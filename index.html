@@ -926,6 +926,10 @@
     .lawSlot { background: rgba(255,255,255,0.05); border-radius: 8px; padding: 7px 9px; font-size: 13px; }
     .lawSlot .live { color: #9fe39f; font-weight: 700; }
     .lawSlot.empty { border: 1px dashed rgba(255,255,255,0.2); color: #8d8da3; text-align: center; }
+    .rushBadge { white-space: nowrap; display: inline-block; font-size: 12px; font-weight: 900; color: #2b1600; background: linear-gradient(90deg, #ffb300, #ff7043); padding: 2px 8px; border-radius: 999px; margin-left: 6px; animation: rushPulse 0.8s ease-in-out infinite alternate; }
+    .rushBadge[hidden] { display: none; }
+    .income.rushOn { color: #ffb300; text-shadow: 0 0 8px rgba(255, 179, 0, 0.6); }
+    @keyframes rushPulse { from { transform: scale(1); } to { transform: scale(1.08); } }
     .mineBar { height: 12px; background: #1c1d2b; border-radius: 999px; overflow: hidden; margin: 6px 0 4px; }
     .mineFill { height: 100%; background: linear-gradient(90deg, #b07a00, #ffd34d); border-radius: 999px; }
     .agent.zero b { color: #9a9ab0; }
@@ -2262,8 +2266,8 @@
       if (action === "buySpecial" && btn.dataset.special === "mine") {
         if (state.special.mines.length >= MINE_MAX || state.money < MINE_PRICE || goldProfit() < MINE_UNLOCK) return;
         state.money -= MINE_PRICE;
-        // how much gold this mine holds: random 25M - 50M (rounded to 100k)
-        const capacity = (250 + secureRandomInt(251)) * 100000;
+        // how much gold this mine holds: random 20M - 30M (rounded to 100k)
+        const capacity = (MINE_CAP_MIN + secureRandomInt((MINE_CAP_MAX - MINE_CAP_MIN) / 100000 + 1) * 100000);
         state.special.mines.push({ id: state.nextId++, capacity, mined: 0 });
         state.stats.minesBought++;
         showNotice("⛏️ Gold mine bought! It holds " + coins(capacity) + " of gold.");
@@ -5370,12 +5374,19 @@
     }
 
     /* ----- ⛏️ Gold mine: needs 500k all-time gold profit, costs 5M, up to 2 at once.
-       Each mine holds a random 25M - 50M of gold and pays a fixed 500 per second until it is empty. ----- */
+       Each mine holds a random 20M - 30M of gold and pays a fixed 500 per second until it is empty.
+       🔥 Gold rush: every second there is a 1 in 1000 chance per mine you own (2 mines: 1 in 500) of a gold rush,
+       which doubles gold mine income for 10 seconds. No new rush can start while one is running. ----- */
     const MINE_PRICE = 5000000;
     const MINE_UNLOCK = 500000;
     const MINE_MAX = 2;
     const MINE_INCOME = 500;
+    const MINE_CAP_MIN = 20000000, MINE_CAP_MAX = 30000000;
+    const RUSH_SECONDS = 10, RUSH_ODDS = 1000;   // chance per second = mines owned / 1000
     if (!state.special.mines) state.special.mines = [];
+    // mines bought before the change held 25M - 50M: cap them at the new maximum
+    state.special.mines.forEach(m => { if (m.capacity > MINE_CAP_MAX) m.capacity = Math.max(MINE_CAP_MAX, Math.min(m.capacity, m.mined + 100000)); });
+    if (typeof state.special.goldRush !== "number") state.special.goldRush = 0;
 
     function goldProfit() {
       const st = state.invest && state.invest.stats && state.invest.stats.gold;
@@ -5389,8 +5400,19 @@
       if (unlocked !== mineWasUnlocked) { mineWasUnlocked = unlocked; render(); }
 
       let income = 0, emptied = false;
-      for (const m of state.special.mines) {
-        let pay = MINE_INCOME * (state.influenceLeft > 0 ? 2 : 1)    // political influence doubles it
+      const mines = state.special.mines;
+      // 🔥 gold rush: roll only when no rush is running
+      if (mines.length && state.special.goldRush <= 0 && secureRandomInt(RUSH_ODDS) < mines.length) {
+        state.special.goldRush = RUSH_SECONDS;
+        state.stats.goldRushes = (state.stats.goldRushes || 0) + 1;
+        showNotice(`🔥 GOLD RUSH! Your gold mines pay double for the next ${RUSH_SECONDS} seconds!`);
+      }
+      const rush = state.special.goldRush > 0;
+      if (rush) state.special.goldRush--;
+      if (!mines.length) state.special.goldRush = 0;
+      for (const m of mines) {
+        let pay = MINE_INCOME * (rush ? 2 : 1)                       // gold rush doubles it
+                  * (state.influenceLeft > 0 ? 2 : 1)                 // political influence doubles it
                   * (1 + 0.10 * lawCount("immigration"));             // immigration lawyers: +10% each
         pay = Math.min(pay, m.capacity - m.mined);                    // the last bit of gold
         m.mined += pay;
@@ -5399,7 +5421,13 @@
         const bar = $("mine-fill-" + m.id), txt = $("mine-text-" + m.id);
         if (bar) bar.style.width = (100 * m.mined / m.capacity) + "%";
         if (txt) txt.textContent = mineText(m);
+        const inc = $("mine-income-" + m.id);
+        if (inc) { inc.textContent = `+${fmt(pay)} / sec`; inc.classList.toggle("rushOn", rush); }
       }
+      document.querySelectorAll(".rushBadge").forEach(el => {
+        el.hidden = !rush;
+        el.textContent = `🔥 Rush 2× · ${state.special.goldRush + 1}s`;
+      });
       if (emptied) {
         state.special.mines = state.special.mines.filter(m => m.mined < m.capacity);
         showNotice("⛏️ A gold mine ran out of gold and closed. You can buy a new one.");
@@ -5421,13 +5449,14 @@
       let html = "";
       mines.forEach((m, i) => {
         html += `<div class="card specialCard">
-          <div class="row"><h3>⛏️ Gold Mine ${mines.length > 1 ? "#" + (i + 1) : ""}</h3><span class="income">+${MINE_INCOME} / sec</span></div>
+          <div class="row"><h3>⛏️ Gold Mine ${mines.length > 1 ? "#" + (i + 1) : ""} <span class="rushBadge" hidden></span></h3><span class="income" id="mine-income-${m.id}">+${MINE_INCOME} / sec</span></div>
           <div class="mineBar"><div class="mineFill" id="mine-fill-${m.id}" style="width:${100 * m.mined / m.capacity}%"></div></div>
           <div class="muted" id="mine-text-${m.id}">${mineText(m)}</div>
         </div>`;
       });
       if (mines.length < MINE_MAX) {
-        const desc = `<div class="muted">Fixed income of ${MINE_INCOME} / sec · each mine holds a random 25M – 50M of gold, then closes</div>
+        const desc = `<div class="muted">Fixed income of ${MINE_INCOME} / sec · each mine holds a random ${fmt(MINE_CAP_MIN)} – ${fmt(MINE_CAP_MAX)} of gold, then closes</div>
+                      <div class="muted">🔥 Gold rush: a 1 in ${RUSH_ODDS} chance every second per mine you own (2 mines: 1 in ${RUSH_ODDS / 2}) to double gold mine income for ${RUSH_SECONDS} seconds</div>
                       <div class="muted">Owned: ${mines.length} / ${MINE_MAX}</div>`;
         if (profit >= MINE_UNLOCK) {
           html += `<div class="card specialCard"><div class="row"><div><h3>⛏️ Gold Mine</h3>${desc}</div>
@@ -7696,7 +7725,7 @@
           ["⚖️ Law Firm", fmt(LAW_PRICE), "Always", `Hire up to ${LAW_MAX} attorneys (slot n costs ${fmt(LAW_SLOT_PRICE)} × n); pick 1 of 3 each time`],
           ["🏢 Real Estate Agency", fmt(AGENCY_PRICE), `${fmt(AGENCY_UNLOCK)} all-time real estate profit`, `+${pctx(AGENCY_SALE_BONUS)} on property sales; 1 agent per ${fmt(AGENCY_PER_AGENT)} real estate profit (max ${AGENCY_MAX_AGENTS}), each earns 0/5/10/15 per second`],
           ["🎢 Amusement Park", fmt(PARK_PRICE), "One per hotel", `Earns ${pctx(PARK_SHARE)} of its paired hotel's income`],
-          ["⛏️ Gold Mine", fmt(MINE_PRICE), `${fmt(MINE_UNLOCK)} all-time gold profit; max ${MINE_MAX}`, `${MINE_INCOME} / sec until 25–50 scoin is mined, then it closes`],
+          ["⛏️ Gold Mine", fmt(MINE_PRICE), `${fmt(MINE_UNLOCK)} all-time gold profit; max ${MINE_MAX}`, `${MINE_INCOME} / sec until its 20–30 scoin of gold is mined, then it closes. 🔥 Gold rush: 1 in ${RUSH_ODDS} chance per second per mine (2 mines: 1 in ${RUSH_ODDS / 2}) of 2× mine income for ${RUSH_SECONDS} sec`],
           ["⚓ Trading Port", fmt(PORT_PRICE), "Own an oil tanker; max 1", `${PORT_PER_TANKER} / sec per tanker and +${pctx(PORT_BONUS)} on tanker contracts`],
           ["🏛️ Art Gallery", fmt(GALLERY_PRICE), `${GALLERY_NEED} paintings in your Art Gallery collection; max 1`, `${fmt(GALLERY_PER_PAINTING)} / sec per painting in your collection, max ${fmt(GALLERY_MAX)} / sec`],
           ["🏬 Logistics Center", fmt(CENTER_PRICE), `Logistics level ${CENTER_LEVEL}; max 1`, `Choose 1 agent upgrade (fee 1%, best contract, or 3-second picks); the other two cost ${fmt(CENTER_UPGRADE_PRICE)} each`]])}
