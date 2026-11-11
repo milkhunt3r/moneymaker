@@ -5746,13 +5746,22 @@
         const el = $("park-income-" + p.id);
         if (el) el.textContent = "+" + income.toFixed(1) + " / sec";
       });
+      const tot = $("parks-total");
+      if (tot) tot.textContent = "+" + total.toFixed(1) + " / sec";
       return total;
     }
 
     function renderParks() {
       const hotels = hotelsOwned(), parks = state.special.parks;
       let html = "";
-      parks.forEach((p, k) => {
+      // all parks under one header that can be minimized (like business groups)
+      const collapsed = parks.length > 0 && !!(state.groupCollapsed || {}).parks;
+      if (parks.length) html += `<div class="card groupHead"><div class="row">
+          <h3>🎢 Amusement Parks <span class="muted">× ${parks.length}</span></h3>
+          <span class="row"><span class="income" id="parks-total">+0.0 / sec</span>
+            <button class="btn ghost small" data-action="toggleGroup" data-type="parks">${collapsed ? "▸ Show all" : "▾ Minimize all"}</button></span></div>
+          ${collapsed ? `<div class="muted">${parks.length} park${parks.length === 1 ? "" : "s"} · ${parks.length} / ${hotels.length} hotel slots used</div>` : ""}</div>`;
+      if (!collapsed) parks.forEach((p, k) => {
         html += `<div class="card specialCard"><div class="row">
           <div><h3>🎢 Amusement Park #${k + 1}</h3>
             <div class="muted">Paired with 🏨 Hotel #${k + 1} · earns 50% of its income</div></div>
