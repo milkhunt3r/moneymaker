@@ -1239,7 +1239,7 @@
                   <span class="segGroup" id="artShapeBtns"></span>
                   <span class="segGroup" id="artTips"></span>
                   <span class="segGroup" id="artSizes"></span>
-                  <span id="artAngleBox" class="artAngle" hidden title="Turn the oval: drag the slider or use the mouse wheel over the canvas (also right after drawing it)">
+                  <span id="artAngleBox" class="artAngle" hidden title="Turn the shape: drag the slider or use the mouse wheel over the canvas (also right after drawing it)">
                     ↻ <input type="range" id="artAngle" min="0" max="179" step="1" value="0"> <b id="artAngleVal">0°</b></span>
                   <button class="btn ghost small" id="artUndo">↶ Undo</button>
                   <button class="btn ghost small" id="artClear">🗑️ Clear</button>
@@ -7977,7 +7977,7 @@
         <p>Your copy is worth <b>match % × the full value</b>: an 80% copy of a Hard painting is worth ${fmt(ART_TIERS.hard.value * 0.8)}. There is no timer.</p>
         <h3>Tools</h3>
         ${wt(["Tool", "What it does"], [["🖌️ Brush", "Paints with the selected color: round or square tip, 6 sizes from 1 px to 44 px"],
-          ["⬛ Square / ⚫ Circle / 🔺 Triangle", "Drag a box to draw a filled shape. Hold Shift for a perfect square or circle. Turn an oval to any angle with the ↻ slider or the mouse wheel, while drawing it or right after"], ["🪣 Fill", "Fills an area of one color"], ["🧽 Eraser", "Paints white"], ["↶ Undo / 🗑️ Clear", "Takes back the last step / starts over"]])}
+          ["⬛ Square / ⚫ Circle / 🔺 Triangle", "Drag a box to draw a filled shape. Hold Shift for a perfect square or circle. Turn an oval or a triangle to any angle (180° = upside down) with the ↻ slider or the mouse wheel, while drawing it or right after"], ["🪣 Fill", "Fills an area of one color"], ["🧽 Eraser", "Paints white"], ["↶ Undo / 🗑️ Clear", "Takes back the last step / starts over"]])}
         <h3>How the match is scored</h3>
         <p>Both pictures are compared in small blocks. <b>🎨 Colors</b> checks that each part has the right color; <b>📐 Shapes</b> checks that the shapes are in the right places.
           Small wobbles are forgiven, but missing parts and extra paint both cost points. Easy and Medium are judged strictest (the shape tools make clean copies simple), so aim for exact positions and sizes there. An empty canvas scores 0%.</p>
@@ -8316,10 +8316,10 @@
     // shape tools: drag a box, the shape is filled with the selected color
     const ART_SHAPES = [{ id: "rect", label: "⬛ Square", title: "Drag to draw a filled rectangle (hold Shift for a perfect square)" },
       { id: "ellipse", label: "⚫ Circle", title: "Drag to draw a filled oval (hold Shift for a perfect circle)" },
-      { id: "tri", label: "🔺 Triangle", title: "Drag to draw a filled triangle (point at the top)" }];
+      { id: "tri", label: "🔺 Triangle", title: "Drag to draw a filled triangle; turn it with the ↻ slider or mouse wheel (180° = upside down)" }];
     const isShapeTool = (t) => ART_SHAPES.some(s => s.id === t);
     const ART_SIZES = [1, 2, 4, 10, 22, 44];
-    const artUI = { tool: "brush", tip: "round", color: "black", size: 10, shapeStart: null, shapeBase: null, angle: 0, lastShape: null, undo: [], drawing: false, last: null, result: null };
+    const artUI = { tool: "brush", tip: "round", color: "black", size: 10, shapeStart: null, shapeBase: null, angles: { ellipse: 0, tri: 0 }, lastShape: null, undo: [], drawing: false, last: null, result: null };
     const drawCtx = () => $("artDraw").getContext("2d", { willReadFrequently: true });
     function artPushUndo() { const c = drawCtx(); artUI.undo.push(c.getImageData(0, 0, ART_W, ART_H)); if (artUI.undo.length > 25) artUI.undo.shift(); }
     function artClearCanvas() { const c = drawCtx(); c.fillStyle = "#ffffff"; c.fillRect(0, 0, ART_W, ART_H); }
@@ -8365,7 +8365,10 @@
       c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke();
     }
 
-    // Circle (oval) tool: drag to size it; turn it with the angle slider or the mouse wheel, during or right after drawing
+    // Circle (oval) and triangle tools: drag to size them; turn them with the angle slider or the mouse wheel,
+    // during or right after drawing (oval 0–179°, triangle 0–359°: 180° is upside down)
+    const turnable = (t) => t === "ellipse" || t === "tri";
+    const ANGLE_MAX = { ellipse: 180, tri: 360 };
     function artShape(a, b, square) {
       const c = drawCtx();
       c.putImageData(artUI.shapeBase, 0, 0);   // live preview: redraw from the canvas as it was when the drag started
@@ -8376,8 +8379,12 @@
       c.fillStyle = ART_PAL[artUI.color];
       c.beginPath();
       if (artUI.tool === "rect") c.rect(x0, y0, W, H);
-      else if (artUI.tool === "ellipse") c.ellipse(x0 + W / 2, y0 + H / 2, W / 2, H / 2, artUI.angle * Math.PI / 180, 0, Math.PI * 2);
-      else { c.moveTo(x0 + W / 2, y0); c.lineTo(x0 + W, y0 + H); c.lineTo(x0, y0 + H); c.closePath(); }
+      else if (artUI.tool === "ellipse") c.ellipse(x0 + W / 2, y0 + H / 2, W / 2, H / 2, artUI.angles.ellipse * Math.PI / 180, 0, Math.PI * 2);
+      else {   // triangle, turned around the middle of its box
+        const cx = x0 + W / 2, cy = y0 + H / 2, r = artUI.angles.tri * Math.PI / 180, cs = Math.cos(r), sn = Math.sin(r);
+        const pts = [[0, -H / 2], [W / 2, H / 2], [-W / 2, H / 2]].map(([x, y]) => [cx + x * cs - y * sn, cy + x * sn + y * cs]);
+        c.moveTo(pts[0][0], pts[0][1]); c.lineTo(pts[1][0], pts[1][1]); c.lineTo(pts[2][0], pts[2][1]); c.closePath();
+      }
       c.fill();
     }
     function renderArtTools() {
@@ -8387,8 +8394,11 @@
       $("artShapeBtns").innerHTML = ART_SHAPES.map(t => `<button class="seg ${artUI.tool === t.id ? "on" : ""}" data-atool="${t.id}" title="${t.title}">${t.label}</button>`).join("");
       $("artTips").innerHTML = [["round", "Round brush", "50%"], ["square", "Square brush", "1px"]].map(([id, title, r]) =>
         `<button class="seg ${artUI.tip === id ? "on" : ""}" data-atip="${id}" title="${title}"><span class="sizeDot" style="width:11px;height:11px;border-radius:${r}"></span></button>`).join("");
-      $("artAngleBox").hidden = artUI.tool !== "ellipse";
-      $("artAngle").value = artUI.angle; $("artAngleVal").textContent = artUI.angle + "°";
+      $("artAngleBox").hidden = !turnable(artUI.tool);
+      if (turnable(artUI.tool)) {
+        $("artAngle").max = ANGLE_MAX[artUI.tool] - 1;
+        $("artAngle").value = artUI.angles[artUI.tool]; $("artAngleVal").textContent = artUI.angles[artUI.tool] + "°";
+      }
       $("artSizes").innerHTML = ART_SIZES.map(s => `<button class="seg ${artUI.size === s ? "on" : ""}" data-asize="${s}" title="Brush size ${s} px">
         <span class="sizeDot" style="width:${Math.max(2, s / 2.2)}px;height:${Math.max(2, s / 2.2)}px;border-radius:${artUI.tip === "square" ? "1px" : "50%"}"></span></button>`).join("");
       $("artTiers").innerHTML = Object.entries(ART_TIERS).map(([k, t]) => `<button class="seg ${state.art.tier === k ? "on" : ""}" data-atier="${k}">${t.icon} ${t.name} · ${fmt(t.value)}</button>`).join("");
@@ -8565,16 +8575,18 @@
         const end = artPos(e);
         artShape(artUI.shapeStart, end, e.shiftKey);
         // the oval just drawn can still be turned (slider / wheel) until the next action
-        if (artUI.tool === "ellipse") artUI.lastShape = { a: artUI.shapeStart, b: end, square: e.shiftKey, base: artUI.shapeBase, color: artUI.color };
+        if (turnable(artUI.tool)) artUI.lastShape = { a: artUI.shapeStart, b: end, square: e.shiftKey, base: artUI.shapeBase, color: artUI.color, tool: artUI.tool };
       }
       artUI.drawing = false; artUI.shapeStart = null; artUI.shapeBase = null;
     }));
     function artTurn(deg) {
-      artUI.angle = ((Math.round(deg) % 180) + 180) % 180;
-      $("artAngle").value = artUI.angle; $("artAngleVal").textContent = artUI.angle + "°";
+      const t = artUI.tool, max = ANGLE_MAX[t];
+      if (!max) return;
+      artUI.angles[t] = ((Math.round(deg) % max) + max) % max;
+      $("artAngle").value = artUI.angles[t]; $("artAngleVal").textContent = artUI.angles[t] + "°";
       if (artUI.drawing && artUI.shapeStart && artUI.lastMove) { artShape(artUI.shapeStart, artUI.lastMove, false); return; }
       const L = artUI.lastShape;
-      if (L && artUI.tool === "ellipse" && !artUI.result) {   // turn the oval that was just drawn
+      if (L && L.tool === t && !artUI.result) {   // turn the shape that was just drawn
         const keep = artUI.color; artUI.color = L.color; artUI.shapeBase = L.base;
         artShape(L.a, L.b, L.square);
         artUI.shapeBase = null; artUI.color = keep;
@@ -8582,9 +8594,9 @@
     }
     $("artAngle").addEventListener("input", () => artTurn(Number($("artAngle").value)));
     artCanvas.addEventListener("wheel", (e) => {
-      if (artUI.tool !== "ellipse") return;
+      if (!turnable(artUI.tool)) return;
       e.preventDefault();
-      artTurn(artUI.angle + (e.deltaY > 0 ? 5 : -5));
+      artTurn(artUI.angles[artUI.tool] + (e.deltaY > 0 ? 5 : -5));
     }, { passive: false });
     artCanvas.addEventListener("pointermove", (e) => { if (artUI.shapeStart) artUI.lastMove = artPos(e); });
 
