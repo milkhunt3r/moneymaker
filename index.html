@@ -2799,21 +2799,21 @@
        To add a game later: add it to CASINO_GAMES and write its render function.
        ===================================================================== */
     const CASINO_GAMES = [
-      { id: "rouletteLow",  name: "Roulette: Classic table", emoji: "🎡", desc: "European roulette, bets from 100 to 5,000 per spot." },
-      { id: "rouletteHigh", name: "Roulette: High rollers",  emoji: "💎", desc: "European roulette, bets from 5,000 to 250,000 per spot." },
-      { id: "bjLow",  name: "Blackjack: Classic table", emoji: "🃏", desc: "Play 1 to 3 hands against the dealer. Bets from 100 to 5,000 per hand." },
-      { id: "bjHigh", name: "Blackjack: High rollers",  emoji: "♠️", desc: "Play 1 to 3 hands against the dealer. Bets from 5,000 to 250,000 per hand." },
+      { id: "rouletteLow",  name: "Roulette: Classic table", emoji: "🎡", desc: "European roulette, bets from 500 to 50,000 per spot." },
+      { id: "rouletteHigh", name: "Roulette: High rollers",  emoji: "💎", desc: "European roulette, bets from 50,000 to 5 scoin per spot." },
+      { id: "bjLow",  name: "Blackjack: Classic table", emoji: "🃏", desc: "Play 1 to 3 hands against the dealer. Bets from 500 to 50,000 per hand." },
+      { id: "bjHigh", name: "Blackjack: High rollers",  emoji: "♠️", desc: "Play 1 to 3 hands against the dealer. Bets from 50,000 to 5 scoin per hand." },
       { id: "rouletteSuper", name: "Roulette: Super high rollers", emoji: "💎💎", desc: "European roulette, bets from 10 to 500 scoin per spot." },
       { id: "bjSuper", name: "Blackjack: Super high rollers", emoji: "💎♠️", desc: "Play 1 to 3 hands against the dealer. Bets from 10 to 500 scoin per hand." },
-      { id: "vpLow",   name: "Video Poker: Classic table", emoji: "🎴", desc: "Jacks or Better with a joker (53 cards). Bets from 100 to 5,000. Jackpot 250,000." },
-      { id: "vpHigh",  name: "Video Poker: High rollers",  emoji: "🎴💎", desc: "Jacks or Better with a joker (53 cards). Bets from 5,000 to 250,000. Jackpot 12.5 scoin." },
+      { id: "vpLow",   name: "Video Poker: Classic table", emoji: "🎴", desc: "Jacks or Better with a joker (53 cards). Bets from 500 to 50,000. Jackpot 2.5 scoin." },
+      { id: "vpHigh",  name: "Video Poker: High rollers",  emoji: "🎴💎", desc: "Jacks or Better with a joker (53 cards). Bets from 50,000 to 5 scoin. Jackpot 250 scoin." },
       { id: "vpSuper", name: "Video Poker: Super high rollers", emoji: "🎴💎💎", desc: "Jacks or Better with a joker (53 cards). Bets from 10 to 500 scoin. Jackpot 25 gcoin." },
-      { id: "uthLow",   name: "Ultimate Texas Hold'em: Classic table", emoji: "🤠", desc: "Beat the dealer's poker hand. Play 1 or 2 seats. Ante 100 to 5,000 (+ equal Blind, optional Trips)." },
-      { id: "uthHigh",  name: "Ultimate Texas Hold'em: High rollers",  emoji: "🤠💎", desc: "Beat the dealer's poker hand. Play 1 or 2 seats. Ante 5,000 to 250,000 (+ equal Blind, optional Trips)." },
+      { id: "uthLow",   name: "Ultimate Texas Hold'em: Classic table", emoji: "🤠", desc: "Beat the dealer's poker hand. Play 1 or 2 seats. Ante 500 to 50,000 (+ equal Blind, optional Trips)." },
+      { id: "uthHigh",  name: "Ultimate Texas Hold'em: High rollers",  emoji: "🤠💎", desc: "Beat the dealer's poker hand. Play 1 or 2 seats. Ante 50,000 to 5 scoin (+ equal Blind, optional Trips)." },
       { id: "uthSuper", name: "Ultimate Texas Hold'em: Super high rollers", emoji: "🤠💎💎", desc: "Beat the dealer's poker hand. Play 1 or 2 seats. Ante 10 to 500 scoin (+ equal Blind, optional Trips)." },
       { id: "plinkoSuper", name: "Plinko: Super high rollers", emoji: "💎🔻", desc: "Same pyramid, 0.3× to 250×, up to 20 balls. Bets from 10 to 50 scoin per ball." },
       { id: "plinko", name: "Plinko", emoji: "🔻", desc: "Drop up to 20 balls down a peg pyramid into multipliers from 0.3× to 250×. Bets 5,000 – 250,000 per ball." },
-      { id: "climb",  name: "Sky Climb", emoji: "🎈", desc: "Draw balls to climb a 20-step ladder up to 50,000×. Cash out before a red ball pops your balloon! Bets 10,000 – 250,000." },
+      { id: "climb",  name: "Sky Climb", emoji: "🎈", desc: "Draw balls to climb a 20-step ladder up to 50,000×. Cash out before a red ball pops your balloon! Bets 10,000 – 500,000." },
     ];
     // Game groups in the casino lobby (games show in this order inside each group)
     const CASINO_GROUPS = [
@@ -3019,8 +3019,8 @@
       };
     }
     const ROULETTE_TABLES = {
-      rouletteLow:  makeTable("rouletteLow",  "Roulette: Classic table", "🎡", 100,  5000,   [100, 500, 1000, 5000]),
-      rouletteHigh: makeTable("rouletteHigh", "Roulette: High rollers",  "💎", 5000, 250000, [5000, 10000, 25000, 50000, 100000, 250000]),
+      rouletteLow:  makeTable("rouletteLow",  "Roulette: Classic table", "🎡", 500, 50000, [500, 1000, 5000, 10000, 25000, 50000]),
+      rouletteHigh: makeTable("rouletteHigh", "Roulette: High rollers",  "💎", 50000, 5000000, [50000, 100000, 250000, 500000, 1000000, 5000000]),
       rouletteSuper: makeTable("rouletteSuper", "Roulette: Super high rollers", "💎💎", 10000000, 500000000, [10000000, 25000000, 50000000, 100000000, 250000000, 500000000]),
     };
     let roulette = ROULETTE_TABLES.rouletteLow;   // the table you are looking at
@@ -3063,6 +3063,8 @@
       50000:  { bg: "#ec407a", text: "#fff" },      // pink
       100000: { bg: "#37474f", text: "#ffd34d" },   // dark grey, gold text
       250000: { bg: "#ffd700", text: "#3e2b00" },   // gold
+      500000: { bg: "#7cb342", text: "#fff" },      // lime      (500k)
+      5000000:   { bg: "#283593", text: "#fff" },    // indigo    (5 scoin)
       10000000:  { bg: "#00897b", text: "#fff" },    // teal      (10 scoin)
       25000000:  { bg: "#5e35b1", text: "#fff" },    // violet    (25 scoin)
       50000000:  { bg: "#c62828", text: "#fff" },    // crimson   (50 scoin)
@@ -4027,8 +4029,8 @@
                lastBets: [0, 0, 0], message: "" };
     }
     const BJ_TABLES = {
-      bjLow:  makeBjTable("bjLow",  "Blackjack: Classic table", "🃏", 100,  5000,   [100, 500, 1000, 5000]),
-      bjHigh: makeBjTable("bjHigh", "Blackjack: High rollers",  "♠️", 5000, 250000, [5000, 10000, 25000, 50000, 100000, 250000]),
+      bjLow:  makeBjTable("bjLow",  "Blackjack: Classic table", "🃏", 500, 50000, [500, 1000, 5000, 10000, 25000, 50000]),
+      bjHigh: makeBjTable("bjHigh", "Blackjack: High rollers",  "♠️", 50000, 5000000, [50000, 100000, 250000, 500000, 1000000, 5000000]),
       bjSuper: makeBjTable("bjSuper", "Blackjack: Super high rollers", "💎♠️", 10000000, 500000000, [10000000, 25000000, 50000000, 100000000, 250000000, 500000000]),
     };
     let bj = null;   // the blackjack table you are looking at
@@ -4511,8 +4513,8 @@
                result: null, busy: false, message: "", jackpotWon: false };
     }
     const VP_TABLES = {
-      vpLow:   makeVpTable("vpLow",   "Video Poker: Classic table", "🎴", 100, 5000, [100, 500, 1000, 5000]),
-      vpHigh:  makeVpTable("vpHigh",  "Video Poker: High rollers",  "🎴💎", 5000, 250000, [5000, 10000, 25000, 50000, 100000, 250000]),
+      vpLow:   makeVpTable("vpLow",   "Video Poker: Classic table", "🎴", 500, 50000, [500, 1000, 5000, 10000, 25000, 50000]),
+      vpHigh:  makeVpTable("vpHigh",  "Video Poker: High rollers",  "🎴💎", 50000, 5000000, [50000, 100000, 250000, 500000, 1000000, 5000000]),
       vpSuper: makeVpTable("vpSuper", "Video Poker: Super high rollers", "🎴💎💎", 10000000, 500000000, [10000000, 25000000, 50000000, 100000000, 250000000, 500000000]),
     };
     let vp = null;   // the video poker table you are looking at
@@ -4787,8 +4789,8 @@
                lastBets: null };
     }
     const UTH_TABLES = {
-      uthLow:   makeUthTable("uthLow",   "Ultimate Texas Hold'em: Classic table", "🤠", 100, 5000, [100, 500, 1000, 5000]),
-      uthHigh:  makeUthTable("uthHigh",  "Ultimate Texas Hold'em: High rollers",  "🤠💎", 5000, 250000, [5000, 10000, 25000, 50000, 100000, 250000]),
+      uthLow:   makeUthTable("uthLow",   "Ultimate Texas Hold'em: Classic table", "🤠", 500, 50000, [500, 1000, 5000, 10000, 25000, 50000]),
+      uthHigh:  makeUthTable("uthHigh",  "Ultimate Texas Hold'em: High rollers",  "🤠💎", 50000, 5000000, [50000, 100000, 250000, 500000, 1000000, 5000000]),
       uthSuper: makeUthTable("uthSuper", "Ultimate Texas Hold'em: Super high rollers", "🤠💎💎", 10000000, 500000000, [10000000, 25000000, 50000000, 100000000, 250000000, 500000000]),
     };
     let uth = null;
@@ -5240,8 +5242,8 @@
        Ladder tuned so perfect play pays back about 97.7%.
        ===================================================================== */
     const CLIMB_LADDER = [0, 1, 1.4, 2, 3, 4.4, 6.6, 8, 9.5, 11.5, 14, 17, 21, 26, 34, 48, 80, 200, 1000, 5000, 50000];
-    const CLIMB_MIN = 10000, CLIMB_MAX = 250000;
-    const CLIMB_CHIPS = [10000, 25000, 50000, 100000, 250000];
+    const CLIMB_MIN = 10000, CLIMB_MAX = 500000;
+    const CLIMB_CHIPS = [10000, 25000, 50000, 100000, 250000, 500000];
     const climb = { bet: 0, chip: 10000, active: false, busy: false, stake: 0, step: 0, shield: false,
                     balls: [], drawn: [], tookHalf: false, banked: 0, message: "", crashed: false, lastBet: 0 };
 
