@@ -1680,8 +1680,9 @@
     let stopSaving = false;   // set while resetting / loading, so the old game isn't saved again
     // Saving: if the browser refuses (storage full), tell the player instead of failing silently
     let saveFailedAt = 0;
+    let catchingUp = false;   // true while the game clock runs several seconds at once (save once at the end)
     function save() {
-      if (stopSaving) return;
+      if (stopSaving || catchingUp) return;
       try {
         localStorage.setItem("coinClickerSave", JSON.stringify(state));
         if (saveFailedAt) { saveFailedAt = 0; const w = document.getElementById("saveWarn"); if (w) w.hidden = true; }
@@ -2534,7 +2535,8 @@
     const flashUntil = {};   // keeps each company message on screen for 3 seconds
     const signed = (n) => Math.abs(n) >= SCOIN ? (n < 0 ? "" : "+") + fmt(n) : (n < 0 ? "" : "+") + n.toFixed(1);
 
-    setInterval(() => {
+    // One game second. Called by the game clock (see GAME CLOCK), which runs it once for every real second that passed.
+    function gameTick() {
       if (isPaused()) return;   // no income and no timers while a pop-up is open
       let perSecond = 0;
       const now = Date.now();
@@ -2575,8 +2577,12 @@
       }
 
       // Special businesses
-      const agencyIncome = agencyTick();
-      perSecond += agencyIncome + mineTick() + lawTick() + parkTick() + portTick() + galleryTick();
+      const agencyIncome = agencyTick(), mineIncome = mineTick();
+      perSecond += agencyIncome + mineIncome + lawTick() + parkTick() + portTick() + galleryTick();
+      // for offline earnings: business income without gold mines (mines are counted on their own), last 60 seconds
+      const passive = Math.max(0, perSecond - mineIncome) * legacyIncomeMult();
+      (state.passiveHist = state.passiveHist || []).push(Math.round(passive));
+      if (state.passiveHist.length > 60) state.passiveHist.shift();
       if (perSecond > 0) perSecond *= legacyIncomeMult();   // ⭐ Tycoon's Legacy: +25% per pick
       if (perSecond > state.stats.bestIncome) state.stats.bestIncome = perSecond;   // record for achievements
 
@@ -2596,8 +2602,7 @@
       $("perSecond").textContent = signed(perSecond) + " / sec";
       state.lastIncome = perSecond;   // used by the magical pill
       updateCounter();
-      save();
-    }, 1000);
+    }
 
     /* =====================================================================
        VIEWS: switch between Income and Casino (income keeps running either way)
@@ -7547,7 +7552,7 @@
       }
       updateVipBar();
     }
-    setInterval(freeTick, 1000);
+    // (freeTick is run every game second by the game clock)
 
     // The line under the Gambler level: every free chip you have, how many, and when the next one comes
     var vipReady;   // set once everything below exists (updateCounter can run earlier during start-up)
@@ -7712,7 +7717,13 @@
           ["🚢 Global Empire", "1st: keep trucks, tankers, planes, warehouses and Trading Port on every reset. 2nd: all contracts take half the time (same pay)", "2"],
           ["🎟️ VIP Coins", "A free 500 scoin bet chip every 20 min (2nd pick: every 10 min) for the Super high roller tables", "2"]])}
         <h3>💾 Saving</h3>
-        <p>The game saves automatically in your browser. In ⚙️ Settings you can save, download a backup file, load one, or reset the game. Art Gallery paintings are stored separately in the browser so a big collection never fills up the save; a downloaded backup includes them. If the browser ever refuses to save, a red warning appears at the bottom of the screen.</p>`;
+        <p>The game saves automatically in your browser. In ⚙️ Settings you can save, download a backup file, load one, or reset the game.</p>
+        <h3>🌙 Background and offline</h3>
+        <p>The game counts real time: in a background tab it earns at full speed (it catches up when the browser wakes it).
+          When the game is closed (or the computer sleeps) for more than 5 minutes, you get <b>offline earnings</b> when you come back:
+          up to 8 hours count, and businesses, special businesses, gold mines and rent pay 50%. Contracts on their way, free bet chips and VIP chips keep their timers running.
+          Nothing random happens while you're away (no taxes, crashes, breakdowns or market moves), and Logistics agents only start new contracts while the game is open.</p>
+        <p>Art Gallery paintings are stored separately in the browser so a big collection never fills up the save; a downloaded backup includes them. If the browser ever refuses to save, a red warning appears at the bottom of the screen.</p>`;
     }
 
     function wikiIncome() {
@@ -8368,6 +8379,121 @@
       else if (!$("artCollection").hidden) $("artBuySlots").disabled = state.money < artSlotPrice();
     }, 1000);
     if (state.art.unlocked) { paintArt($("artRef").getContext("2d"), state.art.tier, state.art.seed || (state.art.seed = 1 + secureRandomInt(2 ** 31 - 2))); artClearCanvas(); }
+
+
+    /* =====================================================================
+       ⏱️ GAME CLOCK + OFFLINE EARNINGS
+       The game runs one game second (gameTick + freeTick) for every REAL second that passed, measured with Date.now().
+       Browsers slow down timers in background tabs (Chrome: about once a minute), so when the clock wakes up
+       it catches up all the missed seconds at once: a hidden tab earns the same as a visible one.
+       If more than 5 minutes passed (game closed, computer asleep), the game pays OFFLINE EARNINGS instead:
+         · up to 8 hours count; income runs at 50% (businesses, special businesses, gold mines, rent)
+         · timers run at full speed: contracts on their way, express offers, free bet chips, VIP chips,
+           property sale locks and the gold cooldown
+         · nothing random happens while away (no taxes, crashes, breakdowns or market moves)
+       While a tax payment is waiting (the game is paused) the time is not counted, as before.
+       ===================================================================== */
+    const CATCHUP_MAX = 300, OFFLINE_CAP = 8 * 3600, OFFLINE_RATE = 0.5;
+    function awayText(sec) {
+      const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60);
+      return h ? `${h}h ${m}m` : m ? `${m}m` : `${Math.floor(sec)}s`;
+    }
+    function applyOffline(seconds) {
+      const away = Math.floor(Math.min(seconds, OFFLINE_CAP)), eff = away * OFFLINE_RATE, rows = [];
+      let total = 0;
+      // businesses and special businesses: average of the last minute you played
+      const hist = state.passiveHist || [];
+      const rate = hist.length ? hist.reduce((a, b) => a + b, 0) / hist.length : Math.max(0, state.lastIncome || 0);
+      const biz = Math.floor(rate * eff);
+      if (biz > 0) { rows.push(["💼 Businesses", biz]); total += biz; }
+      // gold mines: limited by the gold that is left
+      let gold = 0;
+      const perMine = MINE_INCOME * (1 + 0.10 * lawCount("immigration"));
+      for (const m of state.special.mines) { const p = Math.min(m.capacity - m.mined, perMine * eff); m.mined += p; gold += p; }
+      gold = Math.floor(gold * legacyIncomeMult());
+      if (gold > 0) { rows.push(["⛏️ Gold mines", gold]); total += gold; }
+      // real estate rent
+      let rent = 0;
+      for (const p of inv.properties) {
+        let t = eff;
+        if (t >= p.rentIn) { const n = 1 + Math.floor((t - p.rentIn) / RE_RENT_EVERY); rent += n * p.value * RE_RENT_RATE; p.rentIn = RE_RENT_EVERY - ((t - p.rentIn) % RE_RENT_EVERY) || RE_RENT_EVERY; }
+        else p.rentIn -= t;
+        p.rentIn = Math.max(1, Math.round(p.rentIn));
+        if (p.lock > 0) p.lock = Math.max(1, p.lock - away);   // unlocks on the next game second
+      }
+      rent = Math.floor(rent);
+      if (rent > 0) { rows.push(["🏠 Rent", rent]); total += rent; investRecord("re", 0, rent); }
+      if (inv.goldCooldown > 0) inv.goldCooldown = Math.max(0, inv.goldCooldown - away);
+      // logistics: contracts keep travelling (they arrive and pay on the next game second)
+      let arriving = 0;
+      for (const key in FLEETS) for (const v of fleetList(key)) {
+        if (v.contract) { v.contract.left = Math.max(1, v.contract.left - away); if (v.contract.left === 1) arriving++; }
+        if (v.offers) v.offers.forEach(o => { if (o.express) o.express = Math.max(1, o.express - away); });
+      }
+      // free bet chips and VIP chips
+      let chips = 0;
+      const addChips = (have, timer, gap) => {   // -> [new count, new timer]
+        if (have >= FREE_CHIP_MAX) return [have, gap];
+        if (away < timer) return [have, timer - away];
+        const n = 1 + Math.floor((away - timer) / gap), got = Math.min(n, FREE_CHIP_MAX - have);
+        chips += got;
+        return [have + got, have + got >= FREE_CHIP_MAX ? gap : gap - ((away - timer) % gap)];
+      };
+      if (!isPaused()) {
+        const gap = freeChipMinutes() * 60;
+        for (const c of freeUnlocked()) {
+          const [n, t] = addChips(state.freeChips[c.value] || 0, Math.min(state.freeTimers[c.value] || gap, gap), gap);
+          state.freeChips[c.value] = n; state.freeTimers[c.value] = Math.max(1, t);
+        }
+        if (state.legacy.vip > 0) {
+          const gapV = vipMinutes() * 60;
+          const [n, t] = addChips(state.freeChips[VIP_CHIP] || 0, Math.min(state.vip.timer || gapV, gapV), gapV);
+          state.freeChips[VIP_CHIP] = n; state.vip.timer = Math.max(1, t);
+        }
+      }
+      state.money += total;
+      state.stats.offlineEarned = (state.stats.offlineEarned || 0) + total;
+      updateCounter();
+      if (seconds < CATCHUP_MAX || (!total && !arriving && !chips)) return;
+      showModal(`<h2>🌙 While you were away</h2>
+        <p>You were gone for <b>${awayText(seconds)}</b>${seconds > OFFLINE_CAP ? ` (up to ${OFFLINE_CAP / 3600} hours count)` : ""}.
+          Your empire kept working at ${OFFLINE_RATE * 100}% speed:</p>
+        ${rows.length ? `<table class="wikiTable">${rows.map(([k, v]) => `<tr><td>${k}</td><td style="text-align:right"><b class="income">+${fmt(v)}</b></td></tr>`).join("")}
+          <tr><td><b>Total</b></td><td style="text-align:right"><b class="income">+${fmt(total)}</b></td></tr></table>` : ""}
+        ${arriving ? `<p>🚚 ${arriving} contract${arriving === 1 ? "" : "s"} arrived and will pay out now.</p>` : ""}
+        ${chips ? `<p>🎁 ${chips} free bet chip${chips === 1 ? "" : "s"} collected.</p>` : ""}
+        <p class="muted">Tip: while the game is open (even in a background tab) it earns at full speed.</p>
+        <button class="btn big" data-modal="close">💰 Collect</button>`);
+      $("modalBox").classList.add("gold");
+    }
+
+    function gameClock() {
+      const now = Date.now();
+      if (isPaused()) { state.lastTick = now; return; }   // a tax payment is waiting: time is not counted
+      const due = Math.floor((now - state.lastTick) / 1000);
+      if (due <= 0) return;
+      if (due > CATCHUP_MAX) {   // asleep or closed for a long time: offline earnings
+        applyOffline((now - state.lastTick) / 1000);
+        state.lastTick = now; save();
+        return;
+      }
+      catchingUp = due > 1;
+      try {
+        for (let i = 0; i < due; i++) {
+          gameTick(); freeTick();
+          state.lastTick += 1000;
+          if (isPaused()) { state.lastTick = now; break; }
+        }
+      } finally { catchingUp = false; }
+      save();
+    }
+    // Start: pay what was missed since the last save, then run the clock 4 times a second (each run does whole seconds)
+    if (typeof state.lastTick !== "number" || state.lastTick > Date.now()) state.lastTick = Date.now();
+    if (!state.gameOver && Date.now() - state.lastTick > CATCHUP_MAX * 1000) {
+      applyOffline((Date.now() - state.lastTick) / 1000);
+      state.lastTick = Date.now(); save();
+    }
+    setInterval(gameClock, 250);
 
     // Make the game state reachable from the browser console (F12) for testing
     window.state = state;
