@@ -8011,7 +8011,7 @@
     const ART_UNLOCK = 500000, ART_SLOTS_START = 10, ART_SLOTS_STEP = 10, ART_SLOT_PRICE = 500000, ART_SLOT_PRICE_STEP = 250000;
     const ART_TIERS = {
       easy:   { name: "Easy",   icon: "🟢", value: 1e6, desc: "3–4 simple shapes" },
-      medium: { name: "Medium", icon: "🟡", value: 1e7, desc: "Kid-style drawings: houses, flowers, trees, boats" },
+      medium: { name: "Medium", icon: "🟡", value: 1e7, desc: "Kid-style drawings: houses, flowers, trees, boats, cars, rockets, snowmen, rainbows, mushrooms, balloons, ice cream, castles, fish, butterflies" },
       hard:   { name: "Hard",   icon: "🔴", value: 1e8, desc: "Detailed scenes with many colors: mountains, city, seaside, desert, winter, farm, underwater or space" },
     };
     const ART_PAL = {
@@ -8052,39 +8052,145 @@
           else poly(c, [[x, y - s / 2], [x + s / 2, y + s / 2], [x - s / 2, y + s / 2]]);
         }
       } else if (tier === "medium") {
-        const scene = pick(["house", "flower", "tree", "boat"]);
+        // Medium: kid-style drawings with big simple shapes and a few colors (14 kinds)
+        const scene = pick(["house", "flower", "tree", "boat", "car", "rocket", "snowman", "rainbow", "mushroom", "balloons", "icecream", "castle", "fish", "butterfly"]);
         const skyC = pick([P.sky, P.sky, P.white]);
-        rect(skyC, 0, 0, ART_W, ART_H);
-        if (scene !== "boat") rect(P.lime, 0, 185, ART_W, 55);
         const sunX = pick([50, 270]), sunR = rnd(22, 30);
+        const ground = (c = P.lime, y = 185) => rect(c, 0, y, ART_W, ART_H - y);
+        const sun = () => circ(P.yellow, sunX, 45, sunR);
+        const cloud = (x, y, s = 1) => { circ(P.white, x, y, 14 * s); circ(P.white, x + 16 * s, y - 7 * s, 17 * s); circ(P.white, x + 34 * s, y, 14 * s); };
+        rect(skyC, 0, 0, ART_W, ART_H);
         if (scene === "house") {
-          circ(P.yellow, sunX, 45, sunR);
-          const hx = rnd(95, 135), hw = rnd(110, 130), hy = 110, wall = pick([P.red, P.orange, P.yellow, P.beige, P.pink]);
+          ground(); sun();
+          const hx = rnd(85, 135), hw = rnd(110, 130), hy = 110, wall = pick([P.red, P.orange, P.yellow, P.beige, P.pink]);
+          if (R() < 0.5) rect(P.brown, hx + hw * 0.7, hy - 55, 16, 40);   // chimney
           rect(wall, hx, hy, hw, 80);
           poly(pick([P.brown, P.red, P.navy]), [[hx - 12, hy], [hx + hw / 2, hy - rnd(55, 70)], [hx + hw + 12, hy]]);
           rect(P.brown, hx + hw * 0.58, hy + 35, 26, 45);
-          rect(pick([P.blue, P.sky, P.yellow]), hx + hw * 0.14, hy + 20, 30, 28);
+          const win = pick([P.blue, P.sky, P.yellow]);
+          rect(win, hx + hw * 0.14, hy + 20, 30, 28);
         } else if (scene === "flower") {
-          circ(P.yellow, sunX, 45, sunR);
-          const fx = rnd(130, 190), fy = rnd(75, 95), pc = pick([P.red, P.pink, P.purple, P.orange, P.blue]), n = ri(5, 6);
-          rect(P.green, fx - 5, fy, 10, 190 - fy);
-          ell(P.green, fx - 24, fy + 70, 24, 10, -0.5); ell(P.green, fx + 24, fy + 90, 24, 10, 0.5);
-          for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2; circ(pc, fx + Math.cos(a) * 26, fy + Math.sin(a) * 26, 18); }
-          circ(pick([P.yellow, P.brown, P.orange]), fx, fy, 16);
+          ground(); sun();
+          const n = ri(1, 3), pc = pick([P.red, P.pink, P.purple, P.orange, P.blue]);
+          for (let f = 0; f < n; f++) {
+            const fx = n === 1 ? rnd(130, 190) : 60 + f * (200 / (n - 1)) + rnd(-10, 10), fy = rnd(75, 110), k = ri(5, 6), r = n === 1 ? 26 : 20;
+            rect(P.green, fx - 4, fy, 8, 190 - fy);
+            ell(P.green, fx - 20, fy + 60, 20, 8, -0.5);
+            for (let i = 0; i < k; i++) { const a = i / k * Math.PI * 2; circ(n === 1 ? pc : pick([P.red, P.pink, P.purple, P.orange]), fx + Math.cos(a) * r, fy + Math.sin(a) * r, r * 0.7); }
+            circ(pick([P.yellow, P.brown, P.orange]), fx, fy, r * 0.6);
+          }
         } else if (scene === "tree") {
-          circ(P.yellow, sunX, 45, sunR);
+          ground(); sun();
           const tx = rnd(120, 200);
           rect(P.brown, tx - 13, 120, 26, 70);
           circ(P.green, tx, 100, 48); circ(P.green, tx - 38, 120, 32); circ(P.green, tx + 38, 120, 32);
           if (R() < 0.7) for (let i = 0; i < ri(3, 5); i++) circ(P.red, tx + rnd(-50, 50), rnd(80, 130), 7);
-        } else {
+        } else if (scene === "boat") {
           rect(P.blue, 0, 160, ART_W, 80);
-          circ(P.yellow, sunX, 45, sunR);
+          sun();
           const bx = rnd(100, 200);
           poly(P.brown, [[bx - 70, 160], [bx + 70, 160], [bx + 48, 190], [bx - 48, 190]]);
           rect(P.brown, bx - 3, 55, 6, 105);
           poly(pick([P.white, P.red, P.orange]), [[bx + 6, 60], [bx + 6, 150], [bx + 70, 150]]);
           poly(pick([P.yellow, P.pink, P.white]), [[bx - 6, 75], [bx - 6, 150], [bx - 55, 150]]);
+        } else if (scene === "car") {
+          ground(P.lime, 170); rect(P.gray, 0, 190, ART_W, 50); sun();
+          if (R() < 0.6) cloud(rnd(110, 200), rnd(40, 60));
+          const cx = rnd(40, 110), body = pick([P.red, P.blue, P.yellow, P.orange, P.purple]);
+          poly(body, [[cx + 40, 160], [cx + 60, 125], [cx + 130, 125], [cx + 150, 160]]);
+          rect(body, cx, 158, 190, 40);
+          rect(P.sky, cx + 64, 132, 30, 24); rect(P.sky, cx + 100, 132, 30, 24);
+          circ(P.black, cx + 45, 200, 20); circ(P.black, cx + 145, 200, 20);
+          circ(P.gray, cx + 45, 200, 8); circ(P.gray, cx + 145, 200, 8);
+          rect(P.yellow, cx + 178, 165, 12, 10);
+        } else if (scene === "rocket") {
+          rect(P.navy, 0, 0, ART_W, ART_H);
+          for (let i = 0; i < ri(5, 8); i++) circ(P.yellow, rnd(15, 305), rnd(15, 225), rnd(3, 6));
+          circ(P.beige, pick([55, 265]), rnd(50, 80), rnd(24, 32));
+          const rx = rnd(130, 190), ry = rnd(60, 80);
+          poly(P.red, [[rx, ry], [rx + 26, ry + 40], [rx - 26, ry + 40]]);
+          rect(P.white, rx - 26, ry + 40, 52, 90);
+          circ(P.sky, rx, ry + 70, 13);
+          poly(P.red, [[rx - 26, ry + 95], [rx - 50, ry + 135], [rx - 26, ry + 130]]); poly(P.red, [[rx + 26, ry + 95], [rx + 50, ry + 135], [rx + 26, ry + 130]]);
+          poly(P.orange, [[rx - 20, ry + 130], [rx + 20, ry + 130], [rx, ry + 170]]); poly(P.yellow, [[rx - 10, ry + 130], [rx + 10, ry + 130], [rx, ry + 152]]);
+        } else if (scene === "snowman") {
+          rect(P.sky, 0, 0, ART_W, ART_H); ground(P.white, 180);
+          for (let i = 0; i < 10; i++) circ(P.white, rnd(10, 310), rnd(10, 170), rnd(3, 5));
+          const sx = rnd(120, 200);
+          circ(P.white, sx, 175, 42); circ(P.white, sx, 112, 32); circ(P.white, sx, 62, 24);
+          rect(P.black, sx - 22, 30, 44, 8); rect(P.black, sx - 14, 4, 28, 28);
+          circ(P.black, sx - 8, 58, 3); circ(P.black, sx + 8, 58, 3);
+          poly(P.orange, [[sx, 64], [sx + 22, 68], [sx, 71]]);
+          for (const y of [102, 118, 134]) circ(P.black, sx, y, 3.5);
+          line(P.brown, 5, [[sx - 30, 110], [sx - 70, 85]]); line(P.brown, 5, [[sx + 30, 110], [sx + 70, 85]]);
+          rect(pick([P.red, P.blue, P.green, P.purple]), sx - 26, 82, 52, 9);
+        } else if (scene === "rainbow") {
+          rect(P.sky, 0, 0, ART_W, ART_H);
+          const cx = rnd(140, 180), cy = 200;
+          [P.red, P.orange, P.yellow, P.green, P.blue, P.purple].forEach((c, i) => circ(c, cx, cy, 130 - i * 14));
+          circ(P.sky, cx, cy, 130 - 6 * 14);
+          ground(P.lime, 190);
+          cloud(cx - 150, 185, 1.3); cloud(cx + 95, 185, 1.3);
+          if (R() < 0.5) circ(P.yellow, pick([40, 285]), 40, 22);
+        } else if (scene === "mushroom") {
+          ground(P.green, 200);
+          if (skyC !== P.white) sun();
+          const n = ri(1, 2);
+          for (let m = 0; m < n; m++) {
+            const mx = n === 1 ? rnd(130, 190) : 90 + m * 140, s = n === 1 ? 1 : 0.75, cap = pick([P.red, P.orange, P.purple]);
+            rect(P.beige, mx - 22 * s, 200 - 80 * s, 44 * s, 80 * s);
+            fill(cap); ctx.beginPath(); ctx.ellipse(mx, 200 - 78 * s, 85 * s, 70 * s, 0, Math.PI, 0); ctx.fill();
+            circ(P.white, mx - 40 * s, 200 - 110 * s, 12 * s); circ(P.white, mx + 10 * s, 200 - 130 * s, 14 * s); circ(P.white, mx + 48 * s, 200 - 100 * s, 10 * s);
+          }
+          for (let i = 0; i < 8; i++) poly(P.lime, (() => { const gx = rnd(0, 310); return [[gx, 200], [gx + 5, 186], [gx + 10, 200]]; })());
+        } else if (scene === "balloons") {
+          rect(P.sky, 0, 0, ART_W, ART_H);
+          cloud(rnd(20, 90), rnd(190, 210)); cloud(rnd(200, 260), rnd(190, 215));
+          const n = ri(3, 4), kx = rnd(140, 180), ky = 215;
+          const cols = [P.red, P.yellow, P.blue, P.pink, P.purple, P.orange, P.green].sort(() => R() - 0.5);
+          for (let i = 0; i < n; i++) {
+            const bx = kx + (i - (n - 1) / 2) * 52 + rnd(-8, 8), by = rnd(55, 95);
+            line(P.black, 2, [[bx, by + 38], [kx, ky]]);
+            ell(cols[i], bx, by, 30, 38);
+            poly(cols[i], [[bx, by + 36], [bx + 6, by + 46], [bx - 6, by + 46]]);
+          }
+        } else if (scene === "icecream") {
+          rect(pick([P.white, P.pink, P.sky]), 0, 0, ART_W, ART_H);
+          const ix = rnd(130, 190), scoops = ri(1, 3);
+          poly(pick([P.orange, P.brown]), [[ix - 45, 140], [ix + 45, 140], [ix, 230]]);
+          const flav = [P.pink, P.beige, P.brown, P.lime, P.yellow].sort(() => R() - 0.5);
+          for (let i = 0; i < scoops; i++) circ(flav[i], ix, 125 - i * 42, 46);
+          circ(P.red, ix, 125 - (scoops - 1) * 42 - 50, 11);
+          line(P.green, 3, [[ix, 125 - (scoops - 1) * 42 - 60], [ix + 10, 125 - (scoops - 1) * 42 - 76]]);
+        } else if (scene === "castle") {
+          ground(); sun();
+          const cx = rnd(70, 110), wall = pick([P.gray, P.beige, P.pink]), roof = pick([P.red, P.blue, P.purple]);
+          rect(wall, cx + 30, 100, 120, 90);
+          for (let i = 0; i < 4; i++) rect(wall, cx + 34 + i * 30, 88, 18, 14);
+          for (const tx of [cx, cx + 150]) { rect(wall, tx, 80, 40, 110); poly(roof, [[tx - 6, 80], [tx + 20, 30], [tx + 46, 80]]); }
+          fill(P.brown); ctx.beginPath(); ctx.moveTo(cx + 72, 190); ctx.lineTo(cx + 72, 150); ctx.arc(cx + 90, 150, 18, Math.PI, 0); ctx.lineTo(cx + 108, 190); ctx.fill();
+          rect(P.black, cx + 14, 110, 12, 18); rect(P.black, cx + 164, 110, 12, 18);
+          line(P.black, 2, [[cx + 20, 30], [cx + 20, 10]]); poly(pick([P.yellow, P.red, P.green]), [[cx + 20, 10], [cx + 38, 15], [cx + 20, 20]]);
+        } else if (scene === "fish") {
+          rect(P.blue, 0, 0, ART_W, ART_H); ground(P.beige, 205);
+          for (let i = 0; i < ri(2, 3); i++) { const wx = rnd(20, 300); line(P.green, 6, [[wx, 205], [wx - 8, 180], [wx + 6, 160], [wx - 4, 140]]); }
+          const n = ri(1, 2);
+          for (let f = 0; f < n; f++) {
+            const fx = n === 1 ? rnd(130, 190) : 90 + f * 140, fy = rnd(80, 140), s = n === 1 ? 1 : 0.7, c = pick([P.orange, P.yellow, P.red, P.pink, P.purple]), d = R() < 0.5 ? 1 : -1;
+            poly(c, [[fx - d * 50 * s, fy], [fx - d * 90 * s, fy - 35 * s], [fx - d * 90 * s, fy + 35 * s]]);
+            ell(c, fx, fy, 60 * s, 38 * s);
+            circ(P.white, fx + d * 30 * s, fy - 8 * s, 10 * s); circ(P.black, fx + d * 32 * s, fy - 8 * s, 5 * s);
+          }
+          for (let i = 0; i < 5; i++) circ(P.white, rnd(30, 300), rnd(20, 120), rnd(4, 8));
+        } else {   // butterfly
+          ground(); sun();
+          const bx = rnd(130, 190), by = rnd(95, 120), w1 = pick([P.purple, P.blue, P.orange, P.pink, P.red]), w2 = pick([P.yellow, P.pink, P.sky, P.lime]);
+          ell(w1, bx - 38, by - 25, 38, 30, -0.4); ell(w1, bx + 38, by - 25, 38, 30, 0.4);
+          ell(w2, bx - 30, by + 25, 26, 22, 0.4); ell(w2, bx + 30, by + 25, 26, 22, -0.4);
+          circ(w2, bx - 40, by - 28, 10); circ(w2, bx + 40, by - 28, 10);
+          ell(P.black, bx, by, 7, 42);
+          line(P.black, 2, [[bx - 3, by - 40], [bx - 18, by - 65]]); line(P.black, 2, [[bx + 3, by - 40], [bx + 18, by - 65]]);
+          circ(P.black, bx - 18, by - 65, 4); circ(P.black, bx + 18, by - 65, 4);
         }
       } else {
         // Hard: one of 8 detailed scenes, each with its own random layout and time of day
