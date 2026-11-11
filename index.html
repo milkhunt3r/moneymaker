@@ -1654,16 +1654,82 @@
       gameOver: false,
     };
 
-    // Load the save (wrapped in try/catch because browser storage can be blocked)
-    try {
-      const saved = localStorage.getItem("coinClickerSave");
-      if (saved) {
-        state = Object.assign(state, JSON.parse(saved));
-      } else {
-        // carry over money from the first version of the game
-        state.money = parseInt(localStorage.getItem("coinClickerMoney"), 10) || 0;
-      }
-    } catch (e) {}
+    /* =====================================================================
+       💾 STORAGE: the ONLY place that knows where saves are kept.
+       Today: the browser (localStorage for the game, IndexedDB for painting pictures).
+       Later (accounts + database): replace the insides of these functions with server calls;
+       the rest of the game only uses storage.* and does not need to change.
+         storage.loadGame()          -> saved progress object, or null
+         storage.saveGame(progress)  -> writes progress (throws if it can't, e.g. storage full)
+         storage.loadPrefs()         -> screen preferences of this device (tab, map filters, chart settings…)
+         storage.savePrefs(prefs)
+         storage.clearGame()         -> deletes progress, preferences and pictures (game reset)
+         storage.images.put / del / all  -> painting pictures (id -> picture)
+       ===================================================================== */
+    const SAVE_KEY = "coinClickerSave", PREFS_KEY = "coinClickerPrefs", IMG_DB = "coinClickerArt";
+    // Screen preferences: kept per device, never part of the progress that is saved (and later sent to the server)
+    const PREF_KEYS = ["view", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage",
+                       "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage"];
+    function splitState(st) {   // -> { progress, prefs }
+      const progress = {}, prefs = {};
+      for (const k in st) (PREF_KEYS.includes(k) ? prefs : progress)[k] = st[k];
+      return { progress, prefs };
+    }
+    let imgDbP = null;
+    function imgDb() {
+      if (!imgDbP) imgDbP = new Promise((res) => {
+        try {
+          const rq = indexedDB.open(IMG_DB, 1);
+          rq.onupgradeneeded = () => rq.result.createObjectStore("imgs");
+          rq.onsuccess = () => res(rq.result);
+          rq.onerror = () => res(null);
+        } catch (e) { res(null); }
+      });
+      return imgDbP;
+    }
+    async function imgDo(mode, fn) {   // run one request on the pictures store; null if IndexedDB is unavailable
+      const db = await imgDb();
+      if (!db) return null;
+      return new Promise((res) => {
+        try {
+          const tx = db.transaction("imgs", mode), rq = fn(tx.objectStore("imgs"));
+          tx.oncomplete = () => res(rq ? rq.result : true);
+          tx.onerror = tx.onabort = () => res(null);
+        } catch (e) { res(null); }
+      });
+    }
+    const storage = {
+      loadGame() {
+        try {
+          const raw = localStorage.getItem(SAVE_KEY);
+          if (raw) return JSON.parse(raw);
+          const old = localStorage.getItem("coinClickerMoney");   // the very first version only saved money
+          return old ? { money: parseInt(old, 10) || 0 } : null;
+        } catch (e) { return null; }
+      },
+      saveGame(progress) { localStorage.setItem(SAVE_KEY, JSON.stringify(progress)); },
+      loadPrefs() { try { return JSON.parse(localStorage.getItem(PREFS_KEY) || "{}") || {}; } catch (e) { return {}; } },
+      savePrefs(prefs) { try { localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); } catch (e) {} },
+      clearGame() {
+        try { localStorage.removeItem(SAVE_KEY); localStorage.removeItem("coinClickerMoney"); localStorage.removeItem(PREFS_KEY); } catch (e) {}
+        try { indexedDB.deleteDatabase(IMG_DB); } catch (e) {}
+      },
+      images: {
+        put: (id, img) => imgDo("readwrite", st => st.put(img, id)),
+        del: (id) => imgDo("readwrite", st => st.delete(id)),
+        async all() {   // -> { id: picture } or null
+          const keys = await imgDo("readonly", st => st.getAllKeys());
+          if (!keys) return null;
+          const vals = await imgDo("readonly", st => st.getAll()) || [];
+          const out = {}; keys.forEach((k, i) => out[k] = vals[i]); return out;
+        },
+      },
+    };
+
+    // Load the save: progress first, then this device's screen preferences on top
+    const loadedSave = storage.loadGame();
+    if (loadedSave) Object.assign(state, loadedSave);
+    Object.assign(state, storage.loadPrefs());
 
     // Fix up saves from the previous version: old workers had no income roll
     state.companies.forEach(c => {
@@ -1677,14 +1743,28 @@
     }
     delete state.taxDebt; delete state.taxTimeLeft;
 
+    /* ----- When the game saves -----
+       save() only MARKS the game as changed (cheap: it is called all over the code).
+       The progress is actually written by flushSave():
+         · within 3 seconds after a player action (any click except on the coin)
+         · every 30 seconds while the game runs (income, timers…)
+         · right away when the tab is hidden or closed
+       This keeps the number of writes low, which matters once saves go to a server. ----- */
+    const SAVE_EVERY = 30000, ACTION_SAVE_DELAY = 3000;
     let stopSaving = false;   // set while resetting / loading, so the old game isn't saved again
-    // Saving: if the browser refuses (storage full), tell the player instead of failing silently
     let saveFailedAt = 0;
-    let catchingUp = false;   // true while the game clock runs several seconds at once (save once at the end)
-    function save() {
-      if (stopSaving || catchingUp) return;
+    let catchingUp = false;   // true while the game clock runs several seconds at once
+    let saveDirty = false, actionSaveTimer = null, lastPrefs = "";
+    function save() { if (!stopSaving) saveDirty = true; }
+    function flushSave() {
+      clearTimeout(actionSaveTimer); actionSaveTimer = null;
+      if (stopSaving || catchingUp || !saveDirty) return;
+      const { progress, prefs } = splitState(state);
+      const p = JSON.stringify(prefs);
+      if (p !== lastPrefs) { storage.savePrefs(prefs); lastPrefs = p; }
       try {
-        localStorage.setItem("coinClickerSave", JSON.stringify(state));
+        storage.saveGame(progress);
+        saveDirty = false;
         if (saveFailedAt) { saveFailedAt = 0; const w = document.getElementById("saveWarn"); if (w) w.hidden = true; }
       } catch (e) {
         if (!saveFailedAt) console.warn("Saving failed:", e);
@@ -1697,6 +1777,14 @@
         }
       }
     }
+    setInterval(flushSave, SAVE_EVERY);
+    document.addEventListener("click", (e) => {   // player actions: save soon (coin clicks are too frequent for that)
+      if (e.target.closest && e.target.closest("#coin")) return;
+      if (!actionSaveTimer) actionSaveTimer = setTimeout(() => { save(); flushSave(); }, ACTION_SAVE_DELAY);
+    }, true);
+    document.addEventListener("visibilitychange", () => { if (document.hidden) flushSave(); });
+    window.addEventListener("pagehide", flushSave);
+    window.addEventListener("beforeunload", flushSave);
 
     /* =====================================================================
        HELPERS
@@ -2478,8 +2566,7 @@
 
       if (action === "restart" || action === "confirmReset") {
         stopSaving = true;
-        try { localStorage.removeItem("coinClickerSave"); localStorage.removeItem("coinClickerMoney"); } catch (e) {}
-        try { indexedDB.deleteDatabase("coinClickerArt"); } catch (e) {}
+        storage.clearGame();
         location.reload();
       }
       if (action === "close") hideModal();
@@ -3862,8 +3949,8 @@
       const what = btn.dataset.setting;
 
       if (what === "save") {
-        save();
-        settingsNote("✅ Game saved!");
+        save(); flushSave();
+        settingsNote(saveFailedAt ? "❌ Could not save: browser storage is full. Download a backup instead." : "✅ Game saved!");
       }
 
       if (what === "download") {
@@ -3906,7 +3993,9 @@
           const data = JSON.parse(reader.result);
           if (typeof data.money !== "number" || !Array.isArray(data.companies)) throw new Error("not a save");
           stopSaving = true;
-          localStorage.setItem("coinClickerSave", JSON.stringify(data));
+          const { progress, prefs } = splitState(data);
+          storage.saveGame(progress);
+          storage.savePrefs({ ...storage.loadPrefs(), ...prefs });
           location.reload();
         } catch (err) {
           settingsNote("❌ That file is not a Coin Clicker save.");
@@ -7491,7 +7580,9 @@
         keep.special = { agency: null, warehouses: state.special.warehouses, port: state.special.port, center: state.special.center };
       }
       stopSaving = true;
-      try { localStorage.setItem("coinClickerSave", JSON.stringify(keep)); } catch (e) {}
+      const { progress, prefs } = splitState(keep);
+      try { storage.saveGame(progress); } catch (e) {}
+      storage.savePrefs({ ...storage.loadPrefs(), ...prefs });
       location.reload();
     }
 
@@ -8230,46 +8321,22 @@
     /* ----- Painting pictures are kept in the browser's IndexedDB (much more room than the save),
        so a big collection can't fill up the save. The save only keeps each painting's id, score and value.
        If IndexedDB is not available, the picture stays in the save as before. ----- */
-    const artImgs = {};   // id -> picture (data URL), loaded from IndexedDB
-    let artDbP = null;
-    function artDb() {
-      if (!artDbP) artDbP = new Promise((res) => {
-        try {
-          const rq = indexedDB.open("coinClickerArt", 1);
-          rq.onupgradeneeded = () => rq.result.createObjectStore("imgs");
-          rq.onsuccess = () => res(rq.result);
-          rq.onerror = () => res(null);
-        } catch (e) { res(null); }
-      });
-      return artDbP;
-    }
-    async function artDbDo(mode, fn) {
-      const db = await artDb();
-      if (!db) return null;
-      return new Promise((res) => {
-        try {
-          const tx = db.transaction("imgs", mode), st = tx.objectStore("imgs"), rq = fn(st);
-          tx.oncomplete = () => res(rq ? rq.result : true);
-          tx.onerror = tx.onabort = () => res(null);
-        } catch (e) { res(null); }
-      });
-    }
-    const artImgPut = (id, img) => artDbDo("readwrite", st => st.put(img, id));
-    const artImgDel = (id) => artDbDo("readwrite", st => st.delete(id));
+    const artImgs = {};   // id -> picture (data URL), loaded through storage.images
+    const artImgDel = (id) => storage.images.del(id);
     const artImgOf = (it) => it.img || artImgs[it.id] || artCanvasOf(it.tier, it.seed, 160).toDataURL();   // last resort: the original
     async function artStoreImg(it) {   // move a painting's picture out of the save
       if (!it.img) return;
-      const ok = await artImgPut(it.id, it.img);
+      const ok = await storage.images.put(it.id, it.img);
       if (ok) { artImgs[it.id] = it.img; delete it.img; save(); }
     }
     // On start: load the pictures, move any still inside the save, and delete pictures of paintings that are gone
     (async () => {
-      const keys = await artDbDo("readonly", st => st.getAllKeys());
-      if (!keys) return;
-      const vals = await artDbDo("readonly", st => st.getAll());
+      const all = await storage.images.all();
+      if (!all) return;
       const ids = new Set(state.art.items.map(it => it.id));
-      keys.forEach((k, i) => { if (ids.has(k)) artImgs[k] = vals[i]; else artImgDel(k); });
+      for (const k in all) { if (ids.has(Number(k))) artImgs[k] = all[k]; else artImgDel(Number(k)); }
       for (const it of state.art.items) await artStoreImg(it);
+      flushSave();   // write the smaller save right away
       if (!$("artCollection").hidden) renderArtCollection();
     })();
 
@@ -8474,7 +8541,7 @@
       if (due <= 0) return;
       if (due > CATCHUP_MAX) {   // asleep or closed for a long time: offline earnings
         applyOffline((now - state.lastTick) / 1000);
-        state.lastTick = now; save();
+        state.lastTick = now; save(); flushSave();   // write right away so the same offline time can't be paid twice
         return;
       }
       catchingUp = due > 1;
@@ -8491,7 +8558,7 @@
     if (typeof state.lastTick !== "number" || state.lastTick > Date.now()) state.lastTick = Date.now();
     if (!state.gameOver && Date.now() - state.lastTick > CATCHUP_MAX * 1000) {
       applyOffline((Date.now() - state.lastTick) / 1000);
-      state.lastTick = Date.now(); save();
+      state.lastTick = Date.now(); save(); flushSave();
     }
     setInterval(gameClock, 250);
 
