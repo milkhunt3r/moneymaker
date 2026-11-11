@@ -926,6 +926,10 @@
     .lawSlot { background: rgba(255,255,255,0.05); border-radius: 8px; padding: 7px 9px; font-size: 13px; }
     .lawSlot .live { color: #9fe39f; font-weight: 700; }
     .lawSlot.empty { border: 1px dashed rgba(255,255,255,0.2); color: #8d8da3; text-align: center; }
+    #saveWarn { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 9999; max-width: 560px;
+                 background: #b71c1c; color: #fff; padding: 10px 14px; border-radius: 12px; box-shadow: 0 6px 24px rgba(0,0,0,0.5); font-size: 14px; }
+    #saveWarn[hidden] { display: none; }
+    #saveWarn .btn { margin-left: 8px; }
     .rushBadge { white-space: nowrap; display: inline-block; font-size: 12px; font-weight: 900; color: #2b1600; background: linear-gradient(90deg, #ffb300, #ff7043); padding: 2px 8px; border-radius: 999px; margin-left: 6px; animation: rushPulse 0.8s ease-in-out infinite alternate; }
     .rushBadge[hidden] { display: none; }
     .income.rushOn { color: #ffb300; text-shadow: 0 0 8px rgba(255, 179, 0, 0.6); }
@@ -1443,6 +1447,7 @@
   <div id="modal" hidden><div id="modalBox"></div></div>
   <div id="alerts"></div>
 
+  <div id="saveWarn" hidden></div>
   <script>
     /* =====================================================================
        SETTINGS: change these numbers to balance the game
@@ -1673,9 +1678,23 @@
     delete state.taxDebt; delete state.taxTimeLeft;
 
     let stopSaving = false;   // set while resetting / loading, so the old game isn't saved again
+    // Saving: if the browser refuses (storage full), tell the player instead of failing silently
+    let saveFailedAt = 0;
     function save() {
       if (stopSaving) return;
-      try { localStorage.setItem("coinClickerSave", JSON.stringify(state)); } catch (e) {}
+      try {
+        localStorage.setItem("coinClickerSave", JSON.stringify(state));
+        if (saveFailedAt) { saveFailedAt = 0; const w = document.getElementById("saveWarn"); if (w) w.hidden = true; }
+      } catch (e) {
+        if (!saveFailedAt) console.warn("Saving failed:", e);
+        saveFailedAt = Date.now();
+        const w = document.getElementById("saveWarn");
+        if (w) {
+          w.hidden = false;
+          w.innerHTML = `⚠️ <b>Your progress is not being saved</b>: this browser's storage for the game is full.
+            Use ⚙️ Settings → 💾 Save game to download a backup. <button class="btn small" onclick="this.parentNode.hidden=true">OK</button>`;
+        }
+      }
     }
 
     /* =====================================================================
@@ -2459,6 +2478,7 @@
       if (action === "restart" || action === "confirmReset") {
         stopSaving = true;
         try { localStorage.removeItem("coinClickerSave"); localStorage.removeItem("coinClickerMoney"); } catch (e) {}
+        try { indexedDB.deleteDatabase("coinClickerArt"); } catch (e) {}
         location.reload();
       }
       if (action === "close") hideModal();
@@ -3843,7 +3863,10 @@
 
       if (what === "download") {
         save();
-        const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+        // the file backup also carries the painting pictures (they live outside the normal save)
+        const out = state.art && typeof artImgs !== "undefined"
+          ? { ...state, art: { ...state.art, items: state.art.items.map(it => ({ ...it, img: it.img || artImgs[it.id] })) } } : state;
+        const blob = new Blob([JSON.stringify(out, null, 2)], { type: "application/json" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
         a.download = "coin-clicker-save-" + new Date().toISOString().slice(0, 10) + ".json";
@@ -7689,7 +7712,7 @@
           ["🚢 Global Empire", "1st: keep trucks, tankers, planes, warehouses and Trading Port on every reset. 2nd: all contracts take half the time (same pay)", "2"],
           ["🎟️ VIP Coins", "A free 500 scoin bet chip every 20 min (2nd pick: every 10 min) for the Super high roller tables", "2"]])}
         <h3>💾 Saving</h3>
-        <p>The game saves automatically in your browser. In ⚙️ Settings you can save, download a backup file, load one, or reset the game.</p>`;
+        <p>The game saves automatically in your browser. In ⚙️ Settings you can save, download a backup file, load one, or reset the game. Art Gallery paintings are stored separately in the browser so a big collection never fills up the save; a downloaded backup includes them. If the browser ever refuses to save, a red warning appears at the bottom of the screen.</p>`;
     }
 
     function wikiIncome() {
@@ -8179,7 +8202,9 @@
       if (!r) return;
       if (keep) {
         if (state.art.items.length >= state.art.slots) return;
-        state.art.items.unshift({ id: state.nextId++, tier: r.tier, seed: r.seed, score: r.score, value: r.value, img: r.img, at: Date.now() });
+        const item = { id: state.nextId++, tier: r.tier, seed: r.seed, score: r.score, value: r.value, img: r.img, at: Date.now() };
+        state.art.items.unshift(item);
+        artStoreImg(item);
         showNotice(`🖼️ Added to your collection (worth ${fmt(r.value)}).`);
       } else {
         state.money += r.value;
@@ -8191,6 +8216,52 @@
       artNewPainting(false);
     }
 
+    /* ----- Painting pictures are kept in the browser's IndexedDB (much more room than the save),
+       so a big collection can't fill up the save. The save only keeps each painting's id, score and value.
+       If IndexedDB is not available, the picture stays in the save as before. ----- */
+    const artImgs = {};   // id -> picture (data URL), loaded from IndexedDB
+    let artDbP = null;
+    function artDb() {
+      if (!artDbP) artDbP = new Promise((res) => {
+        try {
+          const rq = indexedDB.open("coinClickerArt", 1);
+          rq.onupgradeneeded = () => rq.result.createObjectStore("imgs");
+          rq.onsuccess = () => res(rq.result);
+          rq.onerror = () => res(null);
+        } catch (e) { res(null); }
+      });
+      return artDbP;
+    }
+    async function artDbDo(mode, fn) {
+      const db = await artDb();
+      if (!db) return null;
+      return new Promise((res) => {
+        try {
+          const tx = db.transaction("imgs", mode), st = tx.objectStore("imgs"), rq = fn(st);
+          tx.oncomplete = () => res(rq ? rq.result : true);
+          tx.onerror = tx.onabort = () => res(null);
+        } catch (e) { res(null); }
+      });
+    }
+    const artImgPut = (id, img) => artDbDo("readwrite", st => st.put(img, id));
+    const artImgDel = (id) => artDbDo("readwrite", st => st.delete(id));
+    const artImgOf = (it) => it.img || artImgs[it.id] || artCanvasOf(it.tier, it.seed, 160).toDataURL();   // last resort: the original
+    async function artStoreImg(it) {   // move a painting's picture out of the save
+      if (!it.img) return;
+      const ok = await artImgPut(it.id, it.img);
+      if (ok) { artImgs[it.id] = it.img; delete it.img; save(); }
+    }
+    // On start: load the pictures, move any still inside the save, and delete pictures of paintings that are gone
+    (async () => {
+      const keys = await artDbDo("readonly", st => st.getAllKeys());
+      if (!keys) return;
+      const vals = await artDbDo("readonly", st => st.getAll());
+      const ids = new Set(state.art.items.map(it => it.id));
+      keys.forEach((k, i) => { if (ids.has(k)) artImgs[k] = vals[i]; else artImgDel(k); });
+      for (const it of state.art.items) await artStoreImg(it);
+      if (!$("artCollection").hidden) renderArtCollection();
+    })();
+
     const artSlotPrice = () => ART_SLOT_PRICE + ART_SLOT_PRICE_STEP * (state.art.slotBuys || 0);
     function renderArtCollection() {
       const a = state.art;
@@ -8200,7 +8271,7 @@
       const total = a.items.reduce((s, x) => s + x.value, 0);
       $("artGrid").innerHTML = a.items.length ? `<div class="muted" style="grid-column:1/-1">Collection value: <b>${fmt(total)}</b></div>` + a.items.map(it => {
         const t = ART_TIERS[it.tier];
-        return `<div class="artCard"><img class="artCopy" src="${it.img}" alt="Your copy" title="${t.name} painting">
+        return `<div class="artCard"><img class="artCopy" src="${artImgOf(it)}" alt="Your copy" title="${t.name} painting">
           <div class="row"><b>${it.score.toFixed(1)}%</b><b class="income">${fmt(it.value)}</b></div>
           <button class="btn ghost small" data-asell="${it.id}">💰 Sell</button></div>`;
       }).join("") : `<div class="muted">No paintings yet. Make a copy in the 🎨 Art studio and choose "Keep".</div>`;
@@ -8262,6 +8333,7 @@
         const it = state.art.items.find(x => x.id === Number(sell.dataset.asell));
         if (!it) return;
         state.art.items = state.art.items.filter(x => x !== it);
+        delete artImgs[it.id]; artImgDel(it.id);
         state.money += it.value; clickedThisSecond += it.value; state.art.sold = (state.art.sold || 0) + 1; state.stats.artSold = (state.stats.artSold || 0) + 1;
         updateCounter(); save(); renderArtCollection();
         showNotice(`💰 Sold a painting for ${fmt(it.value)}!`);
