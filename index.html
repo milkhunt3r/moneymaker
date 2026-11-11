@@ -5780,7 +5780,8 @@
     const warehouseSlots = () => WAREHOUSE_UNLOCKS.filter(n => trucksOwned() >= n).length;
 
     // Contract bonus: trucks +2% per warehouse, tankers +2.5% with the trading port
-    const contractBonus = (key) => key === "truck" ? WAREHOUSE_BONUS * warehouseCount() : (state.special.port ? PORT_BONUS : 0);
+    const contractBonus = (key) => key === "truck" ? WAREHOUSE_BONUS * warehouseCount()
+      : key === "tanker" && state.special.port ? PORT_BONUS : 0;   // cargo planes get no bonus
     // What a contract actually pays
     function contractPayout(key, profit) {
       return Math.round(profit * (1 + contractBonus(key)));
