@@ -934,6 +934,16 @@
                  background: #b71c1c; color: #fff; padding: 10px 14px; border-radius: 12px; box-shadow: 0 6px 24px rgba(0,0,0,0.5); font-size: 14px; }
     #saveWarn[hidden] { display: none; }
     #saveWarn .btn { margin-left: 8px; }
+    .incomeTabs { display: flex; gap: 6px; margin-bottom: 12px; position: sticky; top: 0; z-index: 3; padding: 6px 0; background: inherit; }
+    .incomeTab { flex: 1; padding: 9px 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); color: inherit; font-weight: 700; cursor: pointer; font-size: 14px; }
+    .incomeTab:hover { background: rgba(255,255,255,0.09); }
+    .incomeTab.active { background: rgba(255, 211, 77, 0.16); border-color: #ffd34d; color: #ffd34d; }
+    #incBiz[hidden], #incSpecial[hidden], #incScience[hidden] { display: none; }
+    .vialCount { font-size: 18px; font-weight: 900; color: #ffd34d; background: rgba(255,211,77,0.12); border: 1px solid rgba(255,211,77,0.5); padding: 2px 10px; border-radius: 999px; }
+    .nobel { text-align: center; }
+    .nobelMedal { font-size: 64px; line-height: 1; animation: rushPulse 0.9s ease-in-out infinite alternate; }
+    .nobelReward { font-size: 30px; font-weight: 900; color: #ffd34d; margin: 6px 0 14px; }
+    .satPerks { margin: 6px 0 0; padding-left: 18px; font-size: 13px; color: #c9c9da; }
     .rushBadge { white-space: nowrap; display: inline-block; font-size: 12px; font-weight: 900; color: #2b1600; background: linear-gradient(90deg, #ffb300, #ff7043); padding: 2px 8px; border-radius: 999px; margin-left: 6px; animation: rushPulse 0.8s ease-in-out infinite alternate; }
     .rushBadge[hidden] { display: none; }
     .income.rushOn { color: #ffb300; text-shadow: 0 0 8px rgba(255, 179, 0, 0.6); }
@@ -1147,6 +1157,7 @@
         <div class="muted" id="logiXpText"></div>
       </div>
     </div>
+    <div class="card" id="satelliteCard" hidden></div>
     <div class="card wallet">
       <div class="stat"><div class="label">💰 Your money</div><div class="value" id="logiMoney">0</div></div>
       <div class="stat"><div class="label">🚛 Trucks</div><div class="value chips" id="truckCount">0 / 15</div></div>
@@ -1674,7 +1685,7 @@
        ===================================================================== */
     const SAVE_KEY = "coinClickerSave", PREFS_KEY = "coinClickerPrefs", IMG_DB = "coinClickerArt";
     // Screen preferences: kept per device, never part of the progress that is saved (and later sent to the server)
-    const PREF_KEYS = ["view", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage",
+    const PREF_KEYS = ["view", "incomePage", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage",
                        "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage"];
     function splitState(st) {   // -> { progress, prefs }
       const progress = {}, prefs = {};
@@ -2106,7 +2117,15 @@
        updateLive() only changes numbers, so buttons keep working while you click.
        ===================================================================== */
     function render() {
-      let html = "<h2>🏢 Businesses</h2>";
+      // Income has 3 pages: Businesses, Special businesses, Science (all are built; only the chosen one is shown,
+      // so the live numbers of every page keep updating)
+      const page = ["biz", "special", "science"].includes(state.incomePage) ? state.incomePage : "biz";
+      const sciOpen = typeof scienceOpen === "function" && scienceOpen();
+      const tabs = `<nav class="incomeTabs">
+        <button class="incomeTab ${page === "biz" ? "active" : ""}" data-ipage="biz">🏢 Businesses</button>
+        <button class="incomeTab ${page === "special" ? "active" : ""}" data-ipage="special">⭐ Special</button>
+        <button class="incomeTab ${page === "science" ? "active" : ""}" data-ipage="science">${sciOpen ? "" : "🔒 "}🔬 Science</button></nav>`;
+      let html = `<div ${page === "biz" ? "" : "hidden"} id="incBiz"><h2>🏢 Businesses</h2>`;
 
       // One owned company as a card
       const companyCard = (c, ci) => {
@@ -2243,9 +2262,10 @@
           </div></div>`;
       });
 
-      html += `<div class="muted">More businesses coming soon...</div>`;
-      html += renderSpecialBusinesses();
-      $("shop").innerHTML = html;
+      html += `<div class="muted">More businesses coming soon...</div></div>`;
+      html += `<div ${page === "special" ? "" : "hidden"} id="incSpecial">${renderSpecialBusinesses()}</div>`;
+      html += `<div ${page === "science" ? "" : "hidden"} id="incScience"><h2>🔬 Science</h2>${typeof renderScience === "function" ? renderScience() : ""}</div>`;
+      $("shop").innerHTML = tabs + html;
       updateAffordability();
     }
 
@@ -2479,7 +2499,7 @@
          - not enough    -> bill +50% and 5 more minutes (only once)
          - still not enough after that -> game over
        ===================================================================== */
-    const isPaused = () => state.pendingTaxId !== null || state.gameOver;
+    const isPaused = () => state.pendingTaxId !== null || state.gameOver || !!(state.science && state.science.lab && state.science.lab.pending);
     const totalDebt = () => state.taxDebts.reduce((a, d) => a + d.amount, 0);
 
     function startTaxInspection() {
@@ -2671,7 +2691,7 @@
 
       // Special businesses
       const agencyIncome = agencyTick(), mineIncome = mineTick();
-      perSecond += agencyIncome + mineIncome + lawTick() + parkTick() + portTick() + galleryTick();
+      perSecond += agencyIncome + mineIncome + lawTick() + parkTick() + portTick() + galleryTick() + (typeof scienceTick === "function" ? scienceTick() : 0);
       // for offline earnings: business income without gold mines (mines are counted on their own), last 60 seconds
       const passive = Math.max(0, perSecond - mineIncome) * legacyIncomeMult();
       (state.passiveHist = state.passiveHist || []).push(Math.round(passive));
@@ -2710,6 +2730,7 @@
       $("achievementsView").hidden = view !== "achievements";
       $("wikiView").hidden = view !== "wiki";
       $("artView").hidden = view !== "art";
+      if (view === "logistics" && typeof renderSatellite === "function") renderSatellite();
       if (view === "art" && typeof renderArt === "function") renderArt();
       if (view === "wiki" && typeof renderWiki === "function") renderWiki();
       if (view === "achievements" && typeof renderAchievements === "function") renderAchievements();
@@ -5798,7 +5819,8 @@
 
     // Contract bonus: trucks +2% per warehouse, tankers +2.5% with the trading port
     const contractBonus = (key) => key === "truck" ? WAREHOUSE_BONUS * warehouseCount()
-      : key === "tanker" && state.special.port ? PORT_BONUS : 0;   // cargo planes get no bonus
+      : key === "tanker" ? (state.special.port ? PORT_BONUS : 0)
+      : key === "plane" && state.science && state.science.satellite ? SAT_PLANE_BONUS : 0;   // planes: only the 🛰️ satellite
     // What a contract actually pays
     function contractPayout(key, profit) {
       return Math.round(profit * (1 + contractBonus(key)));
@@ -6484,7 +6506,9 @@
         const seconds = (route.min * 60) + secureRandomInt((route.max - route.min) * 60 + 1);   // random time in the range
         const profit = Math.round(route.rate * seconds * (0.95 + secureRandomInt(101) / 1000));    // ±5%
         // ⭐ Global Empire picked twice: every contract takes half the time for the same pay
-        return { route: r, seconds: state.legacy.empire >= 2 ? Math.round(seconds / 2) : seconds, profit };
+        let secs = state.legacy.empire >= 2 ? Math.round(seconds / 2) : seconds;
+        if (key === "tanker" && state.science && state.science.satellite) secs = Math.round(secs * SAT_TANKER_SPEED);   // 🛰️ 10% faster, same pay
+        return { route: r, seconds: secs, profit };
       });
     }
     const ROUTES = FLEETS.tanker.routes;   // (kept for older code and tests)
@@ -6518,7 +6542,8 @@
             if (key === "truck" && secureRandomInt(TRUCK_BREAKDOWN_CHANCE) === 0) {
               v.broken = { cost: TRUCK_REPAIR_MIN + secureRandomInt(TRUCK_REPAIR_MAX - TRUCK_REPAIR_MIN + 1) };
               v.offers = null;
-              showAlert(`🔧 ${v.name} broke down!`, `It needs repairs before it can take new contracts. Repair cost: <b style="display:inline">${fmt(v.broken.cost)}</b> (🚢 Logistics).`);
+              if (state.science && state.science.satellite) showNotice(`🔧 ${v.name} broke down. 🛰️ The satellite will repair it in 5 seconds.`);
+              else showAlert(`🔧 ${v.name} broke down!`, `It needs repairs before it can take new contracts. Repair cost: <b style="display:inline">${fmt(v.broken.cost)}</b> (🚢 Logistics).`);
             } else {
               v.offers = newOffers(key);
             }
@@ -7874,7 +7899,15 @@
           ["🏬 Logistics Center", fmt(CENTER_PRICE), `Logistics level ${CENTER_LEVEL}; max 1`, `Choose 1 agent upgrade (fee 1%, best contract, or 3-second picks); the other two cost ${fmt(CENTER_UPGRADE_PRICE)} each`]])}
         <h3>⚖️ Attorneys</h3>
         ${wt(["Attorney", "Effect"], Object.values(ATTORNEYS).map(a => [`${a.emoji} ${a.name}`, a.desc]))}
-        <p class="muted">When all ${LAW_MAX} slots are filled, you can fire any attorney and choose a replacement from 3 offers for ${fmt(LAW_REPLACE_PRICE)}.</p>`;
+        <p class="muted">When all ${LAW_MAX} slots are filled, you can fire any attorney and choose a replacement from 3 offers for ${fmt(LAW_REPLACE_PRICE)}.</p>
+        <h3>🔬 Science</h3>
+        <p>The 💰 Income tab has three pages: 🏢 Businesses, ⭐ Special and 🔬 Science. Science unlocks at Logistics level ${SCI_REQ.logistics}, Investor level ${SCI_REQ.investor} and Gambler level ${SCI_REQ.gambler}.</p>
+        ${wt(["Building", "Price", "Needs", "What it does"], [
+          ["🎓 University", fmt(UNI_PRICE), "Science unlocked", `1 scientist every 2 min, up to ${UNI_MAX}. Costs ${UNI_COST_PER_EMPTY} / sec per empty place (−${fmt(UNI_COST_PER_EMPTY * UNI_MAX)} / sec at first); full: +${fmt(UNI_FULL_INCOME)} / sec`],
+          ["🧪 Research lab", fmt(LAB_PRICE), `${UNI_MAX} scientists`, `Every second a 1 in ${LAB_ODDS.toLocaleString("en-US")} chance of a breakthrough (guaranteed after 2 hours): a Nobel Prize and ${fmt(LAB_REWARD)}. The game pauses until you accept it. Offline: at most 1`],
+          ["🚀 Space Mission Center", fmt(SPACE_PRICE), `${SPACE_NEED} breakthroughs`, `A mission every hour: ${fmt(SPACE_MIN * 1e6)} – ${fmt(SPACE_MAX * 1e6)}, 10% chance to fail (5% with the satellite)`],
+          ["🛰️ Satellite (🚢 Logistics)", fmt(SAT_PRICE), "Space Mission Center", "Missions fail 5% · cargo planes +5% pay · tankers 10% faster · broken trucks repaired for free after 5 sec"]])}
+        <p class="muted">Nobel Prizes can be won in 10 fields: Physics, Chemistry, Medicine and Physiology, Biology, Genetics, Molecular Biology, Neuroscience, Astronomy and Astrophysics, Materials Science and Environmental Science. A prestige resets Science.</p>`;
     }
 
     function wikiCasino() {
@@ -8730,6 +8763,257 @@
 
 
     /* =====================================================================
+       🔬 SCIENCE (Income tab → Science). Unlocks at Logistics 50, Investor 50 and Gambler 25.
+       🎓 University (100 scoin): 1 scientist every 2 min, up to 50. Costs 5 / sec per empty scientist place
+          (starts at −250 / sec); with all 50 scientists it earns +500 / sec.
+       🧪 Research lab (500 scoin, needs 50 scientists): every second a 1 in 7,200 chance of a scientific breakthrough,
+          guaranteed after 7,200 seconds without one. A breakthrough pauses the game with a golden Nobel Prize pop-up
+          and pays 1,000 scoin. Offline: at most one breakthrough while you were away.
+       🚀 Space Mission Center (10,000 scoin, after 2 breakthroughs): launches a mission every hour:
+          2,000 – 6,000 scoin, or 0 if it fails (10% chance, 5% with the satellite).
+       🛰️ Satellite (Logistics, 500 scoin, after the Space Mission Center): space missions fail only 5% of the time,
+          cargo plane contracts pay +5%, tanker contracts take 10% less time, broken trucks repair themselves for free after 5 seconds.
+       A prestige resets Science (the Nobel Prize count stays in your statistics).
+       ===================================================================== */
+    const SCI_REQ = { logistics: 50, investor: 50, gambler: 25 };
+    const UNI_PRICE = 1e8, UNI_MAX = 50, UNI_EVERY = 120, UNI_COST_PER_EMPTY = 5, UNI_FULL_INCOME = 500;
+    const LAB_PRICE = 5e8, LAB_ODDS = 7200, LAB_REWARD = 1e9;
+    const SPACE_PRICE = 1e10, SPACE_NEED = 2, SPACE_EVERY = 3600, SPACE_MIN = 2000, SPACE_MAX = 6000;
+    const SAT_PRICE = 5e8, SAT_PLANE_BONUS = 0.05, SAT_TANKER_SPEED = 0.9, SAT_REPAIR_SECONDS = 5;
+    if (!state.science) state.science = { uni: null, lab: null, space: null, satellite: false };
+    const sci = () => state.science;
+    const sciLevels = () => ({ logistics: logiLevel(), investor: levelInfo(inv.xp, INVEST_XP).level, gambler: levelInfo(state.casinoXp).level });
+    const scienceOpen = () => { const L = sciLevels(); return L.logistics >= SCI_REQ.logistics && L.investor >= SCI_REQ.investor && L.gambler >= SCI_REQ.gambler; };
+    const uniIncome = () => { const u = sci().uni; if (!u) return 0; return u.scientists >= UNI_MAX ? UNI_FULL_INCOME : -UNI_COST_PER_EMPTY * (UNI_MAX - u.scientists); };
+    const spaceFail = () => sci().satellite ? 0.05 : 0.10;
+
+    // ----- Nobel Prize texts: one field is chosen at random for each breakthrough -----
+    const NOBEL_FIELDS = [
+      { name: "Physics", icon: "⚛️", finds: [
+        "a way to keep quantum states stable at room temperature, opening the door to practical quantum computers",
+        "how dark matter interacts with ordinary matter, solving one of the biggest mysteries of the universe",
+        "a new particle that explains why time only moves forward"] },
+      { name: "Chemistry", icon: "⚗️", finds: [
+        "a catalyst that turns CO₂ from the air into clean fuel using only sunlight",
+        "a new kind of chemical bond that makes unbreakable yet fully recyclable plastics possible",
+        "a reaction that splits water into hydrogen at almost no energy cost"] },
+      { name: "Medicine and Physiology", icon: "🩺", finds: [
+        "a universal vaccine that protects against every strain of influenza",
+        "a treatment that teaches the body's own cells to repair damaged hearts",
+        "a simple blood test that detects over 50 diseases years before symptoms appear"] },
+      { name: "Biology", icon: "🧬", finds: [
+        "how some animals regenerate lost limbs, and how the same process can be switched on in other species",
+        "the hidden language bacteria use to cooperate, changing how we fight infections",
+        "how cells decide when to age, revealing the biological clock of life"] },
+      { name: "Genetics", icon: "🧬", finds: [
+        "a precise gene-editing method that safely fixes inherited diseases with a single treatment",
+        "the genes that make some people naturally immune to most viruses",
+        "how 'silent' DNA switches genes on and off, rewriting the textbooks on heredity"] },
+      { name: "Molecular Biology", icon: "🔬", finds: [
+        "the molecular motor cells use to repair their own DNA, and how to make it stronger",
+        "how proteins fold in a microsecond, allowing new medicines to be designed in days",
+        "a molecule that clears the damaged proteins behind many age-related diseases"] },
+      { name: "Neuroscience", icon: "🧠", finds: [
+        "how the brain stores memories, and how lost memories can be restored",
+        "the brain circuit that creates consciousness",
+        "a way to regrow damaged nerves, helping paralysed patients walk again"] },
+      { name: "Astronomy and Astrophysics", icon: "🔭", finds: [
+        "clear signs of life in the atmosphere of a planet orbiting a nearby star",
+        "what happens to information that falls into a black hole",
+        "the first light ever emitted in the universe, revealing how the very first stars were born"] },
+      { name: "Materials Science", icon: "🧲", finds: [
+        "a superconductor that works at room temperature and normal pressure",
+        "a self-healing material that repairs cracks in bridges and aircraft on its own",
+        "a nanomaterial that stores ten times more energy than today's best batteries"] },
+      { name: "Environmental Science", icon: "🌍", finds: [
+        "a natural process that lets oceans absorb carbon ten times faster, slowing climate change",
+        "how to restore dying coral reefs in just a few years",
+        "a way to turn deserts green using microbes that pull water from the air"] },
+    ];
+    function nobelHtml(p) {
+      const f = NOBEL_FIELDS[p.field] || NOBEL_FIELDS[0];
+      return `<div class="nobel"><div class="nobelMedal">🏅</div>
+        <h2>Scientific breakthrough!</h2>
+        <p>Congratulations! Your researchers have discovered <b>${f.finds[p.find] || f.finds[0]}</b>.</p>
+        <p>This discovery will change the world, and you have won the <b>Nobel Prize in ${f.icon} ${f.name}</b>!</p>
+        <div class="nobelReward">+${fmt(LAB_REWARD)}</div>
+        <button class="btn big" data-nobel="ok">🏅 Accept the Nobel Prize</button></div>`;
+    }
+    function showNobel() {
+      const p = sci().lab && sci().lab.pending;
+      if (!p) return;
+      showModal(nobelHtml(p));
+      $("modalBox").classList.add("gold");
+    }
+    function breakthrough() {
+      const lab = sci().lab;
+      const field = secureRandomInt(NOBEL_FIELDS.length);
+      lab.pending = { field, find: secureRandomInt(NOBEL_FIELDS[field].finds.length) };
+      lab.since = 0;
+      save(); flushSave();
+      showNobel();
+    }
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest("[data-nobel]")) return;
+      const lab = sci().lab;
+      if (!lab || !lab.pending) { hideModal(); return; }
+      lab.pending = null;
+      lab.prizes = (lab.prizes || 0) + 1;
+      state.stats.nobels = (state.stats.nobels || 0) + 1;
+      state.money += LAB_REWARD;
+      hideModal(); updateCounter(); render(); save(); flushSave();
+      showNotice(`🏅 Nobel Prize accepted: +${fmt(LAB_REWARD)}!`);
+    });
+
+    const MISSION_NAMES = ["Artemis", "Odyssey", "Horizon", "Pioneer", "Voyager", "Aurora", "Kepler", "Polaris", "Zenith", "Orion", "Phoenix", "Nova"];
+    function launchMission() {
+      const s = sci().space, n = (s.count = (s.count || 0) + 1);
+      const name = `${MISSION_NAMES[secureRandomInt(MISSION_NAMES.length)]}-${n}`;
+      const failed = secureRandomInt(1000) < spaceFail() * 1000;
+      const reward = failed ? 0 : (SPACE_MIN + secureRandomInt(SPACE_MAX - SPACE_MIN + 1)) * 1e6;
+      s.log = [{ name, reward, at: Date.now() }, ...(s.log || [])].slice(0, 5);
+      s.earned = (s.earned || 0) + reward;
+      return { name, reward };
+    }
+
+    // One game second of Science; returns its income per second (University)
+    function scienceTick() {
+      const S = sci();
+      if (S.uni && S.uni.scientists < UNI_MAX && --S.uni.timer <= 0) {
+        S.uni.scientists++; S.uni.timer = UNI_EVERY;
+        if (S.uni.scientists === UNI_MAX) showNotice(`🎓 Your University is full: ${UNI_MAX} scientists! It now earns +${fmt(UNI_FULL_INCOME)} / sec.`);
+        if (S.uni.scientists === UNI_MAX && state.view === "income") render();
+      }
+      if (S.lab && !S.lab.pending) {
+        S.lab.since = (S.lab.since || 0) + 1;
+        if (S.lab.since >= LAB_ODDS || secureRandomInt(LAB_ODDS) === 0) breakthrough();
+      }
+      if (S.space && --S.space.timer <= 0) {
+        S.space.timer = SPACE_EVERY;
+        const m = launchMission();
+        state.money += m.reward;
+        if (m.reward) showNotice(`🚀 Mission ${m.name} succeeded: +${fmt(m.reward)}!`);
+        else showAlert(`🚀 Mission ${m.name} failed`, "The rocket didn't make it. No reward this time; the next launch is in 1 hour.");
+        if (state.view === "income") render();
+      }
+      // 🛰️ satellite: broken trucks repair themselves for free after 5 seconds
+      if (S.satellite) for (const v of logi.trucks) {
+        if (!v.broken) continue;
+        if (v.broken.auto === undefined) v.broken.auto = SAT_REPAIR_SECONDS;
+        if (--v.broken.auto <= 0) {
+          v.broken = null; v.offers = makeContracts("truck"); v.wait = 0;
+          showNotice(`🛰️ ${v.name} was repaired automatically.`);
+          if (state.view === "logistics") renderFleet("truck");
+        }
+      }
+      // live numbers on the Science page
+      const set = (id, t) => { const el = $(id); if (el) el.textContent = t; };
+      if (S.uni) {
+        set("sci-uni-income", (uniIncome() >= 0 ? "+" : "") + fmt(uniIncome()) + " / sec");
+        set("sci-uni-count", S.uni.scientists);
+        set("sci-uni-next", S.uni.scientists >= UNI_MAX ? "full" : "next in " + clock(S.uni.timer));
+        const bar = $("sci-uni-bar"); if (bar) bar.style.width = (S.uni.scientists / UNI_MAX * 100) + "%";
+      }
+      if (S.lab) set("sci-lab-next", "guaranteed within " + clock(Math.max(0, LAB_ODDS - (S.lab.since || 0))));
+      if (S.space) set("sci-space-next", clock(S.space.timer));
+      return uniIncome();
+    }
+
+    // ----- Science page (Income → 🔬 Science) -----
+    function renderScience() {
+      const S = sci(), L = sciLevels();
+      if (!scienceOpen()) {
+        const row = (k, label) => `<div class="row"><span>${label}</span><b class="${L[k] >= SCI_REQ[k] ? "income" : ""}">${Math.min(L[k], SCI_REQ[k])} / ${SCI_REQ[k]} ${L[k] >= SCI_REQ[k] ? "✅" : ""}</b></div>`;
+        return `<div class="card" style="text-align:center"><h3>🔒 🔬 Science</h3>
+          <p class="muted">Build a University, make Nobel Prize-winning breakthroughs and launch space missions.</p></div>
+          <div class="card"><h4 style="margin-top:0">Unlocks when you reach:</h4>
+            ${row("logistics", "🚚 Logistics level")}${row("investor", "📈 Investor level")}${row("gambler", "🎲 Gambler level")}</div>`;
+      }
+      let html = "";
+      // 🎓 University
+      if (S.uni) {
+        html += `<div class="card specialCard"><div class="row"><h3>🎓 University</h3><span class="income" id="sci-uni-income">${fmt(uniIncome())} / sec</span></div>
+          <div class="row"><span>👩‍🔬 Scientists: <b id="sci-uni-count">${S.uni.scientists}</b> / ${UNI_MAX}</span><span class="muted" id="sci-uni-next"></span></div>
+          <div class="xpBar"><div class="xpFill" id="sci-uni-bar" style="width:${S.uni.scientists / UNI_MAX * 100}%"></div></div>
+          <div class="muted">1 new scientist every 2 minutes · −${UNI_COST_PER_EMPTY} / sec for each empty place · +${fmt(UNI_FULL_INCOME)} / sec when full</div></div>`;
+      } else {
+        html += `<div class="card specialCard"><div class="row"><div><h3>🎓 University</h3>
+            <div class="muted">Trains 1 scientist every 2 minutes, up to ${UNI_MAX}. Until it's full it costs ${UNI_COST_PER_EMPTY} / sec per empty place (−${fmt(UNI_COST_PER_EMPTY * UNI_MAX)} / sec at the start); with ${UNI_MAX} scientists it earns +${fmt(UNI_FULL_INCOME)} / sec.</div></div>
+          <button class="btn" data-sci="uni" data-cost="${UNI_PRICE}">Buy ${fmt(UNI_PRICE)}</button></div></div>`;
+      }
+      // 🧪 Research lab
+      if (S.lab) {
+        html += `<div class="card specialCard"><div class="row"><h3>🧪 Research lab</h3>
+            <span class="vialCount" title="Scientific breakthroughs (Nobel Prizes)">⚗️ × ${S.lab.prizes || 0}</span></div>
+          <div class="muted">Every second: a 1 in ${LAB_ODDS.toLocaleString("en-US")} chance of a scientific breakthrough worth ${fmt(LAB_REWARD)} · <span id="sci-lab-next"></span></div></div>`;
+      } else {
+        const ready = S.uni && S.uni.scientists >= UNI_MAX;
+        html += `<div class="card specialCard" ${ready ? "" : `style="opacity:0.6"`}><div class="row"><div><h3>${ready ? "" : "🔒 "}🧪 Research lab</h3>
+            <div class="muted">Every second a 1 in ${LAB_ODDS.toLocaleString("en-US")} chance of a scientific breakthrough: a Nobel Prize and ${fmt(LAB_REWARD)}. Guaranteed at least every 2 hours.</div>
+            ${ready ? "" : `<div class="muted">Needs ${UNI_MAX} scientists in your University${S.uni ? ` (you have ${S.uni.scientists})` : ""}</div>`}</div>
+          ${ready ? `<button class="btn" data-sci="lab" data-cost="${LAB_PRICE}">Buy ${fmt(LAB_PRICE)}</button>` : `<span class="muted">${fmt(LAB_PRICE)}</span>`}</div></div>`;
+      }
+      // 🚀 Space Mission Center
+      if (S.space) {
+        const log = (S.space.log || []).map(m => `<div class="row"><span>🚀 ${m.name}</span><b class="${m.reward ? "income" : ""}">${m.reward ? "+" + fmt(m.reward) : "❌ failed"}</b></div>`).join("");
+        html += `<div class="card specialCard"><div class="row"><h3>🚀 Space Mission Center</h3><span class="muted">next launch in <b id="sci-space-next">${clock(S.space.timer)}</b></span></div>
+          <div class="muted">Every hour: ${fmt(SPACE_MIN * 1e6)} – ${fmt(SPACE_MAX * 1e6)}, or nothing if the mission fails (${Math.round(spaceFail() * 100)}% chance${S.satellite ? ", lowered by your 🛰️ satellite" : ""})</div>
+          ${log ? `<h4>Last missions</h4>${log}` : ""}
+          ${S.satellite ? "" : `<div class="muted">🛰️ A satellite is now available in 🚢 Logistics.</div>`}</div>`;
+      } else {
+        const ready = S.lab && (S.lab.prizes || 0) >= SPACE_NEED;
+        html += `<div class="card specialCard" ${ready ? "" : `style="opacity:0.6"`}><div class="row"><div><h3>${ready ? "" : "🔒 "}🚀 Space Mission Center</h3>
+            <div class="muted">Launches a space mission every hour: ${fmt(SPACE_MIN * 1e6)} – ${fmt(SPACE_MAX * 1e6)}, with a 10% chance the mission fails. Unlocks a 🛰️ satellite in Logistics.</div>
+            ${ready ? "" : `<div class="muted">Needs ${SPACE_NEED} breakthroughs in your Research lab${S.lab ? ` (you have ${S.lab.prizes || 0})` : ""}</div>`}</div>
+          ${ready ? `<button class="btn" data-sci="space" data-cost="${SPACE_PRICE}">Buy ${fmt(SPACE_PRICE)}</button>` : `<span class="muted">${fmt(SPACE_PRICE)}</span>`}</div></div>`;
+      }
+      return html;
+    }
+    // Income page tabs: Businesses / Special / Science
+    $("shop").addEventListener("click", (e) => {
+      const t = e.target.closest("[data-ipage]");
+      if (!t) return;
+      state.incomePage = t.dataset.ipage;
+      render(); save();
+      $("shop").scrollTop = 0;
+    });
+    $("shop").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-sci]");
+      if (!b || isPaused() || !scienceOpen()) return;
+      const S = sci(), what = b.dataset.sci;
+      const buy = (price) => { if (state.money < price) return false; state.money -= price; return true; };
+      if (what === "uni" && !S.uni && buy(UNI_PRICE)) { S.uni = { scientists: 0, timer: UNI_EVERY }; showNotice("🎓 University built! Your first scientist arrives in 2 minutes."); }
+      else if (what === "lab" && !S.lab && S.uni && S.uni.scientists >= UNI_MAX && buy(LAB_PRICE)) { S.lab = { since: 0, prizes: 0, pending: null }; showNotice("🧪 Research lab opened! Breakthroughs can happen any second now."); }
+      else if (what === "space" && !S.space && S.lab && (S.lab.prizes || 0) >= SPACE_NEED && buy(SPACE_PRICE)) { S.space = { timer: SPACE_EVERY, log: [], count: 0, earned: 0 }; showNotice("🚀 Space Mission Center built! The first launch is in 1 hour. A 🛰️ satellite is now available in Logistics."); }
+      else return;
+      updateCounter(); render(); save();
+    });
+
+    // ----- 🛰️ Satellite card in Logistics -----
+    function renderSatellite() {
+      const box = $("satelliteCard"), S = sci();
+      if (!box) return;
+      box.hidden = !S.space;
+      if (!S.space) return;
+      const perks = `<ul class="satPerks"><li>🚀 Space missions fail only 5% of the time (instead of 10%)</li>
+        <li>✈️ Cargo plane contracts pay +5%</li><li>🛢️ Tanker contracts take 10% less time</li>
+        <li>🔧 Broken trucks repair themselves for free after 5 seconds</li></ul>`;
+      box.innerHTML = S.satellite
+        ? `<div class="row"><h3>🛰️ Satellite <span class="muted">in orbit</span></h3><span class="income">active</span></div>${perks}`
+        : `<div class="row"><div><h3>🛰️ Satellite</h3><div class="muted">Max 1 · works on its own, no agent needed · permanent bonuses:</div>${perks}</div>
+            <button class="btn" data-satellite="buy" data-cost="${SAT_PRICE}" ${state.money >= SAT_PRICE ? "" : "disabled"}>Launch ${fmt(SAT_PRICE)}</button></div>`;
+    }
+    $("satelliteCard").addEventListener("click", (e) => {
+      if (!e.target.closest("[data-satellite]") || isPaused()) return;
+      const S = sci();
+      if (!S.space || S.satellite || state.money < SAT_PRICE) return;
+      state.money -= SAT_PRICE; S.satellite = true;
+      updateCounter(); renderSatellite(); renderFleet("tanker"); renderFleet("plane"); save();
+      showNotice("🛰️ Satellite launched! Its bonuses are active.");
+    });
+    renderSatellite();
+
+    /* =====================================================================
        ⏱️ GAME CLOCK + OFFLINE EARNINGS
        The game runs one game second (gameTick + freeTick) for every REAL second that passed, measured with Date.now().
        Browsers slow down timers in background tabs (Chrome: about once a minute), so when the clock wakes up
@@ -8799,10 +9083,37 @@
           state.freeChips[VIP_CHIP] = n; state.vip.timer = Math.max(1, t);
         }
       }
+      // 🔬 Science: scientists keep arriving, space missions keep launching, at most ONE breakthrough while away
+      const S = state.science;
+      let nobelAway = false;
+      if (S && S.uni && S.uni.scientists < UNI_MAX) {
+        if (away >= S.uni.timer) {
+          const n = 1 + Math.floor((away - S.uni.timer) / UNI_EVERY);
+          S.uni.scientists = Math.min(UNI_MAX, S.uni.scientists + n);
+          S.uni.timer = UNI_EVERY - ((away - S.uni.timer) % UNI_EVERY);
+        } else S.uni.timer -= away;
+        S.uni.timer = Math.max(1, Math.round(S.uni.timer));
+      }
+      if (S && S.space) {
+        let t = away, got = 0, launched = 0, failed = 0;
+        while (t >= S.space.timer) { t -= S.space.timer; S.space.timer = SPACE_EVERY; const m = launchMission(); got += m.reward; launched++; if (!m.reward) failed++; }
+        S.space.timer = Math.max(1, Math.round(S.space.timer - t));
+        if (launched) { rows.push([`🚀 Space missions (${launched}${failed ? `, ${failed} failed` : ""})`, got]); total += got; }
+      }
+      if (S && S.lab && !S.lab.pending) {
+        const p = 1 - Math.pow(1 - 1 / LAB_ODDS, away);
+        if ((S.lab.since || 0) + away >= LAB_ODDS || secureRandomInt(1e6) < p * 1e6) nobelAway = true;
+        else S.lab.since = (S.lab.since || 0) + away;
+      }
       state.money += total;
       state.stats.offlineEarned = (state.stats.offlineEarned || 0) + total;
+      if (nobelAway) {   // shown after the "while you were away" pop-up is closed
+        const field = secureRandomInt(NOBEL_FIELDS.length);
+        S.lab.pending = { field, find: secureRandomInt(NOBEL_FIELDS[field].finds.length) };
+        S.lab.since = 0;
+      }
       updateCounter();
-      if (seconds < CATCHUP_MAX || (!total && !arriving && !chips)) return;
+      if (seconds < CATCHUP_MAX || (!total && !arriving && !chips && !nobelAway)) { if (nobelAway) showNobel(); return; }
       showModal(`<h2>🌙 While you were away</h2>
         <p>You were gone for <b>${awayText(seconds)}</b>${seconds > OFFLINE_CAP ? ` (up to ${OFFLINE_CAP / 3600} hours count)` : ""}.
           Your empire kept working at ${OFFLINE_RATE * 100}% speed:</p>
@@ -8810,6 +9121,7 @@
           <tr><td><b>Total</b></td><td style="text-align:right"><b class="income">+${fmt(total)}</b></td></tr></table>` : ""}
         ${arriving ? `<p>🚚 ${arriving} contract${arriving === 1 ? "" : "s"} arrived and will pay out now.</p>` : ""}
         ${chips ? `<p>🎁 ${chips} free bet chip${chips === 1 ? "" : "s"} collected.</p>` : ""}
+        ${nobelAway ? `<p>🏅 Your Research lab made a scientific breakthrough!</p>` : ""}
         <p class="muted">Tip: while the game is open (even in a background tab) it earns at full speed.</p>
         <button class="btn big" data-modal="close">💰 Collect</button>`);
       $("modalBox").classList.add("gold");
@@ -8817,6 +9129,7 @@
 
     function gameClock() {
       const now = Date.now();
+      if (sci().lab && sci().lab.pending && $("modal").hidden) showNobel();   // a Nobel Prize is waiting to be accepted
       if (isPaused()) { state.lastTick = now; return; }   // a tax payment is waiting: time is not counted
       const due = Math.floor((now - state.lastTick) / 1000);
       if (due <= 0) return;
