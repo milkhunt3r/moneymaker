@@ -146,6 +146,11 @@
     }
     #coin.spaceCoin { background: url("assets/space-coin.webp") center / contain no-repeat; box-shadow: none; filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.55)); }
     #coin.spaceCoin::after { content: none; }
+    body.globalBg {
+      background: linear-gradient(rgba(12, 12, 22, 0.74), rgba(12, 12, 22, 0.86)), url("assets/global-background.jpg") center / cover fixed;
+    }
+    #coin.globalCoin { background: url("assets/global-coin.webp") center / contain no-repeat; box-shadow: none; filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.55)); }
+    #coin.globalCoin::after { content: none; }
     #coin.aheadCoin::after { content: none; }
 
     #shop {
@@ -6417,6 +6422,7 @@
         text: "Unlock 👑 Whale, 🀄 Four of a kind ×4, 🤠 Ultimate Texas Hold'em veteran and 🎴 Video Poker veteran" } },
       { id: "space", name: "🚀 The Space Race Collection", reward: { ids: ["satellite", "sciSpace", "spaceOk", "spaceFail"],
         text: "Unlock 🛰️ Eye in the sky, 🚀 Space race, 🌕 Lift-off! and 💥 Houston, we have a problem" } },
+      { id: "global", name: "🌍 The Global Network Collection", reward: { cat: "logistics", text: "Unlock every 🚢 Logistics achievement" } },
     ];
     const COSMETICS = [
       { id: "wowBg",   collection: "wow", slot: "background", name: "Wow So Rich Background", price: 5000000, desc: "A very rich dog in a very rich office, behind the whole game.",
@@ -6451,6 +6457,10 @@
         preview: `<div class="preview" style="background-image:url('assets/space-background-thumb.jpg')"></div>` },
       { id: "spaceCoin", collection: "space", slot: "coin", name: "Space Race Coin", price: 0, desc: "Replaces the coin you click with the golden rocket launch medallion.",
         preview: `<div class="preview"><img src="assets/space-coin.webp" alt="Space Race coin"></div>` },
+      { id: "globalBg", collection: "global", slot: "background", name: "Global Network Background", price: 0, desc: "The walrus shipping tycoon runs the world's freight from his harbor control tower, behind the whole game.",
+        preview: `<div class="preview" style="background-image:url('assets/global-background-thumb.jpg')"></div>` },
+      { id: "globalCoin", collection: "global", slot: "coin", name: "Global Network Coin", price: 0, desc: "Replaces the coin you click with the walrus captain's golden shipping medallion.",
+        preview: `<div class="preview"><img src="assets/global-coin.webp" alt="Global Network coin"></div>` },
     ];
     if (!state.cosmetics) state.cosmetics = { owned: {}, on: {} };
 
@@ -6470,6 +6480,8 @@
       document.body.classList.toggle("bullBg", !!state.cosmetics.on.bullBg);
       document.body.classList.toggle("sharkBg", !!state.cosmetics.on.sharkBg);
       document.body.classList.toggle("spaceBg", !!state.cosmetics.on.spaceBg);
+      document.body.classList.toggle("globalBg", !!state.cosmetics.on.globalBg);
+      $("coin").classList.toggle("globalCoin", !!state.cosmetics.on.globalCoin);
       $("coin").classList.toggle("spaceCoin", !!state.cosmetics.on.spaceCoin);
       $("coin").classList.toggle("sharkCoin", !!state.cosmetics.on.sharkCoin);
       $("coin").classList.toggle("bullCoin", !!state.cosmetics.on.bullCoin);
