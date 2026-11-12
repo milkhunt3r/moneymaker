@@ -976,6 +976,7 @@
     #coin.tutGlow { border-radius: 50%; }
     @keyframes tutPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,211,77,0.55); } 50% { box-shadow: 0 0 0 10px rgba(255,211,77,0); } }
     #achList[hidden], #rewardList[hidden] { display: none; }
+    .achFilter { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
     .rewardCard .bar { height: 8px; border-radius: 999px; background: rgba(255,255,255,0.08); margin: 8px 0; overflow: hidden; }
     .rewardCard .bar > div { height: 100%; background: linear-gradient(90deg, #ffd34d, #ff9800); }
     .rewardCard:not(.got) .cosmetic { filter: grayscale(0.7); opacity: 0.75; }
@@ -1791,7 +1792,7 @@
        ===================================================================== */
     const SAVE_KEY = "coinClickerSave", PREFS_KEY = "coinClickerPrefs", IMG_DB = "coinClickerArt";
     // Screen preferences: kept per device, never part of the progress that is saved (and later sent to the server)
-    const PREF_KEYS = ["view", "incomePage", "achPage", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage",
+    const PREF_KEYS = ["view", "incomePage", "achPage", "achHideDone", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage",
                        "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage"];
     function splitState(st) {   // -> { progress, prefs }
       const progress = {}, prefs = {};
@@ -7789,6 +7790,11 @@
       document.querySelectorAll("[data-achpage]").forEach(b => b.classList.toggle("active", b.dataset.achpage === state.achPage));
       if (state.achPage === "rewards") renderRewards();
     }
+    $("achList").addEventListener("click", (e) => {
+      if (!e.target.closest("#achHideToggle")) return;
+      state.achHideDone = !state.achHideDone; save();
+      renderAchievements();
+    });
     $("achNav").addEventListener("click", (e) => {
       const b = e.target.closest("[data-achpage]"); if (!b) return;
       showAchPage(b.dataset.achpage); save();
@@ -7798,10 +7804,14 @@
     function renderAchievements() {
       showAchPage(state.achPage);
       $("achTotal").textContent = `${achDone()} / ${ACHIEVEMENTS.length}`;
-      $("achList").innerHTML = ACH_CATEGORIES.map(c => {
-        const list = ACHIEVEMENTS.filter(a => a.cat === c.id);
-        const done = list.filter(a => state.achievements[a.id]).length;
-        return `<div class="achHead"><h2 style="margin:0">${c.name}</h2><span class="muted">${done} / ${list.length}</span></div>
+      const hide = !!state.achHideDone;
+      $("achList").innerHTML = `<div class="achFilter"><button class="btn ghost small" id="achHideToggle">${hide ? "👁️ Show completed" : "🙈 Hide completed"}</button>
+          <span class="muted">${hide ? "Completed achievements are hidden." : ""}</span></div>` + ACH_CATEGORIES.map(c => {
+        const all = ACHIEVEMENTS.filter(a => a.cat === c.id);
+        const done = all.filter(a => state.achievements[a.id]).length;
+        const list = hide ? all.filter(a => !state.achievements[a.id]) : all;
+        return `<div class="achHead"><h2 style="margin:0">${c.name}</h2><span class="muted">${done} / ${all.length}</span></div>
+          ${list.length ? "" : `<div class="muted" style="margin:4px 0 14px">✅ All done in this category!</div>`}
           <div class="achGrid">${list.map(a => {
             const got = state.achievements[a.id];
             const v = Math.min(a.goal, achValue(a));
