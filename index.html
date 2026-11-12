@@ -319,9 +319,10 @@
     /* Roulette wheel */
     .rouletteTop { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; justify-content: center; }
     #wheelWrap { position: relative; width: 280px; height: 280px; }
-    #wheel {
+    #wheel {   /* the wheel picture (assets/roulette-wheel.webp) turns; the ball is drawn on top */
       width: 280px; height: 280px; border-radius: 50%; position: relative;
-      border: 8px solid #6b4a1e; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      background: url("assets/roulette-wheel.webp") center / contain no-repeat;
+      filter: drop-shadow(0 10px 22px rgba(0,0,0,0.6));
     }
     #ball {
       position: absolute; left: 0; top: 0; width: 14px; height: 14px; border-radius: 50%; z-index: 5;
@@ -329,15 +330,7 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
       pointer-events: none;
     }
-    #wheel .num {
-      position: absolute; left: 50%; top: 50%; width: 20px; margin-left: -10px; margin-top: -8px;
-      text-align: center; font-size: 11px; font-weight: 800; color: #fff;
-    }
-    #wheel::after {   /* wooden middle */
-      content: ""; position: absolute; inset: 70px; border-radius: 50%;
-      background: radial-gradient(circle at 40% 35%, #b07a3a, #5a3a14);
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.6);
-    }
+
     #result { text-align: center; min-width: 180px; }
     #resultNum {
       width: 90px; height: 90px; margin: 0 auto 8px; border-radius: 50%;
@@ -3280,17 +3273,7 @@
     }
     const insideKey = (...nums) => "x" + nums.sort((a, b) => a - b).join("-");
 
-    function wheelBackground() {
-      const seg = 360 / 37;
-      const colors = { red: "#c62828", black: "#1b1b1b", green: "#2e7d32" };
-      return "conic-gradient(" + WHEEL_ORDER.map((n, i) =>
-        `${colors[colorOf(n)]} ${i * seg}deg ${(i + 1) * seg}deg`).join(", ") + ")";
-    }
-
     function renderRoulette() {
-      const seg = 360 / 37;
-      const nums = WHEEL_ORDER.map((n, i) =>
-        `<span class="num" style="transform: rotate(${(i + 0.5) * seg}deg) translateY(-118px)">${n}</span>`).join("");
 
       const last = roulette.lastResult;
       const won = (key) => last !== null && !roulette.spinning && betInfo(key).wins(last);
@@ -3349,7 +3332,7 @@
 
           <div class="rouletteTop" style="margin-top:14px">
             <div id="wheelWrap">
-              <div id="wheel" style="background:${wheelBackground()}; transform: rotate(${roulette.rotation}deg)">${nums}</div>
+              <div id="wheel" style="transform: rotate(${roulette.rotation}deg)"></div>
               <div id="ball" style="transform:${ballTransform(...restingBall(roulette))}"></div>
             </div>
             <div id="result">
@@ -3442,13 +3425,15 @@
        The wheel turns clockwise and slows down. The ball runs the other way around the
        outer track, slows to a crawl (the tease), then drops and bounces into its pocket. */
     const SPIN_MS = 7500;          // how long a spin lasts
-    const BALL_TRACK = 126;        // ball distance from the centre while rolling on the rim
-    const BALL_POCKET = 100;       // ball distance from the centre once it lands
+    const BALL_TRACK = 126;        // ball distance from the center while rolling in the rim's channel
+    const BALL_POCKET = 92;        // ball distance from the center once it lands (inside the pocket, below the number)
     const BALL_TURNS = 8;          // laps the ball makes (relative to the wheel)
     const DROP_AT = 0.72;          // when (0-1 of the spin) the ball starts falling in
 
-    // Angle of a number's pocket on the wheel (0 = top, clockwise)
-    const pocketAngle = (n) => (WHEEL_ORDER.indexOf(n) + 0.5) * (360 / 37);
+    // Angle of each pocket's middle on the wheel picture (0 = top, clockwise), in WHEEL_ORDER.
+    // Measured from the picture (its pockets aren't perfectly even), so the ball lands right in the number.
+    const WHEEL_ANGLES = [4.02, 13.37, 22.59, 32.32, 41.82, 52.05, 61.55, 71.84, 81.62, 92.17, 102.17, 113.18, 123.46, 133.8, 143.44, 153.39, 163.09, 172.75, 182.06, 191.34, 200.78, 210.18, 220.14, 229.61, 239.88, 249.37, 259.53, 268.63, 278.68, 287.64, 297.82, 307.15, 317.29, 326.75, 336.2, 345.51, 354.74];
+    const pocketAngle = (n) => WHEEL_ANGLES[WHEEL_ORDER.indexOf(n)];
 
     function ballTransform(angle, radius) {
       const rad = angle * Math.PI / 180;
