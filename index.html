@@ -3428,7 +3428,7 @@
 
     // Angle of each pocket's middle on the wheel picture (0 = top, clockwise), in WHEEL_ORDER.
     // Measured from the picture (its pockets aren't perfectly even), so the ball lands right in the number.
-    const WHEEL_ANGLES = [4.02, 13.37, 22.59, 32.32, 41.82, 52.05, 61.55, 71.84, 81.62, 92.17, 102.17, 113.18, 123.46, 133.8, 143.44, 153.39, 163.09, 172.75, 182.06, 191.34, 200.78, 210.18, 220.14, 229.61, 239.88, 249.37, 259.53, 268.63, 278.68, 287.64, 297.82, 307.15, 317.29, 326.75, 336.2, 345.51, 354.74];
+    const WHEEL_ANGLES = [3.97, 13.26, 22.59, 32.26, 41.8, 51.86, 61.62, 71.81, 81.51, 91.97, 102.02, 113.13, 123.29, 133.76, 143.44, 153.37, 163.01, 172.65, 182.02, 191.25, 200.72, 210.21, 220.12, 229.71, 239.92, 249.49, 259.57, 268.8, 278.68, 287.76, 297.79, 307.33, 317.3, 326.87, 336.18, 345.5, 354.74];
     const pocketAngle = (n) => WHEEL_ANGLES[WHEEL_ORDER.indexOf(n)];
 
     function ballTransform(angle, radius) {
