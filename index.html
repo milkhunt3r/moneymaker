@@ -4475,7 +4475,7 @@
     const SUIT_NAME = { "♠": "spades", "♥": "hearts", "♦": "diamonds", "♣": "clubs" };
     const RANK_NAME = { A: "Ace", J: "Jack", Q: "Queen", K: "King" };
     // the deck in use: the equipped 🃏 Cards cosmetic, or the default fox deck
-    const DECK_DIRS = { wowCards: "cards-wow", rainCards: "cards-rain" };
+    const DECK_DIRS = { wowCards: "cards-wow", rainCards: "cards-rain", aheadCards: "cards-ahead", royalCards: "cards-royal" };
     function deckDir() {
       const on = state.cosmetics && state.cosmetics.on || {};
       const id = Object.keys(DECK_DIRS).find(k => on[k]);
@@ -6454,10 +6454,14 @@
         preview: `<div class="preview" style="background-image:url('assets/ahead-background-thumb.jpg')"></div>` },
       { id: "aheadCoin", collection: "ahead", slot: "coin", name: "One Step Ahead Coin", price: 15000000, desc: "Replaces the coin you click with the gentleman chimpanzee's gold medallion.",
         preview: `<div class="preview"><img src="assets/ahead-coin.webp" alt="One Step Ahead coin"></div>` },
+      { id: "aheadCards", collection: "ahead", slot: "cards", name: "One Step Ahead Cards", price: 15000000, desc: "A full deck with the gentleman chimpanzee on the Jacks, Queens, Kings and Joker, for every card game.",
+        preview: `<div class="preview cardsPreview"><img src="assets/cards-ahead/Jc.webp" alt=""><img src="assets/cards-ahead/Qh.webp" alt=""><img src="assets/cards-ahead/Ks.webp" alt="One Step Ahead cards"></div>` },
       { id: "royalBg", collection: "royal", slot: "background", name: "Royal Background", price: 25000000, desc: "His Majesty the Cat, glowing over the whole game.",
         preview: `<div class="preview" style="background-image:url('assets/royal-background-thumb.jpg')"></div>` },
       { id: "royalCoin", collection: "royal", slot: "coin", name: "Royal Coin", price: 25000000, desc: "Replaces the coin you click with His Majesty's golden coin.",
         preview: `<div class="preview"><img src="assets/royal-coin.webp" alt="Royal coin"></div>` },
+      { id: "royalCards", collection: "royal", slot: "cards", name: "Royal Cards", price: 25000000, desc: "A full deck with His Majesty the Cat on the Jacks, Queens, Kings and Joker, for every card game.",
+        preview: `<div class="preview cardsPreview"><img src="assets/cards-royal/Jc.webp" alt=""><img src="assets/cards-royal/Qh.webp" alt=""><img src="assets/cards-royal/Ks.webp" alt="Royal cards"></div>` },
       { id: "rainBg", collection: "rain", slot: "background", name: "Make It Rain Background", price: 100000000, desc: "The frog wizard casts his golden coin spell behind the whole game.",
         preview: `<div class="preview" style="background-image:url('assets/rain-background-thumb.jpg')"></div>` },
       { id: "rainCoin", collection: "rain", slot: "coin", name: "Make It Rain Coin", price: 100000000, desc: "Replaces the coin you click with the frog wizard's golden coin.",
