@@ -7638,6 +7638,7 @@
       { id: "artcol10", cat: "art", icon: "🖼️", name: "Small collection", desc: "Have 10 paintings in your collection", goal: 10, get: () => paintingsOwned() },
       { id: "artcol50", cat: "art", icon: "🖼️", name: "Curator", desc: "Have 50 paintings in your collection", goal: 50, get: () => paintingsOwned() },
       { id: "artcol100", cat: "art", icon: "🖼️", name: "Museum of copies", desc: "Have 100 paintings in your collection", goal: 100, get: () => paintingsOwned() },
+      { id: "artslots", cat: "art", icon: "🏛️", name: "Grand gallery", desc: "Buy every collection slot (100 slots)", goal: 100, get: () => (state.art && state.art.slots) || 0 },
       { id: "artsold1", cat: "art", icon: "💰", name: "First sale", desc: "Sell 1 painting", goal: 1, get: () => state.stats.artSold || 0 },
       { id: "artsold50", cat: "art", icon: "💰", name: "Art dealer", desc: "Sell 50 paintings", goal: 50, get: () => state.stats.artSold || 0 },
       { id: "artsold100", cat: "art", icon: "💰", name: "Gallery regular", desc: "Sell 100 paintings", goal: 100, get: () => state.stats.artSold || 0 },
