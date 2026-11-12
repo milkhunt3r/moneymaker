@@ -4145,7 +4145,7 @@
         return;
       }
       if (what === "tipsReset") { state.tips.seen = {}; state.tips.on = true; state.tips.lastAt = 0; save(); $("tipsToggle").textContent = "💡 Show tips: ON"; settingsNote("↺ All tips will show again."); return; }
-      if (what === "tutorial") { state.tips.tutorial = 0; state.tips.on = true; tutClicks = 0; save(); $("tipsToggle").textContent = "💡 Show tips: ON"; $("settingsMenu").hidden = true; showView("income"); state.incomePage = "biz"; render(); return; }
+      if (what === "tutorial") { state.tips.tutorial = 0; delete state.tips.energyBase; state.tips.on = true; tutClicks = 0; save(); $("tipsToggle").textContent = "💡 Show tips: ON"; $("settingsMenu").hidden = true; showView("income"); state.incomePage = "biz"; render(); return; }
       if (what === "save") {
         save(); flushSave();
         settingsNote(saveFailedAt ? "❌ Could not save: browser storage is full. Download a backup instead." : "✅ Game saved!");
@@ -9636,8 +9636,11 @@
     $("coin").addEventListener("click", () => { tutClicks++; });
     const TUT = [
       { target: "#coin", view: "income", text: "👆 <b>Click the coin</b> to earn your first money.", done: () => tutClicks >= 10, progress: () => `${Math.min(tutClicks, 10)} / 10` },
+      { target: "#energyBtn", view: "income", text: "⚡ <b>Buy an energy drink.</b> For 30 seconds every click is worth ×5, a quick way to afford your first business.",
+        done: () => energyActive() || (state.stats.boostEnergy || 0) > (state.tips.energyBase ?? (state.tips.energyBase = state.stats.boostEnergy || 0)),
+        hint: () => state.money < ENERGY_PRICE ? `It costs ${fmt(ENERGY_PRICE)}: keep clicking the coin.` : "Then click the coin as fast as you can!" },
       { target: '[data-action="buy"]', view: "income", page: "biz", text: "🏢 <b>Buy your first business.</b> Businesses earn money every second.", done: () => state.companies.length > 0,
-        hint: () => state.money < 50 ? "Keep clicking the coin until you can afford it." : "" },
+        hint: () => state.money < 1000 ? "Keep clicking the coin until you can afford it (a Car Wash costs 1,000)." : "" },
       { target: '[data-action="accountant"]', view: "income", page: "biz", text: "🧮 <b>Every business needs staff.</b> First choose an accountant: each one gives a different bonus.", done: () => state.companies.some(c => c.accountant) },
       { target: '[data-action="hr"]', view: "income", page: "biz", text: "🧑‍💼 <b>Hire an HR manager.</b> Each one gives your workers a different kind of bonus.", done: () => state.companies.some(c => c.hr) },
       { target: '[data-action="hire"]', view: "income", page: "biz", text: "👷 <b>Hire a worker.</b> A business only earns when it has workers. Each worker has a trait with a small bonus.", done: () => state.companies.some(c => c.workers.length > 0) },
