@@ -113,7 +113,7 @@
     body.wowBg {
       background: linear-gradient(rgba(12, 12, 22, 0.78), rgba(12, 12, 22, 0.86)), url("assets/wow-background.jpg") center / cover fixed;
     }
-    #coin.wowCoin { background: url("assets/wow-coin.webp") center / contain no-repeat; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55); }
+    #coin.wowCoin { background: url("assets/wow-coin.webp") center / contain no-repeat; box-shadow: none; filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.55)); }
     #coin.wowCoin::after { content: none; }
     #coin.royalCoin { background: url("assets/royal-coin.webp") center / contain no-repeat; box-shadow: none; filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.55)); }
     #coin.royalCoin::after { content: none; }
@@ -6431,7 +6431,7 @@
       { id: "jackpot", name: "🎰 The Jackpot Collection", reward: { cat: "casino", text: "Unlock every 🎰 Casino achievement" } },
     ];
     const COSMETICS = [
-      { id: "wowBg",   collection: "wow", slot: "background", name: "Wow So Rich Background", price: 5000000, desc: "A very rich dog in a very rich office, behind the whole game.",
+      { id: "wowBg",   collection: "wow", slot: "background", name: "Wow So Rich Background", price: 5000000, desc: "A very rich Shiba Inu tycoon counts his cash in a glittering office, behind the whole game.",
         preview: `<div class="preview" style="background-image:url('assets/wow-background-thumb.jpg')"></div>` },
       { id: "wowCoin", collection: "wow", slot: "coin", name: "Wow So Rich Coin", price: 5000000, desc: "Replaces the golden coin you click with the Wow So Rich coin.",
         preview: `<div class="preview"><img src="assets/wow-coin.webp" alt="Wow So Rich coin"></div>` },
