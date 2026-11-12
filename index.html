@@ -944,6 +944,16 @@
     .nobelMedal { font-size: 64px; line-height: 1; animation: rushPulse 0.9s ease-in-out infinite alternate; }
     .nobelReward { font-size: 30px; font-weight: 900; color: #ffd34d; margin: 6px 0 14px; }
     .satPerks { margin: 6px 0 0; padding-left: 18px; font-size: 13px; color: #c9c9da; }
+    .wikiSearch { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .wikiSearch input { flex: 1; padding: 11px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.06); color: inherit; font-size: 15px; outline: none; }
+    .wikiSearch input:focus { border-color: #ffd34d; box-shadow: 0 0 0 3px rgba(255,211,77,0.2); }
+    .wikiHitRow { display: block; width: 100%; text-align: left; padding: 10px 12px; margin: 6px 0; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: inherit; cursor: pointer; font: inherit; }
+    .wikiHitRow:hover { background: rgba(255,211,77,0.08); border-color: rgba(255,211,77,0.5); }
+    .wikiHitWhere { display: block; font-size: 12px; font-weight: 700; color: #ffd34d; margin-bottom: 3px; }
+    .wikiHitText { font-size: 14px; color: #d6d6e6; }
+    .wikiBody mark, .wikiHitRow mark { background: #ffd34d; color: #2b2000; border-radius: 3px; padding: 0 2px; }
+    .wikiFlash { animation: wikiFlash 2s ease-out; }
+    @keyframes wikiFlash { 0%, 40% { background: rgba(255,211,77,0.25); } 100% { background: transparent; } }
     .rushBadge { white-space: nowrap; display: inline-block; font-size: 12px; font-weight: 900; color: #2b1600; background: linear-gradient(90deg, #ffb300, #ff7043); padding: 2px 8px; border-radius: 999px; margin-left: 6px; animation: rushPulse 0.8s ease-in-out infinite alternate; }
     .rushBadge[hidden] { display: none; }
     .income.rushOn { color: #ffb300; text-shadow: 0 0 8px rgba(255, 179, 0, 0.6); }
@@ -1278,7 +1288,13 @@
   <section id="wikiView" hidden>
     <div class="subLayout">
       <nav class="subNav" id="wikiNav"></nav>
-      <div class="subMain"><div class="card wikiBody" id="wikiBody"></div></div>
+      <div class="subMain">
+        <div class="wikiSearch">
+          <input id="wikiSearch" type="search" placeholder="🔍 Search the wiki (e.g. tanker, jackpot, Nobel)…" autocomplete="off" aria-label="Search the wiki">
+          <span class="muted" id="wikiSearchInfo"></span>
+        </div>
+        <div class="card wikiBody" id="wikiBody"></div>
+      </div>
     </div>
   </section>
 
@@ -8048,6 +8064,84 @@
       $("wikiNav").innerHTML = WIKI_SECTIONS.map(s => `<button class="subTab ${s.id === page ? "active" : ""}" data-wiki="${s.id}">${s.name}</button>`).join("");
       $("wikiBody").innerHTML = WIKI_RENDER[page]();
     }
+    /* ----- 🔍 Wiki search: looks through every section (headings, paragraphs, list items, table rows) ----- */
+    const escHtml = (t) => String(t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const escRe = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const WIKI_BLOCKS = "h2, h3, h4, p, li, tr";
+    function wikiWords(q) { return q.toLowerCase().split(/\s+/).filter(w => w.length >= 2); }
+    function wikiSearch(q) {
+      const words = wikiWords(q), hits = [];
+      if (!words.length) return hits;
+      const tmp = document.createElement("div");
+      for (const sec of WIKI_SECTIONS) {
+        try { tmp.innerHTML = WIKI_RENDER[sec.id](); } catch (e) { continue; }
+        let heading = sec.name;
+        tmp.querySelectorAll(WIKI_BLOCKS).forEach((el, idx) => {
+          const raw = el.tagName === "TR" ? [...el.cells].map(c => c.textContent.trim()).filter(Boolean).join(" · ") : el.textContent;
+          const text = raw.replace(/\s+/g, " ").trim();
+          if (/^H[234]$/.test(el.tagName)) heading = text;
+          const low = text.toLowerCase();
+          if (!text || !words.every(w => low.includes(w))) return;
+          const score = (/^H[234]$/.test(el.tagName) ? 10 : 0) + words.reduce((a, w) => a + low.split(w).length - 1, 0);
+          hits.push({ sec: sec.id, secName: sec.name, heading, text, idx, score });
+        });
+      }
+      return hits.sort((a, b) => b.score - a.score).slice(0, 40);
+    }
+    function wikiMark(text, words) {
+      let html = escHtml(text);
+      for (const w of words) html = html.replace(new RegExp("(" + escRe(escHtml(w)) + ")", "gi"), "<mark>$1</mark>");
+      return html;
+    }
+    function wikiSnippet(text, words) {
+      const low = text.toLowerCase(), at = Math.max(0, low.indexOf(words[0]) - 60);
+      const cut = (at > 0 ? "…" : "") + text.slice(at, at + 170) + (at + 170 < text.length ? "…" : "");
+      return wikiMark(cut, words);
+    }
+    let wikiQuery = "";
+    function renderWikiResults() {
+      const q = wikiQuery.trim(), words = wikiWords(q);
+      if (!words.length) { $("wikiSearchInfo").textContent = ""; renderWiki(); return; }
+      const hits = wikiSearch(q);
+      $("wikiSearchInfo").textContent = hits.length ? `${hits.length}${hits.length === 40 ? "+" : ""} result${hits.length === 1 ? "" : "s"}` : "";
+      $("wikiNav").querySelectorAll(".subTab").forEach(b => b.classList.remove("active"));
+      $("wikiBody").innerHTML = `<h2>🔍 Results for “${escHtml(q)}”</h2>` + (hits.length
+        ? hits.map((h, i) => `<button class="wikiHitRow" data-hit="${i}">
+            <span class="wikiHitWhere">${h.secName}${h.heading && h.heading !== h.secName ? " › " + escHtml(h.heading) : ""}</span>
+            <span class="wikiHitText">${wikiSnippet(h.text, words)}</span></button>`).join("")
+        : `<p class="muted">Nothing found. Try another word, e.g. a game, a building or a vehicle.</p>`);
+      $("wikiBody")._hits = hits;
+    }
+    function openWikiHit(h) {
+      const words = wikiWords(wikiQuery);
+      state.wikiPage = h.sec; renderWiki(); save();
+      // highlight the search words in the opened section and jump to the matching block
+      const walker = document.createTreeWalker($("wikiBody"), NodeFilter.SHOW_TEXT), nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      const re = new RegExp("(" + words.map(escRe).join("|") + ")", "gi");
+      for (const n of nodes) {
+        if (!re.test(n.nodeValue)) continue;
+        re.lastIndex = 0;
+        const span = document.createElement("span");
+        span.innerHTML = escHtml(n.nodeValue).replace(new RegExp("(" + words.map(w => escRe(escHtml(w))).join("|") + ")", "gi"), "<mark>$1</mark>");
+        n.replaceWith(span);
+      }
+      const el = $("wikiBody").querySelectorAll(WIKI_BLOCKS)[h.idx];
+      if (el) { el.classList.add("wikiFlash"); el.scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(() => el.classList.remove("wikiFlash"), 2200); }
+    }
+    let wikiSearchTimer = null;
+    $("wikiSearch").addEventListener("input", () => {
+      clearTimeout(wikiSearchTimer);
+      wikiSearchTimer = setTimeout(() => { wikiQuery = $("wikiSearch").value; renderWikiResults(); }, 150);
+    });
+    $("wikiSearch").addEventListener("keydown", (e) => {
+      if (e.key === "Escape") { $("wikiSearch").value = ""; wikiQuery = ""; renderWikiResults(); }
+      if (e.key === "Enter") { const h = ($("wikiBody")._hits || [])[0]; if (h && wikiWords(wikiQuery).length) openWikiHit(h); }
+    });
+    $("wikiBody").addEventListener("click", (e) => {
+      const r = e.target.closest("[data-hit]");
+      if (r) openWikiHit($("wikiBody")._hits[Number(r.dataset.hit)]);
+    });
     $("wikiNav").addEventListener("click", (e) => {
       const b = e.target.closest("[data-wiki]");
       if (!b) return;
