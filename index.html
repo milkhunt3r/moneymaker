@@ -932,6 +932,29 @@
     .lawSlot.empty { border: 1px dashed rgba(255,255,255,0.2); color: #8d8da3; text-align: center; }
     #logisticsView.locked > :not(#logiLocked):not(.debtBanner) { display: none !important; }
     #liveLocked[hidden], #logiLocked[hidden] { display: none; }
+    #tipCard { position: fixed; left: 16px; bottom: 16px; z-index: 9000; width: 340px; max-width: calc(100vw - 32px); padding: 12px 14px;
+               border-radius: 14px; background: #23233a; border: 1px solid rgba(255,211,77,0.55); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+               animation: tipIn 0.35s ease-out; font-size: 14px; }
+    #tipCard[hidden], #tutBubble[hidden] { display: none; }
+    @keyframes tipIn { from { transform: translateY(20px); opacity: 0; } to { transform: none; opacity: 1; } }
+    .tipHead { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; color: #ffd34d; }
+    .tipHead b { flex: 1; } .tipIcon { font-size: 20px; }
+    .tipX { background: none; border: none; color: #9a9ab0; cursor: pointer; font-size: 14px; }
+    .tipText { color: #d6d6e6; line-height: 1.4; }
+    .tipBtns { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+    .tipOff { margin-left: auto; opacity: 0.7; }
+    #tutBubble { position: fixed; z-index: 9500; width: 300px; max-width: calc(100vw - 16px); padding: 12px 14px; border-radius: 14px;
+                 background: #ffd34d; color: #2b2000; box-shadow: 0 10px 30px rgba(0,0,0,0.55); font-size: 14px; line-height: 1.4; transition: top 0.2s, left 0.2s; }
+    #tutBubble.free { left: 50% !important; bottom: 20px; top: auto !important; transform: translateX(-50%); }
+    #tutBubble .muted { color: #5a4600; }
+    .tutStep { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.75; margin-bottom: 4px; }
+    .tutProg { font-weight: 900; margin-top: 4px; }
+    .tutBtns { display: flex; gap: 6px; margin-top: 8px; }
+    #tutBubble .btn.ghost { color: #2b2000; border-color: rgba(43,32,0,0.35); }
+    #tutBubble .btn:not(.ghost) { background: #2b2000; color: #ffd34d; }
+    .tutGlow { outline: 3px solid #ffd34d !important; outline-offset: 4px; border-radius: 12px; animation: tutPulse 1.2s ease-in-out infinite; position: relative; z-index: 5; }
+    #coin.tutGlow { border-radius: 50%; }
+    @keyframes tutPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,211,77,0.55); } 50% { box-shadow: 0 0 0 10px rgba(255,211,77,0); } }
     #saveWarn { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 9999; max-width: 560px;
                  background: #b71c1c; color: #fff; padding: 10px 14px; border-radius: 12px; box-shadow: 0 6px 24px rgba(0,0,0,0.5); font-size: 14px; }
     #saveWarn[hidden] { display: none; }
@@ -999,8 +1022,11 @@
         <button data-setting="save">💾 Save game</button>
         <button data-setting="download">⬇️ Download progress file</button>
         <button data-setting="load">⬆️ Load progress file</button>
+        <button data-setting="tips" id="tipsToggle">💡 Show tips: ON</button>
+        <button data-setting="tipsReset">↺ Show all tips again</button>
+        <button data-setting="tutorial">▶️ Replay the guided start</button>
         <button data-setting="reset" class="danger">🗑️ Reset game</button>
-        <div class="muted" id="settingsNote">The game also saves itself every second.</div>
+        <div class="muted" id="settingsNote">The game saves itself every 30 seconds and after every action.</div>
       </div>
       <input type="file" id="loadFile" accept=".json,application/json" hidden>
     </div>
@@ -1506,6 +1532,8 @@
   <div id="alerts"></div>
 
   <div id="saveWarn" hidden></div>
+  <div id="tipCard" hidden role="status"></div>
+  <div id="tutBubble" hidden role="dialog" aria-label="Guided start"></div>
   <script>
     /* =====================================================================
        SETTINGS: change these numbers to balance the game
@@ -4072,6 +4100,14 @@
       if (!btn) return;
       const what = btn.dataset.setting;
 
+      if (what === "tips") {
+        state.tips.on = !state.tips.on; save();
+        $("tipsToggle").textContent = `💡 Show tips: ${state.tips.on ? "ON" : "OFF"}`;
+        settingsNote(state.tips.on ? "💡 Tips are on." : "💡 Tips are off.");
+        return;
+      }
+      if (what === "tipsReset") { state.tips.seen = {}; state.tips.on = true; state.tips.lastAt = 0; save(); $("tipsToggle").textContent = "💡 Show tips: ON"; settingsNote("↺ All tips will show again."); return; }
+      if (what === "tutorial") { state.tips.tutorial = 0; state.tips.on = true; tutClicks = 0; save(); $("tipsToggle").textContent = "💡 Show tips: ON"; $("settingsMenu").hidden = true; showView("income"); state.incomePage = "biz"; render(); return; }
       if (what === "save") {
         save(); flushSave();
         settingsNote(saveFailedAt ? "❌ Could not save: browser storage is full. Download a backup instead." : "✅ Game saved!");
@@ -7734,6 +7770,7 @@
         achievements: state.achievements, stats: state.stats, casinoXp: state.casinoXp, casinoStats: state.casinoStats,
         cosmetics: state.cosmetics, legacy: L, vip: state.vip, nextId: state.nextId, xpVersion: state.xpVersion, logiXp: state.logiXp, freeChips: state.freeChips, freeTimers: state.freeTimers,
         vpPayHidden: state.vpPayHidden, uthPayHidden: state.uthPayHidden, view: "income",
+        tips: state.tips,   // 💡 tips already seen and the guided start stay done
         // 🖼️ Art Gallery: stays unlocked and keeps its bought slots and all kept paintings
         art: state.art ? { unlocked: !!state.art.unlocked, slots: state.art.slots, slotBuys: state.art.slotBuys || 0, items: state.art.items || [], done: state.art.done, tier: state.art.tier || "easy", seed: 0, page: "studio", sold: state.art.sold || 0 } : undefined,
         invest: { xp: inv.xp, properties: [], etf: 0, etfTimer: ETF_EVERY, etfHistory: [] },
@@ -7974,6 +8011,9 @@
           ["🎟️ VIP Coins", "A free 500 scoin bet chip every 20 min (2nd pick: every 10 min) for the Super high roller tables", "2"]])}
         <h3>💾 Saving</h3>
         <p>The game saves automatically in your browser. In ⚙️ Settings you can save, download a backup file, load one, or reset the game.</p>
+        <h3>💡 Tips and guided start</h3>
+        <p>New players get a short guided start (click the coin, buy a business, hire staff). After that, a small tip appears the first time you meet something new, with a link to the matching Wiki page.
+          ⚙️ Settings: turn tips on/off, show all tips again, or replay the guided start.</p>
         <h3>🌙 Background and offline</h3>
         <p>The game counts real time: in a background tab it earns at full speed (it catches up when the browser wakes it).
           When the game is closed (or the computer sleeps) for more than 5 minutes, you get <b>offline earnings</b> when you come back:
@@ -9273,6 +9313,141 @@
     setInterval(() => refreshUnlocks(false), 1000);
 
     /* =====================================================================
+       💡 TIPS + GUIDED START (Settings → 💡 Show tips)
+       · Guided start: 5 small steps for new players; each highlights something and waits until you do it.
+       · Tips: a small card the first time something new happens (each tip shows once), with "📖 Read more" → Wiki.
+         At most one tip at a time and at least TIP_GAP between tips; they never pause the game.
+       Progress (which tips were seen, tutorial step) is part of the saved progress.
+       ===================================================================== */
+    const TIP_GAP = 60000;
+    const TIPS = {
+      special:   { icon: "⭐", title: "Special businesses", wiki: "income", text: "Special businesses need no workers. Most have a requirement first; they show 🔒 until you meet it, so check this page as you grow." },
+      taxes:     { icon: "🧾", title: "Taxes", wiki: "general", text: "Your income is taxed. When a tax bill comes you have time to pay it; unpaid bills become debt that grows. Pay with the red banner at the top." },
+      casino:    { icon: "🎰", title: "The casino", wiki: "casino", text: "Move money into casino chips first, then pick a table. Bets give Gambler XP, and every Gambler level gives cashback on lost bets." },
+      hot:       { icon: "🔥", title: "Hot Tables", wiki: "casino", text: "Right now one game gets +10 on its XP multiplier for 15 minutes. The card under your Gambler level shows which game and how long." },
+      freeChips: { icon: "🎁", title: "Free bet chips", wiki: "casino", text: "You earn free chips on a timer. Place them on Roulette, Blackjack, Video Poker or Hold'em: you keep what they win, not the chip itself." },
+      invest:    { icon: "📈", title: "Investing", wiki: "investing", text: "Real estate pays rent and can be sold for profit, ETFs grow (and dip) over time, gold is a safe store. Money invested also earns Investor XP." },
+      live:      { icon: "📡", title: "Live trading", wiki: "investing", text: "These are real crypto prices. Long wins when the price goes up, Short when it goes down. Leverage multiplies profit AND loss: watch the liquidation price." },
+      logistics: { icon: "🚢", title: "Logistics", wiki: "logistics", text: "Buy a truck, pick one of its contracts, and it pays when it arrives. Delivering earns Logistics XP, which unlocks agents and more." },
+      breakdown: { icon: "🔧", title: "A truck broke down", wiki: "logistics", text: "Broken trucks can't take contracts until repaired: pay the repair on the red truck. Later, a 🛰️ satellite repairs them for free." },
+      agent:     { icon: "🤖", title: "Logistics agents", wiki: "logistics", text: "Agents pick a contract for you a few seconds after a truck is free, for a small fee. Turn them on per vehicle type in Logistics." },
+      art:       { icon: "🖼️", title: "Art studio", wiki: "art", text: "Copy the painting on the left. The Fill bucket and shape tools (Shift = perfect square/circle) are the fastest way to a high match %." },
+      artTier:   { icon: "🔓", title: "A new painting tier", wiki: "art", text: "Harder paintings are worth much more, but are also judged on more detail. Keep practicing on the easier tier if your match drops." },
+      science:   { icon: "🔬", title: "Science", wiki: "income", text: "Start with the University: it costs money until it has 50 scientists, then earns. The Research lab and Space Mission Center come after it." },
+      prestige:  { icon: "⭐", title: "Prestige", wiki: "general", text: "You can now reset the game for a permanent Legacy bonus. Achievements, levels, cosmetics and your paintings are kept. There's no rush." },
+      offline:   { icon: "🌙", title: "Offline earnings", wiki: "general", text: "While the game is closed you earn at 50% for up to 8 hours. Keep the game open (even in a background tab) to earn at full speed." },
+      achievements: { icon: "🏆", title: "Achievements", wiki: "achievements", text: "Achievements track your milestones in every part of the game. The counter on the tab shows how many you have." },
+    };
+    if (!state.tips) {
+      const veteran = (state.companies || []).length > 0 || (state.stats && (state.stats.clicks || 0) > 50);
+      state.tips = { on: true, seen: {}, tutorial: veteran ? "skipped" : 0, lastAt: 0 };
+    }
+    $("tipsToggle").textContent = `💡 Show tips: ${state.tips.on ? "ON" : "OFF"}`;
+    const tipQueue = [];
+    function showTip(id) {
+      const T = state.tips;
+      if (!T.on || T.seen[id] || !TIPS[id] || tipQueue.includes(id)) return;
+      tipQueue.push(id);
+    }
+    function tipPump() {
+      const T = state.tips, card = $("tipCard");
+      if (!T.on) { tipQueue.length = 0; card.hidden = true; return; }
+      if (!card.hidden || !tipQueue.length || Date.now() - (T.lastAt || 0) < TIP_GAP) return;
+      if (typeof tutActive === "function" && tutActive()) return;   // no tips during the guided start
+      if (!$("modal").hidden) return;                              // wait until pop-ups are closed
+      const id = tipQueue.shift(), t = TIPS[id];
+      if (T.seen[id]) return;
+      T.seen[id] = true; T.lastAt = Date.now(); save();
+      card.innerHTML = `<div class="tipHead"><span class="tipIcon">${t.icon}</span><b>${t.title}</b><button class="tipX" data-tip="close" aria-label="Close">✕</button></div>
+        <div class="tipText">${t.text}</div>
+        <div class="tipBtns"><button class="btn small" data-tip="close">Got it</button>
+          <button class="btn ghost small" data-tip="wiki" data-wiki-go="${t.wiki}">📖 Read more</button>
+          <button class="btn ghost small tipOff" data-tip="off">Turn tips off</button></div>`;
+      card.hidden = false;
+    }
+    $("tipCard").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-tip]"); if (!b) return;
+      if (b.dataset.tip === "wiki") { state.wikiPage = b.dataset.wikiGo; showView("wiki"); if (typeof renderWiki === "function") renderWiki(); }
+      if (b.dataset.tip === "off") { state.tips.on = false; save(); showNotice("💡 Tips turned off. Turn them back on in ⚙️ Settings."); }
+      $("tipCard").hidden = true;
+    });
+    // When does each tip appear? Checked every 2 seconds (cheap checks only).
+    function tipTriggers() {
+      if (!state.tips.on) return;
+      const v = state.view;
+      if (v === "income" && state.incomePage === "special") showTip("special");
+      if ((state.taxDebts || []).length || state.pendingTaxId !== null) showTip("taxes");
+      if (v === "casino") showTip("casino");
+      if (v === "casino" && hotNow().active) showTip("hot");
+      if (typeof freeUnlocked === "function" && freeUnlocked().length) showTip("freeChips");
+      if (v === "invest") showTip(state.investPage === "live" && liveOpen() ? "live" : "invest");
+      if (v === "logistics" && logisticsOpen()) showTip("logistics");
+      if (logi.trucks.some(t => t.broken)) showTip("breakdown");
+      if (logiLevel() >= AGENT_LEVEL.truck) showTip("agent");
+      if (v === "art" && state.art && state.art.unlocked) showTip("art");
+      if (state.art && state.art.done && state.art.done.easy >= ART_TIER_NEED.medium.count) showTip("artTier");
+      if (scienceOpen()) showTip("science");
+      if (state.prestigeOffered) showTip("prestige");
+      if (v === "achievements") showTip("achievements");
+    }
+    setInterval(() => { tipTriggers(); tipPump(); }, 2000);
+
+    // ----- Guided start -----
+    let tutClicks = 0;
+    $("coin").addEventListener("click", () => { tutClicks++; });
+    const TUT = [
+      { target: "#coin", view: "income", text: "👆 <b>Click the coin</b> to earn your first money.", done: () => tutClicks >= 10, progress: () => `${Math.min(tutClicks, 10)} / 10` },
+      { target: '[data-action="buy"]', view: "income", page: "biz", text: "🏢 <b>Buy your first business.</b> Businesses earn money every second.", done: () => state.companies.length > 0,
+        hint: () => state.money < 50 ? "Keep clicking the coin until you can afford it." : "" },
+      { target: '[data-action="accountant"]', view: "income", page: "biz", text: "🧮 <b>Every business needs staff.</b> First choose an accountant: each one gives a different bonus.", done: () => state.companies.some(c => c.accountant) },
+      { target: '[data-action="hr"]', view: "income", page: "biz", text: "🧑‍💼 <b>Hire your HR.</b> Each HR gives your workers a different kind of bonus.", done: () => state.companies.some(c => c.hr) },
+      { target: '[data-action="hire"]', view: "income", page: "biz", text: "👷 <b>Hire a worker.</b> A business only earns when it has workers. Each worker has a trait with a small bonus.", done: () => state.companies.some(c => c.workers.length > 0) },
+      { target: "#perSecond", view: "income", text: "📈 This is your <b>income per second</b>. More businesses and workers make it grow, even while you're away.", next: true },
+      { target: "#tabs", view: null, text: "🔓 New tabs and features <b>unlock as you grow</b>. Look for 🔒 to see what's next, and 📖 Wiki if you need help. Have fun!", next: true, last: true },
+    ];
+    function tutActive() { return typeof state.tips.tutorial === "number" && state.tips.tutorial < TUT.length && state.tips.on; }
+    function tutEnd(how) {
+      state.tips.tutorial = how; save();
+      $("tutBubble").hidden = true;
+      document.querySelectorAll(".tutGlow").forEach(el => el.classList.remove("tutGlow"));
+      state.tips.lastAt = Date.now();
+    }
+    function tutTick() {
+      const bubble = $("tutBubble");
+      document.querySelectorAll(".tutGlow").forEach(el => el.classList.remove("tutGlow"));
+      if (!tutActive()) { bubble.hidden = true; return; }
+      let step = TUT[state.tips.tutorial];
+      if (step.done && step.done()) { state.tips.tutorial++; save(); return tutTick(); }
+      const onView = !step.view || state.view === step.view;
+      const onPage = !step.page || (state.incomePage || "biz") === step.page;
+      const el = onView && onPage ? [...document.querySelectorAll(step.target)].find(x => x.offsetParent !== null) : null;
+      const hint = step.hint ? step.hint() : "";
+      bubble.innerHTML = `<div class="tutStep">Guided start · ${state.tips.tutorial + 1} / ${TUT.length}</div>
+        <div>${el ? step.text : (!onView ? `Go back to <b>💰 Income</b> to continue.` : !onPage ? `Open <b>🏢 Businesses</b> to continue.` : step.text)}</div>
+        ${step.progress ? `<div class="tutProg">${step.progress()}</div>` : ""}${hint ? `<div class="muted">${hint}</div>` : ""}
+        <div class="tutBtns">${step.next ? `<button class="btn small" data-tut="next">${step.last ? "Finish" : "Next"}</button>` : ""}
+          <button class="btn ghost small" data-tut="skip">Skip tutorial</button></div>`;
+      bubble.hidden = false;
+      if (el) {
+        el.classList.add("tutGlow");
+        const r = el.getBoundingClientRect(), bw = bubble.offsetWidth, bh = bubble.offsetHeight;
+        let top = r.bottom + 12, left = r.left + r.width / 2 - bw / 2;
+        if (top + bh > innerHeight - 8) top = Math.max(8, r.top - bh - 12);
+        left = Math.max(8, Math.min(innerWidth - bw - 8, left));
+        bubble.style.top = top + "px"; bubble.style.left = left + "px"; bubble.classList.remove("free");
+      } else { bubble.style.top = ""; bubble.style.left = ""; bubble.classList.add("free"); }
+    }
+    $("tutBubble").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-tut]"); if (!b) return;
+      if (b.dataset.tut === "skip") return tutEnd("skipped");
+      const step = TUT[state.tips.tutorial];
+      if (step && step.last) return tutEnd("done");
+      state.tips.tutorial++; save(); tutTick();
+    });
+    setInterval(tutTick, 400);
+    addEventListener("scroll", () => { if (tutActive()) tutTick(); }, { passive: true });
+
+    /* =====================================================================
        ⏱️ GAME CLOCK + OFFLINE EARNINGS
        The game runs one game second (gameTick + freeTick) for every REAL second that passed, measured with Date.now().
        Browsers slow down timers in background tabs (Chrome: about once a minute), so when the clock wakes up
@@ -9384,6 +9559,7 @@
         <p class="muted">Tip: while the game is open (even in a background tab) it earns at full speed.</p>
         <button class="btn big" data-modal="close">💰 Collect</button>`);
       $("modalBox").classList.add("gold");
+      if (typeof showTip === "function") showTip("offline");
     }
 
     function gameClock() {
