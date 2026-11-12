@@ -2872,8 +2872,8 @@
     /* =====================================================================
        GAMBLER LEVEL: XP = bcoin bet × the game's XP multiplier (longer rounds give more XP per bet).
          Curve: XP = 3.738 * level^6.728  →  level 10 ≈ 20 million, level 50 ≈ 1 trillion, level 99 ≈ 100 trillion
-         Multipliers: Plinko ×1, Sky Climb ×2, Video Poker ×1, Roulette ×2, Blackjack ×4, Ultimate Texas Hold'em ×5,
-                      and ×2 on top at every Super high roller table.
+         Multipliers per table: see XP_TABLE_MULT (e.g. Roulette ×1 / ×2.5 / ×4, Blackjack ×2 / ×4 / ×8,
+                      Video Poker ×1 / ×1.5 / ×2). 🔥 Hot Tables add +10.
          Each level gives 0.1% cashback on lost bets (level 10 = 1%). Max level 99.
        INVESTOR LEVEL: XP for every minute you have money invested (4 / 8 / 16 XP per minute).
          Curve: XP = 0.147 * level^2.76  →  level 50 = 7,186 (about 13 h), level 99 = 47,345 (about 55 h)
@@ -2923,10 +2923,10 @@
 
     // XP multiplier for each casino game (by how long a round takes), ×2 more at Super high roller tables
     const XP_GAME_MULT = { roulette: 2, bj: 4, vp: 1, uth: 5, plinko: 1, climb: 2 };
-    /* ----- 🔥 HOT TABLES: every 30 minutes, one game type gets ×10 Gambler XP on all its tables for 15 minutes,
+    /* ----- 🔥 HOT TABLES: every 30 minutes, one game type gets +10 to the XP multiplier of all its tables for 15 minutes,
        then 15 minutes with no bonus. The schedule follows the real clock (the same for everyone, and it keeps
        running while the game is closed); the hot game is picked at random and is never the same twice in a row. ----- */
-    const HOT_LEN = 15 * 60 * 1000, HOT_MULT = 10;
+    const HOT_LEN = 15 * 60 * 1000, HOT_BONUS = 10;
     const HOT_GAMES = [
       { id: "roulette", name: "🎡 Roulette" }, { id: "bj", name: "🃏 Blackjack" }, { id: "vp", name: "🎴 Video Poker" },
       { id: "uth", name: "🤠 Ultimate Texas Hold'em" }, { id: "plinko", name: "🔻 Plinko" }, { id: "climb", name: "🎈 Sky Climb" }];
@@ -2944,10 +2944,22 @@
       const slot = Math.floor(t / HOT_LEN), cycle = Math.floor(slot / 2), active = slot % 2 === 0;
       return { active, game: HOT_GAMES[hotGameOf(cycle)], next: HOT_GAMES[hotGameOf(cycle + 1)], left: HOT_LEN - (t % HOT_LEN) };
     }
-    function xpMult(id = currentGame || "") {
+    // XP multiplier per table (XP = bet × this). 🔥 Hot Tables add +10 to every table of the hot game.
+    const XP_TABLE_MULT = {
+      rouletteLow: 1, rouletteHigh: 2.5, rouletteSuper: 4,
+      bjLow: 2, bjHigh: 4, bjSuper: 8,
+      vpLow: 1, vpHigh: 1.5, vpSuper: 2,
+      uthLow: 5, uthHigh: 5, uthSuper: 10,
+      plinko: 1, plinkoSuper: 2, climb: 2,
+    };
+    function xpBase(id) {
+      if (XP_TABLE_MULT[id] !== undefined) return XP_TABLE_MULT[id];
       const game = Object.keys(XP_GAME_MULT).find(k => id.startsWith(k));
-      const h = hotNow();
-      return (game ? XP_GAME_MULT[game] : 1) * (/Super/.test(id) ? 2 : 1) * (game && h.active && h.game.id === game ? HOT_MULT : 1);
+      return (game ? XP_GAME_MULT[game] : 1) * (/Super/.test(id) ? 2 : 1);
+    }
+    function xpMult(id = currentGame || "") {
+      const game = Object.keys(XP_GAME_MULT).find(k => id.startsWith(k)), h = hotNow();
+      return xpBase(id) + (game && h.active && h.game.id === game ? HOT_BONUS : 0);
     }
     setTimeout(() => { renderHot(); setInterval(renderHot, 1000); }, 0);
     let hotWasKey = "";
@@ -2956,15 +2968,15 @@
       const h = hotNow(), mm = clock(Math.ceil(h.left / 1000)), pct = (1 - h.left / HOT_LEN) * 100;
       box.className = "card hotCard " + (h.active ? "on" : "off");
       box.innerHTML = h.active
-        ? `<div class="row"><b>🔥 Hot Tables: ${h.game.name} · ×${HOT_MULT} XP</b><span class="hotTime">${mm} left</span></div>
+        ? `<div class="row"><b>🔥 Hot Tables: ${h.game.name} · +${HOT_BONUS} XP multiplier</b><span class="hotTime">${mm} left</span></div>
            <div class="hotBar"><div style="width:${100 - pct}%"></div></div>
-           <div class="muted">All ${h.game.name} tables give ×${HOT_MULT} Gambler XP right now. Then a 15-minute break; next up: ${h.next.name}.</div>`
+           <div class="muted">All ${h.game.name} tables get +${HOT_BONUS} on their XP multiplier right now (e.g. ×4 becomes ×${4 + HOT_BONUS}). Then a 15-minute break; next up: ${h.next.name}.</div>`
         : `<div class="row"><b>❄️ Hot Tables cooling down</b><span class="hotTime">next in ${mm}</span></div>
            <div class="hotBar"><div style="width:${pct}%"></div></div>
-           <div class="muted">Next hot game: <b>${h.next.name}</b> (×${HOT_MULT} XP for 15 minutes on all its tables).</div>`;
+           <div class="muted">Next hot game: <b>${h.next.name}</b> (+${HOT_BONUS} XP multiplier for 15 minutes on all its tables).</div>`;
       const key = h.active + h.game.id;
       if (key !== hotWasKey) {   // the bonus started or ended: refresh the game list
-        if (hotWasKey && h.active) showNotice(`🔥 Hot Tables: ${h.game.name} gives ×${HOT_MULT} XP for 15 minutes!`);
+        if (hotWasKey && h.active) showNotice(`🔥 Hot Tables: ${h.game.name} gets +${HOT_BONUS} XP multiplier for 15 minutes!`);
         hotWasKey = key;
         if (state.view === "casino" && !currentGame && typeof renderCasino === "function") renderCasino();
       }
@@ -3009,7 +3021,7 @@
     // Adds XP for a bet (bet × the game's multiplier) and returns how many levels you gained
     function addXp(amount) {
       const before = levelInfo(state.casinoXp).level;
-      state.casinoXp += amount * xpMult();
+      state.casinoXp += Math.round(amount * xpMult());
       const gained = levelInfo(state.casinoXp).level - before;
       updateCasinoLevel();
       if (gained > 0) {
@@ -7995,10 +8007,15 @@
         <p>Move money into <b>casino chips</b> at the top of the Casino tab, play, then cash out. Every game has Classic, High roller and (most) Super high roller tables.
           Bets give <b>Gambler XP</b> (bet × the game's XP multiplier) and you get <b>cashback</b> on lost bets (0.1% per Gambler level, +5% per Criminal defence lawyer).
           Random results use your browser's secure random generator.</p>
-        ${wt(["Game", "XP multiplier", "Super tables"], [["🎡 Roulette", "×2", "×4"], ["🃏 Blackjack", "×4", "×8"], ["🎴 Video Poker", "×1", "×2"],
-          ["🤠 Ultimate Texas Hold'em", "×5", "×10"], ["🔻 Plinko", "×1", "×2"], ["🎈 Sky Climb", "×2", "–"]])}
+        ${wt(["Game", "Classic", "High rollers", "Super high rollers"], [
+          ["🎡 Roulette", "×" + XP_TABLE_MULT.rouletteLow, "×" + XP_TABLE_MULT.rouletteHigh, "×" + XP_TABLE_MULT.rouletteSuper],
+          ["🃏 Blackjack", "×" + XP_TABLE_MULT.bjLow, "×" + XP_TABLE_MULT.bjHigh, "×" + XP_TABLE_MULT.bjSuper],
+          ["🎴 Video Poker", "×" + XP_TABLE_MULT.vpLow, "×" + XP_TABLE_MULT.vpHigh, "×" + XP_TABLE_MULT.vpSuper],
+          ["🤠 Ultimate Texas Hold'em", "×" + XP_TABLE_MULT.uthLow, "×" + XP_TABLE_MULT.uthHigh, "×" + XP_TABLE_MULT.uthSuper],
+          ["🔻 Plinko", "×" + XP_TABLE_MULT.plinko, "–", "×" + XP_TABLE_MULT.plinkoSuper],
+          ["🎈 Sky Climb", "×" + XP_TABLE_MULT.climb, "–", "–"]])}
         <h3>🔥 Hot Tables</h3>
-        <p>Every 30 minutes one game type becomes <b>hot</b>: for 15 minutes <b>all</b> its tables give <b>×${HOT_MULT} Gambler XP</b> (on top of the multipliers above),
+        <p>Every 30 minutes one game type becomes <b>hot</b>: for 15 minutes <b>all</b> its tables get <b>+${HOT_BONUS} on their XP multiplier</b> (High roller Blackjack ×4 becomes ×${4 + HOT_BONUS}),
           then there are 15 minutes with no bonus. The hot game is chosen at random and is never the same twice in a row. The timer is shown under your Gambler level, together with the next hot game.</p>
         <h3>🎁 Free bet chips</h3>
         <p>From Gambler level 5 you get free chips on timers (see the frame under the Gambler level). Use them at Roulette, Blackjack, Video Poker and Hold'em (not Plinko or Sky Climb).
