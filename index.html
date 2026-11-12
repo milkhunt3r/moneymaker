@@ -126,6 +126,11 @@
       background: linear-gradient(rgba(12, 12, 22, 0.76), rgba(12, 12, 22, 0.86)), url("assets/ahead-background.jpg") center / cover fixed;
     }
     #coin.aheadCoin { background: url("assets/ahead-coin.webp") center / contain no-repeat; box-shadow: none; filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.55)); }
+    body.artistBg {
+      background: linear-gradient(rgba(12, 12, 22, 0.74), rgba(12, 12, 22, 0.86)), url("assets/artist-background.jpg") center / cover fixed;
+    }
+    #coin.artistCoin { background: url("assets/artist-coin.webp") center / contain no-repeat; box-shadow: none; filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.55)); }
+    #coin.artistCoin::after { content: none; }
     #coin.aheadCoin::after { content: none; }
 
     #shop {
@@ -955,6 +960,11 @@
     .tutGlow { outline: 3px solid #ffd34d !important; outline-offset: 4px; border-radius: 12px; animation: tutPulse 1.2s ease-in-out infinite; position: relative; z-index: 5; }
     #coin.tutGlow { border-radius: 50%; }
     @keyframes tutPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,211,77,0.55); } 50% { box-shadow: 0 0 0 10px rgba(255,211,77,0); } }
+    #achList[hidden], #rewardList[hidden] { display: none; }
+    .rewardCard .bar { height: 8px; border-radius: 999px; background: rgba(255,255,255,0.08); margin: 8px 0; overflow: hidden; }
+    .rewardCard .bar > div { height: 100%; background: linear-gradient(90deg, #ffd34d, #ff9800); }
+    .rewardCard:not(.got) .cosmetic { filter: grayscale(0.7); opacity: 0.75; }
+    .rewardCard.got { border-color: rgba(255,211,77,0.6); }
     #saveWarn { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 9999; max-width: 560px;
                  background: #b71c1c; color: #fff; padding: 10px 14px; border-radius: 12px; box-shadow: 0 6px 24px rgba(0,0,0,0.5); font-size: 14px; }
     #saveWarn[hidden] { display: none; }
@@ -1268,7 +1278,16 @@
     <div class="card wallet">
       <div class="stat"><div class="label">🏆 Achievements unlocked</div><div class="value" id="achTotal">0</div></div>
     </div>
-    <div id="achList"></div>
+    <div class="subLayout">
+      <nav class="subNav" id="achNav">
+        <button class="subTab active" data-achpage="list">🏆 Achievements</button>
+        <button class="subTab" data-achpage="rewards">🎁 Rewards</button>
+      </nav>
+      <div class="subMain">
+        <div id="achList"></div>
+        <div id="rewardList" hidden></div>
+      </div>
+    </div>
   </section>
 
   <!-- ===== Art Gallery: copy paintings, sell them or keep them (filled in by JavaScript) ===== -->
@@ -1754,7 +1773,7 @@
        ===================================================================== */
     const SAVE_KEY = "coinClickerSave", PREFS_KEY = "coinClickerPrefs", IMG_DB = "coinClickerArt";
     // Screen preferences: kept per device, never part of the progress that is saved (and later sent to the server)
-    const PREF_KEYS = ["view", "incomePage", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage",
+    const PREF_KEYS = ["view", "incomePage", "achPage", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage",
                        "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage"];
     function splitState(st) {   // -> { progress, prefs }
       const progress = {}, prefs = {};
@@ -6371,6 +6390,8 @@
       { id: "ahead", name: "♟️ One Step Ahead Collection" },
       { id: "royal", name: "👑 Royal Collection" },
       { id: "rain",  name: "🐸 Make It Rain Collection" },
+      // 🎁 reward collections: not sold in the Shop, unlocked in Achievements → Rewards
+      { id: "artist", name: "🎨 Artist Collection", reward: { cat: "art", text: "Unlock every 🖼️ Art Gallery achievement" } },
     ];
     const COSMETICS = [
       { id: "wowBg",   collection: "wow", slot: "background", name: "Wow So Rich Background", price: 5000000, desc: "A very rich dog in a very rich office, behind the whole game.",
@@ -6389,6 +6410,10 @@
         preview: `<div class="preview" style="background-image:url('assets/rain-background-thumb.jpg')"></div>` },
       { id: "rainCoin", collection: "rain", slot: "coin", name: "Make It Rain Coin", price: 100000000, desc: "Replaces the coin you click with the frog wizard's golden coin.",
         preview: `<div class="preview"><img src="assets/rain-coin.webp" alt="Make It Rain coin"></div>` },
+      { id: "artistBg", collection: "artist", slot: "background", name: "Artist Background", price: 0, desc: "The painter cat at work under a sky full of stars, behind the whole game.",
+        preview: `<div class="preview" style="background-image:url('assets/artist-background-thumb.jpg')"></div>` },
+      { id: "artistCoin", collection: "artist", slot: "coin", name: "Artist Coin", price: 0, desc: "Replaces the coin you click with the painter cat's golden medallion.",
+        preview: `<div class="preview"><img src="assets/artist-coin.webp" alt="Artist coin"></div>` },
     ];
     if (!state.cosmetics) state.cosmetics = { owned: {}, on: {} };
 
@@ -6404,25 +6429,29 @@
       document.body.classList.toggle("royalBg", !!state.cosmetics.on.royalBg);
       document.body.classList.toggle("rainBg", !!state.cosmetics.on.rainBg);
       document.body.classList.toggle("aheadBg", !!state.cosmetics.on.aheadBg);
+      document.body.classList.toggle("artistBg", !!state.cosmetics.on.artistBg);
+      $("coin").classList.toggle("artistCoin", !!state.cosmetics.on.artistCoin);
       $("coin").classList.toggle("wowCoin", !!state.cosmetics.on.wowCoin);
       $("coin").classList.toggle("royalCoin", !!state.cosmetics.on.royalCoin);
       $("coin").classList.toggle("rainCoin", !!state.cosmetics.on.rainCoin);
       $("coin").classList.toggle("aheadCoin", !!state.cosmetics.on.aheadCoin);
     }
 
-    function renderCosmetics() {
-      const card = (c) => {
+    function cosmeticCard(c) {
         const owned = !!state.cosmetics.owned[c.id], on = !!state.cosmetics.on[c.id];
         const action = owned
           ? `<span class="muted">${on ? "On" : "Off"}</span>
              <button class="switch ${on ? "on" : ""}" data-cosmetic-toggle="${c.id}" aria-label="Turn ${c.name} ${on ? "off" : "on"}"></button>`
+          : c.price === 0 ? `<span class="muted">🔒 Reward</span>`
           : `<span><b>${coins(c.price)}</b></span>
              <button class="btn" data-cosmetic-buy="${c.id}" data-cost="${c.price}" ${state.money < c.price ? "disabled" : ""}>Buy</button>`;
         return `<div class="cosmetic ${on ? "on" : ""}">${c.preview}
           <div class="info"><b>${c.name}</b><div class="muted">${c.desc}</div>
             <div class="row">${action}</div></div></div>`;
-      };
-      $("cosmetics").innerHTML = COLLECTIONS.map(col => `
+    }
+    function renderCosmetics() {
+      const card = cosmeticCard;
+      $("cosmetics").innerHTML = COLLECTIONS.filter(col => !col.reward).map(col => `
         <div class="card">
           <h2 style="margin:0">${col.name}</h2>
           <div class="cosmetics">${COSMETICS.filter(c => c.collection === col.id).map(card).join("")}</div>
@@ -6449,6 +6478,15 @@
         }
       }
       if (buy || tog) { applyCosmetics(); renderCosmetics(); updateCounter(); save(); }
+    });
+    // the same on/off switches on the Rewards page
+    $("rewardList").addEventListener("click", (e) => {
+      const tog = e.target.closest("[data-cosmetic-toggle]");
+      if (!tog) return;
+      const id = tog.dataset.cosmeticToggle;
+      if (!state.cosmetics.owned[id]) return;
+      if (state.cosmetics.on[id]) state.cosmetics.on[id] = false; else turnOn(id);
+      applyCosmetics(); renderRewards(); save();
     });
 
     /* =====================================================================
@@ -7535,7 +7573,7 @@
       { id: "tax10",      cat: "general", icon: "🧾", name: "Good citizen",       desc: "Pay 10 tax bills",                    goal: 10,   get: () => state.stats.taxPaid || 0 },
       { id: "tax100",     cat: "general", icon: "🧾", name: "Model taxpayer",     desc: "Pay 100 tax bills",                   goal: 100,  get: () => state.stats.taxPaid || 0 },
       { id: "tax1000",    cat: "general", icon: "🏛️", name: "Pillar of society",  desc: "Pay 1,000 tax bills",                 goal: 1000, get: () => state.stats.taxPaid || 0 },
-      { id: "cosmetic1",  cat: "general", icon: "🛍️", name: "Treat yourself",     desc: "Buy your first cosmetic item in the Shop", goal: 1, get: () => Object.values(state.cosmetics.owned).some(Boolean) ? 1 : 0 },
+      { id: "cosmetic1",  cat: "general", icon: "🛍️", name: "Treat yourself",     desc: "Buy your first cosmetic item in the Shop", goal: 1, get: () => COSMETICS.some(c => c.price > 0 && state.cosmetics.owned[c.id]) ? 1 : 0 },
       { id: "fullSet",    cat: "general", icon: "🎨", name: "Dressed to impress", desc: "Wear the coin and background from the same collection", goal: 1, get: () => matchingSet() ? 1 : 0 },
       // Income
       { id: "click100",   cat: "income", icon: "👆", name: "Warming up",         desc: "Click the coin 100 times",            goal: 100,    get: () => state.stats.clicks },
@@ -7671,7 +7709,50 @@
       if (!$("achievementsView").hidden) renderAchievements();
     }
 
+    /* ----- 🎁 Rewards: cosmetic collections earned by finishing a whole achievement category ----- */
+    function rewardProgress(col) {
+      const list = ACHIEVEMENTS.filter(a => a.cat === col.reward.cat);
+      return { done: list.filter(a => state.achievements[a.id]).length, total: list.length };
+    }
+    function grantRewards() {   // checked with the achievements; a reward, once earned, stays
+      for (const col of COLLECTIONS.filter(c => c.reward)) {
+        const items = COSMETICS.filter(c => c.collection === col.id);
+        if (items.every(c => state.cosmetics.owned[c.id])) continue;
+        const p = rewardProgress(col);
+        if (p.done < p.total) continue;
+        items.forEach(c => state.cosmetics.owned[c.id] = true);
+        save();
+        showAlert(`🎁 Reward unlocked: ${col.name}!`, `You finished every achievement it needs. Turn it on in 🏆 Achievements → 🎁 Rewards.`);
+        if (state.view === "achievements") renderAchievements();
+      }
+    }
+    function renderRewards() {
+      $("rewardList").innerHTML = `<div class="card"><h2 style="margin:0 0 4px">🎁 Rewards</h2>
+          <div class="muted">Finish every achievement of a category to unlock its collection. Rewards can't be bought in the Shop.</div></div>` +
+        COLLECTIONS.filter(c => c.reward).map(col => {
+          const p = rewardProgress(col), items = COSMETICS.filter(c => c.collection === col.id), got = items.every(c => state.cosmetics.owned[c.id]);
+          return `<div class="card rewardCard ${got ? "got" : ""}">
+            <div class="row"><h2 style="margin:0">${got ? "" : "🔒 "}${col.name}</h2><span class="muted">${got ? "✅ Unlocked" : `${p.done} / ${p.total}`}</span></div>
+            <div class="muted">${col.reward.text}</div>
+            ${got ? "" : `<div class="bar"><div style="width:${100 * p.done / Math.max(1, p.total)}%"></div></div>`}
+            <div class="cosmetics">${items.map(cosmeticCard).join("")}</div></div>`;
+        }).join("");
+    }
+    function showAchPage(p) {
+      state.achPage = p === "rewards" ? "rewards" : "list";
+      $("achList").hidden = state.achPage !== "list";
+      $("rewardList").hidden = state.achPage !== "rewards";
+      document.querySelectorAll("[data-achpage]").forEach(b => b.classList.toggle("active", b.dataset.achpage === state.achPage));
+      if (state.achPage === "rewards") renderRewards();
+    }
+    $("achNav").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-achpage]"); if (!b) return;
+      showAchPage(b.dataset.achpage); save();
+    });
+    setInterval(grantRewards, 2000);
+
     function renderAchievements() {
+      showAchPage(state.achPage);
       $("achTotal").textContent = `${achDone()} / ${ACHIEVEMENTS.length}`;
       $("achList").innerHTML = ACH_CATEGORIES.map(c => {
         const list = ACHIEVEMENTS.filter(a => a.cat === c.id);
@@ -8173,6 +8254,9 @@
     function wikiAchievements() {
       return `<h2>🏆 Achievements</h2>
         <p>${ACHIEVEMENTS.length} achievements in ${ACH_CATEGORIES.length} categories. They are checked every second, kept forever (also through prestige) and shown with progress bars in the 🏆 tab.</p>
+        <h3>🎁 Rewards</h3>
+        <p>Finishing every achievement of a category unlocks a cosmetic collection that can't be bought in the Shop. Turn it on in 🏆 Achievements → 🎁 Rewards.</p>
+        ${wt(["Reward", "How to unlock"], COLLECTIONS.filter(c => c.reward).map(c => [c.name, c.reward.text]))}
         ${ACH_CATEGORIES.map(c => `<h3>${c.name}</h3>` + wt(["", "Achievement", "Goal", ""],
           ACHIEVEMENTS.filter(a => a.cat === c.id).map(a => [a.icon, `<b>${a.name}</b>`, a.desc, state.achievements[a.id] ? "✅" : ""]))).join("")}`;
     }
