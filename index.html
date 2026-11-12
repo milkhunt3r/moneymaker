@@ -156,6 +156,11 @@
     }
     #coin.jackpotCoin { background: url("assets/jackpot-coin.webp") center / contain no-repeat; box-shadow: none; filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.55)); }
     #coin.jackpotCoin::after { content: none; }
+    body.goldrushBg {   /* already a dark picture: lighter overlay */
+      background: linear-gradient(rgba(12, 12, 22, 0.55), rgba(12, 12, 22, 0.75)), url("assets/goldrush-background.jpg") center / cover fixed;
+    }
+    #coin.goldrushCoin { background: url("assets/goldrush-coin.webp") center / contain no-repeat; box-shadow: none; filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.55)); }
+    #coin.goldrushCoin::after { content: none; }
     #coin.aheadCoin::after { content: none; }
 
     #shop {
@@ -6429,6 +6434,7 @@
         text: "Unlock 🛰️ Eye in the sky, 🚀 Space race, 🌕 Lift-off! and 💥 Houston, we have a problem" } },
       { id: "global", name: "🌍 The Global Network Collection", reward: { cat: "logistics", text: "Unlock every 🚢 Logistics achievement" } },
       { id: "jackpot", name: "🎰 The Jackpot Collection", reward: { cat: "casino", text: "Unlock every 🎰 Casino achievement" } },
+      { id: "goldrush", name: "⛏️ The Gold Rush Collection", reward: { ids: ["mine1", "mine4"], text: "Unlock ⛏️ Gold digger and ⛏️ Mining magnate" } },
     ];
     const COSMETICS = [
       { id: "wowBg",   collection: "wow", slot: "background", name: "Wow So Rich Background", price: 5000000, desc: "A very rich Shiba Inu tycoon counts his cash in a glittering office, behind the whole game.",
@@ -6471,6 +6477,10 @@
         preview: `<div class="preview" style="background-image:url('assets/jackpot-background-thumb.jpg')"></div>` },
       { id: "jackpotCoin", collection: "jackpot", slot: "coin", name: "Jackpot Coin", price: 0, desc: "Replaces the coin you click with the winking fox's golden casino medallion.",
         preview: `<div class="preview"><img src="assets/jackpot-coin.webp" alt="Jackpot coin"></div>` },
+      { id: "goldrushBg", collection: "goldrush", slot: "background", name: "Gold Rush Background", price: 0, desc: "A happy mole miner strikes gold by lantern light deep in an old mine, behind the whole game.",
+        preview: `<div class="preview" style="background-image:url('assets/goldrush-background-thumb.jpg')"></div>` },
+      { id: "goldrushCoin", collection: "goldrush", slot: "coin", name: "Gold Rush Coin", price: 0, desc: "Replaces the coin you click with the mole miner's golden medallion.",
+        preview: `<div class="preview"><img src="assets/goldrush-coin.webp" alt="Gold Rush coin"></div>` },
     ];
     if (!state.cosmetics) state.cosmetics = { owned: {}, on: {} };
 
@@ -6492,6 +6502,8 @@
       document.body.classList.toggle("spaceBg", !!state.cosmetics.on.spaceBg);
       document.body.classList.toggle("globalBg", !!state.cosmetics.on.globalBg);
       document.body.classList.toggle("jackpotBg", !!state.cosmetics.on.jackpotBg);
+      document.body.classList.toggle("goldrushBg", !!state.cosmetics.on.goldrushBg);
+      $("coin").classList.toggle("goldrushCoin", !!state.cosmetics.on.goldrushCoin);
       $("coin").classList.toggle("jackpotCoin", !!state.cosmetics.on.jackpotCoin);
       $("coin").classList.toggle("globalCoin", !!state.cosmetics.on.globalCoin);
       $("coin").classList.toggle("spaceCoin", !!state.cosmetics.on.spaceCoin);
