@@ -1253,7 +1253,7 @@
         <button class="btn ghost small" data-info="truck">ℹ️ Info</button></div>
       <div class="muted infoBox" id="info-truck" hidden>Buy a semi-truck (150,000) for one of your 15 slots. Each free truck gets
         <b>4 contract offers</b> on roads around the world: pick one and it drives. When it arrives, the whole contract is paid to your money.
-        Longer routes pay more per second. A truck earns back its price in about 1.5 hours. Trips only move while the game is open.
+        Longer routes pay more per second. A truck earns back its price in about 1.5 hours. Trips keep moving while the game is closed.
         <br><br>🔧 <b>Breakdowns:</b> after each delivery there is a 1 in 100 chance the truck breaks down. It can't take new contracts
         until you pay for repairs (500 – 5,000).
         <br><br>🤖 <b>Logistics agent</b> (unlocks at Logistics level 5): turn it on and it picks a random contract for any waiting truck 5 seconds after the offers appear.
@@ -1267,7 +1267,7 @@
       <div class="muted infoBox" id="info-logi" hidden>Buy an <b>Aframax</b> tanker (75 scoin) for one of your 10 slots. Each free tanker gets
         <b>4 contract offers</b>: pick one and the tanker sails. When it arrives, the whole contract is paid to your money.
         Then it gets 4 new offers. Longer routes pay more per second, and the two ocean crossings pay the most.
-        A tanker earns back its price in about 3 hours. Voyages only move while the game is open.
+        A tanker earns back its price in about 3 hours. Voyages keep moving while the game is closed.
         <br><br>🤖 <b>Logistics agent</b> (unlocks at Logistics level 25): turn it on and it picks a random contract for any waiting tanker 5 seconds after the offers appear.
         It charges 2% of that contract's profit, taken from your money the moment it picks. It waits if you can't afford the fee.</div>
       <div id="tankers" style="margin-top:12px"></div>
@@ -1345,7 +1345,7 @@
             <div class="card">
               <div class="row"><h3 style="margin:0">🖼️ Collection <span class="muted" id="artSlots"></span></h3>
                 <button class="btn" id="artBuySlots"></button></div>
-              <div class="muted" style="margin-top:6px">Paintings you kept. Sell any of them later for its value.</div>
+              <div class="muted" style="margin-top:6px">Paintings you kept. You can sell any of them later for its full value.</div>
               <div class="artGrid" id="artGrid"></div>
             </div>
           </div>
@@ -1413,7 +1413,7 @@
             <div class="card">
               <div class="row"><h3>🏠 Real estate</h3>
                 <button class="btn ghost small" data-info="re">ℹ️ Info</button></div>
-              <div class="muted infoBox" id="info-re" hidden>Safe, steady income: earns 1.2% of its value as rent every 45 seconds (about +80% per hour, paid to your money).
+              <div class="muted infoBox" id="info-re" hidden>Safe, steady income: earns 1.2% of its value as rent every 45 seconds (about +96% per hour, paid to your money).
                 Locked for 20 minutes after buying, then sell any time with no fee.
                 Min. 50,000. ⚠️ Each second there is a small 1 in 21,600 chance (about once every 6 hours) of a market crash: all properties lose 70% of their value.</div>
               <div class="moneyRow">
@@ -1435,7 +1435,7 @@
               <div class="row"><h3>📊 Stock market ETF</h3>
                 <button class="btn ghost small" data-info="etf">ℹ️ Info</button></div>
               <div class="muted infoBox" id="info-etf" hidden>Every 10 seconds the market moves: 1 in 10 chance of −4%, 1 in 10 chance of +4%, otherwise 50/50 between +1.5% and −1%.
-                Min. 1,000 per investment. Cash-out fee: <span id="etfFeeInline"></span> (lower with every investor level).</div>
+                Min. 1,000 per investment. Cash-out fee: <span id="etfFeeInline"></span> (lower with every Investor level).</div>
               <div class="row" style="margin-top:10px; justify-content:flex-start; gap:20px; flex-wrap:wrap">
                 <div><div class="muted">Your ETF</div><div class="bigValue" id="etfValue">0</div></div>
                 <div><div class="muted">Invested</div><div class="bigValue" id="etfInvested">0</div></div>
@@ -1505,7 +1505,7 @@
               <div class="muted infoBox" id="info-petf" hidden>Only for owners of a Brokerage Firm. Works like the normal ETF, with better wins:
                 every 10 seconds, 1 in 10 chance of −4%, 1 in 10 chance of +5%, otherwise 50/50 between +2% and −1%.
                 <b>No cash-out fee.</b> One slot: you invest once (min. 1,000, max. 10,000,000), and cash out everything before investing again. Your investment can still grow past 10M.</div>
-              <div id="petfLocked" class="muted" style="margin-top:8px">🔒 Buy a 🏦 Brokerage Firm (Income tab, needs investor level 10) to unlock.</div>
+              <div id="petfLocked" class="muted" style="margin-top:8px">🔒 Buy a 🏦 Brokerage Firm (Income tab, needs Investor level 10) to unlock.</div>
               <div id="petfBody" hidden>
                 <div class="row" style="margin-top:10px; justify-content:flex-start; gap:20px; flex-wrap:wrap">
                   <div><div class="muted">Your Broker ETF</div><div class="bigValue" id="petfValue">0</div></div>
@@ -1545,7 +1545,7 @@
               <div class="muted infoBox" id="info-crypto" hidden>Trade <b>Bitcoin, Ethereum and Solana at their real, live prices</b> (1 US dollar = 1 bcoin),
                 streamed every second from Binance (or Coinbase if Binance isn't reachable). Prices move with the real market, 24/7, up or down.
                 <br><br><b>Positions:</b> every trade opens its own position. <b>Long</b> earns when the price goes up, <b>Short</b> when it goes down.
-        <b>Leverage ×20 / ×50</b> multiplies your profit and loss: at ×50, a 1% move is 50% of your money.
+        <b>Leverage ×20 / ×50</b> multiplies your profit and loss: at ×50, a 1% price move changes your position by 50%.
         If the price moves 1/leverage against you (5% at ×20, 2% at ×50; 100% up for a ×1 Short) the position is <b>liquidated</b>
         and you lose the money you put in. Liquidations are checked while the game is open.
         <br><br><b>Fee:</b> 2% of the money you put in when you open and of what you get back when you close, 0.1% less for every 10 Investor levels (level 10, 20, 30…). At Investor level 99 trading is free.
@@ -1651,14 +1651,14 @@
         name: "Casino",
         emoji: "🎰",
         price: 1000000,     // 1M, then 2M, 4M, 8M...
-        maxOwned: 10,       // gambler level 5, 15, 25 ... 95 = up to 10 casinos
+        maxOwned: 10,       // Gambler level 5, 15, 25 ... 95 = up to 10 casinos
         priceMultiplier: 2,
-        // Unlock: first casino at gambler level 5, then one more every 10 levels
+        // Unlock: first casino at Gambler level 5, then one more every 10 levels
         unlock: () => {
           const lvl = levelInfo(state.casinoXp).level;
           return lvl < 5 ? 0 : 1 + Math.floor((lvl - 5) / 10);
         },
-        unlockText: (owned) => `Casino #${owned + 1} unlocks at gambler level ${5 + owned * 10} (play in the 🎰 Casino tab)`,
+        unlockText: (owned) => `Casino #${owned + 1} unlocks at Gambler level ${5 + owned * 10} (play in the 🎰 Casino tab)`,
         maxEmployees: 15,   // includes the accountant and HR, so 13 workers
         hireBaseCost: 0,    // first worker is free...
         hireCostStep: 250,  // ...then 250, 500, 750...
@@ -1672,14 +1672,14 @@
         name: "Hotel",
         emoji: "🏨",
         price: 2500000,     // 2.5M, then 5M, 10M...
-        maxOwned: 10,       // investor level 5, 15, 25 ... 95 = up to 10 hotels
+        maxOwned: 10,       // Investor level 5, 15, 25 ... 95 = up to 10 hotels
         priceMultiplier: 2,
-        // Unlock: first hotel at investor level 5, then one more every 10 levels
+        // Unlock: first hotel at Investor level 5, then one more every 10 levels
         unlock: () => {
           const lvl = levelInfo((state.invest && state.invest.xp) || 0, INVEST_XP).level;
           return lvl < 5 ? 0 : 1 + Math.floor((lvl - 5) / 10);
         },
-        unlockText: (owned) => `Hotel #${owned + 1} unlocks at investor level ${5 + owned * 10} (invest in the 📈 Investing tab)`,
+        unlockText: (owned) => `Hotel #${owned + 1} unlocks at Investor level ${5 + owned * 10} (invest in the 📈 Investing tab)`,
         maxEmployees: 18,   // includes the accountant and HR, so 16 workers
         hireBaseCost: 0,    // first worker is free...
         hireCostStep: 350,  // ...then 350, 700, 1,050...
@@ -1695,9 +1695,9 @@
         price: 5000000,     // 5M
         maxOwned: 1,        // you can only have one
         priceMultiplier: 1,
-        // Unlock: investor level 10
+        // Unlock: Investor level 10
         unlock: () => levelInfo((state.invest && state.invest.xp) || 0, INVEST_XP).level >= 10 ? 1 : 0,
-        unlockText: () => `Unlocks at investor level 10 (invest in the 📈 Investing tab)`,
+        unlockText: () => `Unlocks at Investor level 10 (invest in the 📈 Investing tab)`,
         maxEmployees: 20,   // includes the accountant and HR, so 18 workers
         hireBaseCost: 0,    // first worker is free...
         hireCostStep: 500,  // ...then 500, 1,000, 1,500...
@@ -1719,8 +1719,8 @@
     const HR_OPTIONS = {
       motivator:  { name: "Motivator",         emoji: "📣", desc: "All workers earn +15%" },
       friendship: { name: "Friendship expert", emoji: "💞", desc: "Candidates are twice as likely to have the Friendship trait" },
-      talent:     { name: "Talent acquisition specialist", emoji: "🎯", desc: "Hiring workers and refreshing options cost 30% less. Company profit +5% when every worker spot is filled" },
-      schedule:   { name: "Schedule specialist", emoji: "🗓️", desc: "Night owls and morning people earn ×3 (instead of ×2) in their good 10 seconds" },
+      talent:     { name: "Talent acquisition specialist", emoji: "🎯", desc: "Hiring workers and refreshing candidates costs 30% less. Company profit +5% when every worker spot is filled" },
+      schedule:   { name: "Schedule specialist", emoji: "🗓️", desc: "Night owls and morning people earn ×3 (instead of ×2) during their double-income 10 seconds" },
     };
 
     // chance = how likely a new candidate gets this trait
@@ -1750,8 +1750,8 @@
       cleaner:   { name: "Cleaner",          emoji: "🧹", chance: 0.10, onlyFor: ["hotel"], desc: "Stops one Lazy worker from slacking each second" },
       // ----- Casino-only traits (onlyFor = which businesses can get them) -----
       mastergambler: { name: "Master gambler", emoji: "🃏", chance: 0.08, onlyFor: ["casino"], desc: "Every 10 seconds: 70% chance to earn double, 30% nothing, for the next 10 seconds" },
-      quickhands:    { name: "Quick hands",    emoji: "✋", chance: 0.10, onlyFor: ["casino"], desc: "Every 5 seconds earns double" },
-      scammer:       { name: "Scammer",        emoji: "🤑", chance: 0.08, onlyFor: ["casino"], desc: "Each second: 1 in 5 chance of triple income, 1 in 10 chance of losing triple" },
+      quickhands:    { name: "Quick hands",    emoji: "✋", chance: 0.10, onlyFor: ["casino"], desc: "Earns double every 5th second" },
+      scammer:       { name: "Scammer",        emoji: "🤑", chance: 0.08, onlyFor: ["casino"], desc: "Each second: 1 in 5 chance of triple income, 1 in 10 chance of losing three times its income" },
       normal:     { name: "No trait",   emoji: "🙂", chance: 0,    desc: "Just does the job" }, // only for old saves
     };
 
@@ -2263,7 +2263,7 @@
         // Step 2: choose HR
         if (!c.hr) {
           html += `<div class="staff">${ACCOUNTANTS[c.accountant].emoji} Accountant: <b>${ACCOUNTANTS[c.accountant].name}</b></div>`;
-          html += `<h4>Hire your HR</h4><div class="choices">`;
+          html += `<h4>Hire your HR manager</h4><div class="choices">`;
           for (const key in HR_OPTIONS) {
             const h = HR_OPTIONS[key];
             html += `<button class="choice" data-action="hr" data-company="${ci}" data-pick="${key}">
@@ -2422,7 +2422,7 @@
         if (state.special.law || state.money < LAW_PRICE) return;
         state.money -= LAW_PRICE;
         state.special.law = { attorneys: [], offer: null };
-        showNotice("⚖️ Law firm opened! Buy attorney slots to hire lawyers.");
+        showNotice("⚖️ Law Firm opened! Buy attorney slots to hire lawyers.");
       }
       if (action === "buySpecial" && btn.dataset.special === "warehouse") {
         if (warehouseCount() >= warehouseSlots() || state.money < WAREHOUSE_PRICE) return;
@@ -2462,7 +2462,7 @@
         if (state.special.port || tankersOwned() < 1 || state.money < PORT_PRICE) return;
         state.money -= PORT_PRICE;
         state.special.port = { bought: true };
-        showNotice(`⚓ Trading port opened! +${fmt(PORT_PER_TANKER)} / sec per tanker and tanker contracts pay +2.5%.`);
+        showNotice(`⚓ Trading Port opened! +${fmt(PORT_PER_TANKER)} / sec per tanker and tanker contracts pay +2.5%.`);
         if (typeof renderTankers === "function") renderTankers();
       }
       if (action === "buySpecial" && btn.dataset.special === "park") {
@@ -2512,7 +2512,7 @@
         state.money -= AGENCY_PRICE;
         state.special.agency = { agents: [], best: 0 };
         agencyHireAgents();
-        showNotice("🏢 Real estate agency opened!");
+        showNotice("🏢 Real Estate Agency opened!");
       }
       if (action === "toggleGroup") {
         state.groupCollapsed = state.groupCollapsed || {};
@@ -2632,7 +2632,7 @@
           d.amount = Math.ceil(d.amount * (1 + TAX_LATE_PENALTY));
           d.timeLeft = TAX_TIME_TO_PAY;
           d.extended = true;
-          showNotice("⚠️ Not enough money! Tax bill raised to " + fmt(d.amount) + ". 5 more minutes.");
+          showNotice("⚠️ Not enough money! Tax bill raised to " + fmt(d.amount) + ". You have 5 more minutes.");
           continue;
         }
         state.gameOver = true;
@@ -2715,7 +2715,7 @@
       const banners = document.querySelectorAll(".debtBanner");
       if (state.taxDebts.length === 0) { btn.hidden = true; banners.forEach(b => b.hidden = true); return; }
       const soonest = Math.min(...state.taxDebts.map(d => d.timeLeft));
-      const text = `🧾 TAX DEBT: ${fmt(totalDebt())} · ${clock(soonest)} left · click to go pay it`;
+      const text = `🧾 TAX DEBT: ${fmt(totalDebt())} · ${clock(soonest)} left · click to pay`;
       banners.forEach(b => { b.hidden = false; b.textContent = text; });
 
       // soonest deadline first
@@ -2895,7 +2895,7 @@
     $("buyIn").addEventListener("click", () => {
       if (isPaused()) return;
       const amount = Math.floor(Number($("buyAmount").value));
-      if (!(amount > 0)) return casinoMessage("Type how much money to bring in.");
+      if (!(amount > 0)) return casinoMessage("Enter how much money to bring in.");
       if (amount > state.money) return casinoMessage("You don't have that much money.");
       state.money -= amount;
       state.casinoChips += amount;
@@ -3354,7 +3354,7 @@
           </div>
           <div id="casinoMsg" class="flash" style="margin-top:8px"></div>
           <div class="muted" style="margin-top:6px">Click a number, or the line between numbers: between 2 = split, where 4 meet = corner, bottom edge = street, bottom corner = six line (next to 0: first four 0-1-2-3).</div>
-          <div class="muted">Pays: number 35:1 · split 17:1 · street 11:1 · corner / first four 8:1 · six line 5:1 · dozen / column 2:1 · red, black, odd, even, 1–18, 19–36 1:1 · on 0 only bets on 0 win</div>
+          <div class="muted">Pays: number 35:1 · split 17:1 · street 11:1 · corner / first four 8:1 · six line 5:1 · dozen / column 2:1 · red, black, odd, even, 1–18, 19–36 1:1 · when 0 comes up, only bets on 0 win</div>
         </div>`;
     }
 
@@ -3567,7 +3567,7 @@
     const inv = state.invest;
 
     const investLevel = () => levelInfo(inv.xp, INVEST_XP).level;
-    const RE_LEVEL_BONUS = 0.001;   // +0.1% on property sales per investor level
+    const RE_LEVEL_BONUS = 0.001;   // +0.1% on property sales per Investor level
     const etfFee = () => Math.max(0, ETF_BASE_FEE - ETF_FEE_PER_LEVEL * (investLevel() - 1));
 
     // Shows a message in the card it belongs to (re / etf / gold / petf), or in the general line above
@@ -4124,7 +4124,7 @@
 
     function settingsNote(text) {
       $("settingsNote").textContent = text;
-      setTimeout(() => { $("settingsNote").textContent = "The game also saves itself every second."; }, 3000);
+      setTimeout(() => { $("settingsNote").textContent = "The game saves itself every 30 seconds and after every action."; }, 3000);
     }
 
     $("settingsMenu").addEventListener("click", (e) => {
@@ -5120,7 +5120,7 @@
       freeDone(t.id);
       const levelsGained = addXp(wagered);   // XP = bet × game multiplier (raises and Trips count)
       const net = back - wagered;
-      t.message = `Dealer has ${t.dealerHand}${qualifies ? "" : " (doesn't qualify: Antes push)"}. ` +
+      t.message = `Dealer has ${t.dealerHand}${qualifies ? "" : " (doesn't qualify, so Antes push)"}. ` +
         (net > 0 ? `You won ${fmt(net)}!` : net < 0 ? `You lost ${fmt(-net)}.` : "You broke even.") +
         (cashback > 0 ? ` Cashback +${cashback.toLocaleString(undefined, { maximumFractionDigits: 1 })}.` : "") +
         (levelsGained > 0 ? ` 🎉 Level up! Now level ${levelInfo(state.casinoXp).level}.` : "");
@@ -5786,13 +5786,13 @@
     // Each new attorney slot costs 50k more: 50k, 100k, 150k ... 500k for the 10th
     const lawSlotPrice = () => LAW_SLOT_PRICE * (((state.special.law && state.special.law.attorneys.length) || 0) + 1);
     const ATTORNEYS = {
-      criminal:    { name: "Criminal defence lawyer",     emoji: "🚔", desc: "+5% cashback on lost casino bets" },
+      criminal:    { name: "Criminal defense lawyer",     emoji: "🚔", desc: "+5% cashback on lost casino bets" },
       immigration: { name: "Immigration lawyer",          emoji: "🛂", desc: "Gold mines and car washes earn +10%" },
       divorce:     { name: "Divorce & family lawyer",     emoji: "💔", desc: "Earns 90–100 per second (changes every second)" },
       employment:  { name: "Employment lawyer",           emoji: "👷", desc: "+1 worker slot in every business (only one allowed)" },
-      realestate:  { name: "Real estate lawyer",          emoji: "🏠", desc: "Selling real estate gives +2% more" },
+      realestate:  { name: "Real estate lawyer",          emoji: "🏠", desc: "Real estate sales pay +2% more" },
       business:    { name: "Business lawyer",             emoji: "💼", desc: "+2% income for one random business, changes every 10 seconds" },
-      debt:        { name: "Debt & financial lawyer",     emoji: "🧾", desc: "Get 25% back of every tax payment (max 100%)" },
+      debt:        { name: "Debt & financial lawyer",     emoji: "🧾", desc: "Get 25% of every tax payment back (up to 100% with 4 of them)" },
       civil:       { name: "Civil litigation lawyer",     emoji: "🏛️", desc: "Earns 70–100 per second (changes every second)" },
     };
 
@@ -5956,7 +5956,7 @@
       if (parks.length < hotels.length) {
         html += `<div class="card specialCard"><div class="row">
           <div><h3>🎢 Amusement Park #${parks.length + 1}</h3>
-            <div class="muted">Pairs with 🏨 Hotel #${parks.length + 1} and earns 50% of its income · no workers, HR or accountant</div>
+            <div class="muted">Pairs with 🏨 Hotel #${parks.length + 1} and earns 50% of its income · no workers, HR manager or accountant</div>
             <div class="muted">Owned: ${parks.length} / ${hotels.length} (one slot per hotel)</div></div>
           <button class="btn" data-action="buySpecial" data-special="park" data-cost="${PARK_PRICE}">Buy ${fmt(PARK_PRICE)}</button>
         </div></div>`;
@@ -6004,7 +6004,7 @@
     function renderCenter() {
       const c = state.special.center, lvl = centerLevel();
       if (!c) {
-        const desc = `<div class="muted">Upgrades every 🤖 Logistics agent: choose 1 of 3 when you buy it, add the other two later for ${fmt(CENTER_UPGRADE_PRICE)} each · no workers, HR or accountant · max 1</div>`;
+        const desc = `<div class="muted">Upgrades every 🤖 Logistics agent: choose 1 of 3 when you buy it, add the other two later for ${fmt(CENTER_UPGRADE_PRICE)} each · no workers, HR manager or accountant · max 1</div>`;
         if (lvl >= CENTER_LEVEL) return `<div class="card specialCard"><div class="row"><div><h3>🏬 Logistics Center</h3>${desc}</div>
             <button class="btn" data-action="buySpecial" data-special="center" data-cost="${CENTER_PRICE}">Buy ${fmt(CENTER_PRICE)}</button></div></div>`;
         return `<div class="card specialCard" style="opacity:0.6"><div class="row"><div><h3>🔒 🏬 Logistics Center</h3>${desc}
@@ -6038,7 +6038,7 @@
     }
     function renderGalleryBiz() {
       const n = paintingsOwned();
-      const desc = `<div class="muted">Shows your paintings to visitors: ${fmt(GALLERY_PER_PAINTING)} / sec for each painting in your 🖼️ Collection, up to ${fmt(GALLERY_MAX)} / sec (${GALLERY_MAX / GALLERY_PER_PAINTING} paintings) · no workers, HR or accountant · max 1</div>`;
+      const desc = `<div class="muted">Shows your paintings to visitors: ${fmt(GALLERY_PER_PAINTING)} / sec for each painting in your 🖼️ Collection, up to ${fmt(GALLERY_MAX)} / sec (${GALLERY_MAX / GALLERY_PER_PAINTING} paintings) · no workers, HR manager or accountant · max 1</div>`;
       if (state.special.gallery) {
         return `<div class="card specialCard"><div class="row">
           <div><h3>🏛️ Art Gallery</h3><div class="muted">${fmt(GALLERY_PER_PAINTING)} / sec for each of your ${n} painting${n === 1 ? "" : "s"}${GALLERY_PER_PAINTING * n >= GALLERY_MAX ? " · maximum reached" : ` · max ${fmt(GALLERY_MAX)} / sec`}</div></div>
@@ -6073,7 +6073,7 @@
             <div class="muted">${fmt(PORT_PER_TANKER)} / sec for each of your ${n} oil tanker${n === 1 ? "" : "s"} · tanker contracts pay <b>+2.5%</b></div></div>
           <span class="income" id="port-income">+${fmt(PORT_PER_TANKER * n)} / sec</span></div></div>`;
       }
-      const desc = `<div class="muted">Earns ${fmt(PORT_PER_TANKER)} / sec per oil tanker you own and +2.5% profit on every tanker contract · no workers, HR or accountant · max 1</div>`;
+      const desc = `<div class="muted">Earns ${fmt(PORT_PER_TANKER)} / sec per oil tanker you own and +2.5% profit on every tanker contract · no workers, HR manager or accountant · max 1</div>`;
       if (n >= 1) {
         return `<div class="card specialCard"><div class="row"><div><h3>⚓ Trading Port</h3>${desc}
             <div class="muted">With your ${n} tanker${n === 1 ? "" : "s"}: +${fmt(PORT_PER_TANKER * n)} / sec</div></div>
@@ -6095,7 +6095,7 @@
       }
       if (owned < WAREHOUSE_UNLOCKS.length) {
         const next = WAREHOUSE_UNLOCKS[owned];
-        const desc = `<div class="muted">+2% profit on every truck contract · no workers, HR or accountant</div>
+        const desc = `<div class="muted">+2% profit on every truck contract · no workers, HR manager or accountant</div>
                       <div class="muted">Owned: ${owned} / ${WAREHOUSE_UNLOCKS.length}</div>`;
         if (owned < slots) {
           html += `<div class="card specialCard"><div class="row"><div><h3>📦 Warehouse #${owned + 1}</h3>${desc}</div>
@@ -6664,7 +6664,7 @@
         const fee = Math.round(contractPayout(key, o.profit) * agentFee());
         if (state.money < fee) {
           const el = $("agent-" + v.id);
-          if (el) el.textContent = `🤖 Agent waits: needs ${fmt(fee)} for the fee`;
+          if (el) el.textContent = `🤖 Agent is waiting: needs ${fmt(fee)} for the fee`;
           continue;
         }
         state.money -= fee;
@@ -7592,12 +7592,12 @@
     const COLLECTIONS_IDS = () => [...new Set(COSMETICS.map(c => c.collection))];
     const ACHIEVEMENTS = [
       // General
-      { id: "cash1s",     cat: "general", icon: "💵", name: "Millionaire",        desc: "Have 1 scoin in your money (not casino chips)",   goal: SC,       get: () => state.money, money: true },
-      { id: "cash10s",    cat: "general", icon: "💰", name: "Multi-millionaire",  desc: "Have 10 scoin in your money (not casino chips)",  goal: 10 * SC,  get: () => state.money, money: true },
-      { id: "cash100s",   cat: "general", icon: "🏦", name: "Swimming in coins",  desc: "Have 100 scoin in your money (not casino chips)", goal: 100 * SC, get: () => state.money, money: true },
-      { id: "cash1g",     cat: "general", icon: "👑", name: "Billionaire",        desc: "Have 1 gcoin in your money (not casino chips)",   goal: 1e12,     get: () => state.money, money: true },
+      { id: "cash1s",     cat: "general", icon: "💵", name: "Millionaire",        desc: "Have 1 scoin on hand (not in casino chips)",   goal: SC,       get: () => state.money, money: true },
+      { id: "cash10s",    cat: "general", icon: "💰", name: "Multi-millionaire",  desc: "Have 10 scoin on hand (not in casino chips)",  goal: 10 * SC,  get: () => state.money, money: true },
+      { id: "cash100s",   cat: "general", icon: "🏦", name: "Swimming in coins",  desc: "Have 100 scoin on hand (not in casino chips)", goal: 100 * SC, get: () => state.money, money: true },
+      { id: "cash1g",     cat: "general", icon: "👑", name: "Billionaire",        desc: "Have 1 gcoin on hand (not in casino chips)",   goal: 1e12,     get: () => state.money, money: true },
       { id: "prestige1",  cat: "general", icon: "⭐", name: "A fresh start",      desc: "Prestige for the first time",         goal: 1, get: () => state.legacy.count },
-      { id: "prestige2",  cat: "general", icon: "🌟", name: "Second wind",        desc: "Prestige 2 times",                    goal: 2, get: () => state.legacy.count },
+      { id: "prestige2",  cat: "general", icon: "🌟", name: "Second wind",        desc: "Prestige twice",                    goal: 2, get: () => state.legacy.count },
       { id: "prestige4",  cat: "general", icon: "🏆", name: "Legend",             desc: "Prestige 4 times and finish the game", goal: 4, get: () => state.legacy.count },
       { id: "tax10",      cat: "general", icon: "🧾", name: "Good citizen",       desc: "Pay 10 tax bills",                    goal: 10,   get: () => state.stats.taxPaid || 0 },
       { id: "tax100",     cat: "general", icon: "🧾", name: "Model taxpayer",     desc: "Pay 100 tax bills",                   goal: 100,  get: () => state.stats.taxPaid || 0 },
@@ -7615,7 +7615,7 @@
       { id: "casino2",    cat: "income", icon: "🎰", name: "The house always wins", desc: "Own 2 casinos",                    goal: 2, get: () => ownedOf("casino") },
       { id: "hotel2",     cat: "income", icon: "🏨", name: "Hotelier",           desc: "Own 2 hotels",                        goal: 2, get: () => ownedOf("hotel") },
       { id: "warehouse5", cat: "income", icon: "📦", name: "Storage empire",     desc: "Own 5 warehouses",                    goal: 5, get: () => warehouseCount() },
-      { id: "law10",      cat: "income", icon: "⚖️", name: "Full legal team",    desc: "Fill all 10 attorney slots in the law firm", goal: 10, get: () => state.special.law ? state.special.law.attorneys.length : 0 },
+      { id: "law10",      cat: "income", icon: "⚖️", name: "Full legal team",    desc: "Fill all 10 attorney slots in the Law Firm", goal: 10, get: () => state.special.law ? state.special.law.attorneys.length : 0 },
       { id: "agents100",  cat: "income", icon: "🏢", name: "Agency boss",        desc: "Have 100 real estate agents",         goal: 100, get: () => state.special.agency && state.special.agency.agents ? state.special.agency.agents.length : 0 },
       { id: "mine1",      cat: "income", icon: "⛏️", name: "Gold digger",        desc: "Buy your first gold mine",            goal: 1, get: () => state.stats.minesBought },
       { id: "mine4",      cat: "income", icon: "⛏️", name: "Mining magnate",     desc: "Buy 4 gold mines (all-time)",         goal: 4, get: () => state.stats.minesBought },
@@ -7657,23 +7657,23 @@
           ["climb", "🎈", "Sky Climb", "rounds"], ["vp", "🎴", "Video Poker", "hands"], ["uth", "🤠", "Ultimate Texas Hold'em", "hands"]]
         .flatMap(([g, icon, label, unit]) => [100, 1000].map(n => ({
           id: `play-${g}-${n}`, cat: "casino", icon, name: `${label} ${n === 100 ? "regular" : "veteran"}`,
-          desc: `Play ${n.toLocaleString()} ${label} ${unit}`, goal: n, get: () => (state.stats.played && state.stats.played[g]) || 0 }))),
+          desc: `${unit === "balls" ? "Drop" : "Play"} ${n.toLocaleString()} ${label} ${unit}`, goal: n, get: () => (state.stats.played && state.stats.played[g]) || 0 }))),
       // Investments
       { id: "prop1",      cat: "invest", icon: "🏠", name: "Landlord",           desc: "Buy your first property",             goal: 1,  get: () => Math.max(inv.properties.length, state.invest.stats && state.invest.stats.re && state.invest.stats.re.in > 0 ? 1 : 0) },
       { id: "prop10",     cat: "invest", icon: "🏘️", name: "Property portfolio", desc: "Own 10 properties at once",           goal: 10, get: () => inv.properties.length },
-      { id: "re1s",       cat: "invest", icon: "🏙️", name: "Real estate mogul",  desc: "1 scoin all-time real estate profit", goal: SC,      get: () => reProfit(), money: true },
-      { id: "re10s",      cat: "invest", icon: "🌆", name: "Skyline owner",      desc: "10 scoin all-time real estate profit", goal: 10 * SC, get: () => reProfit(), money: true },
+      { id: "re1s",       cat: "invest", icon: "🏙️", name: "Real estate mogul",  desc: "Earn 1 scoin in all-time real estate profit", goal: SC,      get: () => reProfit(), money: true },
+      { id: "re10s",      cat: "invest", icon: "🌆", name: "Skyline owner",      desc: "Earn 10 scoin in all-time real estate profit", goal: 10 * SC, get: () => reProfit(), money: true },
       { id: "reSold100",  cat: "invest", icon: "🔑", name: "Flipper",            desc: "Sell 100 properties",                 goal: 100, get: () => state.stats.reSold || 0 },
       { id: "reCrash",    cat: "invest", icon: "🏚️", name: "Survivor",           desc: "Live through a real estate crash",    goal: 1, get: flag("reCrash") },
-      { id: "etf1s",      cat: "invest", icon: "📉", name: "Index fan",          desc: "1 scoin all-time ETF profit",         goal: SC,       get: () => investProfit("etf"), money: true },
-      { id: "etf10s",     cat: "invest", icon: "📈", name: "Market timer",       desc: "10 scoin all-time ETF profit",        goal: 10 * SC,  get: () => investProfit("etf"), money: true },
-      { id: "gold10s",    cat: "invest", icon: "🪙", name: "Fort Knox",          desc: "10 scoin all-time gold profit",       goal: 10 * SC,  get: () => goldProfit(), money: true },
-      { id: "petf10s",    cat: "invest", icon: "🏦", name: "Friends in high places", desc: "10 scoin all-time Broker ETF profit", goal: 10 * SC,  get: () => investProfit("petf"), money: true },
-      { id: "petf100s",   cat: "invest", icon: "🏛️", name: "Wall Street insider", desc: "100 scoin all-time Broker ETF profit", goal: 100 * SC, get: () => investProfit("petf"), money: true },
+      { id: "etf1s",      cat: "invest", icon: "📉", name: "Index fan",          desc: "Earn 1 scoin in all-time ETF profit",         goal: SC,       get: () => investProfit("etf"), money: true },
+      { id: "etf10s",     cat: "invest", icon: "📈", name: "Market timer",       desc: "Earn 10 scoin in all-time ETF profit",        goal: 10 * SC,  get: () => investProfit("etf"), money: true },
+      { id: "gold10s",    cat: "invest", icon: "🪙", name: "Fort Knox",          desc: "Earn 10 scoin in all-time gold profit",       goal: 10 * SC,  get: () => goldProfit(), money: true },
+      { id: "petf10s",    cat: "invest", icon: "🏦", name: "Friends in high places", desc: "Earn 10 scoin in all-time Broker ETF profit", goal: 10 * SC,  get: () => investProfit("petf"), money: true },
+      { id: "petf100s",   cat: "invest", icon: "🏛️", name: "Wall Street insider", desc: "Earn 100 scoin in all-time Broker ETF profit", goal: 100 * SC, get: () => investProfit("petf"), money: true },
       { id: "trade1",     cat: "invest", icon: "📡", name: "First green trade",  desc: "Close 1 profitable trade in Live trading",    goal: 1,   get: () => state.stats.profitTrades || 0 },
       { id: "trade10",    cat: "invest", icon: "📈", name: "Day trader",         desc: "Close 10 profitable trades in Live trading",  goal: 10,  get: () => state.stats.profitTrades || 0 },
       { id: "trade100",   cat: "invest", icon: "🦈", name: "Market shark",       desc: "Close 100 profitable trades in Live trading", goal: 100, get: () => state.stats.profitTrades || 0 },
-      { id: "gold1s",     cat: "invest", icon: "🥇", name: "Golden touch",       desc: "1 scoin all-time gold profit",        goal: SC, get: () => goldProfit(), money: true },
+      { id: "gold1s",     cat: "invest", icon: "🥇", name: "Golden touch",       desc: "Earn 1 scoin in all-time gold profit",        goal: SC, get: () => goldProfit(), money: true },
       { id: "petfFull",   cat: "invest", icon: "🏦", name: "Insider",            desc: "Fill the Broker ETF (10 scoin invested)", goal: 10 * SC, get: () => investCurrent("petf"), money: true },
       { id: "ilevel5",    cat: "invest", icon: "📈", name: "First steps",        desc: "Reach Investor level 5",              goal: 5,  get: () => levelInfo(inv.xp, INVEST_XP).level },
       { id: "ilevel25",   cat: "invest", icon: "📊", name: "Analyst",            desc: "Reach Investor level 25",             goal: 25, get: () => levelInfo(inv.xp, INVEST_XP).level },
@@ -7693,9 +7693,9 @@
       { id: "con1k",      cat: "logistics", icon: "📋", name: "Logistics pro",    desc: "Fulfill 1,000 logistics contracts",  goal: 1000,  get: () => logi.contracts || 0 },
       { id: "con10k",     cat: "logistics", icon: "🌍", name: "Global network",   desc: "Fulfill 10,000 logistics contracts", goal: 10000, get: () => logi.contracts || 0 },
       { id: "logi1s",     cat: "logistics", icon: "💵", name: "First big haul",   desc: "Earn 1 scoin from logistics",        goal: SC,       get: () => logi.earned, money: true },
-      { id: "arteasy50", cat: "art", icon: "🟢", name: "Apprentice: Easy", desc: "Submit a 50%+ match on a Easy painting", goal: 50, get: () => Math.floor((state.stats.artBest || {}).easy || 0) },
-      { id: "arteasy75", cat: "art", icon: "🟢", name: "Skilled copyist: Easy", desc: "Submit a 75%+ match on a Easy painting", goal: 75, get: () => Math.floor((state.stats.artBest || {}).easy || 0) },
-      { id: "arteasy90", cat: "art", icon: "🟢", name: "Master forger: Easy", desc: "Submit a 90%+ match on a Easy painting", goal: 90, get: () => Math.floor((state.stats.artBest || {}).easy || 0) },
+      { id: "arteasy50", cat: "art", icon: "🟢", name: "Apprentice: Easy", desc: "Submit a 50%+ match on an Easy painting", goal: 50, get: () => Math.floor((state.stats.artBest || {}).easy || 0) },
+      { id: "arteasy75", cat: "art", icon: "🟢", name: "Skilled copyist: Easy", desc: "Submit a 75%+ match on an Easy painting", goal: 75, get: () => Math.floor((state.stats.artBest || {}).easy || 0) },
+      { id: "arteasy90", cat: "art", icon: "🟢", name: "Master forger: Easy", desc: "Submit a 90%+ match on an Easy painting", goal: 90, get: () => Math.floor((state.stats.artBest || {}).easy || 0) },
       { id: "artmedium50", cat: "art", icon: "🟡", name: "Apprentice: Medium", desc: "Submit a 50%+ match on a Medium painting", goal: 50, get: () => Math.floor((state.stats.artBest || {}).medium || 0) },
       { id: "artmedium75", cat: "art", icon: "🟡", name: "Skilled copyist: Medium", desc: "Submit a 75%+ match on a Medium painting", goal: 75, get: () => Math.floor((state.stats.artBest || {}).medium || 0) },
       { id: "artmedium90", cat: "art", icon: "🟡", name: "Master forger: Medium", desc: "Submit a 90%+ match on a Medium painting", goal: 90, get: () => Math.floor((state.stats.artBest || {}).medium || 0) },
@@ -7709,7 +7709,7 @@
       { id: "artsold1", cat: "art", icon: "💰", name: "First sale", desc: "Sell 1 painting", goal: 1, get: () => state.stats.artSold || 0 },
       { id: "artsold50", cat: "art", icon: "💰", name: "Art dealer", desc: "Sell 50 paintings", goal: 50, get: () => state.stats.artSold || 0 },
       { id: "artsold100", cat: "art", icon: "💰", name: "Gallery regular", desc: "Sell 100 paintings", goal: 100, get: () => state.stats.artSold || 0 },
-      { id: "artsold1000", cat: "art", icon: "💰", name: "Art market mogul", desc: "Sell 1000 paintings", goal: 1000, get: () => state.stats.artSold || 0 },
+      { id: "artsold1000", cat: "art", icon: "💰", name: "Art market mogul", desc: "Sell 1,000 paintings", goal: 1000, get: () => state.stats.artSold || 0 },
       { id: "satellite", cat: "logistics", icon: "🛰️", name: "Eye in the sky", desc: "Launch a satellite", goal: 1, get: () => state.science && state.science.satellite ? 1 : 0 },
       { id: "logi100s",   cat: "logistics", icon: "💎", name: "Shipping tycoon",  desc: "Earn 100 scoin from logistics",      goal: 100 * SC, get: () => logi.earned, money: true },
     ];
@@ -7730,7 +7730,7 @@
         if (achValue(a) >= a.goal) { state.achievements[a.id] = Date.now(); fresh.push(a); }
       }
       // an old save can unlock many at once: just mark them, without a pop-up for each
-      if (achFirstCheck && fresh.length > 3) showAlert(`🏆 ${fresh.length} achievements unlocked!`, "Your progress so far already earned them. See 🏆 Achievements.", "good");
+      if (achFirstCheck && fresh.length > 3) showAlert(`🏆 ${fresh.length} achievements unlocked!`, "Your progress so far has already earned them. See 🏆 Achievements.", "good");
       else fresh.forEach(a => showAlert(`🏆 Achievement unlocked!`, `${a.icon} <b style="display:inline">${a.name}</b>: ${a.desc}`, "good"));
       achFirstCheck = false;
       if (fresh.length) save();
@@ -7866,7 +7866,7 @@
         <p>Are you sure? This <b>resets</b> ${lost}.</p>
         <p class="muted">Kept: achievements, levels, cosmetics, statistics, Legacy bonuses, free bet chips, Art Gallery unlock, slots and paintings.</p>
         <p>This can't be undone.</p>
-        ${state.legacy.count + 1 === PRESTIGE_MAX ? `<p style="color:#ffd34d"><b>This is your final prestige.</b> After it no more resets are possible, but you can keep playing.</p>` : ""}
+        ${state.legacy.count + 1 === PRESTIGE_MAX ? `<p style="color:#ffd34d"><b>This is your final prestige.</b> After it, no more resets are possible, but you can keep playing.</p>` : ""}
         <button class="btn big" data-prestige="confirm" data-choice="${id}">⭐ Prestige now</button>
         <button class="btn ghost" data-prestige="back">Back</button>`);
       $("modalBox").classList.add("gold");
@@ -7971,7 +7971,7 @@
         const open = L >= c.level, n = state.freeChips[c.value] || 0;
         return { value: c.value, open, n, vip: false,
           time: !open ? `Level ${c.level}` : n >= FREE_CHIP_MAX ? "full" : clock(state.freeTimers[c.value] || gap * 60),
-          tip: open ? `Free ${chipLabel(c.value)} bet chip: a new one every ${gap} min while the game is open (max ${FREE_CHIP_MAX}). Unlocked at Gambler level ${c.level}.`
+          tip: open ? `Free ${chipLabel(c.value)} bet chip: a new one every ${gap} min, even while the game is closed (max ${FREE_CHIP_MAX}). Unlocked at Gambler level ${c.level}.`
                     : `🔒 Unlocks at Gambler level ${c.level} (you are level ${L}). Then you get a free ${chipLabel(c.value)} bet chip every ${gap} min.` };
       });
       const vip = state.legacy.vip > 0, nV = state.freeChips[VIP_CHIP] || 0;
@@ -8060,7 +8060,7 @@
       }
       const next = cur < MAX_LEVEL ? `${fmtNum(curve[cur + 1] - xp)} XP to level ${cur + 1}` : "Max level reached!";
       showModal(`<h2>${gam ? "🎲 Gambler" : lg ? "🚚 Logistics" : "📈 Investor"} levels</h2>
-        <p class="muted">${lg ? "XP when a contract is delivered: contract minutes × 1 (trucks), × 3 (tankers), × 6 (cargo planes)" : gam ? "XP = bcoin bet × game multiplier: Plinko, Sky Climb, Video Poker ×1 · Roulette ×2 · Blackjack ×4 · Ultimate Texas Hold'em ×5 · Super high roller tables ×2 more"
+        <p class="muted">${lg ? "XP when a contract is delivered: contract minutes × 1 (trucks), × 3 (tankers), × 6 (cargo planes)" : gam ? "XP = bcoin bet × the table's XP multiplier (from ×1 at Classic Roulette to ×10 at Super high roller Hold'em; see 📖 Wiki → Casino) · 🔥 Hot Tables add +10"
                                : "Every minute with money invested gives 4 XP, 8 XP from 1 scoin invested, 16 XP from 100 scoin"} ·
           You: level ${cur}, ${fmtNum(xp)} XP · ${next}</p>
         <div class="levelTableWrap"><table class="levelTable">
@@ -8098,7 +8098,7 @@
         <p class="muted">Hover your money counter to see it in the other unit.</p>
         <h3>The tabs</h3>
         ${wt(["Tab", "What you do there"], [
-          ["💰 Income", "Click the coin, buy businesses, hire workers, special businesses, boosters"],
+          ["💰 Income", "Click the coin, buy businesses and special businesses, hire workers, use boosters"],
           ["🎰 Casino", "Move money into casino chips and play table games"],
           ["📈 Investing", "Real estate, ETFs, gold, Broker ETF and live crypto trading"],
           ["🚢 Logistics", "Trucks, oil tankers and cargo planes on contracts, with a world map"],
@@ -8111,12 +8111,12 @@
           A Debt &amp; financial lawyer gives part of every tax payment back.</p>
         <h3>📊 Levels</h3>
         ${wt(["Level", "How you get XP", "What it gives"], [
-          ["🎲 Gambler (Casino)", "XP = bcoin you bet × the game's XP multiplier", "0.1% cashback on lost bets per level, casino businesses, free bet chips"],
+          ["🎲 Gambler (Casino)", "XP = bcoin you bet × the table's XP multiplier", "0.1% cashback on lost bets per level, casino businesses, free bet chips"],
           ["📈 Investor (Investing)", "XP every minute you have money invested, plus XP per crypto trade", "Lower ETF fee, +0.1% on property sales per level, hotels, Brokerage Firm, lower crypto fee"],
           ["🚚 Logistics", "XP for every delivered contract (contract minutes × 1 truck / 3 tanker / 6 plane)", "Logistics agents: trucks at 5, tankers at 25, planes at 50"]])}
         <p class="muted">Each level card has a "📋 All levels" button with every level's XP and unlocks.</p>
         <h3>⭐ Prestige</h3>
-        <p>When your <b>main money reaches 1 gcoin</b>, you can reset the game for a permanent Legacy bonus (max ${PRESTIGE_MAX} prestiges; the 4th finishes the game, but you can keep playing).
+        <p>When the money on hand <b>reaches 1 gcoin</b>, you can reset the game for a permanent Legacy bonus (max ${PRESTIGE_MAX} prestiges; the 4th finishes the game, but you can keep playing).
           <b>Always kept:</b> achievements, Gambler, Investor and Logistics levels, cosmetics, statistics, free bet chips, the 🖼️ Art Gallery unlock, its collection slots and your paintings.</p>
         ${wt(["Bonus", "Effect", "Max"], [
           ["💼 Tycoon's Legacy", "+25% income from businesses, special businesses and clicks, for each pick", "Unlimited"],
@@ -8138,7 +8138,7 @@
     function wikiIncome() {
       const biz = BUSINESS_TYPES.map(t => {
         let unlock = "Always";
-        try { if (t.unlockText) unlock = t.unlockText(0).replace(/\s*\(.*\)\s*$/, ""); } catch (e) {}
+        try { if (t.unlockText) unlock = t.unlockText(0).replace(/\s*\([^)]*\)/g, ""); } catch (e) {}
         return [`${t.emoji} <b>${t.name}</b>`, fmt(t.price) + (t.maxOwned > 1 ? `, then ×${t.priceMultiplier || 2} each` : ""), t.maxOwned,
                 `${t.maxEmployees - 2} workers + accountant + HR`, `${t.minIncome}–${t.maxIncome} / sec per worker`, unlock];
       });
@@ -8148,21 +8148,21 @@
         <h3>👆 Clicking</h3>
         <p>Every click on the coin gives 1 bcoin (up to 10 clicks per second). Boosters and Tycoon's Legacy increase it.</p>
         <h3>🏢 Businesses</h3>
-        <p>Buy a business, then hire workers. Each worker earns a random amount per second and has one trait. The first worker is free; each next one costs more. You choose from 3 candidates, and "New options" refreshes them for a small growing price.</p>
+        <p>Buy a business, then hire workers. Each worker earns a random amount per second and has one trait. The first worker is free; each one after that costs more. You choose from 3 candidates, and "New options" refreshes them for a small growing price.</p>
         ${wt(["Business", "Price", "Max", "Staff", "Worker income", "Unlock"], biz)}
         <h3>👤 Worker traits</h3>
         ${wt(["Trait", "Effect", "Businesses", "Chance"], traitRows)}
         <h3>🧮 Accountants (one per business)</h3>
         ${wt(["Accountant", "Effect"], Object.values(ACCOUNTANTS).map(a => [`${a.emoji} ${a.name}`, a.desc]))}
-        <h3>🤝 HR (one per business)</h3>
+        <h3>🤝 HR managers (one per business)</h3>
         ${wt(["HR", "Effect"], Object.values(HR_OPTIONS).map(a => [`${a.emoji} ${a.name}`, a.desc]))}
         <h3>⚡ Boosters</h3>
         ${wt(["Booster", "Price", "Effect", "Cooldown"], [
-          ["🥤 Energy drink", fmt(ENERGY_PRICE), `Clicks ×${ENERGY_MULTIPLIER} for ${ENERGY_SECONDS} s`, `${ENERGY_COOLDOWN / 60} min`],
-          ["💊 Magical pill", fmt(PILL_PRICE), `Each click also gives ${pctx(PILL_SHARE)} of your income per second, for ${PILL_SECONDS} s`, `${PILL_COOLDOWN / 60} min`],
-          ["🏛️ Political influence", fmt(INFLUENCE_PRICE), `Business income ×2 for ${INFLUENCE_SECONDS / 60} min`, `${INFLUENCE_COOLDOWN / 60} min`]])}
+          ["⚡ Energy drink", fmt(ENERGY_PRICE), `Clicks ×${ENERGY_MULTIPLIER} for ${ENERGY_SECONDS} s`, `${ENERGY_COOLDOWN / 60} min`],
+          ["🧙 Magical pill", fmt(PILL_PRICE), `Each click also gives ${pctx(PILL_SHARE)} of your income per second, for ${PILL_SECONDS} s`, `${PILL_COOLDOWN / 60} min`],
+          ["🎩 Political influence", fmt(INFLUENCE_PRICE), `Business income ×2 for ${INFLUENCE_SECONDS / 60} min`, `${INFLUENCE_COOLDOWN / 60} min`]])}
         <h3>⭐ Special businesses</h3>
-        <p>No workers, HR or accountant. Sorted from cheapest to most expensive.</p>
+        <p>No workers, HR manager or accountant. Sorted from cheapest to most expensive.</p>
         ${wt(["Business", "Price", "Unlock", "What it does"], [
           ["📦 Warehouse", fmt(WAREHOUSE_PRICE), `Max 5; slots open at ${WAREHOUSE_UNLOCKS.join(", ")} trucks`, `+${pctx(WAREHOUSE_BONUS)} on truck contract payouts each`],
           ["⚖️ Law Firm", fmt(LAW_PRICE), "Always", `Hire up to ${LAW_MAX} attorneys (slot n costs ${fmt(LAW_SLOT_PRICE)} × n); pick 1 of 3 each time`],
@@ -8191,8 +8191,8 @@
       const vpRows = VP_HANDS.slice(1).reverse().map(h => [h.name, h.pays + "×", h.jackpot ? `+${h.jackpot * 100}% of the jackpot (× your bet / max bet)` : ""]);
       const pk = (map) => Object.keys(map).map(Number).sort((a, b) => b - a).map(c => [PK_NAMES[c], map[c] === 1.5 ? "3:2" : map[c] + ":1"]);
       return `<h2>🎰 Casino</h2>
-        <p>Move money into <b>casino chips</b> at the top of the Casino tab, play, then cash out. Every game has Classic, High roller and (most) Super high roller tables.
-          Bets give <b>Gambler XP</b> (bet × the game's XP multiplier) and you get <b>cashback</b> on lost bets (0.1% per Gambler level, +5% per Criminal defence lawyer).
+        <p>Move money into <b>casino chips</b> at the top of the Casino tab, play, then cash out. Most games have Classic, High roller and Super high roller tables.
+          Bets give <b>Gambler XP</b> (bet × the table's XP multiplier) and you get <b>cashback</b> on lost bets (0.1% per Gambler level, +5% per Criminal defense lawyer).
           Random results use your browser's secure random generator.</p>
         ${wt(["Game", "Classic", "High rollers", "Super high rollers"], [
           ["🎡 Roulette", "×" + XP_TABLE_MULT.rouletteLow, "×" + XP_TABLE_MULT.rouletteHigh, "×" + XP_TABLE_MULT.rouletteSuper],
@@ -8265,7 +8265,7 @@
       return `<h2>🚢 Logistics</h2>
         <p class="muted">🔒 Logistics unlocks when you buy your first 🚘 Car Salon.</p>
         <p>Buy vehicles, then pick one of 4 contract offers for each. When the trip ends, the contract is paid to your money and a new set of offers appears.
-          Trips only move while the game is open.</p>
+          Trips keep moving while the game is closed.</p>
         ${wt(["Fleet", "Price", "Slots", "Trip length", "Unlock", "🤖 Agent unlock"], ["truck", "tanker", "plane"].map(fleetRow))}
         <h3>🚚 Logistics level</h3>
         <p>XP for every delivered contract: contract minutes × 1 (truck), × 3 (tanker), × 6 (plane). The level unlocks the <b>Logistics agents</b>:
@@ -8296,13 +8296,13 @@
       return `<h2>🛍️ Shop</h2>
         <p>Cosmetics only: they change how the game looks, not how it plays. Each item belongs to a collection and a slot (background or coin). You can wear one item per slot and switch any time in the Shop.</p>
         ${wt(["Item", "Collection", "Slot", "Price", ""], COSMETICS.map(c => [`<b>${c.name}</b><br><span class="muted">${c.desc}</span>`,
-          (COLLECTIONS.find(x => x.id === c.collection) || {}).name || "", c.slot, fmt(c.price), state.cosmetics.owned[c.id] ? "✅ owned" : ""]))}
+          (COLLECTIONS.find(x => x.id === c.collection) || {}).name || "", c.slot, c.price ? fmt(c.price) : "🎁 Reward", state.cosmetics.owned[c.id] ? "✅ owned" : ""]))}
         <p class="muted">Wearing the coin and background from the same collection unlocks the 🎨 "Dressed to impress" achievement.</p>`;
     }
 
     function wikiArt() {
       return `<h2>🖼️ Art Gallery</h2>
-        <p>Copy a painting as closely as you can. The closer the match, the more your copy is worth. After you earn the 💵 Millionaire achievement (${fmt(1e6)} in your money), the gallery can be opened for <b>${fmt(ART_UNLOCK)}</b>.</p>
+        <p>Copy a painting as closely as you can. The closer the match, the more your copy is worth. After you earn the 💵 Millionaire achievement (${fmt(1e6)} on hand), the gallery can be opened for <b>${fmt(ART_UNLOCK)}</b>.</p>
         <h3>Tiers</h3>
         <p>🟡 Medium unlocks after you submit (sell or keep) ${ART_TIER_NEED.medium.count} Easy paintings; 🔴 Hard unlocks after ${ART_TIER_NEED.hard.count} Medium paintings.</p>
         ${wt(["Tier", "Paintings", "Full value"], Object.values(ART_TIERS).map(t => [`${t.icon} ${t.name}`, t.desc, fmt(t.value)]))}
@@ -8312,7 +8312,7 @@
           ["⬛ Square / ⚫ Circle / 🔺 Triangle", "Drag a box to draw a filled shape. Hold Shift for a perfect square or circle. Turn an oval or a triangle to any angle (180° = upside down) with the ↻ slider or the mouse wheel, while drawing it or right after"], ["🪣 Fill", "Fills an area of one color"], ["🧽 Eraser", "Paints white"], ["↶ Undo / 🗑️ Clear", "Takes back the last step / starts over"]])}
         <h3>How the match is scored</h3>
         <p>Both pictures are compared in small blocks. <b>🎨 Colors</b> checks that each part has the right color; <b>📐 Shapes</b> checks that the shapes are in the right places.
-          Small wobbles are forgiven, but missing parts and extra paint both cost points. Easy and Medium are judged strictest (the shape tools make clean copies simple), so aim for exact positions and sizes there. An empty canvas scores 0%.</p>
+          Small wobbles are forgiven, but missing parts and extra paint both cost points. Easy and Medium are judged most strictly (the shape tools make clean copies simple), so aim for exact positions and sizes there. An empty canvas scores 0%.</p>
         <h3>Sell or keep</h3>
         <p>After submitting, <b>sell</b> the copy for its value right away, or <b>keep</b> it in your 🖼️ Collection (no money now; sell it there any time for the same value).
           The collection starts with ${ART_SLOTS_START} slots; each +${ART_SLOTS_STEP} slots costs ${fmt(ART_SLOT_PRICE)}, then ${fmt(ART_SLOT_PRICE + ART_SLOT_PRICE_STEP)}, ${fmt(ART_SLOT_PRICE + 2 * ART_SLOT_PRICE_STEP)}… up to a maximum of ${ART_SLOTS_MAX} slots. A prestige keeps the gallery unlocked, your bought slots and all your paintings; only the 🏛️ Art Gallery business is reset (buy it again to earn from the paintings).</p>
@@ -9044,7 +9044,7 @@
           <p class="muted">🟢 Easy ${fmt(ART_TIERS.easy.value)} · 🟡 Medium ${fmt(ART_TIERS.medium.value)} · 🔴 Hard ${fmt(ART_TIERS.hard.value)} (you earn your match %)</p>
           ${artGalleryReady()
             ? `<button class="btn big" id="artUnlock" ${state.money >= ART_UNLOCK ? "" : "disabled"}>🔓 Open the gallery for ${fmt(ART_UNLOCK)}</button>`
-            : `<p><b>🔒 Unlocks with the 💵 Millionaire achievement:</b> have ${fmt(1e6)} in your money.</p>`}`;
+            : `<p><b>🔒 Unlocks with the 💵 Millionaire achievement:</b> have ${fmt(1e6)} on hand.</p>`}`;
         return;
       }
       renderArtTools();
@@ -9205,7 +9205,7 @@
       { name: "Neuroscience", icon: "🧠", finds: [
         "how the brain stores memories, and how lost memories can be restored",
         "the brain circuit that creates consciousness",
-        "a way to regrow damaged nerves, helping paralysed patients walk again"] },
+        "a way to regrow damaged nerves, helping paralyzed patients walk again"] },
       { name: "Astronomy and Astrophysics", icon: "🔭", finds: [
         "clear signs of life in the atmosphere of a planet orbiting a nearby star",
         "what happens to information that falls into a black hole",
@@ -9442,7 +9442,7 @@
       casino:    { icon: "🎰", title: "The casino", wiki: "casino", text: "Move money into casino chips first, then pick a table. Bets give Gambler XP, and every Gambler level gives cashback on lost bets." },
       hot:       { icon: "🔥", title: "Hot Tables", wiki: "casino", text: "Right now one game gets +10 on its XP multiplier for 15 minutes. The card under your Gambler level shows which game and how long." },
       freeChips: { icon: "🎁", title: "Free bet chips", wiki: "casino", text: "You earn free chips on a timer. Place them on Roulette, Blackjack, Video Poker or Hold'em: you keep what they win, not the chip itself." },
-      invest:    { icon: "📈", title: "Investing", wiki: "investing", text: "Real estate pays rent and can be sold for profit, ETFs grow (and dip) over time, gold is a safe store. Money invested also earns Investor XP." },
+      invest:    { icon: "📈", title: "Investing", wiki: "investing", text: "Real estate pays rent and can be sold for profit, ETFs grow (and dip) over time, gold is a safe store of value. Money invested also earns Investor XP." },
       live:      { icon: "📡", title: "Live trading", wiki: "investing", text: "These are real crypto prices. Long wins when the price goes up, Short when it goes down. Leverage multiplies profit AND loss: watch the liquidation price." },
       logistics: { icon: "🚢", title: "Logistics", wiki: "logistics", text: "Buy a truck, pick one of its contracts, and it pays when it arrives. Delivering earns Logistics XP, which unlocks agents and more." },
       breakdown: { icon: "🔧", title: "A truck broke down", wiki: "logistics", text: "Broken trucks can't take contracts until repaired: pay the repair on the red truck. Later, a 🛰️ satellite repairs them for free." },
@@ -9516,7 +9516,7 @@
       { target: '[data-action="buy"]', view: "income", page: "biz", text: "🏢 <b>Buy your first business.</b> Businesses earn money every second.", done: () => state.companies.length > 0,
         hint: () => state.money < 50 ? "Keep clicking the coin until you can afford it." : "" },
       { target: '[data-action="accountant"]', view: "income", page: "biz", text: "🧮 <b>Every business needs staff.</b> First choose an accountant: each one gives a different bonus.", done: () => state.companies.some(c => c.accountant) },
-      { target: '[data-action="hr"]', view: "income", page: "biz", text: "🧑‍💼 <b>Hire your HR.</b> Each HR gives your workers a different kind of bonus.", done: () => state.companies.some(c => c.hr) },
+      { target: '[data-action="hr"]', view: "income", page: "biz", text: "🧑‍💼 <b>Hire an HR manager.</b> Each one gives your workers a different kind of bonus.", done: () => state.companies.some(c => c.hr) },
       { target: '[data-action="hire"]', view: "income", page: "biz", text: "👷 <b>Hire a worker.</b> A business only earns when it has workers. Each worker has a trait with a small bonus.", done: () => state.companies.some(c => c.workers.length > 0) },
       { target: "#perSecond", view: "income", text: "📈 This is your <b>income per second</b>. More businesses and workers make it grow, even while you're away.", next: true },
       { target: "#tabs", view: null, text: "🔓 New tabs and features <b>unlock as you grow</b>. Look for 🔒 to see what's next, and 📖 Wiki if you need help. Have fun!", next: true, last: true },
