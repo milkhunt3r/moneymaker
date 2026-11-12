@@ -7994,7 +7994,7 @@
           Small wobbles are forgiven, but missing parts and extra paint both cost points. Easy and Medium are judged strictest (the shape tools make clean copies simple), so aim for exact positions and sizes there. An empty canvas scores 0%.</p>
         <h3>Sell or keep</h3>
         <p>After submitting, <b>sell</b> the copy for its value right away, or <b>keep</b> it in your 🖼️ Collection (no money now; sell it there any time for the same value).
-          The collection starts with ${ART_SLOTS_START} slots; each +${ART_SLOTS_STEP} slots costs ${fmt(ART_SLOT_PRICE)}, then ${fmt(ART_SLOT_PRICE + ART_SLOT_PRICE_STEP)}, ${fmt(ART_SLOT_PRICE + 2 * ART_SLOT_PRICE_STEP)}… A prestige keeps the gallery unlocked, your bought slots and all your paintings; only the 🏛️ Art Gallery business is reset (buy it again to earn from the paintings).</p>
+          The collection starts with ${ART_SLOTS_START} slots; each +${ART_SLOTS_STEP} slots costs ${fmt(ART_SLOT_PRICE)}, then ${fmt(ART_SLOT_PRICE + ART_SLOT_PRICE_STEP)}, ${fmt(ART_SLOT_PRICE + 2 * ART_SLOT_PRICE_STEP)}… up to a maximum of ${ART_SLOTS_MAX} slots. A prestige keeps the gallery unlocked, your bought slots and all your paintings; only the 🏛️ Art Gallery business is reset (buy it again to earn from the paintings).</p>
         <h3>🏛️ Art Gallery business</h3>
         <p>With ${GALLERY_NEED} paintings in your collection you can buy the 🏛️ Art Gallery special business (💰 Income tab) for ${fmt(GALLERY_PRICE)}.
           It earns ${fmt(GALLERY_PER_PAINTING)} / sec for every painting in your collection, up to ${fmt(GALLERY_MAX)} / sec. Selling paintings lowers it.</p>`;
@@ -8019,6 +8019,7 @@
        Sell right away, or keep the painting in your Collection (10 slots; +10 slots for 500k, 750k, 1M…).
        Paintings are generated from a seed, using only the 16 colors of the player's palette.
        ===================================================================== */
+    const ART_SLOTS_MAX = 100;   // a collection can hold at most 100 paintings
     const ART_UNLOCK = 500000, ART_SLOTS_START = 10, ART_SLOTS_STEP = 10, ART_SLOT_PRICE = 500000, ART_SLOT_PRICE_STEP = 250000;
     const ART_TIERS = {
       easy:   { name: "Easy",   icon: "🟢", value: 1e6, desc: "3–4 simple shapes" },
@@ -8591,14 +8592,16 @@
       if (!$("artCollection").hidden) renderArtCollection();
     })();
 
+    if (state.art.slots > ART_SLOTS_MAX) state.art.slots = Math.max(ART_SLOTS_MAX, state.art.items.length);
     const artSlotPrice = () => ART_SLOT_PRICE + ART_SLOT_PRICE_STEP * (state.art.slotBuys || 0);
     function renderArtCollection() {
       const a = state.art;
       $("artSlots").textContent = `(${a.items.length} / ${a.slots})`;
-      $("artBuySlots").textContent = `➕ ${ART_SLOTS_STEP} slots (${fmt(artSlotPrice())})`;
-      $("artBuySlots").disabled = state.money < artSlotPrice();
+      const maxed = a.slots >= ART_SLOTS_MAX;
+      $("artBuySlots").textContent = maxed ? `✅ Maximum ${ART_SLOTS_MAX} slots` : `➕ ${ART_SLOTS_STEP} slots (${fmt(artSlotPrice())})`;
+      $("artBuySlots").disabled = maxed || state.money < artSlotPrice();
       const total = a.items.reduce((s, x) => s + x.value, 0);
-      $("artGrid").innerHTML = a.items.length ? `<div class="muted" style="grid-column:1/-1">Collection value: <b>${fmt(total)}</b></div>` + a.items.map(it => {
+      $("artGrid").innerHTML = a.items.length ? `<div class="muted" style="grid-column:1/-1">Collection value: <b>${fmt(total)}</b> · Average match: <b>${(a.items.reduce((s, x) => s + x.score, 0) / a.items.length).toFixed(1)}%</b></div>` + a.items.map(it => {
         const t = ART_TIERS[it.tier];
         return `<div class="artCard"><img class="artCopy" src="${artImgOf(it)}" alt="Your copy" title="${t.name} painting">
           <div class="row"><b>${it.score.toFixed(1)}%</b><b class="income">${fmt(it.value)}</b></div>
@@ -8651,7 +8654,7 @@
       if (e.target.closest("#artKeep")) { artFinish(true); return; }
       if (e.target.closest("#artBuySlots")) {
         const price = artSlotPrice();
-        if (state.money < price) return;
+        if (state.money < price || state.art.slots >= ART_SLOTS_MAX) return;
         state.money -= price; state.art.slots += ART_SLOTS_STEP; state.art.slotBuys = (state.art.slotBuys || 0) + 1;
         updateCounter(); save(); renderArtCollection();
         showNotice(`🖼️ Collection now has ${state.art.slots} slots.`);
@@ -8721,7 +8724,7 @@
     setInterval(() => {
       if ($("artView").hidden) return;
       if (!state.art.unlocked) { const b = $("artUnlock"); if (b) b.disabled = state.money < ART_UNLOCK; }
-      else if (!$("artCollection").hidden) $("artBuySlots").disabled = state.money < artSlotPrice();
+      else if (!$("artCollection").hidden) $("artBuySlots").disabled = state.art.slots >= ART_SLOTS_MAX || state.money < artSlotPrice();
     }, 1000);
     if (state.art.unlocked) { paintArt($("artRef").getContext("2d"), state.art.tier, state.art.seed || (state.art.seed = 1 + secureRandomInt(2 ** 31 - 2))); artClearCanvas(); }
 
