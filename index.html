@@ -364,7 +364,11 @@
     .pcard .corner { position: absolute; top: 4px; left: 6px; font-size: 15px; line-height: 1; text-align: center; }
     .pcard .corner.br { top: auto; left: auto; bottom: 4px; right: 6px; transform: rotate(180deg); }
     .pcard.face, .pcard.back { background: center / 100% 100% no-repeat; }
-    .pcard.back { background-image: url("assets/cards/back.webp"); }
+    .pcard.back { background-image: var(--card-back, url("assets/cards/back.webp")); }
+    .cardsPreview { display: flex; align-items: center; justify-content: center; gap: 0; background: radial-gradient(circle, #1f5a3a, #0f2e1e) !important; }
+    .cardsPreview img { width: 30% !important; height: auto !important; border-radius: 6px; box-shadow: 0 3px 8px rgba(0,0,0,0.5); margin: 0 -4%; }
+    .cardsPreview img:nth-child(1) { transform: rotate(-10deg) translateY(6%); }
+    .cardsPreview img:nth-child(3) { transform: rotate(10deg) translateY(6%); }
     .pcard.deal { animation: dealIn 0.35s ease-out; }
     @keyframes dealIn { from { opacity: 0; transform: translate(0, -60px) rotate(-8deg) scale(0.8); } to { opacity: 1; transform: none; } }
     /* Achievements */
@@ -4470,7 +4474,14 @@
     const SUIT_FILE = { "♠": "s", "♥": "h", "♦": "d", "♣": "c" };
     const SUIT_NAME = { "♠": "spades", "♥": "hearts", "♦": "diamonds", "♣": "clubs" };
     const RANK_NAME = { A: "Ace", J: "Jack", Q: "Queen", K: "King" };
-    const cardSrc = (c) => `assets/cards/${c.joker ? "joker" : c.r + SUIT_FILE[c.s]}.webp`;
+    // the deck in use: the equipped 🃏 Cards cosmetic, or the default fox deck
+    const DECK_DIRS = { wowCards: "cards-wow", rainCards: "cards-rain" };
+    function deckDir() {
+      const on = state.cosmetics && state.cosmetics.on || {};
+      const id = Object.keys(DECK_DIRS).find(k => on[k]);
+      return "assets/" + (id ? DECK_DIRS[id] : "cards");
+    }
+    const cardSrc = (c) => `${deckDir()}/${c.joker ? "joker" : c.r + SUIT_FILE[c.s]}.webp`;
     const cardName = (c) => c.joker ? "Joker" : `${RANK_NAME[c.r] || c.r} of ${SUIT_NAME[c.s]}`;
     function cardFace(c, extraCls = "", extraAttr = "") {
       return `<div class="pcard face ${extraCls}" ${extraAttr} role="img" aria-label="${cardName(c)}" style="background-image:url('${cardSrc(c)}')"></div>`;
@@ -4479,8 +4490,11 @@
     setTimeout(() => {
       const all = ["joker", "back"];
       for (const s of Object.values(SUIT_FILE)) for (const r of ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]) all.push(r + s);
-      all.forEach(n => { const im = new Image(); im.src = `assets/cards/${n}.webp`; });
+      all.forEach(n => { const im = new Image(); im.src = `${deckDir()}/${n}.webp`; });
     }, 1500);
+    function applyDeck() {   // card backs follow the deck; preload the new deck's pictures
+      document.documentElement.style.setProperty("--card-back", `url("${deckDir()}/back.webp")`);
+    }
     function cardHtml(c) {
       if (c.hidden) return `<div class="pcard back ${c.fresh ? "deal" : ""}" role="img" aria-label="Face-down card"></div>`;
       return cardFace(c, c.fresh ? "deal" : "");
@@ -6434,6 +6448,8 @@
         preview: `<div class="preview" style="background-image:url('assets/wow-background-thumb.jpg')"></div>` },
       { id: "wowCoin", collection: "wow", slot: "coin", name: "Wow So Rich Coin", price: 5000000, desc: "Replaces the golden coin you click with the Wow So Rich coin.",
         preview: `<div class="preview"><img src="assets/wow-coin.webp" alt="Wow So Rich coin"></div>` },
+      { id: "wowCards", collection: "wow", slot: "cards", name: "Wow So Rich Cards", price: 5000000, desc: "A full deck with the Shiba tycoon on the Jacks, Queens, Kings and Joker, for every card game.",
+        preview: `<div class="preview cardsPreview"><img src="assets/cards-wow/Jc.webp" alt=""><img src="assets/cards-wow/Qh.webp" alt=""><img src="assets/cards-wow/Ks.webp" alt="Wow So Rich cards"></div>` },
       { id: "aheadBg", collection: "ahead", slot: "background", name: "One Step Ahead Background", price: 15000000, desc: "A gentleman chimpanzee moves his golden knight in a grand chess library, always one step ahead, behind the whole game.",
         preview: `<div class="preview" style="background-image:url('assets/ahead-background-thumb.jpg')"></div>` },
       { id: "aheadCoin", collection: "ahead", slot: "coin", name: "One Step Ahead Coin", price: 15000000, desc: "Replaces the coin you click with the gentleman chimpanzee's gold medallion.",
@@ -6446,6 +6462,8 @@
         preview: `<div class="preview" style="background-image:url('assets/rain-background-thumb.jpg')"></div>` },
       { id: "rainCoin", collection: "rain", slot: "coin", name: "Make It Rain Coin", price: 100000000, desc: "Replaces the coin you click with the frog wizard's golden coin.",
         preview: `<div class="preview"><img src="assets/rain-coin.webp" alt="Make It Rain coin"></div>` },
+      { id: "rainCards", collection: "rain", slot: "cards", name: "Make It Rain Cards", price: 100000000, desc: "A full deck with the frog wizard on the Jacks, Queens, Kings and Joker, for every card game.",
+        preview: `<div class="preview cardsPreview"><img src="assets/cards-rain/Jc.webp" alt=""><img src="assets/cards-rain/Qh.webp" alt=""><img src="assets/cards-rain/Ks.webp" alt="Make It Rain cards"></div>` },
       { id: "artistBg", collection: "artist", slot: "background", name: "Artist Background", price: 0, desc: "The painter cat at work under a sky full of stars, behind the whole game.",
         preview: `<div class="preview" style="background-image:url('assets/artist-background-thumb.jpg')"></div>` },
       { id: "artistCoin", collection: "artist", slot: "coin", name: "Artist Coin", price: 0, desc: "Replaces the coin you click with the painter cat's golden medallion.",
@@ -6488,6 +6506,10 @@
       document.body.classList.toggle("wowBg", !!state.cosmetics.on.wowBg);
       document.body.classList.toggle("royalBg", !!state.cosmetics.on.royalBg);
       document.body.classList.toggle("rainBg", !!state.cosmetics.on.rainBg);
+      if (typeof applyDeck === "function") {   // 🃏 card deck: redraw an open card table with the new cards
+        applyDeck();
+        if (state.view === "casino" && typeof currentGame === "string" && currentGame && typeof renderCasino === "function") renderCasino();
+      }
       document.body.classList.toggle("aheadBg", !!state.cosmetics.on.aheadBg);
       document.body.classList.toggle("artistBg", !!state.cosmetics.on.artistBg);
       document.body.classList.toggle("bullBg", !!state.cosmetics.on.bullBg);
@@ -8346,7 +8368,7 @@
 
     function wikiShop() {
       return `<h2>🛍️ Shop</h2>
-        <p>Cosmetics only: they change how the game looks, not how it plays. Each item belongs to a collection and a slot (background or coin). You can wear one item per slot and switch any time in the Shop.</p>
+        <p>Cosmetics only: they change how the game looks, not how it plays. Each item belongs to a collection and a slot (background, coin or 🃏 cards, which changes the deck in every card game). You can wear one item per slot and switch any time in the Shop.</p>
         ${wt(["Item", "Collection", "Slot", "Price", ""], COSMETICS.map(c => [`<b>${c.name}</b><br><span class="muted">${c.desc}</span>`,
           (COLLECTIONS.find(x => x.id === c.collection) || {}).name || "", c.slot, c.price ? fmt(c.price) : "🎁 Reward", state.cosmetics.owned[c.id] ? "✅ owned" : ""]))}
         <p class="muted">Wearing the coin and background from the same collection unlocks the 🎨 "Dressed to impress" achievement.</p>`;
