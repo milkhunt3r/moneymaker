@@ -7613,7 +7613,7 @@
         cosmetics: state.cosmetics, legacy: L, vip: state.vip, nextId: state.nextId, xpVersion: state.xpVersion, logiXp: state.logiXp, freeChips: state.freeChips, freeTimers: state.freeTimers,
         vpPayHidden: state.vpPayHidden, uthPayHidden: state.uthPayHidden, view: "income",
         // 🖼️ Art Gallery: stays unlocked and keeps its bought slots and all kept paintings
-        art: state.art ? { unlocked: !!state.art.unlocked, slots: state.art.slots, slotBuys: state.art.slotBuys || 0, items: state.art.items || [], tier: state.art.tier || "easy", seed: 0, page: "studio", sold: state.art.sold || 0 } : undefined,
+        art: state.art ? { unlocked: !!state.art.unlocked, slots: state.art.slots, slotBuys: state.art.slotBuys || 0, items: state.art.items || [], done: state.art.done, tier: state.art.tier || "easy", seed: 0, page: "studio", sold: state.art.sold || 0 } : undefined,
         invest: { xp: inv.xp, properties: [], etf: 0, etfTimer: ETF_EVERY, etfHistory: [] },
         // all-time logistics counters are statistics: always kept
         logistics: { tankers: [], trucks: [], planes: [], earned: logi.earned, contracts: logi.contracts || 0 },
@@ -8015,8 +8015,9 @@
 
     function wikiArt() {
       return `<h2>🖼️ Art Gallery</h2>
-        <p>Copy a painting as closely as you can. The closer the match, the more your copy is worth. The gallery opens for <b>${fmt(ART_UNLOCK)}</b>.</p>
+        <p>Copy a painting as closely as you can. The closer the match, the more your copy is worth. After you earn the 💵 Millionaire achievement (${fmt(1e6)} in your money), the gallery can be opened for <b>${fmt(ART_UNLOCK)}</b>.</p>
         <h3>Tiers</h3>
+        <p>🟡 Medium unlocks after you submit (sell or keep) ${ART_TIER_NEED.medium.count} Easy paintings; 🔴 Hard unlocks after ${ART_TIER_NEED.hard.count} Medium paintings.</p>
         ${wt(["Tier", "Paintings", "Full value"], Object.values(ART_TIERS).map(t => [`${t.icon} ${t.name}`, t.desc, fmt(t.value)]))}
         <p>Your copy is worth <b>match % × the full value</b>: an 80% copy of a Hard painting is worth ${fmt(ART_TIERS.hard.value * 0.8)}. There is no timer.</p>
         <h3>Tools</h3>
@@ -8065,6 +8066,10 @@
       purple: "#8e24aa", pink: "#f48fb1", brown: "#6d4c41", beige: "#ffe0b2",
     };
     const ART_W = 320, ART_H = 240;
+    // Unlocks: the gallery opens after the 💵 Millionaire achievement (and costs ART_UNLOCK);
+    // Medium needs 5 submitted Easy paintings, Hard needs 10 submitted Medium paintings (sold or kept)
+    const ART_TIER_NEED = { medium: { tier: "easy", count: 5 }, hard: { tier: "medium", count: 10 } };
+    const artGalleryReady = () => !!(state.achievements && state.achievements.cash1s);
     if (!state.art) state.art = { unlocked: false, slots: ART_SLOTS_START, slotBuys: 0, items: [], tier: "easy", seed: 0, page: "studio", sold: 0 };
 
     // Seeded random numbers, so a painting can be drawn again from its seed
@@ -8552,7 +8557,11 @@
       }
       $("artSizes").innerHTML = ART_SIZES.map(s => `<button class="seg ${artUI.size === s ? "on" : ""}" data-asize="${s}" title="Brush size ${s} px">
         <span class="sizeDot" style="width:${Math.max(2, s / 2.2)}px;height:${Math.max(2, s / 2.2)}px;border-radius:${artUI.tip === "square" ? "1px" : "50%"}"></span></button>`).join("");
-      $("artTiers").innerHTML = Object.entries(ART_TIERS).map(([k, t]) => `<button class="seg ${state.art.tier === k ? "on" : ""}" data-atier="${k}">${t.icon} ${t.name} · ${fmt(t.value)}</button>`).join("");
+      $("artTiers").innerHTML = Object.entries(ART_TIERS).map(([k, t]) => {
+        if (artTierOpen(k)) return `<button class="seg ${state.art.tier === k ? "on" : ""}" data-atier="${k}">${t.icon} ${t.name} · ${fmt(t.value)}</button>`;
+        const n = ART_TIER_NEED[k], have = state.art.done[n.tier] || 0;
+        return `<button class="seg" disabled title="Submit (sell or keep) ${n.count} ${ART_TIERS[n.tier].name} paintings to unlock">🔒 ${t.name} · ${have}/${n.count} ${ART_TIERS[n.tier].name}</button>`;
+      }).join("");
       const t = ART_TIERS[state.art.tier];
       $("artTierInfo").textContent = `${t.icon} ${t.name}: ${t.desc}. You earn your match % of ${fmt(t.value)}: an 85% copy is worth ${fmt(t.value * 0.85)}.`;
     }
@@ -8587,6 +8596,11 @@
     function artFinish(keep) {
       const r = artUI.result;
       if (!r) return;
+      if (keep && state.art.items.length >= state.art.slots) return;
+      const before = Object.keys(ART_TIERS).filter(artTierOpen);
+      state.art.done[r.tier] = (state.art.done[r.tier] || 0) + 1;
+      Object.keys(ART_TIERS).filter(k => artTierOpen(k) && !before.includes(k))
+        .forEach(k => setTimeout(() => showNotice(`🔓 ${ART_TIERS[k].icon} ${ART_TIERS[k].name} paintings are now unlocked in the Art studio!`), 1200));
       if (keep) {
         if (state.art.items.length >= state.art.slots) return;
         const item = { id: state.nextId++, tier: r.tier, seed: r.seed, score: r.score, value: r.value, img: r.img, at: Date.now() };
@@ -8600,6 +8614,7 @@
         showNotice(`💰 Sold your copy for ${fmt(r.value)}!`);
       }
       updateCounter();
+      renderArtTools();   // tier buttons may have unlocked
       artNewPainting(false);
     }
 
@@ -8626,6 +8641,13 @@
     })();
 
     if (state.art.slots > ART_SLOTS_MAX) state.art.slots = Math.max(ART_SLOTS_MAX, state.art.items.length);
+    // painting copies submitted per tier (sold or kept); older saves that already used a tier keep it open
+    if (!state.art.done) {
+      const best = (state.stats && state.stats.artBest) || {}, has = (t) => (best[t] || 0) > 0 || state.art.items.some(i => i.tier === t);
+      state.art.done = { easy: has("medium") || has("hard") ? 5 : 0, medium: has("hard") ? 10 : 0, hard: 0 };
+    }
+    const artTierOpen = (k) => { const n = ART_TIER_NEED[k]; return !n || (state.art.done[n.tier] || 0) >= n.count; };
+    if (!artTierOpen(state.art.tier)) state.art.tier = "easy";
     const artSlotPrice = () => ART_SLOT_PRICE + ART_SLOT_PRICE_STEP * (state.art.slotBuys || 0);
     function renderArtCollection() {
       const a = state.art;
@@ -8655,7 +8677,9 @@
         $("artLocked").innerHTML = `<h2>🖼️ Art Gallery</h2>
           <p>Copy paintings as closely as you can: the better the match, the more they're worth. Sell your copies right away or keep them in your collection.</p>
           <p class="muted">🟢 Easy ${fmt(ART_TIERS.easy.value)} · 🟡 Medium ${fmt(ART_TIERS.medium.value)} · 🔴 Hard ${fmt(ART_TIERS.hard.value)} (you earn your match %)</p>
-          <button class="btn big" id="artUnlock" ${state.money >= ART_UNLOCK ? "" : "disabled"}>🔓 Open the gallery for ${fmt(ART_UNLOCK)}</button>`;
+          ${artGalleryReady()
+            ? `<button class="btn big" id="artUnlock" ${state.money >= ART_UNLOCK ? "" : "disabled"}>🔓 Open the gallery for ${fmt(ART_UNLOCK)}</button>`
+            : `<p><b>🔒 Unlocks with the 💵 Millionaire achievement:</b> have ${fmt(1e6)} in your money.</p>`}`;
         return;
       }
       renderArtTools();
@@ -8666,7 +8690,7 @@
     $("artView").addEventListener("click", (e) => {
       if (isPaused()) return;
       if (e.target.closest("#artUnlock")) {
-        if (state.art.unlocked || state.money < ART_UNLOCK) return;
+        if (state.art.unlocked || state.money < ART_UNLOCK || !artGalleryReady()) return;
         state.money -= ART_UNLOCK; state.art.unlocked = true;
         updateCounter(); save(); renderArt(); artNewPainting(true);
         showNotice("🖼️ The Art Gallery is open!");
@@ -8678,7 +8702,7 @@
       const size = e.target.closest("[data-asize]"); if (size) { artUI.size = Number(size.dataset.asize); if (isShapeTool(artUI.tool) || artUI.tool === "fill") artUI.tool = "brush"; renderArtTools(); return; }
       const tip = e.target.closest("[data-atip]"); if (tip) { artUI.tip = tip.dataset.atip; if (isShapeTool(artUI.tool) || artUI.tool === "fill") artUI.tool = "brush"; renderArtTools(); return; }
       const tier = e.target.closest("[data-atier]");
-      if (tier && tier.dataset.atier !== state.art.tier) { state.art.tier = tier.dataset.atier; renderArtTools(); artNewPainting(false); return; }
+      if (tier && tier.dataset.atier !== state.art.tier && artTierOpen(tier.dataset.atier)) { state.art.tier = tier.dataset.atier; renderArtTools(); artNewPainting(false); return; }
       if (e.target.closest("#artUndo")) { artUI.lastShape = null; const u = artUI.undo.pop(); if (u) drawCtx().putImageData(u, 0, 0); return; }
       if (e.target.closest("#artClear")) { artUI.lastShape = null; artPushUndo(); artClearCanvas(); return; }
       if (e.target.closest("#artNew")) { artNewPainting(false); return; }
@@ -8756,7 +8780,7 @@
     // keep the money-dependent buttons fresh
     setInterval(() => {
       if ($("artView").hidden) return;
-      if (!state.art.unlocked) { const b = $("artUnlock"); if (b) b.disabled = state.money < ART_UNLOCK; }
+      if (!state.art.unlocked) { const b = $("artUnlock"); if (b) b.disabled = state.money < ART_UNLOCK; else if (artGalleryReady()) renderArt(); }
       else if (!$("artCollection").hidden) $("artBuySlots").disabled = state.art.slots >= ART_SLOTS_MAX || state.money < artSlotPrice();
     }, 1000);
     if (state.art.unlocked) { paintArt($("artRef").getContext("2d"), state.art.tier, state.art.seed || (state.art.seed = 1 + secureRandomInt(2 ** 31 - 2))); artClearCanvas(); }
