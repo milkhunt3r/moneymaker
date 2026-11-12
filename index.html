@@ -5419,6 +5419,7 @@
       if (state.money < ENERGY_PRICE) { showNotice("You need " + coins(ENERGY_PRICE) + " for an energy drink."); return; }
       state.money -= ENERGY_PRICE;
       state.energyLeft = ENERGY_SECONDS;
+      state.stats.boostEnergy = (state.stats.boostEnergy || 0) + 1; 
       showNotice("⚡ Energy drink! Clicks are worth ×" + ENERGY_MULTIPLIER + " for " + state.energyLeft + " seconds.");
       updateCounter(); updateEnergy(); save();
     });
@@ -5430,6 +5431,7 @@
       if (state.money < INFLUENCE_PRICE) { showNotice("You need " + coins(INFLUENCE_PRICE) + " for political influence."); return; }
       state.money -= INFLUENCE_PRICE;
       state.influenceLeft = INFLUENCE_SECONDS;
+      state.stats.boostInfluence = (state.stats.boostInfluence || 0) + 1; 
       showNotice("🎩 Political influence bought! All businesses earn double for 2 minutes.");
       updateCounter(); updateEnergy(); save();
     });
@@ -5441,6 +5443,7 @@
       if (state.money < PILL_PRICE) { showNotice("You need " + coins(PILL_PRICE) + " for a magical pill."); return; }
       state.money -= PILL_PRICE;
       state.pillLeft = PILL_SECONDS;
+      state.stats.boostPill = (state.stats.boostPill || 0) + 1; 
       showNotice("🧙 Magical pill! Each click gives +" + fmt(PILL_SHARE * Math.max(0, state.lastIncome || 0)) + " extra for 30 seconds.");
       updateCounter(); updateEnergy(); save();
     });
@@ -7701,6 +7704,12 @@
       { id: "parks2",     cat: "income", icon: "🎢", name: "Theme park tycoon",  desc: "Pair two amusement parks with hotels", goal: 2, get: () => state.special.parks.length },
       { id: "inc5k",      cat: "income", icon: "📈", name: "Money printer",      desc: "Reach an income of 5,000 / sec",      goal: 5000,  get: () => state.stats.bestIncome, money: true },
       { id: "inc10k",     cat: "income", icon: "💸", name: "Money fountain",     desc: "Reach an income of 10,000 / sec",     goal: 10000, get: () => state.stats.bestIncome, money: true },
+      { id: "boost-energy-10", cat: "income", icon: "⚡", name: "Caffeinated", desc: "Use 10 energy drinks", goal: 10, get: () => state.stats.boostEnergy || 0 },
+      { id: "boost-energy-100", cat: "income", icon: "⚡", name: "Wired for life", desc: "Use 100 energy drinks", goal: 100, get: () => state.stats.boostEnergy || 0 },
+      { id: "boost-pill-10", cat: "income", icon: "🧙", name: "Feeling magical", desc: "Use 10 magical pills", goal: 10, get: () => state.stats.boostPill || 0 },
+      { id: "boost-pill-100", cat: "income", icon: "🧙", name: "Potion master", desc: "Use 100 magical pills", goal: 100, get: () => state.stats.boostPill || 0 },
+      { id: "boost-influence-10", cat: "income", icon: "🎩", name: "Lobbyist", desc: "Use 10 political influences", goal: 10, get: () => state.stats.boostInfluence || 0 },
+      { id: "boost-influence-100", cat: "income", icon: "🎩", name: "Pulling the strings", desc: "Use 100 political influences", goal: 100, get: () => state.stats.boostInfluence || 0 },
       // Casino
       { id: "bet1s",      cat: "casino", icon: "🎲", name: "Regular",            desc: "Bet 1 scoin in total",                goal: SC,       get: () => state.casinoStats.wagered, money: true },
       { id: "bet100s",    cat: "casino", icon: "🎲", name: "High roller",        desc: "Bet 100 scoin in total",              goal: 100 * SC, get: () => state.casinoStats.wagered, money: true },
