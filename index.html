@@ -954,6 +954,14 @@
     .wikiBody mark, .wikiHitRow mark { background: #ffd34d; color: #2b2000; border-radius: 3px; padding: 0 2px; }
     .wikiFlash { animation: wikiFlash 2s ease-out; }
     @keyframes wikiFlash { 0%, 40% { background: rgba(255,211,77,0.25); } 100% { background: transparent; } }
+    .hotCard.on { border-color: rgba(255, 138, 0, 0.7); background: linear-gradient(90deg, rgba(255,87,34,0.22), rgba(255,193,7,0.12)); }
+    .hotCard.on b { color: #ffb74d; }
+    .hotCard.off { opacity: 0.85; }
+    .hotTime { font-weight: 800; font-variant-numeric: tabular-nums; }
+    .hotBar { height: 6px; border-radius: 999px; background: rgba(255,255,255,0.08); margin: 8px 0 6px; overflow: hidden; }
+    .hotBar > div { height: 100%; background: linear-gradient(90deg, #ff5722, #ffc107); transition: width 0.9s linear; }
+    .hotCard.off .hotBar > div { background: linear-gradient(90deg, #4fc3f7, #b3e5fc); }
+    .hotTag { font-size: 11px; font-weight: 900; color: #2b1600; background: linear-gradient(90deg, #ffb300, #ff7043); padding: 1px 6px; border-radius: 999px; }
     .rushBadge { white-space: nowrap; display: inline-block; font-size: 12px; font-weight: 900; color: #2b1600; background: linear-gradient(90deg, #ffb300, #ff7043); padding: 2px 8px; border-radius: 999px; margin-left: 6px; animation: rushPulse 0.8s ease-in-out infinite alternate; }
     .rushBadge[hidden] { display: none; }
     .income.rushOn { color: #ffb300; text-shadow: 0 0 8px rgba(255, 179, 0, 0.6); }
@@ -1127,6 +1135,7 @@
           <span class="muted" id="casinoAllTimeBet"></span></div>
       </div>
     </div>
+    <div class="card hotCard" id="hotCard"></div>
     <div class="card" id="freeChipsCard">
       <div class="row"><b>🎁 Free bet chips</b>
         <span class="muted">Hover a chip for details · use them at Roulette, Blackjack, Video Poker and Hold'em (not Plinko or Sky Climb)</span></div>
@@ -2863,7 +2872,7 @@
     /* =====================================================================
        GAMBLER LEVEL: XP = bcoin bet × the game's XP multiplier (longer rounds give more XP per bet).
          Curve: XP = 3.738 * level^6.728  →  level 10 ≈ 20 million, level 50 ≈ 1 trillion, level 99 ≈ 100 trillion
-         Multipliers: Plinko ×1, Sky Climb ×1, Video Poker ×1, Roulette ×2, Blackjack ×4, Ultimate Texas Hold'em ×5,
+         Multipliers: Plinko ×1, Sky Climb ×2, Video Poker ×1, Roulette ×2, Blackjack ×4, Ultimate Texas Hold'em ×5,
                       and ×2 on top at every Super high roller table.
          Each level gives 0.1% cashback on lost bets (level 10 = 1%). Max level 99.
        INVESTOR LEVEL: XP for every minute you have money invested (4 / 8 / 16 XP per minute).
@@ -2913,10 +2922,52 @@
     }
 
     // XP multiplier for each casino game (by how long a round takes), ×2 more at Super high roller tables
-    const XP_GAME_MULT = { roulette: 2, bj: 4, vp: 1, uth: 5, plinko: 1, climb: 1 };
+    const XP_GAME_MULT = { roulette: 2, bj: 4, vp: 1, uth: 5, plinko: 1, climb: 2 };
+    /* ----- 🔥 HOT TABLES: every 30 minutes, one game type gets ×10 Gambler XP on all its tables for 15 minutes,
+       then 15 minutes with no bonus. The schedule follows the real clock (the same for everyone, and it keeps
+       running while the game is closed); the hot game is picked at random and is never the same twice in a row. ----- */
+    const HOT_LEN = 15 * 60 * 1000, HOT_MULT = 10;
+    const HOT_GAMES = [
+      { id: "roulette", name: "🎡 Roulette" }, { id: "bj", name: "🃏 Blackjack" }, { id: "vp", name: "🎴 Video Poker" },
+      { id: "uth", name: "🤠 Ultimate Texas Hold'em" }, { id: "plinko", name: "🔻 Plinko" }, { id: "climb", name: "🎈 Sky Climb" }];
+    function hotPick(cycle) {   // same answer for the same 30-minute cycle, on every device
+      let h = Math.imul((cycle ^ 0x5bd1e995) >>> 0, 2654435761) >>> 0; h ^= h >>> 13; h = Math.imul(h, 1274126177) >>> 0; h ^= h >>> 16;
+      return (h >>> 0) % HOT_GAMES.length;
+    }
+    // walk forward from 12 cycles back so the game never repeats twice in a row (the walk always agrees after a few steps)
+    function hotGameOf(cycle) {
+      let g = hotPick(cycle - 12);
+      for (let c = cycle - 11; c <= cycle; c++) { const r = hotPick(c); g = r === g ? (g + 1 + hotPick(c + 7919) % (HOT_GAMES.length - 1)) % HOT_GAMES.length : r; }
+      return g;
+    }
+    function hotNow(t = Date.now()) {
+      const slot = Math.floor(t / HOT_LEN), cycle = Math.floor(slot / 2), active = slot % 2 === 0;
+      return { active, game: HOT_GAMES[hotGameOf(cycle)], next: HOT_GAMES[hotGameOf(cycle + 1)], left: HOT_LEN - (t % HOT_LEN) };
+    }
     function xpMult(id = currentGame || "") {
       const game = Object.keys(XP_GAME_MULT).find(k => id.startsWith(k));
-      return (game ? XP_GAME_MULT[game] : 1) * (/Super/.test(id) ? 2 : 1);
+      const h = hotNow();
+      return (game ? XP_GAME_MULT[game] : 1) * (/Super/.test(id) ? 2 : 1) * (game && h.active && h.game.id === game ? HOT_MULT : 1);
+    }
+    setTimeout(() => { renderHot(); setInterval(renderHot, 1000); }, 0);
+    let hotWasKey = "";
+    function renderHot() {
+      const box = $("hotCard"); if (!box) return;
+      const h = hotNow(), mm = clock(Math.ceil(h.left / 1000)), pct = (1 - h.left / HOT_LEN) * 100;
+      box.className = "card hotCard " + (h.active ? "on" : "off");
+      box.innerHTML = h.active
+        ? `<div class="row"><b>🔥 Hot Tables: ${h.game.name} · ×${HOT_MULT} XP</b><span class="hotTime">${mm} left</span></div>
+           <div class="hotBar"><div style="width:${100 - pct}%"></div></div>
+           <div class="muted">All ${h.game.name} tables give ×${HOT_MULT} Gambler XP right now. Then a 15-minute break; next up: ${h.next.name}.</div>`
+        : `<div class="row"><b>❄️ Hot Tables cooling down</b><span class="hotTime">next in ${mm}</span></div>
+           <div class="hotBar"><div style="width:${pct}%"></div></div>
+           <div class="muted">Next hot game: <b>${h.next.name}</b> (×${HOT_MULT} XP for 15 minutes on all its tables).</div>`;
+      const key = h.active + h.game.id;
+      if (key !== hotWasKey) {   // the bonus started or ended: refresh the game list
+        if (hotWasKey && h.active) showNotice(`🔥 Hot Tables: ${h.game.name} gives ×${HOT_MULT} XP for 15 minutes!`);
+        hotWasKey = key;
+        if (state.view === "casino" && !currentGame && typeof renderCasino === "function") renderCasino();
+      }
     }
     const CASHBACK_PER_LEVEL = 0.001;   // 0.1%
 
@@ -2975,7 +3026,7 @@
       if (!currentGame) {
         const gameCard = (g) => `<button class="card gameCard" data-game="${g.id}">
              <h3>${g.emoji} ${g.name}</h3><div class="muted">${g.desc}</div>
-             <div class="muted" style="color:#b388ff; margin-top:4px">✨ XP ×${xpMult(g.id)}</div></button>`;
+             <div class="muted" style="color:#b388ff; margin-top:4px">✨ XP ×${xpMult(g.id)}${hotNow().active && g.id.startsWith(hotNow().game.id) ? ` <span class="hotTag">🔥 HOT</span>` : ""}</div></button>`;
         box.innerHTML = `<h2>Choose a game</h2>` + CASINO_GROUPS.map(group => `
           <div class="card gameGroup">
             <h2 style="margin:0 0 10px">${group.name}</h2>
@@ -7945,7 +7996,10 @@
           Bets give <b>Gambler XP</b> (bet × the game's XP multiplier) and you get <b>cashback</b> on lost bets (0.1% per Gambler level, +5% per Criminal defence lawyer).
           Random results use your browser's secure random generator.</p>
         ${wt(["Game", "XP multiplier", "Super tables"], [["🎡 Roulette", "×2", "×4"], ["🃏 Blackjack", "×4", "×8"], ["🎴 Video Poker", "×1", "×2"],
-          ["🤠 Ultimate Texas Hold'em", "×5", "×10"], ["🔻 Plinko", "×1", "×2"], ["🎈 Sky Climb", "×1", "–"]])}
+          ["🤠 Ultimate Texas Hold'em", "×5", "×10"], ["🔻 Plinko", "×1", "×2"], ["🎈 Sky Climb", "×2", "–"]])}
+        <h3>🔥 Hot Tables</h3>
+        <p>Every 30 minutes one game type becomes <b>hot</b>: for 15 minutes <b>all</b> its tables give <b>×${HOT_MULT} Gambler XP</b> (on top of the multipliers above),
+          then there are 15 minutes with no bonus. The hot game is chosen at random and is never the same twice in a row. The timer is shown under your Gambler level, together with the next hot game.</p>
         <h3>🎁 Free bet chips</h3>
         <p>From Gambler level 5 you get free chips on timers (see the frame under the Gambler level). Use them at Roulette, Blackjack, Video Poker and Hold'em (not Plinko or Sky Climb).
           A free chip is a bet: whatever it wins goes to your casino chips. At Hold'em, a free Ante needs 2 chips (Ante + Blind).</p>
