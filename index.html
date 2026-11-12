@@ -136,6 +136,11 @@
     }
     #coin.bullCoin { background: url("assets/bull-coin.webp") center / contain no-repeat; box-shadow: none; filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.55)); }
     #coin.bullCoin::after { content: none; }
+    body.sharkBg {
+      background: linear-gradient(rgba(12, 12, 22, 0.74), rgba(12, 12, 22, 0.86)), url("assets/shark-background.jpg") center / cover fixed;
+    }
+    #coin.sharkCoin { background: url("assets/shark-coin.webp") center / contain no-repeat; box-shadow: none; filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.55)); }
+    #coin.sharkCoin::after { content: none; }
     #coin.aheadCoin::after { content: none; }
 
     #shop {
@@ -970,6 +975,9 @@
     .rewardCard .bar > div { height: 100%; background: linear-gradient(90deg, #ffd34d, #ff9800); }
     .rewardCard:not(.got) .cosmetic { filter: grayscale(0.7); opacity: 0.75; }
     .rewardCard.got { border-color: rgba(255,211,77,0.6); }
+    .rewardNeeds { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; font-size: 13px; }
+    .rewardNeeds span { padding: 3px 9px; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); }
+    .rewardNeeds span.ok { border-color: rgba(129,199,132,0.6); color: #a5d6a7; }
     #saveWarn { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 9999; max-width: 560px;
                  background: #b71c1c; color: #fff; padding: 10px 14px; border-radius: 12px; box-shadow: 0 6px 24px rgba(0,0,0,0.5); font-size: 14px; }
     #saveWarn[hidden] { display: none; }
@@ -6398,6 +6406,9 @@
       // 🎁 reward collections: not sold in the Shop, unlocked in Achievements → Rewards
       { id: "artist", name: "🎨 Artist Collection", reward: { cat: "art", text: "Unlock every 🖼️ Art Gallery achievement" } },
       { id: "bull", name: "🐂 Bull Run Collection", reward: { cat: "invest", text: "Unlock every 📈 Investments achievement" } },
+      // a reward can also need a hand-picked list of achievements (ids)
+      { id: "shark", name: "🦈 The Shark at the Table Collection", reward: { ids: ["glevel50", "quads4", "play-uth-1000", "play-vp-1000"],
+        text: "Unlock 👑 Whale, 🀄 Four of a kind ×4, 🤠 Ultimate Texas Hold'em veteran and 🎴 Video Poker veteran" } },
     ];
     const COSMETICS = [
       { id: "wowBg",   collection: "wow", slot: "background", name: "Wow So Rich Background", price: 5000000, desc: "A very rich dog in a very rich office, behind the whole game.",
@@ -6424,6 +6435,10 @@
         preview: `<div class="preview" style="background-image:url('assets/bull-background-thumb.jpg')"></div>` },
       { id: "bullCoin", collection: "bull", slot: "coin", name: "Bull Run Coin", price: 0, desc: "Replaces the coin you click with the penguin investor's Bull Run coin.",
         preview: `<div class="preview"><img src="assets/bull-coin.webp" alt="Bull Run coin"></div>` },
+      { id: "sharkBg", collection: "shark", slot: "background", name: "Shark at the Table Background", price: 0, desc: "The card shark takes the pot at an underwater poker night, behind the whole game.",
+        preview: `<div class="preview" style="background-image:url('assets/shark-background-thumb.jpg')"></div>` },
+      { id: "sharkCoin", collection: "shark", slot: "coin", name: "Shark at the Table Coin", price: 0, desc: "Replaces the coin you click with the card shark's golden coin.",
+        preview: `<div class="preview"><img src="assets/shark-coin.webp" alt="Shark at the Table coin"></div>` },
     ];
     if (!state.cosmetics) state.cosmetics = { owned: {}, on: {} };
 
@@ -6441,6 +6456,8 @@
       document.body.classList.toggle("aheadBg", !!state.cosmetics.on.aheadBg);
       document.body.classList.toggle("artistBg", !!state.cosmetics.on.artistBg);
       document.body.classList.toggle("bullBg", !!state.cosmetics.on.bullBg);
+      document.body.classList.toggle("sharkBg", !!state.cosmetics.on.sharkBg);
+      $("coin").classList.toggle("sharkCoin", !!state.cosmetics.on.sharkCoin);
       $("coin").classList.toggle("bullCoin", !!state.cosmetics.on.bullCoin);
       $("coin").classList.toggle("artistCoin", !!state.cosmetics.on.artistCoin);
       $("coin").classList.toggle("wowCoin", !!state.cosmetics.on.wowCoin);
@@ -7723,7 +7740,7 @@
 
     /* ----- 🎁 Rewards: cosmetic collections earned by finishing a whole achievement category ----- */
     function rewardProgress(col) {
-      const list = ACHIEVEMENTS.filter(a => a.cat === col.reward.cat);
+      const list = col.reward.ids ? ACHIEVEMENTS.filter(a => col.reward.ids.includes(a.id)) : ACHIEVEMENTS.filter(a => a.cat === col.reward.cat);
       return { done: list.filter(a => state.achievements[a.id]).length, total: list.length };
     }
     function grantRewards() {   // checked with the achievements; a reward, once earned, stays
@@ -7746,6 +7763,8 @@
           return `<div class="card rewardCard ${got ? "got" : ""}">
             <div class="row"><h2 style="margin:0">${got ? "" : "🔒 "}${col.name}</h2><span class="muted">${got ? "✅ Unlocked" : `${p.done} / ${p.total}`}</span></div>
             <div class="muted">${col.reward.text}</div>
+            ${col.reward.ids && !got ? `<div class="rewardNeeds">${ACHIEVEMENTS.filter(x => col.reward.ids.includes(x.id)).map(x =>
+              `<span class="${state.achievements[x.id] ? "ok" : ""}">${state.achievements[x.id] ? "✅" : "⬜"} ${x.icon} ${x.name}</span>`).join("")}</div>` : ""}
             ${got ? "" : `<div class="bar"><div style="width:${100 * p.done / Math.max(1, p.total)}%"></div></div>`}
             <div class="cosmetics">${items.map(cosmeticCard).join("")}</div></div>`;
         }).join("");
