@@ -930,6 +930,8 @@
     .lawSlot { background: rgba(255,255,255,0.05); border-radius: 8px; padding: 7px 9px; font-size: 13px; }
     .lawSlot .live { color: #9fe39f; font-weight: 700; }
     .lawSlot.empty { border: 1px dashed rgba(255,255,255,0.2); color: #8d8da3; text-align: center; }
+    #logisticsView.locked > :not(#logiLocked):not(.debtBanner) { display: none !important; }
+    #liveLocked[hidden], #logiLocked[hidden] { display: none; }
     #saveWarn { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 9999; max-width: 560px;
                  background: #b71c1c; color: #fff; padding: 10px 14px; border-radius: 12px; box-shadow: 0 6px 24px rgba(0,0,0,0.5); font-size: 14px; }
     #saveWarn[hidden] { display: none; }
@@ -1166,6 +1168,7 @@
   <!-- ===== Logistics: oil tankers ===== -->
   <section id="logisticsView" hidden>
     <button class="debtBanner" hidden></button>
+    <div id="logiLocked" class="card" hidden style="text-align:center"></div>
     <div class="card row levelCard" id="logiLevel" style="gap:16px; justify-content:flex-start">
       <div class="levelNum" id="logiLevelNum">1</div>
       <div style="flex:1">
@@ -1461,6 +1464,7 @@
               </div>
             </div>
         </div>
+        <div id="liveLocked" class="card" hidden style="text-align:center"></div>
         <div id="livePane" hidden>
             <!-- Live crypto market (real prices from Binance, or Coinbase as a backup) -->
             <div class="card" id="cryptoCard">
@@ -7161,10 +7165,25 @@
     });
     $("cryptoList").addEventListener("input", () => renderCryptoNumbers());
     // Investing tab: switch between the classic investments and Live trading (remembered)
+    // 📡 Live trading unlocks at Investor level 20 (players with open positions can always reach them)
+    const LIVE_LEVEL = 20;
+    const liveOpen = () => levelInfo(inv.xp, INVEST_XP).level >= LIVE_LEVEL || (inv.positions || []).length > 0;
     function showInvestPage(p) {
       state.investPage = p === "live" ? "live" : "invest";
+      const lockedLive = state.investPage === "live" && !liveOpen();
       $("investPane").hidden = state.investPage !== "invest";
-      $("livePane").hidden = state.investPage !== "live";
+      $("livePane").hidden = state.investPage !== "live" || lockedLive;
+      $("liveLocked").hidden = !lockedLive;
+      if (lockedLive) {
+        const L = levelInfo(inv.xp, INVEST_XP).level;
+        $("liveLocked").innerHTML = `<h2>🔒 📡 Live trading</h2>
+          <p>Trade real Bitcoin, Ethereum and Solana prices with Long / Short positions and up to ×50 leverage.</p>
+          <p><b>Unlocks at 📈 Investor level ${LIVE_LEVEL}</b> (you are level ${L}).</p>
+          <div class="xpBar" style="max-width:360px;margin:8px auto"><div class="xpFill" style="width:${Math.min(100, L / LIVE_LEVEL * 100)}%"></div></div>`;
+      }
+      const liveBtn = document.querySelector('[data-isub="live"]');
+      if (liveBtn) liveBtn.textContent = (liveOpen() ? "" : "🔒 ") + "📡 Live trading";
+      if (lockedLive) return document.querySelectorAll("[data-isub]").forEach(b => b.classList.toggle("active", b.dataset.isub === "live"));
       document.querySelectorAll("[data-isub]").forEach(b => b.classList.toggle("active", b.dataset.isub === state.investPage));
       if (state.investPage === "live") { renderCryptoNumbers(); drawCryptoCharts(); }
     }
@@ -8068,7 +8087,7 @@
         <h3>📊 ETF</h3><p>${infoText("etf")}</p>
         <h3>🪙 Gold</h3><p>${infoText("gold")}</p>
         <h3>🏦 Broker ETF</h3><p>${infoText("petf")}</p>
-        <h3>📡 Live trading (crypto)</h3><p>${infoText("crypto")}</p>
+        <h3>📡 Live trading (crypto)</h3><p class="muted">🔒 Unlocks at Investor level ${LIVE_LEVEL}.</p><p>${infoText("crypto")}</p>
         <p class="muted">Chart tools: Line or Candles (1 min, 5 min, 15 min, 4 hours), volume bars, and MA5 / MA10 / MA20 / MA50 moving averages. Hover the chart for details.</p>`;
     }
 
@@ -8076,6 +8095,7 @@
       const fleetRow = (k) => { const F = FLEETS[k]; const mins = F.routes.map(r => r.min), maxs = F.routes.map(r => r.max);
         return [`${F.icon} ${F.label}`, fmt(F.price), F.slots, `${Math.min(...mins)}–${Math.max(...maxs)} min`, F.unlock ? `Own ${F.unlock.tankers} oil tankers` : "Always", `Level ${AGENT_LEVEL[k]}`]; };
       return `<h2>🚢 Logistics</h2>
+        <p class="muted">🔒 Logistics unlocks when you buy your first 🚘 Car Salon.</p>
         <p>Buy vehicles, then pick one of 4 contract offers for each. When the trip ends, the contract is paid to your money and a new set of offers appears.
           Trips only move while the game is open.</p>
         ${wt(["Fleet", "Price", "Slots", "Trip length", "Unlock", "🤖 Agent unlock"], ["truck", "tanker", "plane"].map(fleetRow))}
@@ -9211,6 +9231,31 @@
       showNotice("🛰️ Satellite launched! Its bonuses are active.");
     });
     renderSatellite();
+
+    /* ----- 🔒 Logistics unlocks when you buy your first 🚘 Car Salon (stays open after that;
+       players who already own vehicles keep it). Live trading unlock labels are refreshed here too. ----- */
+    const logisticsOpen = () => !!state.logiUnlocked || ownedOf("salon") > 0 || ["trucks", "tankers", "planes"].some(k => (logi[k] || []).length > 0);
+    function refreshUnlocks(first) {
+      const open = logisticsOpen();
+      if (open && !state.logiUnlocked) {
+        state.logiUnlocked = true; save();
+        if (!first) showNotice("🚢 Logistics unlocked! Buy trucks and deliver contracts around the world.");
+      }
+      const tab = document.querySelector('.tab[data-view="logistics"]');
+      if (tab) tab.textContent = (open ? "" : "🔒 ") + "🚢 Logistics";
+      $("logisticsView").classList.toggle("locked", !open);
+      $("logiLocked").hidden = open;
+      if (!open) $("logiLocked").innerHTML = `<h2>🔒 🚢 Logistics</h2>
+        <p>Run trucks, oil tankers and cargo planes on contracts around the world.</p>
+        <p><b>Unlocks when you buy your first 🚘 Car Salon</b> (💰 Income → 🏢 Businesses; it needs 3 car washes and 3 repair shops).</p>`;
+      const liveBtn = document.querySelector('[data-isub="live"]');
+      if (liveBtn) {
+        const lbl = (liveOpen() ? "" : "🔒 ") + "📡 Live trading";
+        if (liveBtn.textContent !== lbl) { liveBtn.textContent = lbl; if (state.view === "invest" && state.investPage === "live") showInvestPage("live"); }
+      }
+    }
+    refreshUnlocks(true);
+    setInterval(() => refreshUnlocks(false), 1000);
 
     /* =====================================================================
        ⏱️ GAME CLOCK + OFFLINE EARNINGS
