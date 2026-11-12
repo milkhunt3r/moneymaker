@@ -7698,7 +7698,7 @@
        Always kept: achievements, Gambler & Investor levels, cosmetics, statistics, Legacy, VIP coins.
        Choices (each can be picked again on later prestiges):
          tycoon  +25% income (businesses, special businesses, clicks) for every pick
-         empire  (max 2) 1st: keep your trucks, tankers, cargo planes, warehouses and Trading Port on every reset from now on
+         empire  (max 2) 1st: keep your trucks, tankers, cargo planes, warehouses, Trading Port, Logistics Center and satellite on every reset from now on
                          2nd: all logistics contracts take half the time (same pay)
          vip     (max 2) VIP coins: 500 scoin every 20 min for the Super high roller tables; 2nd pick: every 10 min
        ===================================================================== */
@@ -7715,7 +7715,7 @@
       { id: "empire", icon: "🚢", name: "Global Empire", max: 2,
         text: () => state.legacy.empire
           ? "Level 2: every logistics contract takes half the time, for the same pay."
-          : "Keep all your trucks, oil tankers and cargo planes, plus warehouses and Trading Port, on this and every future reset.",
+          : "Keep all your trucks, oil tankers and cargo planes, plus warehouses, Trading Port, Logistics Center and satellite, on this and every future reset.",
         now: () => { const n = (x, w) => `${x} ${w}${x === 1 ? "" : "s"}`; return state.legacy.empire ? "Your fleet is already kept on every reset" : `You'd keep ${n(logi.trucks.length, "truck")}, ${n(logi.tankers.length, "tanker")}, ${n(logi.planes.length, "plane")}`; } },
       { id: "vip", icon: "🎟️", name: "VIP Coins", max: 2,
         text: () => state.legacy.vip
@@ -7780,6 +7780,8 @@
       if (L.empire > 0) {   // Global Empire keeps the fleet on every reset after it was picked
         keep.logistics = state.logistics;
         keep.special = { agency: null, warehouses: state.special.warehouses, port: state.special.port, center: state.special.center };
+        // the 🛰️ satellite is part of the logistics network: it stays in orbit (the Science buildings themselves reset)
+        if (state.science && state.science.satellite) keep.science = { uni: null, lab: null, space: null, satellite: true };
       }
       stopSaving = true;
       const { progress, prefs } = splitState(keep);
@@ -8007,7 +8009,7 @@
           <b>Always kept:</b> achievements, Gambler, Investor and Logistics levels, cosmetics, statistics, free bet chips, the 🖼️ Art Gallery unlock, its collection slots and your paintings.</p>
         ${wt(["Bonus", "Effect", "Max"], [
           ["💼 Tycoon's Legacy", "+25% income from businesses, special businesses and clicks, for each pick", "Unlimited"],
-          ["🚢 Global Empire", "1st: keep trucks, tankers, planes, warehouses and Trading Port on every reset. 2nd: all contracts take half the time (same pay)", "2"],
+          ["🚢 Global Empire", "1st: keep trucks, tankers, planes, warehouses, Trading Port, Logistics Center and satellite on every reset. 2nd: all contracts take half the time (same pay)", "2"],
           ["🎟️ VIP Coins", "A free 500 scoin bet chip every 20 min (2nd pick: every 10 min) for the Super high roller tables", "2"]])}
         <h3>💾 Saving</h3>
         <p>The game saves automatically in your browser. In ⚙️ Settings you can save, download a backup file, load one, or reset the game.</p>
@@ -9267,8 +9269,8 @@
     function renderSatellite() {
       const box = $("satelliteCard"), S = sci();
       if (!box) return;
-      box.hidden = !S.space;
-      if (!S.space) return;
+      box.hidden = !S.space && !S.satellite;
+      if (box.hidden) return;
       const perks = `<ul class="satPerks"><li>🚀 Space missions fail only 5% of the time (instead of 10%)</li>
         <li>✈️ Cargo plane contracts pay +5%</li><li>🛢️ Tanker contracts take 10% less time</li>
         <li>🔧 Broken trucks repair themselves for free after 5 seconds</li></ul>`;
