@@ -354,19 +354,17 @@
     .bjDealer { text-align: center; min-height: 150px; }
     .bjLabel { font-size: 13px; color: #d7f5df; opacity: 0.8; margin-bottom: 6px; }
     .bjTotal { display: inline-block; margin-top: 6px; background: rgba(0,0,0,0.35); padding: 2px 10px; border-radius: 999px; font-weight: 800; font-size: 14px; }
-    .cardsRow { display: flex; justify-content: center; gap: 6px; min-height: 92px; flex-wrap: wrap; }
+    .cardsRow { display: flex; justify-content: center; gap: 6px; min-height: 104px; flex-wrap: wrap; }
     .pcard {
-      width: 62px; height: 88px; border-radius: 8px; background: #fff; color: #1b1b1b;
+      width: 62px; height: 100px; border-radius: 8px; background: #fff; color: #1b1b1b;
       box-shadow: 0 3px 8px rgba(0,0,0,0.45); position: relative; font-weight: 800;
       display: flex; align-items: center; justify-content: center; font-size: 28px;
     }
     .pcard.redSuit { color: #c62828; }
     .pcard .corner { position: absolute; top: 4px; left: 6px; font-size: 15px; line-height: 1; text-align: center; }
     .pcard .corner.br { top: auto; left: auto; bottom: 4px; right: 6px; transform: rotate(180deg); }
-    .pcard.back {
-      background: repeating-linear-gradient(45deg, #b71c1c 0 6px, #8e1414 6px 12px);
-      border: 4px solid #fff;
-    }
+    .pcard.face, .pcard.back { background: center / 100% 100% no-repeat; }
+    .pcard.back { background-image: url("assets/cards/back.webp"); }
     .pcard.deal { animation: dealIn 0.35s ease-out; }
     @keyframes dealIn { from { opacity: 0; transform: translate(0, -60px) rotate(-8deg) scale(0.8); } to { opacity: 1; transform: none; } }
     /* Achievements */
@@ -477,7 +475,7 @@
     .tanker.broken .brokeIcon { font-size: 34px; text-align: center; margin: 6px 0; }
     /* Ultimate Texas Hold'em */
     .uthRow { text-align: center; }
-    .uthRow .pcard, .uthSeat .pcard { width: 54px; height: 76px; font-size: 24px; }
+    .uthRow .pcard, .uthSeat .pcard { width: 54px; height: 87px; font-size: 24px; }
     .uthRow .pcard .corner, .uthSeat .pcard .corner { font-size: 13px; }
     .uthRow .cardsRow, .uthSeat .cardsRow { min-height: 78px; gap: 5px; }
     .uthBoard { margin: 14px 0; padding: 10px 0; border-top: 1px dashed rgba(255,255,255,0.2); border-bottom: 1px dashed rgba(255,255,255,0.2); }
@@ -526,16 +524,14 @@
     .vpSlot { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: default; }
     .vpSlot.canHold { cursor: pointer; }
     .vpSlot.canHold:hover .pcard { transform: translateY(-4px); }
-    .vpSlot .pcard { width: 78px; height: 110px; font-size: 34px; transition: transform 0.12s; }
+    .vpSlot .pcard { width: 78px; height: 126px; font-size: 34px; transition: transform 0.12s; }
     .vpSlot .pcard .corner { font-size: 17px; }
     .vpSlot.held .pcard { box-shadow: 0 0 0 3px #ffd34d, 0 3px 8px rgba(0,0,0,0.45); transform: translateY(-6px); }
     .vpSlot .holdTag { font-size: 12px; font-weight: 900; letter-spacing: 1px; height: 18px; padding: 0 8px; border-radius: 6px; }
     .vpSlot.held .holdTag { background: #ffd34d; color: #3a2a00; }
     .vpCards .pcard.deal { animation-fill-mode: backwards; }
-    .pcard.joker { background: linear-gradient(160deg, #fff 0%, #ffe9a8 100%); color: #6a1b9a; flex-direction: column; font-size: 30px; }
-    .pcard.joker small { font-size: 11px; letter-spacing: 1px; }
     .vpHandName { text-align: center; margin-top: 10px; font-weight: 800; min-height: 22px; color: #d7f5df; }
-    @media (max-width: 640px) { .vpSlot .pcard { width: 56px; height: 80px; font-size: 24px; } .vpCards { gap: 5px; } }
+    @media (max-width: 640px) { .vpSlot .pcard { width: 56px; height: 90px; font-size: 24px; } .vpCards { gap: 5px; } }
     .bjSeats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 18px; }
     .bjSeat {
       border: 2px dashed rgba(255,255,255,0.35); border-radius: 14px; padding: 10px 6px; text-align: center;
@@ -546,7 +542,7 @@
     .bjSeat .seatName { font-size: 12px; color: #d7f5df; opacity: 0.8; }
     .bjHand { border-radius: 10px; padding: 6px; width: 100%; }
     .bjHand.active { background: rgba(255, 211, 77, 0.15); box-shadow: 0 0 0 2px #ffd34d; }
-    .bjHand .pcard { width: 48px; height: 68px; font-size: 22px; }
+    .bjHand .pcard { width: 48px; height: 77px; font-size: 22px; }
     .bjHand .pcard .corner { font-size: 12px; }
     .bjHand .cardsRow { min-height: 70px; gap: 4px; }
     .bjResult { font-weight: 800; font-size: 13px; margin-top: 4px; }
@@ -554,7 +550,7 @@
     .bjSeat .chipMark { width: 40px; height: 40px; font-size: 12px; }
     .bjActions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 14px; }
     .bjActions .btn { min-width: 92px; }
-    @media (max-width: 640px) { .bjSeats { gap: 4px; } .bjHand .pcard { width: 38px; height: 56px; font-size: 18px; } }
+    @media (max-width: 640px) { .bjSeats { gap: 4px; } .bjHand .pcard { width: 38px; height: 61px; font-size: 18px; } }
 
     /* ================= Plinko ================= */
     #plinkoCanvas { display: block; width: 100%; max-width: 680px; margin: 10px auto 0; border-radius: 14px;
@@ -4469,11 +4465,25 @@
     function bjMsg(text) { if (bj) { bj.message = text; renderBlackjack(); } }
 
     // ----- Drawing the table -----
+    /* 🃏 Card pictures (assets/cards/): one picture per card, e.g. "Qh.webp", plus "joker.webp" and "back.webp".
+       The picture is the card's background; the card's name is kept for screen readers. */
+    const SUIT_FILE = { "♠": "s", "♥": "h", "♦": "d", "♣": "c" };
+    const SUIT_NAME = { "♠": "spades", "♥": "hearts", "♦": "diamonds", "♣": "clubs" };
+    const RANK_NAME = { A: "Ace", J: "Jack", Q: "Queen", K: "King" };
+    const cardSrc = (c) => `assets/cards/${c.joker ? "joker" : c.r + SUIT_FILE[c.s]}.webp`;
+    const cardName = (c) => c.joker ? "Joker" : `${RANK_NAME[c.r] || c.r} of ${SUIT_NAME[c.s]}`;
+    function cardFace(c, extraCls = "", extraAttr = "") {
+      return `<div class="pcard face ${extraCls}" ${extraAttr} role="img" aria-label="${cardName(c)}" style="background-image:url('${cardSrc(c)}')"></div>`;
+    }
+    // load every card picture once, so cards appear instantly when dealt
+    setTimeout(() => {
+      const all = ["joker", "back"];
+      for (const s of Object.values(SUIT_FILE)) for (const r of ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]) all.push(r + s);
+      all.forEach(n => { const im = new Image(); im.src = `assets/cards/${n}.webp`; });
+    }, 1500);
     function cardHtml(c) {
-      if (c.hidden) return `<div class="pcard back ${c.fresh ? "deal" : ""}"></div>`;
-      const red = c.s === "♥" || c.s === "♦";
-      return `<div class="pcard ${red ? "redSuit" : ""} ${c.fresh ? "deal" : ""}">
-                <span class="corner">${c.r}<br>${c.s}</span>${c.s}<span class="corner br">${c.r}<br>${c.s}</span></div>`;
+      if (c.hidden) return `<div class="pcard back ${c.fresh ? "deal" : ""}" role="img" aria-label="Face-down card"></div>`;
+      return cardFace(c, c.fresh ? "deal" : "");
     }
     function totalHtml(cards, fromSplit = false) {
       const visible = cards.filter(c => !c.hidden);
@@ -4799,10 +4809,8 @@
 
     function vpCardHtml(c, delay) {
       const anim = c.fresh ? ` deal" style="animation-delay:${delay}ms` : "";
-      if (c.joker) return `<div class="pcard joker${anim}">🃏<small>JOKER</small></div>`;
-      const red = c.s === "♥" || c.s === "♦";
-      return `<div class="pcard ${red ? "redSuit" : ""}${anim}">
-                <span class="corner">${c.r}<br>${c.s}</span>${c.s}<span class="corner br">${c.r}<br>${c.s}</span></div>`;
+      if (!c.fresh) return cardFace(c);
+      return `<div class="pcard face deal" style="animation-delay:${delay}ms; background-image:url('${cardSrc(c)}')" role="img" aria-label="${cardName(c)}"></div>`;
     }
 
     function renderVideoPoker() {
