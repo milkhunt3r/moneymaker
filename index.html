@@ -131,6 +131,11 @@
     }
     #coin.artistCoin { background: url("assets/artist-coin.webp") center / contain no-repeat; box-shadow: none; filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.55)); }
     #coin.artistCoin::after { content: none; }
+    body.bullBg {
+      background: linear-gradient(rgba(12, 12, 22, 0.74), rgba(12, 12, 22, 0.86)), url("assets/bull-background.jpg") center / cover fixed;
+    }
+    #coin.bullCoin { background: url("assets/bull-coin.webp") center / contain no-repeat; box-shadow: none; filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.55)); }
+    #coin.bullCoin::after { content: none; }
     #coin.aheadCoin::after { content: none; }
 
     #shop {
@@ -6392,6 +6397,7 @@
       { id: "rain",  name: "🐸 Make It Rain Collection" },
       // 🎁 reward collections: not sold in the Shop, unlocked in Achievements → Rewards
       { id: "artist", name: "🎨 Artist Collection", reward: { cat: "art", text: "Unlock every 🖼️ Art Gallery achievement" } },
+      { id: "bull", name: "🐂 Bull Run Collection", reward: { cat: "invest", text: "Unlock every 📈 Investments achievement" } },
     ];
     const COSMETICS = [
       { id: "wowBg",   collection: "wow", slot: "background", name: "Wow So Rich Background", price: 5000000, desc: "A very rich dog in a very rich office, behind the whole game.",
@@ -6414,6 +6420,10 @@
         preview: `<div class="preview" style="background-image:url('assets/artist-background-thumb.jpg')"></div>` },
       { id: "artistCoin", collection: "artist", slot: "coin", name: "Artist Coin", price: 0, desc: "Replaces the coin you click with the painter cat's golden medallion.",
         preview: `<div class="preview"><img src="assets/artist-coin.webp" alt="Artist coin"></div>` },
+      { id: "bullBg", collection: "bull", slot: "background", name: "Bull Run Background", price: 0, desc: "A penguin investor watches the bull charge up the market, behind the whole game.",
+        preview: `<div class="preview" style="background-image:url('assets/bull-background-thumb.jpg')"></div>` },
+      { id: "bullCoin", collection: "bull", slot: "coin", name: "Bull Run Coin", price: 0, desc: "Replaces the coin you click with the penguin investor's Bull Run coin.",
+        preview: `<div class="preview"><img src="assets/bull-coin.webp" alt="Bull Run coin"></div>` },
     ];
     if (!state.cosmetics) state.cosmetics = { owned: {}, on: {} };
 
@@ -6430,6 +6440,8 @@
       document.body.classList.toggle("rainBg", !!state.cosmetics.on.rainBg);
       document.body.classList.toggle("aheadBg", !!state.cosmetics.on.aheadBg);
       document.body.classList.toggle("artistBg", !!state.cosmetics.on.artistBg);
+      document.body.classList.toggle("bullBg", !!state.cosmetics.on.bullBg);
+      $("coin").classList.toggle("bullCoin", !!state.cosmetics.on.bullCoin);
       $("coin").classList.toggle("artistCoin", !!state.cosmetics.on.artistCoin);
       $("coin").classList.toggle("wowCoin", !!state.cosmetics.on.wowCoin);
       $("coin").classList.toggle("royalCoin", !!state.cosmetics.on.royalCoin);
