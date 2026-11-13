@@ -1780,7 +1780,7 @@
       // ----- Car salon traits -----
       promoter:  { name: "Promoter",         emoji: "📢", chance: 0.12, onlyFor: ["salon"], desc: "Every car wash earns +2% (stacks for each Promoter)" },
       // ----- Hotel traits -----
-      concierge: { name: "Concierge",        emoji: "🛎️", chance: 0.08, onlyFor: ["hotel"], desc: "Doubles the income of the 2 best-paid co-workers" },
+      concierge: { name: "Concierge",        emoji: "🛎️", chance: 0.08, onlyFor: ["hotel"], desc: "Doubles the income of the 2 best-paid co-workers (max 5 per hotel)" },
       vip:       { name: "VIP guest magnet", emoji: "🧳", chance: 0.08, onlyFor: ["hotel"], desc: "Each second a 1 in 30 chance of a ×20 tip" },
       cleaner:   { name: "Cleaner",          emoji: "🧹", chance: 0.10, onlyFor: ["hotel"], desc: "Stops one Lazy worker from slacking each second" },
       // ----- Casino-only traits (onlyFor = which businesses can get them) -----
@@ -1995,6 +1995,8 @@
     // Pick a random trait using each trait's chance.
     // The Friendship expert doubles the Friendship chance; other traits shrink to make room.
     const LEGEND_CHANCE = 1 / 100;
+    const CONCIERGE_MAX = 5; // most Concierges a hotel can have
+    const conciergeCount = (company) => (company.workers || []).filter(w => w.trait === "concierge").length;
     function rollTrait(company) {
       // The Legend: always exactly 1 in 100, in every business
       if (Math.random() < LEGEND_CHANCE) return "legend";
@@ -2004,6 +2006,7 @@
       for (const key in TRAITS) {
         const t = TRAITS[key];
         if (t.onlyFor && !t.onlyFor.includes(company.typeId)) continue;
+        if (key === "concierge" && conciergeCount(company) >= CONCIERGE_MAX) continue;
         chances[key] = t.chance;
       }
       const scale = (sum) => { for (const k in chances) chances[k] /= sum; };
@@ -2125,9 +2128,11 @@
         if (lowest >= 0) { earn[lowest] *= 2; status[lowest] = "🧑‍🏫 mentored"; }
       });
 
-      // Concierges double the 2 best-paid co-workers
+      // Concierges double the 2 best-paid co-workers (only the first 5 work, Copycats included)
+      let onDuty = 0;
       traits.forEach((t, i) => {
         if (t !== "concierge") return;
+        if (++onDuty > CONCIERGE_MAX) { if (status[i] === "") status[i] = "🛎️ off duty"; return; }
         const best = workers.map((_, j) => j).filter(j => j !== i)
           .sort((a, b) => earn[b] - earn[a]).slice(0, 2);
         best.forEach(j => { earn[j] *= 2; status[j] = "🛎️ served"; });
@@ -2565,8 +2570,12 @@
       if (action === "hire") {
         const cost = hireCost(company);
         if (state.money < cost) return;
-        state.money -= cost;
         const cand = company.candidates[btn.dataset.pick];
+        if (cand.trait === "concierge" && conciergeCount(company) >= CONCIERGE_MAX) {
+          showNotice("🛎️ This hotel already has " + CONCIERGE_MAX + " Concierges, the most allowed.");
+          return;
+        }
+        state.money -= cost;
         company.workers.push(cand);
         company.candidates = null;
       }
