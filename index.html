@@ -2730,8 +2730,14 @@
 
     function taxTick() {
       // Roll for a new inspection every second (they can stack)
-      state.secondsSinceTax++;
-      if (Math.random() < TAX_CHANCE || state.secondsSinceTax >= TAX_FORCED_AFTER) startTaxInspection();
+      if (state.taxHoliday > 0) {   // 🛡️ after a prestige: no inspections for 10 minutes of play (the main menu doesn't count)
+        if ($("mainMenu").hidden) state.taxHoliday--;
+        state.secondsSinceTax = 0;
+      }
+      else {
+        state.secondsSinceTax++;
+        if (Math.random() < TAX_CHANCE || state.secondsSinceTax >= TAX_FORCED_AFTER) startTaxInspection();
+      }
 
       state.taxDebts.forEach(d => { if (d.timeLeft > 0) d.timeLeft--; });
 
@@ -7771,6 +7777,9 @@
       { id: "cash10s",    cat: "general", icon: "💰", name: "Multi-millionaire",  desc: "Have 10 scoin on hand (not in casino chips)",  goal: 10 * SC,  get: () => state.money, money: true },
       { id: "cash100s",   cat: "general", icon: "🏦", name: "Swimming in coins",  desc: "Have 100 scoin on hand (not in casino chips)", goal: 100 * SC, get: () => state.money, money: true },
       { id: "cash1g",     cat: "general", icon: "👑", name: "Billionaire",        desc: "Have 1 gcoin on hand (not in casino chips)",   goal: 1e12,     get: () => state.money, money: true },
+      { id: "cash5g",     cat: "general", icon: "💎", name: "Gold baron",         desc: "Have 5 gcoin on hand (not in casino chips)",   goal: 5e12,     get: () => state.money, money: true },
+      { id: "cash10g",    cat: "general", icon: "🏰", name: "Coin emperor",       desc: "Have 10 gcoin on hand (not in casino chips)",  goal: 10e12,    get: () => state.money, money: true },
+      { id: "cash20g",    cat: "general", icon: "🌍", name: "Empire of Coins",    desc: "Have 20 gcoin on hand (not in casino chips)",  goal: 20e12,    get: () => state.money, money: true },
       { id: "prestige1",  cat: "general", icon: "⭐", name: "A fresh start",      desc: "Prestige for the first time",         goal: 1, get: () => state.legacy.count },
       { id: "prestige2",  cat: "general", icon: "🌟", name: "Second wind",        desc: "Prestige twice",                    goal: 2, get: () => state.legacy.count },
       { id: "prestige4",  cat: "general", icon: "🏆", name: "Legend",             desc: "Prestige 4 times and finish the game", goal: 4, get: () => state.legacy.count },
@@ -7997,23 +8006,26 @@
     setInterval(checkAchievements, 1000);
 
     /* =====================================================================
-       ⭐ PRESTIGE: at 1 gcoin in your main money you can reset the game for a Legacy bonus.
+       ⭐ PRESTIGE: at 1 / 5 / 10 / 20 gcoin in your main money (1st / 2nd / 3rd / 4th prestige) you can reset the game for a Legacy bonus.
+       Every prestige gives a 10-minute tax holiday afterwards (no tax inspections), whatever bonus is chosen.
        Always kept: achievements, Gambler & Investor levels, cosmetics, statistics, Legacy, VIP coins.
        Choices (each can be picked again on later prestiges):
-         tycoon  +25% income (businesses, special businesses, clicks) for every pick
+         tycoon  +25% income (businesses, special businesses, clicks) for every pick; this reset also keeps your Science buildings (not the satellite)
          empire  (max 2) 1st: keep your trucks, tankers, cargo planes, warehouses, Trading Port and Logistics Center on every reset from now on (not the satellite)
                          2nd: all logistics contracts take half the time (same pay)
          vip     (max 2) VIP coins: 500 scoin every 20 min for the Super high roller tables; 2nd pick: every 10 min
        ===================================================================== */
-    const PRESTIGE_AT = 1e12;    // 1 gcoin
-    const PRESTIGE_MAX = 4;      // the 4th prestige finishes the game (you can keep playing)
-    const canPrestige = () => state.legacy.count < PRESTIGE_MAX && state.money >= PRESTIGE_AT;
+    const PRESTIGE_STEPS = [1e12, 5e12, 10e12, 20e12];   // money needed for the 1st, 2nd, 3rd and 4th prestige (1 / 5 / 10 / 20 gcoin)
+    const PRESTIGE_MAX = PRESTIGE_STEPS.length;            // the 4th prestige finishes the game (you can keep playing)
+    const prestigeAt = () => PRESTIGE_STEPS[Math.min(state.legacy.count, PRESTIGE_MAX - 1)];
+    const canPrestige = () => state.legacy.count < PRESTIGE_MAX && state.money >= prestigeAt();
+    const TAX_HOLIDAY = 600;     // seconds without tax inspections after every prestige
     const TYCOON_BONUS = 0.25;
     if (!state.legacy) state.legacy = { count: 0, tycoon: 0, empire: 0, vip: 0, history: [] };
     function legacyIncomeMult() { return 1 + TYCOON_BONUS * ((state.legacy && state.legacy.tycoon) || 0); }
 
     const PRESTIGE_CHOICES = [
-      { id: "tycoon", icon: "💼", name: "Tycoon's Legacy", text: "+25% income from businesses, special businesses and clicks, forever.",
+      { id: "tycoon", icon: "💼", name: "Tycoon's Legacy", text: "+25% income from businesses, special businesses and clicks, forever. This reset also keeps your 🔬 Science buildings (not the satellite).",
         now: () => `Now: +${state.legacy.tycoon * 25}% → after: +${(state.legacy.tycoon + 1) * 25}%` },
       { id: "empire", icon: "🚢", name: "Global Empire", max: 2,
         text: () => state.legacy.empire
@@ -8029,10 +8041,11 @@
 
     function showPrestigeOffer() {
       const n = state.legacy.count + 1;
-      showModal(`<h2>⭐ You made it: 1 gcoin!</h2>
+      showModal(`<h2>⭐ You made it: ${fmt(prestigeAt())}!</h2>
         <p>You can <b>prestige</b>: start the game over and choose a permanent Legacy bonus.</p>
         <p><b style="color:#ffd34d">Prestige ${n} of ${PRESTIGE_MAX}</b>${n === PRESTIGE_MAX ? " · this is the final one: it finishes the game" : ""}</p>
-        <p class="muted">Always kept: achievements, levels, cosmetics, statistics and your 🖼️ Art Gallery (unlock, slots and paintings)${state.legacy.count ? ` · Prestiges so far: ${state.legacy.count}` : ""}.</p>
+        <p class="muted">Always kept: achievements, levels, cosmetics, statistics and your 🖼️ Art Gallery (unlock, slots and paintings)${state.legacy.count ? ` · Prestiges so far: ${state.legacy.count}` : ""}.
+          After every prestige: 🛡️ no tax inspections for the first 10 minutes.</p>
         <div class="prestigeChoices">${PRESTIGE_CHOICES.map(c => {
           const maxed = c.max && state.legacy[c.id] >= c.max;
           const level = c.max ? ` <span class="muted">(${state.legacy[c.id] || 0}/${c.max})</span>` : "";
@@ -8049,12 +8062,14 @@
 
     function showPrestigeConfirm(id) {
       const c = PRESTIGE_CHOICES.find(x => x.id === id);
-      const lost = id === "empire" || state.legacy.empire > 0
+      let lost = id === "empire" || state.legacy.empire > 0
         ? "your money, casino chips, businesses, workers, other special businesses and investments"
         : "your money, casino chips, businesses, workers, special businesses, investments and logistics fleet";
+      lost += id === "tycoon" ? " (your 🔬 Science buildings are kept, the 🛰️ satellite is not)" : " and 🔬 Science";
       showModal(`<h2>${c.icon} ${c.name}</h2>
         <p>Are you sure? This <b>resets</b> ${lost}.</p>
-        <p class="muted">Kept: achievements, levels, cosmetics, statistics, Legacy bonuses, free bet chips, Art Gallery unlock, slots and paintings.</p>
+        <p class="muted">Kept: achievements, levels, cosmetics, statistics, Legacy bonuses, free bet chips, Art Gallery unlock, slots and paintings.
+          🛡️ No tax inspections for the first 10 minutes after the reset.</p>
         <p>This can't be undone.</p>
         ${state.legacy.count + 1 === PRESTIGE_MAX ? `<p style="color:#ffd34d"><b>This is your final prestige.</b> After it, no more resets are possible, but you can keep playing.</p>` : ""}
         <button class="btn big" data-prestige="confirm" data-choice="${id}">⭐ Prestige now</button>
@@ -8074,12 +8089,15 @@
         cosmetics: state.cosmetics, legacy: L, vip: state.vip, nextId: state.nextId, xpVersion: state.xpVersion, logiXp: state.logiXp, freeChips: state.freeChips, freeTimers: state.freeTimers,
         vpPayHidden: state.vpPayHidden, uthPayHidden: state.uthPayHidden, view: "income",
         tips: state.tips,   // 💡 tips already seen and the guided start stay done
+        taxHoliday: TAX_HOLIDAY,   // 🛡️ no tax inspections for the first 10 minutes
         // 🖼️ Art Gallery: stays unlocked and keeps its bought slots and all kept paintings
         art: state.art ? { unlocked: !!state.art.unlocked, slots: state.art.slots, slotBuys: state.art.slotBuys || 0, items: state.art.items || [], done: state.art.done, tier: state.art.tier || "easy", seed: 0, page: "studio", sold: state.art.sold || 0 } : undefined,
         invest: { xp: inv.xp, properties: [], etf: 0, etfTimer: ETF_EVERY, etfHistory: [] },
         // all-time logistics counters are statistics: always kept
         logistics: { tankers: [], trucks: [], planes: [], earned: logi.earned, contracts: logi.contracts || 0 },
       };
+      // 💼 Tycoon's Legacy: this reset keeps the Science buildings (University, Research lab, Space Mission Center), not the satellite
+      if (id === "tycoon" && state.science) keep.science = { ...state.science, satellite: false };
       if (L.empire > 0) {   // Global Empire keeps the fleet on every reset after it was picked
         keep.logistics = state.logistics;
         keep.special = { agency: null, warehouses: state.special.warehouses, port: state.special.port, center: state.special.center };
@@ -8168,7 +8186,7 @@
       slots.push({ value: VIP_CHIP, open: vip, n: nV, vip: true,
         time: !vip ? "Prestige" : nV >= FREE_CHIP_MAX ? "full" : clock(state.vip.timer || vipMinutes() * 60),
         tip: vip ? `🎫 VIP chip from the ⭐ VIP Coins prestige bonus: a free 500 scoin bet chip every ${vipMinutes()} min (shares the 500 scoin count, max ${FREE_CHIP_MAX}).`
-                 : "🔒 Unlocks when you choose ⭐ VIP Coins as a prestige bonus (at 1 gcoin): a free 500 scoin bet chip every 20 min." });
+                 : "🔒 Unlocks when you choose ⭐ VIP Coins as a prestige bonus (from 1 gcoin): a free 500 scoin bet chip every 20 min." });
       // build the slots once, then only update their numbers (so the hover box doesn't flicker)
       const key = slots.map(x => x.open).join();
       if ($("freeChipsGrid").dataset.key !== key) {
@@ -8197,7 +8215,7 @@
     }
     vipReady = true;
 
-    // Checked every second: show the button, and the golden pop-up the first time you reach 1 gcoin
+    // Checked every second: show the button when the next prestige goal (1 / 5 / 10 / 20 gcoin) is reached
     setInterval(() => {
       const ready = canPrestige();
       $("prestigeBtn").hidden = !ready;
@@ -8281,7 +8299,7 @@
 
     function wikiGeneral() {
       return `<h2>⭐ General</h2>
-        <p><b>Empire of Coins</b> is an idle tycoon game. Click the coin, build businesses, play the casino, invest, run a logistics empire, and grow your fortune up to <b>1 gcoin</b>, where you can prestige.</p>
+        <p><b>Empire of Coins</b> is an idle tycoon game. Click the coin, build businesses, play the casino, invest, run a logistics empire, and grow your fortune up to <b>1 gcoin</b>, where you can prestige (then 5, 10 and 20 gcoin).</p>
         <h3>Money units</h3>
         ${wt(["Unit", "Value", "Where you see it"], [
           ["bcoin", "1", "Normal amounts"], ["scoin (sc)", "1,000,000 bcoin", "Amounts from 1 million (your main counter switches at 100 scoin)"], ["gcoin", "1,000,000 scoin", "The biggest amounts"]])}
@@ -8306,10 +8324,11 @@
           ["🚚 Logistics", "XP for every delivered contract (contract minutes × 1 truck / 3 tanker / 6 plane)", "Logistics agents: trucks at 5, tankers at 25, planes at 50"]])}
         <p class="muted">Each level card has a "📋 All levels" button with every level's XP and unlocks.</p>
         <h3>⭐ Prestige</h3>
-        <p>When the money on hand <b>reaches 1 gcoin</b>, you can reset the game for a permanent Legacy bonus (max ${PRESTIGE_MAX} prestiges; the 4th finishes the game, but you can keep playing).
+        <p>When the money on hand reaches <b>1 gcoin</b> (1st prestige), <b>5 gcoin</b> (2nd), <b>10 gcoin</b> (3rd) or <b>20 gcoin</b> (4th), you can reset the game for a permanent Legacy bonus (max ${PRESTIGE_MAX} prestiges; the 4th finishes the game, but you can keep playing).
+          After every prestige there are <b>no tax inspections for the first 10 minutes</b>, whichever bonus you pick.
           <b>Always kept:</b> achievements, Gambler, Investor and Logistics levels, cosmetics, statistics, free bet chips, the 🖼️ Art Gallery unlock, its collection slots and your paintings.</p>
         ${wt(["Bonus", "Effect", "Max"], [
-          ["💼 Tycoon's Legacy", "+25% income from businesses, special businesses and clicks, for each pick", "Unlimited"],
+          ["💼 Tycoon's Legacy", "+25% income from businesses, special businesses and clicks, for each pick. That reset also keeps your Science buildings (University, Research lab, Space Mission Center), but not the satellite", "Unlimited"],
           ["🚢 Global Empire", "1st: keep trucks, tankers, planes, warehouses, Trading Port and Logistics Center on every reset (the satellite resets with Science). 2nd: all contracts take half the time (same pay)", "2"],
           ["🎟️ VIP Coins", "A free 500 scoin bet chip every 20 min (2nd pick: every 10 min) for the Super high roller tables", "2"]])}
         <h3>💾 Saving</h3>
@@ -9998,6 +10017,7 @@
     }
     function closeMenu() {
       $("mainMenu").hidden = true; document.body.classList.remove("menuOpen");
+      if (state.taxHoliday > 0) showNotice(`🛡️ Tax holiday: no tax inspections for the next ${Math.ceil(state.taxHoliday / 60)} minutes.`);
       save();
     }
     addEventListener("resize", () => { if (!$("mainMenu").hidden) layoutMenu(); });
@@ -10044,6 +10064,7 @@
         "The game has a new name: <b>Empire of Coins</b>, with a new logo, browser tab icon, loading screen and this main menu.",
         "New first business: the <b>🌭 Hot Dog Stand</b> (100, 2 workers, no accountant or HR, up to 3). The guided start now begins with it.",
         "Hotels: at most <b>5 Concierges</b> per hotel. More Concierges stacked their bonus far too high.",
+        "Prestige: the 4 resets are now at <b>1, 5, 10 and 20 gcoin</b>, with new achievements for 5, 10 and 20 gcoin. 💼 Tycoon's Legacy also keeps your Science buildings (not the satellite), and every prestige gives a <b>10-minute tax holiday</b>.",
         "Science: buildings now cost scientists (Research lab 20, Space Mission Center 50). Space missions run every 20 minutes and pay 2,000–5,000 scoin, with a 20% chance to fail (15% with the satellite).",
       ] },
       { date: "12 November 2026", title: "Science, rewards and card decks", items: [
@@ -10073,7 +10094,7 @@
           <li>🏢 <b>Buy businesses and hire workers.</b> Every worker has a trait, and accountants and HR experts make a business earn more.</li>
           <li>📈 <b>Grow into new areas</b> as you unlock them: 🎰 Casino, 📈 Investing, 🚢 Logistics, 🖼️ Art Gallery and 🔬 Science.</li>
           <li>🏆 <b>Collect achievements</b> to win reward collections, and spend scoin in the 🛍️ Shop on looks for your coin and background.</li>
-          <li>⭐ <b>Prestige</b> at 1 gcoin: start over with a permanent Legacy bonus.</li>
+          <li>⭐ <b>Prestige</b> at 1, 5, 10 and 20 gcoin: start over with a permanent Legacy bonus.</li>
         </ul>
         <p class="muted">💾 The game saves itself in this browser. Use ⚙️ Settings to download a backup of your progress.
           The 📖 Wiki in the game explains every feature.</p>
