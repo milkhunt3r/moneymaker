@@ -44,14 +44,16 @@
     #mainMenu::before { content: ""; position: absolute; inset: -40px; background: inherit; filter: blur(24px) brightness(0.55); }
     #menuStage { position: absolute; left: 0; top: 0; width: 1672px; height: 941px; transform-origin: 0 0;
       background: url("assets/logo/menu-bg.webp") 0 0 / 100% 100%; box-shadow: 0 0 80px rgba(0, 0, 0, 0.6); }
-    .menuBtn { position: absolute; border: 0; padding: 0; margin: 0; border-radius: 999px; background: transparent;
-      cursor: pointer; transition: background 0.15s, box-shadow 0.15s, transform 0.1s; color: transparent; font-size: 1px; }
-    .menuBtn:hover, .menuBtn:focus-visible { background: rgba(255, 255, 255, 0.18); box-shadow: 0 0 40px rgba(255, 220, 100, 0.95); outline: none; }
+    /* the painted buttons are long hexagons: the click areas use the same shape */
+    .menuBtn { position: absolute; border: 0; padding: 0; margin: 0; background: transparent;
+      clip-path: polygon(5% 0, 95% 0, 100% 50%, 95% 100%, 5% 100%, 0 50%);
+      cursor: pointer; transition: background 0.15s, transform 0.1s; color: transparent; font-size: 1px; }
+    .menuBtn:hover, .menuBtn:focus-visible { background: rgba(255, 240, 180, 0.22); outline: none; }
     .menuBtn[data-menu="play"]:not(:hover) { animation: playGlow 2.2s ease-in-out infinite; }
-    @keyframes playGlow { 50% { box-shadow: 0 0 36px rgba(120, 255, 120, 0.55); } }
+    @keyframes playGlow { 50% { background: rgba(255, 255, 255, 0.12); } }
     .menuBtn:active { transform: scale(0.97); background: rgba(0, 0, 0, 0.12); }
     .menuBtn.soon { cursor: default; }
-    .menuBtn.soon:hover { box-shadow: none; background: rgba(255, 255, 255, 0.06); }
+    .menuBtn.soon:hover { background: rgba(255, 255, 255, 0.06); }
     body.menuOpen #tipCard, body.menuOpen #tutBubble, body.menuOpen #alerts { display: none !important; }
     .recruitCols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; text-align: left; max-height: 58vh; overflow-y: auto; margin: 10px 0 14px; }
     @media (max-width: 640px) { .recruitCols { grid-template-columns: 1fr; } }
@@ -1123,10 +1125,10 @@
   <!-- ===== Main menu (start page) ===== -->
   <div id="mainMenu" hidden>
     <div id="menuStage">
-      <button class="menuBtn" data-menu="play"     style="left:1058px; top:348px; width:289px; height:68px" aria-label="Play">Play</button>
-      <button class="menuBtn" data-menu="settings" style="left:1071px; top:456px; width:264px; height:56px"  aria-label="Settings">Settings</button>
-      <button class="menuBtn" data-menu="about"    style="left:1077px; top:550px; width:252px; height:52px"  aria-label="About">About</button>
-      <button class="menuBtn soon" data-menu="donate" style="left:1078px; top:639px; width:250px; height:54px" aria-label="Donate (coming soon)" title="Coming soon">Donate</button>
+      <button class="menuBtn" data-menu="play"     style="left:1036px; top:337px; width:330px; height:76px" aria-label="Play">Play</button>
+      <button class="menuBtn" data-menu="settings" style="left:1048px; top:445px; width:308px; height:62px"  aria-label="Settings">Settings</button>
+      <button class="menuBtn" data-menu="about"    style="left:1048px; top:535px; width:308px; height:62px"  aria-label="About">About</button>
+      <button class="menuBtn soon" data-menu="donate" style="left:1048px; top:624px; width:308px; height:63px" aria-label="Donate (coming soon)" title="Coming soon">Donate</button>
     </div>
   </div>
 
@@ -10192,7 +10194,7 @@
        so the logo and buttons (x 975–1450, y 35–700 in the picture) always fit.
        The game clock keeps running while the menu is open.
        ===================================================================== */
-    const MENU_W = 1672, MENU_H = 941, MENU_FOCUS = { x0: 975, x1: 1450, y0: 35, y1: 700 };
+    const MENU_W = 1672, MENU_H = 941, MENU_FOCUS = { x0: 975, x1: 1450, y0: 35, y1: 712 };
     function layoutMenu() {
       const vw = innerWidth, vh = innerHeight, F = MENU_FOCUS, pad = 8;
       let s = Math.max(vw / MENU_W, vh / MENU_H);                       // cover the screen
