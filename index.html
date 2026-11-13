@@ -1113,10 +1113,10 @@
   <!-- ===== Main menu (start page) ===== -->
   <div id="mainMenu" hidden>
     <div id="menuStage">
-      <button class="menuBtn" data-menu="play"     style="left:968px;  top:372px; width:442px; height:100px" aria-label="Play">Play</button>
-      <button class="menuBtn" data-menu="settings" style="left:998px;  top:508px; width:386px; height:76px"  aria-label="Settings">Settings</button>
-      <button class="menuBtn" data-menu="about"    style="left:1002px; top:612px; width:378px; height:76px"  aria-label="About">About</button>
-      <button class="menuBtn soon" data-menu="donate" style="left:1002px; top:716px; width:378px; height:78px" aria-label="Donate (coming soon)" title="Coming soon">Donate</button>
+      <button class="menuBtn" data-menu="play"     style="left:1058px; top:348px; width:289px; height:68px" aria-label="Play">Play</button>
+      <button class="menuBtn" data-menu="settings" style="left:1071px; top:456px; width:264px; height:56px"  aria-label="Settings">Settings</button>
+      <button class="menuBtn" data-menu="about"    style="left:1077px; top:550px; width:252px; height:52px"  aria-label="About">About</button>
+      <button class="menuBtn soon" data-menu="donate" style="left:1078px; top:639px; width:250px; height:54px" aria-label="Donate (coming soon)" title="Coming soon">Donate</button>
     </div>
   </div>
 
@@ -9975,10 +9975,10 @@
        🏠 MAIN MENU (start page)
        Shown every time the game opens. The picture (1672 × 941) has the logo and buttons painted in;
        invisible buttons sit on top of them. The picture covers the screen, but on narrow screens it shrinks
-       so the logo and buttons (x 890–1550, y 20–805 in the picture) always fit.
+       so the logo and buttons (x 975–1450, y 35–700 in the picture) always fit.
        The game clock keeps running while the menu is open.
        ===================================================================== */
-    const MENU_W = 1672, MENU_H = 941, MENU_FOCUS = { x0: 890, x1: 1550, y0: 20, y1: 805 };
+    const MENU_W = 1672, MENU_H = 941, MENU_FOCUS = { x0: 975, x1: 1450, y0: 35, y1: 700 };
     function layoutMenu() {
       const vw = innerWidth, vh = innerHeight, F = MENU_FOCUS, pad = 8;
       let s = Math.max(vw / MENU_W, vh / MENU_H);                       // cover the screen
