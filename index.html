@@ -53,6 +53,12 @@
     .menuBtn.soon { cursor: default; }
     .menuBtn.soon:hover { box-shadow: none; background: rgba(255, 255, 255, 0.06); }
     body.menuOpen #tipCard, body.menuOpen #tutBubble, body.menuOpen #alerts { display: none !important; }
+    .recruitCols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; text-align: left; max-height: 58vh; overflow-y: auto; margin: 10px 0 14px; }
+    @media (max-width: 640px) { .recruitCols { grid-template-columns: 1fr; } }
+    .recruitCol h3 { margin: 0 0 8px; color: #ffd34d; }
+    .recruitCol label { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 4px 0; font-size: 14px; }
+    .recruitCol select { flex: 0 0 60%; padding: 5px 6px; border-radius: 8px; border: 1px solid #555566; background: #1c1d2b; color: #fff; font: inherit; font-size: 13px; }
+    .recruitErr { color: #ff8a8a; min-height: 18px; font-weight: 700; }
     #modalBox.about { text-align: left; max-height: 86vh; overflow-y: auto; }
     #modalBox.about h2, #modalBox.about .aboutLogo { text-align: center; }
     #modalBox.about h3 { color: #ffd34d; margin: 18px 0 6px; font-size: 18px; }
@@ -2587,6 +2593,14 @@
         state.special.parks.push({ id: state.nextId++ });
         showNotice(`🎢 Amusement park #${state.special.parks.length} opened next to Hotel #${state.special.parks.length}!`);
       }
+      if (action === "buySpecial" && btn.dataset.special === "recruit") {
+        if (state.special.recruit || !recruitUnlocked() || state.money < RECRUIT_PRICE) return;
+        state.money -= RECRUIT_PRICE;
+        state.special.recruit = { bought: true };
+        showNotice("🧑‍💼 Recruitment Agency opened! Set your 📝 Staffing plan, then 👥 Hire staff for every empty hotel and casino.");
+      }
+      if (action === "recruitPlan") return showRecruitPlan();
+      if (action === "recruitHire") recruitHire();
       if (action === "toggleLaw") state.special.lawCollapsed = !state.special.lawCollapsed;
       if (action === "toggleAgency") state.special.agencyCollapsed = !state.special.agencyCollapsed;
       if (action === "lawSlot") {
@@ -6180,6 +6194,109 @@
       if (el) el.textContent = "+" + fmt(income) + " / sec";
       return income;
     }
+
+    /* =====================================================================
+       🧑‍💼 RECRUITMENT AGENCY (special business): 10 scoin, max 1, unlocks with 2 hotels and 2 casinos.
+       No workers, HR or accountant. You save a staffing plan for each business type (accountant, HR and
+       a trait for every worker place; "Random" rolls a trait like normal hiring). "Hire staff" fills every
+       hotel and casino that has NO staff yet (no accountant, HR or workers) with that plan:
+       1 scoin per business filled, each worker's pay per second is random in the normal range.
+       Businesses that already have any staff are never touched. The plan is kept on prestige.
+       ===================================================================== */
+    const RECRUIT_PRICE = 1e7, RECRUIT_FILL = 1e6, RECRUIT_NEED = { hotel: 2, casino: 2 };
+    const RECRUIT_TYPES = ["casino", "hotel"];
+    const recruitSlots = (typeId) => { const T = BUSINESS_TYPES.find(t => t.id === typeId); return T.maxEmployees - 2 + (lawCount("employment") > 0 ? 1 : 0); };
+    const recruitTraits = (typeId) => Object.keys(TRAITS).filter(k => k !== "normal" && k !== "legend" && (!TRAITS[k].onlyFor || TRAITS[k].onlyFor.includes(typeId)));
+    const recruitUnlocked = () => ownedOf("hotel") >= RECRUIT_NEED.hotel && ownedOf("casino") >= RECRUIT_NEED.casino;
+    const recruitTargets = () => state.companies.filter(c => RECRUIT_TYPES.includes(c.typeId) && !c.accountant && !c.hr && c.workers.length === 0);
+    function recruitPlan() {
+      if (!state.recruitPlan) state.recruitPlan = {};
+      RECRUIT_TYPES.forEach(id => {
+        const p = state.recruitPlan[id] = state.recruitPlan[id] || { accountant: "numbers", hr: "motivator", traits: [] };
+        while (p.traits.length < recruitSlots(id)) p.traits.push("random");
+      });
+      return state.recruitPlan;
+    }
+
+    function renderRecruit() {
+      const desc = `<div class="muted">Fills every empty 🎰 casino and 🏨 hotel with your staffing plan: accountant, HR and a chosen trait for every worker · ${fmt(RECRUIT_FILL)} per business filled · pay per second stays random · businesses that already have staff are not touched · no workers, HR or accountant · max 1</div>`;
+      if (state.special.recruit) {
+        const n = recruitTargets().length;
+        return `<div class="card specialCard"><div class="row"><h3>🧑‍💼 Recruitment Agency</h3></div>${desc}
+          <div class="muted" style="margin-top:6px">${n ? `<b>${n}</b> empty business${n === 1 ? "" : "es"} ready to staff · cost ${fmt(n * RECRUIT_FILL)}` : "No empty hotels or casinos right now."}</div>
+          <div class="row" style="justify-content:flex-start; gap:8px; margin-top:8px">
+            <button class="btn ghost" data-action="recruitPlan">📝 Staffing plan</button>
+            <button class="btn" data-action="recruitHire" ${n ? `data-cost="${RECRUIT_FILL}"` : ""} ${n && state.money >= RECRUIT_FILL ? "" : "disabled"}>👥 Hire staff</button>
+          </div></div>`;
+      }
+      if (recruitUnlocked()) {
+        return `<div class="card specialCard"><div class="row"><div><h3>🧑‍💼 Recruitment Agency</h3>${desc}</div>
+          <button class="btn" data-action="buySpecial" data-special="recruit" data-cost="${RECRUIT_PRICE}">Buy ${fmt(RECRUIT_PRICE)}</button></div></div>`;
+      }
+      return `<div class="card specialCard" style="opacity:0.6"><div class="row"><div><h3>🔒 🧑‍💼 Recruitment Agency</h3>${desc}
+          <div class="muted">Unlocks when you own ${RECRUIT_NEED.hotel} hotels (${ownedOf("hotel")}/${RECRUIT_NEED.hotel}) and ${RECRUIT_NEED.casino} casinos (${ownedOf("casino")}/${RECRUIT_NEED.casino})</div></div>
+        <span class="muted">${fmt(RECRUIT_PRICE)}</span></div></div>`;
+    }
+
+    // 📝 The staffing plan pop-up: one column per business type
+    function showRecruitPlan(msg = "") {
+      const plan = recruitPlan();
+      const opt = (obj, sel) => Object.keys(obj).map(k => `<option value="${k}" ${k === sel ? "selected" : ""}>${obj[k].emoji} ${obj[k].name}</option>`).join("");
+      const col = (id) => {
+        const T = BUSINESS_TYPES.find(t => t.id === id), p = plan[id], n = recruitSlots(id);
+        const traitOpts = (sel) => `<option value="random" ${sel === "random" ? "selected" : ""}>🎲 Random</option>` +
+          recruitTraits(id).map(k => `<option value="${k}" ${k === sel ? "selected" : ""}>${TRAITS[k].emoji} ${TRAITS[k].name}</option>`).join("");
+        return `<div class="recruitCol"><h3>${T.emoji} ${T.name}</h3>
+          <label>🧮 Accountant<select data-rp="${id}" data-field="accountant">${opt(ACCOUNTANTS, p.accountant)}</select></label>
+          <label>💞 HR<select data-rp="${id}" data-field="hr">${opt(HR_OPTIONS, p.hr)}</select></label>
+          ${p.traits.slice(0, n).map((tr, i) => `<label>👷 Worker ${i + 1}<select data-rp="${id}" data-field="trait" data-i="${i}">${traitOpts(tr)}</select></label>`).join("")}
+          <div class="muted">${n + 2} places: accountant, HR and ${n} workers · pay ${T.minIncome}–${T.maxIncome} / sec each (random)</div></div>`;
+      };
+      showModal(`<h2>📝 Staffing plan</h2>
+        <p class="muted">Choose the staff for every new hotel and casino. "🎲 Random" rolls a trait like normal hiring. Max ${CONCIERGE_MAX} 🛎️ Concierges per hotel.</p>
+        <div class="recruitErr" id="recruitErr">${msg}</div>
+        <div class="recruitCols">${RECRUIT_TYPES.map(col).join("")}</div>
+        <button class="btn big" data-modal="close">✅ Save plan</button>`);
+      $("modalBox").classList.add("wide");
+    }
+    $("modalBox").addEventListener("change", (e) => {
+      const sel = e.target.closest("select[data-rp]"); if (!sel) return;
+      const p = recruitPlan()[sel.dataset.rp], f = sel.dataset.field;
+      if (f === "trait") {
+        const i = Number(sel.dataset.i), old = p.traits[i];
+        p.traits[i] = sel.value;
+        if (sel.dataset.rp === "hotel" && p.traits.slice(0, recruitSlots("hotel")).filter(t => t === "concierge").length > CONCIERGE_MAX) {
+          p.traits[i] = old; sel.value = old;
+          $("recruitErr").textContent = `🛎️ A hotel can have at most ${CONCIERGE_MAX} Concierges.`;
+          return;
+        }
+      } else p[f] = sel.value;
+      $("recruitErr").textContent = "";
+      save();
+    });
+
+    // 👥 Fill every empty hotel and casino with the plan (1 scoin each, as many as you can afford)
+    function recruitHire() {
+      const plan = recruitPlan();
+      let filled = 0, people = 0;
+      for (const c of recruitTargets()) {
+        if (state.money < RECRUIT_FILL) break;
+        state.money -= RECRUIT_FILL;
+        const p = plan[c.typeId], T = typeOf(c);
+        c.accountant = p.accountant; c.hr = p.hr; c.candidates = null;
+        for (let i = 0; i < maxWorkers(c); i++) {
+          const want = p.traits[i] || "random";
+          c.workers.push({ id: state.nextId++, name: randomItem(FIRST_NAMES), trait: want === "random" ? rollTrait(c) : want, base: randomInt(T.minIncome, T.maxIncome) });
+        }
+        filled++; people += c.workers.length + 2;
+      }
+      if (filled) {
+        state.stats.recruitFilled = (state.stats.recruitFilled || 0) + filled;
+        const left = recruitTargets().length;
+        showNotice(`🧑‍💼 Staffed ${filled} business${filled === 1 ? "" : "es"} (${people} people) for ${fmt(filled * RECRUIT_FILL)}.${left ? ` ${left} still empty: not enough money.` : ""}`);
+      }
+    }
+
     function renderGalleryBiz() {
       const n = paintingsOwned();
       const desc = `<div class="muted">Shows your paintings to visitors: ${fmt(GALLERY_PER_PAINTING)} / sec for each painting in your 🖼️ Collection, up to ${fmt(GALLERY_MAX)} / sec (${GALLERY_MAX / GALLERY_PER_PAINTING} paintings) · no workers, HR manager or accountant · max 1</div>`;
@@ -6264,6 +6381,7 @@
         [MINE_PRICE, renderMines],             // 5M
         [PORT_PRICE, renderPort],              // 25M
         [GALLERY_PRICE, renderGalleryBiz],     // 50M
+        [RECRUIT_PRICE, renderRecruit],        // 10 scoin
       ].sort((a, b) => a[0] - b[0]);
       return `<h2 class="specialHead">⭐ Special businesses</h2>` + list.map(([, fn]) => fn()).join("");
     }
@@ -7819,6 +7937,7 @@
       { id: "mine1",      cat: "income", icon: "⛏️", name: "Gold digger",        desc: "Buy your first gold mine",            goal: 1, get: () => state.stats.minesBought },
       { id: "mine4",      cat: "income", icon: "⛏️", name: "Mining magnate",     desc: "Buy 4 gold mines (all-time)",         goal: 4, get: () => state.stats.minesBought },
       { id: "port",       cat: "income", icon: "⚓", name: "Harbor master",      desc: "Buy the Trading Port",                goal: 1, get: () => state.special.port ? 1 : 0 },
+      { id: "recruit", cat: "income", icon: "🧑‍💼", name: "Headhunter", desc: "Buy the Recruitment Agency special business", goal: 1, get: () => state.special.recruit ? 1 : 0 },
       { id: "artbiz", cat: "income", icon: "🏛️", name: "Patron of the arts", desc: "Buy the Art Gallery special business", goal: 1, get: () => state.special.gallery ? 1 : 0 },
       { id: "sciUni",   cat: "income", icon: "🎓", name: "Higher education", desc: "Build a University", goal: 1, get: () => state.science && state.science.uni ? 1 : 0 },
       { id: "sciLab",   cat: "income", icon: "🧪", name: "Mad scientist", desc: "Build a Research lab", goal: 1, get: () => state.science && state.science.lab ? 1 : 0 },
@@ -8105,6 +8224,7 @@
         vpPayHidden: state.vpPayHidden, uthPayHidden: state.uthPayHidden, view: "income",
         tips: state.tips,   // 💡 tips already seen and the guided start stay done
         taxHoliday: TAX_HOLIDAY,   // 🛡️ no tax inspections for the first 10 minutes
+        recruitPlan: state.recruitPlan,   // 🧑‍💼 the Recruitment Agency's staffing plan (the building itself resets)
         // 🖼️ Art Gallery: stays unlocked and keeps its bought slots and all kept paintings
         art: state.art ? { unlocked: !!state.art.unlocked, slots: state.art.slots, slotBuys: state.art.slotBuys || 0, items: state.art.items || [], done: state.art.done, tier: state.art.tier || "easy", seed: 0, page: "studio", sold: state.art.sold || 0 } : undefined,
         invest: { xp: inv.xp, properties: [], etf: 0, etfTimer: ETF_EVERY, etfHistory: [] },
@@ -8390,6 +8510,7 @@
         ${wt(["Business", "Price", "Unlock", "What it does"], [
           ["📦 Warehouse", fmt(WAREHOUSE_PRICE), `Max 5; slots open at ${WAREHOUSE_UNLOCKS.join(", ")} trucks`, `+${pctx(WAREHOUSE_BONUS)} on truck contract payouts each`],
           ["⚖️ Law Firm", fmt(LAW_PRICE), "Always", `Hire up to ${LAW_MAX} attorneys (slot n costs ${fmt(LAW_SLOT_PRICE)} × n); pick 1 of 3 each time`],
+          ["🧑‍💼 Recruitment Agency", fmt(RECRUIT_PRICE), `${RECRUIT_NEED.hotel} hotels and ${RECRUIT_NEED.casino} casinos`, `📝 Staffing plan: pick the accountant, HR and a trait for every worker place of a hotel and a casino. 👥 Hire staff fills every hotel and casino with no staff yet, ${fmt(RECRUIT_FILL)} per business (pay per second stays random). Businesses with staff are not touched; the plan is kept on prestige`],
           ["🏢 Real Estate Agency", fmt(AGENCY_PRICE), `${fmt(AGENCY_UNLOCK)} all-time real estate profit`, `+${pctx(AGENCY_SALE_BONUS)} on property sales; 1 agent per ${fmt(AGENCY_PER_AGENT)} real estate profit (max ${AGENCY_MAX_AGENTS}), each earns 0/5/10/15 per second`],
           ["🎢 Amusement Park", fmt(PARK_PRICE), "One per hotel", `Earns ${pctx(PARK_SHARE)} of its paired hotel's income`],
           ["⛏️ Gold Mine", fmt(MINE_PRICE), `${fmt(MINE_UNLOCK)} all-time gold profit; max ${MINE_MAX}`, `${MINE_INCOME} / sec until its 20–30 scoin of gold is mined, then it closes. 🔥 Gold rush: 1 in ${RUSH_ODDS} chance per second per mine (2 mines: 1 in ${RUSH_ODDS / 2}) of 2× mine income for ${RUSH_SECONDS} sec`],
@@ -10079,6 +10200,7 @@
         "The game has a new name: <b>Empire of Coins</b>, with a new logo, browser tab icon, loading screen and this main menu.",
         "New first business: the <b>🌭 Hot Dog Stand</b> (100, 2 workers, no accountant or HR, up to 3). The guided start now begins with it.",
         "Hotels: at most <b>5 Concierges</b> per hotel. More Concierges stacked their bonus far too high.",
+        "New special business: the <b>🧑‍💼 Recruitment Agency</b> (10 scoin, needs 2 hotels and 2 casinos). Save a staffing plan once, then staff every new hotel and casino in one click for 1 scoin each.",
         "Shop: the new <b>🦁 Emperor Collection</b> (background, coin and card deck, 1 gcoin each), with the achievement <b>Hail, Emperor!</b> for wearing all 3 at once.",
         "Shop: new prices per item: One Step Ahead 25 scoin, Royal 100 scoin, Make It Rain 500 scoin (Wow So Rich stays 5 scoin). Items you already own stay yours.",
         "Prestige: the 4 resets are now at <b>1, 5, 10 and 20 gcoin</b>, with new achievements for 5, 10 and 20 gcoin. 💼 Tycoon's Legacy also keeps your Science buildings (not the satellite), and every prestige gives a <b>10-minute tax holiday</b>.",
