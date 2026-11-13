@@ -1609,6 +1609,22 @@
     // Business types. To add a new one later, copy the car wash entry.
     const BUSINESS_TYPES = [
       {
+        id: "hotdog",
+        name: "Hot Dog Stand",
+        emoji: "🌭",
+        price: 100,
+        maxOwned: 3,
+        priceMultiplier: 2, // 100, 200, 400
+        noStaff: true,      // a small stand: no accountant and no HR, just 2 workers
+        maxEmployees: 2,
+        hireBaseCost: 0,    // first worker is free, the second costs 50
+        hireCostStep: 50,
+        minIncome: 2,
+        maxIncome: 3,
+        refreshBaseCost: 5,
+        refreshCostStep: 5,
+      },
+      {
         id: "carwash",
         name: "Car Wash",
         emoji: "🚗",
@@ -1949,7 +1965,8 @@
     const typeOf = (company) => BUSINESS_TYPES.find(t => t.id === company.typeId);
 
     // Accountant and HR count as 2 of the max employees
-    const maxWorkers = (company) => typeOf(company).maxEmployees - 2 + (lawCount("employment") > 0 ? 1 : 0);
+    const maxWorkers = (company) => typeOf(company).maxEmployees - (typeOf(company).noStaff ? 0 : 2) + (lawCount("employment") > 0 ? 1 : 0);
+    const staffReady = (company) => !!typeOf(company).noStaff || !!(company.accountant && company.hr);   // can hire workers and earn
 
     const ownedOf = (typeId) => state.companies.filter(c => c.typeId === typeId).length;
     const carWashWorkers = () => state.companies
@@ -2049,7 +2066,7 @@
       const workers = company.workers;
 
       // The company only works once the accountant and HR are chosen
-      if (!company.accountant || !company.hr || workers.length === 0) return result;
+      if (!staffReady(company) || workers.length === 0) return result;
 
       const tick = company.ticks = (company.ticks || 0) + 1;   // seconds this company has been running
 
@@ -2254,7 +2271,7 @@
             <h3>${t.emoji} ${title}</h3>
             <span class="row">
               <span class="income" id="c-income-${ci}">+0 / sec</span>
-              ${c.accountant && c.hr
+              ${staffReady(c)
                 ? `<button class="btn ghost small" data-action="toggle" data-company="${ci}"
                      title="${c.collapsed ? "Show workers" : "Hide workers"}">${c.collapsed ? "▸ Show" : "▾ Hide"}</button>`
                 : ""}
@@ -2262,8 +2279,8 @@
           </div>
           <div class="flash" id="c-flash-${ci}"></div>`;
 
-        // Step 1: choose the accountant
-        if (!c.accountant) {
+        // Step 1: choose the accountant (not for small businesses without staff)
+        if (!t.noStaff && !c.accountant) {
           html += `<h4>Hire your accountant</h4><div class="choices">`;
           for (const key in ACCOUNTANTS) {
             const a = ACCOUNTANTS[key];
@@ -2275,7 +2292,7 @@
         }
 
         // Step 2: choose HR
-        if (!c.hr) {
+        if (!t.noStaff && !c.hr) {
           html += `<div class="staff">${ACCOUNTANTS[c.accountant].emoji} Accountant: <b>${ACCOUNTANTS[c.accountant].name}</b></div>`;
           html += `<h4>Hire your HR manager</h4><div class="choices">`;
           for (const key in HR_OPTIONS) {
@@ -2289,15 +2306,14 @@
 
         // Minimized: just a one-line summary
         if (c.collapsed) {
-          html += `<div class="muted">${ACCOUNTANTS[c.accountant].emoji} ${HR_OPTIONS[c.hr].emoji}
-                     · ${c.workers.length} / ${maxWorkers(c)} workers</div></div>`;
+          html += `<div class="muted">${t.noStaff ? "" : `${ACCOUNTANTS[c.accountant].emoji} ${HR_OPTIONS[c.hr].emoji} · `}${c.workers.length} / ${maxWorkers(c)} workers</div></div>`;
           return html;
         }
 
         // Step 3: the running company
-        html += `<div class="staff">${ACCOUNTANTS[c.accountant].emoji} Accountant: <b>${ACCOUNTANTS[c.accountant].name}</b></div>
-                 <div class="staff">${HR_OPTIONS[c.hr].emoji} HR: <b>${HR_OPTIONS[c.hr].name}</b></div>
-                 <h4>Workers (${c.workers.length} / ${maxWorkers(c)})</h4>`;
+        if (!t.noStaff) html += `<div class="staff">${ACCOUNTANTS[c.accountant].emoji} Accountant: <b>${ACCOUNTANTS[c.accountant].name}</b></div>
+                 <div class="staff">${HR_OPTIONS[c.hr].emoji} HR: <b>${HR_OPTIONS[c.hr].name}</b></div>`;
+        html += `<h4>Workers (${c.workers.length} / ${maxWorkers(c)})</h4>`;
 
         if (c.workers.length === 0) html += `<div class="muted">No workers yet. Hire someone to start earning!</div>`;
 
@@ -2370,7 +2386,7 @@
         html += `<div class="card">
           <div class="row">
             <div><h3>${t.emoji} ${t.name}</h3>
-              <div class="muted">Up to ${t.maxEmployees} employees (incl. accountant &amp; HR) · workers earn ${t.minIncome}–${t.maxIncome} / sec</div>
+              <div class="muted">${t.noStaff ? `${t.maxEmployees} workers · no accountant or HR` : `Up to ${t.maxEmployees} employees (incl. accountant &amp; HR)`} · workers earn ${t.minIncome}–${t.maxIncome} / sec</div>
               ${t.perk ? `<div class="muted">⭐ ${t.perk}</div>` : ""}
               <div class="muted">Owned: ${owned} / ${t.maxOwned}</div></div>
             <button class="btn" data-action="buy" data-type="${t.id}" data-cost="${businessPrice(t)}">Buy ${fmt(businessPrice(t))}</button>
@@ -8227,7 +8243,7 @@
         let unlock = "Always";
         try { if (t.unlockText) unlock = t.unlockText(0).replace(/\s*\([^)]*\)/g, ""); } catch (e) {}
         return [`${t.emoji} <b>${t.name}</b>`, fmt(t.price) + (t.maxOwned > 1 ? `, then ×${t.priceMultiplier || 2} each` : ""), t.maxOwned,
-                `${t.maxEmployees - 2} workers + accountant + HR`, `${t.minIncome}–${t.maxIncome} / sec per worker`, unlock];
+                t.noStaff ? `${t.maxEmployees} workers (no accountant or HR)` : `${t.maxEmployees - 2} workers + accountant + HR`, `${t.minIncome}–${t.maxIncome} / sec per worker`, unlock];
       });
       const traitRows = Object.entries(TRAITS).filter(([k]) => k !== "normal").map(([k, t]) =>
         [`${t.emoji} ${t.name}`, t.desc, t.onlyFor ? t.onlyFor.map(id => (BUSINESS_TYPES.find(b => b.id === id) || {}).name).join(", ") : "All", k === "legend" ? "1%" : pctx(t.chance)]);
@@ -9560,6 +9576,7 @@
        ===================================================================== */
     const TIP_GAP = 60000;
     const TIPS = {
+      staff:     { icon: "🧮", title: "Hiring staff", wiki: "income", text: "Bigger businesses need an accountant and an HR manager before they can hire workers. Pick the ones whose bonus suits you; you can't change them later." },
       special:   { icon: "⭐", title: "Special businesses", wiki: "income", text: "Special businesses need no workers. Most have a requirement first; they show 🔒 until you meet it, so check this page as you grow." },
       taxes:     { icon: "🧾", title: "Taxes", wiki: "general", text: "Your income is taxed. When a tax bill comes you have time to pay it; unpaid bills become debt that grows. Pay with the red banner at the top." },
       casino:    { icon: "🎰", title: "The casino", wiki: "casino", text: "Move money into casino chips first, then pick a table. Bets give Gambler XP, and every Gambler level gives cashback on lost bets." },
@@ -9615,6 +9632,7 @@
       if (!state.tips.on) return;
       const v = state.view;
       if (v === "income" && state.incomePage === "special") showTip("special");
+      if (state.companies.some(c => !typeOf(c).noStaff && !c.accountant)) showTip("staff");
       if ((state.taxDebts || []).length || state.pendingTaxId !== null) showTip("taxes");
       if (v === "casino") showTip("casino");
       if (v === "casino" && hotNow().active) showTip("hot");
@@ -9639,11 +9657,15 @@
       { target: "#energyBtn", view: "income", text: "⚡ <b>Buy an energy drink.</b> For 30 seconds every click is worth ×5, a quick way to afford your first business.",
         done: () => energyActive() || (state.stats.boostEnergy || 0) > (state.tips.energyBase ?? (state.tips.energyBase = state.stats.boostEnergy || 0)),
         hint: () => state.money < ENERGY_PRICE ? `It costs ${fmt(ENERGY_PRICE)}: keep clicking the coin.` : "Then click the coin as fast as you can!" },
-      { target: '[data-action="buy"]', view: "income", page: "biz", text: "🏢 <b>Buy your first business.</b> Businesses earn money every second.", done: () => state.companies.length > 0,
-        hint: () => state.money < 1000 ? "Keep clicking the coin until you can afford it (a Car Wash costs 1,000)." : "" },
-      { target: '[data-action="accountant"]', view: "income", page: "biz", text: "🧮 <b>Every business needs staff.</b> First choose an accountant: each one gives a different bonus.", done: () => state.companies.some(c => c.accountant) },
-      { target: '[data-action="hr"]', view: "income", page: "biz", text: "🧑‍💼 <b>Hire an HR manager.</b> Each one gives your workers a different kind of bonus.", done: () => state.companies.some(c => c.hr) },
-      { target: '[data-action="hire"]', view: "income", page: "biz", text: "👷 <b>Hire a worker.</b> A business only earns when it has workers. Each worker has a trait with a small bonus.", done: () => state.companies.some(c => c.workers.length > 0) },
+      { target: '[data-action="buy"][data-type="hotdog"]', view: "income", page: "biz", text: "🌭 <b>Buy a Hot Dog Stand.</b> It's your first business: small, cheap, and it earns money every second.",
+        done: () => state.companies.some(c => c.typeId === "hotdog"),
+        hint: () => state.money < 100 ? "Keep clicking the coin until you have 100." : "" },
+      { target: '[data-action="hire"]', view: "income", page: "biz", text: "👷 <b>Hire a worker.</b> A business only earns when it has workers. Each worker has a trait with a small bonus. The first one is free!",
+        done: () => state.companies.some(c => c.workers.length > 0) },
+      { target: '[data-action="hire"]', view: "income", page: "biz", text: "👷 <b>Hire a second worker.</b> A Hot Dog Stand has room for 2 workers.",
+        done: () => state.companies.some(c => c.workers.length >= 2) || !state.companies.some(c => c.workers.length < maxWorkers(c)),
+        hint: () => { const c = state.companies.find(x => x.typeId === "hotdog"); return c ? `It costs ${fmt(hireCost(c))}.` : ""; } },
+      { target: '[data-action="buy"][data-type="carwash"]', view: "income", page: "biz", text: "🚗 <b>Next goal: a Car Wash</b> (1,000). Bigger businesses earn more, but first you'll pick an <b>accountant</b> and an <b>HR manager</b>, and each gives a bonus.", next: true },
       { target: "#perSecond", view: "income", text: "📈 This is your <b>income per second</b>. More businesses and workers make it grow, even while you're away.", next: true },
       { target: "#tabs", view: null, text: "🔓 New tabs and features <b>unlock as you grow</b>. Look for 🔒 to see what's next, and 📖 Wiki if you need help. Have fun!", next: true, last: true },
     ];
