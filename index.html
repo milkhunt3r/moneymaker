@@ -164,6 +164,10 @@
     .switch.on::after { left: 27px; }
 
     /* Wow So Rich cosmetics */
+    body.emperorBg {
+      background: linear-gradient(rgba(12, 12, 22, 0.8), rgba(12, 12, 22, 0.88)), url("assets/emperor-background.jpg") center / cover fixed;
+    }
+    #coin.emperorCoin { background: url("assets/emperor-coin.webp") center / contain no-repeat; box-shadow: none; filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.55)); }
     body.royalBg {
       background: linear-gradient(rgba(12, 12, 22, 0.8), rgba(12, 12, 22, 0.88)), url("assets/royal-background.jpg") center / cover fixed;
     }
@@ -4584,7 +4588,7 @@
     const SUIT_NAME = { "♠": "spades", "♥": "hearts", "♦": "diamonds", "♣": "clubs" };
     const RANK_NAME = { A: "Ace", J: "Jack", Q: "Queen", K: "King" };
     // the deck in use: the equipped 🃏 Cards cosmetic, or the default fox deck
-    const DECK_DIRS = { wowCards: "cards-wow", rainCards: "cards-rain", aheadCards: "cards-ahead", royalCards: "cards-royal" };
+    const DECK_DIRS = { wowCards: "cards-wow", rainCards: "cards-rain", aheadCards: "cards-ahead", royalCards: "cards-royal", emperorCards: "cards-emperor" };
     function deckDir() {
       const on = state.cosmetics && state.cosmetics.on || {};
       const id = Object.keys(DECK_DIRS).find(k => on[k]);
@@ -6543,6 +6547,7 @@
       { id: "ahead", name: "♟️ One Step Ahead Collection" },
       { id: "royal", name: "👑 Royal Collection" },
       { id: "rain",  name: "🐸 Make It Rain Collection" },
+      { id: "emperor", name: "🦁 Emperor Collection" },
       // 🎁 reward collections: not sold in the Shop, unlocked in Achievements → Rewards
       { id: "artist", name: "🎨 Artist Collection", reward: { cat: "art", text: "Unlock every 🖼️ Art Gallery achievement" } },
       { id: "bull", name: "🐂 Bull Run Collection", reward: { cat: "invest", text: "Unlock every 📈 Investments achievement" } },
@@ -6580,6 +6585,12 @@
         preview: `<div class="preview"><img src="assets/rain-coin.webp" alt="Make It Rain coin"></div>` },
       { id: "rainCards", collection: "rain", slot: "cards", name: "Make It Rain Cards", price: 500000000, desc: "A full deck with the frog wizard on the Jacks, Queens, Kings and Joker, for every card game.",
         preview: `<div class="preview cardsPreview"><img src="assets/cards-rain/Jc.webp" alt=""><img src="assets/cards-rain/Qh.webp" alt=""><img src="assets/cards-rain/Ks.webp" alt="Make It Rain cards"></div>` },
+      { id: "emperorBg", collection: "emperor", slot: "background", name: "Emperor Background", price: 1e12, desc: "The Lion Emperor on his golden throne, looking over his whole empire: city, casino, harbor, gold mines and a rocket launch, behind the whole game.",
+        preview: `<div class="preview" style="background-image:url('assets/emperor-background-thumb.jpg')"></div>` },
+      { id: "emperorCoin", collection: "emperor", slot: "coin", name: "Emperor Coin", price: 1e12, desc: "Replaces the coin you click with the Lion Emperor's ruby-set gold medallion.",
+        preview: `<div class="preview"><img src="assets/emperor-coin.webp" alt="Emperor coin"></div>` },
+      { id: "emperorCards", collection: "emperor", slot: "cards", name: "Emperor Cards", price: 1e12, desc: "A full deck with the Lion Emperor as King, the Lioness Empress as Queen, the Lion Prince as Jack and the monkey jester as Joker, for every card game.",
+        preview: `<div class="preview cardsPreview"><img src="assets/cards-emperor/Jc.webp" alt=""><img src="assets/cards-emperor/Qh.webp" alt=""><img src="assets/cards-emperor/Ks.webp" alt="Emperor cards"></div>` },
       { id: "artistBg", collection: "artist", slot: "background", name: "Artist Background", price: 0, desc: "The painter cat at work under a sky full of stars, behind the whole game.",
         preview: `<div class="preview" style="background-image:url('assets/artist-background-thumb.jpg')"></div>` },
       { id: "artistCoin", collection: "artist", slot: "coin", name: "Artist Coin", price: 0, desc: "Replaces the coin you click with the painter cat's golden medallion.",
@@ -6621,6 +6632,8 @@
     function applyCosmetics() {
       document.body.classList.toggle("wowBg", !!state.cosmetics.on.wowBg);
       document.body.classList.toggle("royalBg", !!state.cosmetics.on.royalBg);
+      document.body.classList.toggle("emperorBg", !!state.cosmetics.on.emperorBg);
+      $("coin").classList.toggle("emperorCoin", !!state.cosmetics.on.emperorCoin);
       document.body.classList.toggle("rainBg", !!state.cosmetics.on.rainBg);
       if (typeof applyDeck === "function") {   // 🃏 card deck: redraw an open card table with the new cards
         applyDeck();
@@ -7787,6 +7800,8 @@
       { id: "tax100",     cat: "general", icon: "🧾", name: "Model taxpayer",     desc: "Pay 100 tax bills",                   goal: 100,  get: () => state.stats.taxPaid || 0 },
       { id: "tax1000",    cat: "general", icon: "🏛️", name: "Pillar of society",  desc: "Pay 1,000 tax bills",                 goal: 1000, get: () => state.stats.taxPaid || 0 },
       { id: "cosmetic1",  cat: "general", icon: "🛍️", name: "Treat yourself",     desc: "Buy your first cosmetic item in the Shop", goal: 1, get: () => COSMETICS.some(c => c.price > 0 && state.cosmetics.owned[c.id]) ? 1 : 0 },
+      { id: "emperor",    cat: "general", icon: "🦁", name: "Hail, Emperor!",     desc: "Buy the whole 🦁 Emperor Collection and wear all 3 items at once (background, coin and cards)", goal: 3,
+        get: () => ["emperorBg", "emperorCoin", "emperorCards"].filter(id => state.cosmetics.owned[id] && state.cosmetics.on[id]).length },
       { id: "fullSet",    cat: "general", icon: "🎨", name: "Dressed to impress", desc: "Wear the coin and background from the same collection", goal: 1, get: () => matchingSet() ? 1 : 0 },
       // Income
       { id: "click100",   cat: "income", icon: "👆", name: "Warming up",         desc: "Click the coin 100 times",            goal: 100,    get: () => state.stats.clicks },
@@ -10064,6 +10079,7 @@
         "The game has a new name: <b>Empire of Coins</b>, with a new logo, browser tab icon, loading screen and this main menu.",
         "New first business: the <b>🌭 Hot Dog Stand</b> (100, 2 workers, no accountant or HR, up to 3). The guided start now begins with it.",
         "Hotels: at most <b>5 Concierges</b> per hotel. More Concierges stacked their bonus far too high.",
+        "Shop: the new <b>🦁 Emperor Collection</b> (background, coin and card deck, 1 gcoin each), with the achievement <b>Hail, Emperor!</b> for wearing all 3 at once.",
         "Shop: new prices per item: One Step Ahead 25 scoin, Royal 100 scoin, Make It Rain 500 scoin (Wow So Rich stays 5 scoin). Items you already own stay yours.",
         "Prestige: the 4 resets are now at <b>1, 5, 10 and 20 gcoin</b>, with new achievements for 5, 10 and 20 gcoin. 💼 Tycoon's Legacy also keeps your Science buildings (not the satellite), and every prestige gives a <b>10-minute tax holiday</b>.",
         "Science: buildings now cost scientists (Research lab 20, Space Mission Center 50). Space missions run every 20 minutes and pay 2,000–5,000 scoin, with a 20% chance to fail (15% with the satellite).",
