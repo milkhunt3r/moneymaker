@@ -1125,10 +1125,10 @@
   <!-- ===== Main menu (start page) ===== -->
   <div id="mainMenu" hidden>
     <div id="menuStage">
-      <button class="menuBtn" data-menu="play"     style="left:1036px; top:337px; width:330px; height:76px" aria-label="Play">Play</button>
-      <button class="menuBtn" data-menu="settings" style="left:1048px; top:445px; width:308px; height:62px"  aria-label="Settings">Settings</button>
-      <button class="menuBtn" data-menu="about"    style="left:1048px; top:535px; width:308px; height:62px"  aria-label="About">About</button>
-      <button class="menuBtn soon" data-menu="donate" style="left:1048px; top:624px; width:308px; height:63px" aria-label="Donate (coming soon)" title="Coming soon">Donate</button>
+      <button class="menuBtn" data-menu="play"     style="left:970px; top:378px; width:234px; height:62px" aria-label="Play">Play</button>
+      <button class="menuBtn" data-menu="settings" style="left:980px; top:456px; width:216px; height:50px"  aria-label="Settings">Settings</button>
+      <button class="menuBtn" data-menu="about"    style="left:980px; top:519px; width:216px; height:50px"  aria-label="About">About</button>
+      <button class="menuBtn soon" data-menu="donate" style="left:980px; top:582px; width:216px; height:50px" aria-label="Donate (coming soon)" title="Coming soon">Donate</button>
     </div>
   </div>
 
@@ -10194,13 +10194,16 @@
        so the logo and buttons (x 975–1450, y 35–700 in the picture) always fit.
        The game clock keeps running while the menu is open.
        ===================================================================== */
-    const MENU_W = 1672, MENU_H = 941, MENU_FOCUS = { x0: 975, x1: 1450, y0: 35, y1: 712 };
+    const MENU_W = 1672, MENU_H = 941;
+    const MENU_SAFE = { x0: 220, x1: 1450, y0: 140, y1: 800 };    // everything important (penguin, logo, buttons, roulette): never cut off
+    const MENU_FOCUS = { x0: 925, x1: 1270, y0: 165, y1: 650 };   // logo + buttons: what phones zoom in on
     function layoutMenu() {
-      const vw = innerWidth, vh = innerHeight, F = MENU_FOCUS, pad = 8;
-      // Landscape screens: show the WHOLE picture (no zoom, no cropping); the blurred copy fills any leftover edges.
-      // Portrait screens (phones): the whole picture would be tiny, so zoom in on the logo and buttons instead.
-      let s = vw >= vh ? Math.min(vw / MENU_W, vh / MENU_H)
-                       : Math.min(Math.max(vw / MENU_W, vh / MENU_H), (vw - 2 * pad) / (F.x1 - F.x0), (vh - 2 * pad) / (F.y1 - F.y0));
+      const vw = innerWidth, vh = innerHeight, pad = 8;
+      // Landscape screens: fill the screen; only the plain edges (sky and sea) may be cut off, never the safe area.
+      // Portrait screens (phones): zoom in on the logo and buttons.
+      const F = vw >= vh ? MENU_SAFE : MENU_FOCUS;
+      let s = Math.max(vw / MENU_W, vh / MENU_H);                       // cover the screen
+      s = Math.min(s, (vw - 2 * pad) / (F.x1 - F.x0), (vh - 2 * pad) / (F.y1 - F.y0));   // ...but keep the important part on screen
       const place = (view, size, f0, f1) => {
         let o = (view - size * s) / 2;                                   // centered
         if (size * s >= view) o = Math.min(0, Math.max(view - size * s, o));
