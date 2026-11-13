@@ -20,14 +20,10 @@
     [hidden] { display: none !important; }
 
     /* 👑 Logo: header bar, loading screen, welcome screen */
-    :root { --brandH: 80px; }
-    @media (max-width: 640px) { :root { --brandH: 60px; } }
-    #brand {
-      height: var(--brandH);
-      display: flex; align-items: center; justify-content: center;
-      background: radial-gradient(ellipse at 50% 120%, rgba(255, 196, 60, 0.18), transparent 60%), rgba(0, 0, 0, 0.55);
-    }
-    #brand img { height: calc(var(--brandH) - 8px); width: auto; filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6)); cursor: pointer; }
+    :root { --brandH: 0px; }   /* the logo sits inside the tab bar, so it takes no extra height */
+    #brand { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); display: flex; cursor: pointer; }
+    #brand img { height: 48px; width: auto; filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6)); }
+    #brand img.icon { height: 40px; border-radius: 22%; }
     #loading {
       position: fixed; inset: 0; z-index: 1000;
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px;
@@ -286,6 +282,7 @@
       cursor: pointer;
     }
     .tab.active { background: #ffd34d; color: #2b2100; border-color: #ffd34d; }
+    @media (max-width: 1500px) { .tab { padding: 8px 14px; } }   /* leaves room for the logo on the left */
 
     /* ================= Casino ================= */
     #casinoView { max-width: 900px; margin: 0 auto; padding: 20px; }
@@ -1123,11 +1120,14 @@
     </div>
   </div>
 
-  <!-- ===== Logo bar ===== -->
-  <header id="brand"><img src="assets/logo/logo-banner.webp" alt="Empire of Coins" width="413" height="144" title="Main menu"></header>
 
   <!-- ===== Tabs to switch views ===== -->
   <nav id="tabs">
+    <!-- Logo (left): the wide logo, or only the coin icon when the tabs need the room; click = main menu -->
+    <div id="brand" title="Main menu">
+      <img id="brandWide" src="assets/logo/logo-banner.webp" alt="Empire of Coins" width="138" height="48">
+      <img id="brandIcon" class="icon" src="assets/logo/icon-192.png" alt="Empire of Coins" width="40" height="40" hidden>
+    </div>
     <button id="prestigeBtn" hidden title="Reset the game for a permanent Legacy bonus">⭐ Prestige</button>
     <div id="settingsWrap">
       <button id="settingsBtn" title="Settings" aria-label="Settings">⚙️</button>
@@ -10002,6 +10002,16 @@
     }
     addEventListener("resize", () => { if (!$("mainMenu").hidden) layoutMenu(); });
     $("brand").addEventListener("click", openMenu);
+    // The logo sits left of the tabs: the wide logo if there is room, else the coin icon, else nothing
+    function fitBrand() {
+      const first = document.querySelector("#tabs .tab:not([hidden])");
+      if (!first) return;
+      const room = first.getBoundingClientRect().left - 14 - 12;   // free space left of the first tab
+      $("brandWide").hidden = room < 138;
+      $("brandIcon").hidden = !(room < 138 && room >= 44);
+    }
+    new ResizeObserver(fitBrand).observe($("tabs"));
+    addEventListener("resize", fitBrand); fitBrand();
 
     function menuSettingsHtml() {
       return `<h2>⚙️ Settings</h2>
