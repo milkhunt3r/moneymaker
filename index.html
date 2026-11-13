@@ -1051,6 +1051,11 @@
     @keyframes tutPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,211,77,0.55); } 50% { box-shadow: 0 0 0 10px rgba(255,211,77,0); } }
     #achList[hidden], #rewardList[hidden] { display: none; }
     .achFilter { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .achCats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .achCat { background: transparent; color: #c9c9d6; border: 1px solid #555566; border-radius: 999px; padding: 7px 14px; font: inherit; font-weight: 700; cursor: pointer; }
+    .achCat span { color: #9a9ab0; font-weight: 600; font-size: 12px; margin-left: 4px; }
+    .achCat.active { background: #ffd34d; color: #2b2100; border-color: #ffd34d; }
+    .achCat.active span { color: #5a4500; }
     .rewardCard .bar { height: 8px; border-radius: 999px; background: rgba(255,255,255,0.08); margin: 8px 0; overflow: hidden; }
     .rewardCard .bar > div { height: 100%; background: linear-gradient(90deg, #ffd34d, #ff9800); }
     .rewardCard:not(.got) .cosmetic { filter: grayscale(0.7); opacity: 0.75; }
@@ -1905,7 +1910,7 @@
        ===================================================================== */
     const SAVE_KEY = "coinClickerSave", PREFS_KEY = "coinClickerPrefs", IMG_DB = "coinClickerArt";
     // Screen preferences: kept per device, never part of the progress that is saved (and later sent to the server)
-    const PREF_KEYS = ["view", "incomePage", "achPage", "achHideDone", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage",
+    const PREF_KEYS = ["view", "incomePage", "achPage", "achHideDone", "achCat", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage",
                        "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage"];
     function splitState(st) {   // -> { progress, prefs }
       const progress = {}, prefs = {};
@@ -8162,6 +8167,8 @@
       if (state.achPage === "rewards") renderRewards();
     }
     $("achList").addEventListener("click", (e) => {
+      const cat = e.target.closest("[data-achcat]");
+      if (cat) { state.achCat = cat.dataset.achcat; save(); return renderAchievements(); }
       if (!e.target.closest("#achHideToggle")) return;
       state.achHideDone = !state.achHideDone; save();
       renderAchievements();
@@ -8176,8 +8183,13 @@
       showAchPage(state.achPage);
       $("achTotal").textContent = `${achDone()} / ${ACHIEVEMENTS.length}`;
       const hide = !!state.achHideDone;
-      $("achList").innerHTML = `<div class="achFilter"><button class="btn ghost small" id="achHideToggle">${hide ? "👁️ Show completed" : "🙈 Hide completed"}</button>
-          <span class="muted">${hide ? "Completed achievements are hidden." : ""}</span></div>` + ACH_CATEGORIES.map(c => {
+      const sel = ACH_CATEGORIES.some(c => c.id === state.achCat) ? state.achCat : "all";
+      const chip = (id, name, done, total) => `<button class="achCat ${sel === id ? "active" : ""}" data-achcat="${id}">${name} <span>${done}/${total}</span></button>`;
+      const doneIn = (id) => ACHIEVEMENTS.filter(a => a.cat === id && state.achievements[a.id]).length;
+      $("achList").innerHTML = `<div class="achCats">${chip("all", "🏆 All", achDone(), ACHIEVEMENTS.length)}${ACH_CATEGORIES.map(c =>
+            chip(c.id, c.name, doneIn(c.id), ACHIEVEMENTS.filter(a => a.cat === c.id).length)).join("")}</div>
+        <div class="achFilter"><button class="btn ghost small" id="achHideToggle">${hide ? "👁️ Show completed" : "🙈 Hide completed"}</button>
+          <span class="muted">${hide ? "Completed achievements are hidden." : ""}</span></div>` + ACH_CATEGORIES.filter(c => sel === "all" || c.id === sel).map(c => {
         const all = ACHIEVEMENTS.filter(a => a.cat === c.id);
         const done = all.filter(a => state.achievements[a.id]).length;
         const list = hide ? all.filter(a => !state.achievements[a.id]) : all;
@@ -9444,11 +9456,16 @@
       document.querySelectorAll("[data-art]").forEach(b => b.classList.toggle("active", b.dataset.art === state.art.page));
       if (state.art.page === "collection") renderArtCollection();
     }
+    function updateArtTab() {   // 🔒 on the tab while the gallery is locked (like Logistics)
+      const tab = document.querySelector('.tab[data-view="art"]');
+      if (tab) tab.textContent = (state.art.unlocked ? "" : "🔒 ") + "🖼️ Art Gallery";
+    }
     function renderArt() {
       const open = state.art.unlocked;
+      updateArtTab();
       $("artLocked").hidden = open; $("artOpen").hidden = !open;
       if (!open) {
-        $("artLocked").innerHTML = `<h2>🖼️ Art Gallery</h2>
+        $("artLocked").innerHTML = `<h2>🔒 🖼️ Art Gallery</h2>
           <p>Copy paintings as closely as you can: the better the match, the more they're worth. Sell your copies right away or keep them in your collection.</p>
           <p class="muted">🟢 Easy ${fmt(ART_TIERS.easy.value)} · 🟡 Medium ${fmt(ART_TIERS.medium.value)} · 🔴 Hard ${fmt(ART_TIERS.hard.value)} (you earn your match %)</p>
           ${artGalleryReady()
@@ -9591,6 +9608,7 @@
       if (!state.art.unlocked) { const b = $("artUnlock"); if (b) b.disabled = state.money < ART_UNLOCK; else if (artGalleryReady()) renderArt(); }
       else if (!$("artCollection").hidden) $("artBuySlots").disabled = state.art.slots >= ART_SLOTS_MAX || state.money < artSlotPrice();
     }, 1000);
+    updateArtTab();
     if (state.art.unlocked) { paintArt($("artRef").getContext("2d"), state.art.tier, state.art.seed || (state.art.seed = 1 + secureRandomInt(2 ** 31 - 2))); artClearCanvas(); }
 
 
