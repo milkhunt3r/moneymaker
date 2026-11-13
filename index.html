@@ -42,7 +42,7 @@
     #mainMenu { position: fixed; inset: 0; z-index: 90; overflow: hidden;
       background: #1b1140 url("assets/logo/menu-bg-blur.webp") center / cover; }
     #mainMenu::before { content: ""; position: absolute; inset: -40px; background: inherit; filter: blur(24px) brightness(0.55); }
-    #menuStage { position: absolute; left: 0; top: 0; width: 1671px; height: 941px; transform-origin: 0 0;
+    #menuStage { position: absolute; left: 0; top: 0; width: 1672px; height: 941px; transform-origin: 0 0;
       background: url("assets/logo/menu-bg.webp") 0 0 / 100% 100%; box-shadow: 0 0 80px rgba(0, 0, 0, 0.6); }
     /* the painted buttons are long hexagons: the click areas use the same shape */
     .menuBtn { position: absolute; border: 0; padding: 0; margin: 0; background: transparent;
@@ -10189,13 +10189,13 @@
 
     /* =====================================================================
        🏠 MAIN MENU (start page)
-       Shown every time the game opens. The picture (1671 × 941) has the logo and buttons painted in;
+       Shown every time the game opens. The picture (1672 × 941) has the logo and buttons painted in;
        invisible buttons sit on top of them. The picture covers the screen, but on narrow screens it shrinks
        so the logo and buttons (x 975–1450, y 35–700 in the picture) always fit.
        The game clock keeps running while the menu is open.
        ===================================================================== */
-    const MENU_W = 1671, MENU_H = 941;
-    const MENU_SAFE = { x0: 220, x1: 1450, y0: 140, y1: 840 };    // everything important (penguin with his feet, logo, buttons, roulette): never cut off
+    const MENU_W = 1672, MENU_H = 941;
+    const MENU_SAFE = { x0: 220, x1: 1640, y0: 140, y1: 870 };    // everything important (penguin with his feet, logo, buttons, roulette): never cut off
     const MENU_FOCUS = { x0: 925, x1: 1270, y0: 165, y1: 650 };   // logo + buttons: what phones zoom in on
     function layoutMenu() {
       const vw = innerWidth, vh = innerHeight, pad = 8;
