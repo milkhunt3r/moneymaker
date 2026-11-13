@@ -41,8 +41,33 @@
     #loading .txt { color: #ffd34d; font: 600 16px system-ui, sans-serif; letter-spacing: 0.5px; }
     @keyframes loadPulse { 50% { transform: scale(1.04); } }
     @keyframes loadBar { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
-    #modalBox.welcome { max-width: 460px; }
-    #modalBox.welcome .welcomeLogo { width: min(300px, 70vw); display: block; margin: -6px auto 6px; filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.5)); }
+
+    /* 🏠 Main menu (start page): the picture has the logo and buttons painted in; clickable areas sit on top */
+    #mainMenu { position: fixed; inset: 0; z-index: 90; overflow: hidden;
+      background: #1b1140 url("assets/logo/menu-bg-blur.webp") center / cover; }
+    #mainMenu::before { content: ""; position: absolute; inset: -40px; background: inherit; filter: blur(24px) brightness(0.55); }
+    #menuStage { position: absolute; left: 0; top: 0; width: 1672px; height: 941px; transform-origin: 0 0;
+      background: url("assets/logo/menu-bg.webp") 0 0 / 100% 100%; box-shadow: 0 0 80px rgba(0, 0, 0, 0.6); }
+    .menuBtn { position: absolute; border: 0; padding: 0; margin: 0; border-radius: 999px; background: transparent;
+      cursor: pointer; transition: background 0.15s, box-shadow 0.15s, transform 0.1s; color: transparent; font-size: 1px; }
+    .menuBtn:hover, .menuBtn:focus-visible { background: rgba(255, 255, 255, 0.18); box-shadow: 0 0 40px rgba(255, 220, 100, 0.95); outline: none; }
+    .menuBtn[data-menu="play"]:not(:hover) { animation: playGlow 2.2s ease-in-out infinite; }
+    @keyframes playGlow { 50% { box-shadow: 0 0 36px rgba(120, 255, 120, 0.55); } }
+    .menuBtn:active { transform: scale(0.97); background: rgba(0, 0, 0, 0.12); }
+    .menuBtn.soon { cursor: default; }
+    .menuBtn.soon:hover { box-shadow: none; background: rgba(255, 255, 255, 0.06); }
+    body.menuOpen #tipCard, body.menuOpen #tutBubble, body.menuOpen #alerts { display: none !important; }
+    #modalBox.about { text-align: left; max-height: 86vh; overflow-y: auto; }
+    #modalBox.about h2, #modalBox.about .aboutLogo { text-align: center; }
+    #modalBox.about h3 { color: #ffd34d; margin: 18px 0 6px; font-size: 18px; }
+    #modalBox.about ul { margin: 4px 0; padding-left: 22px; line-height: 1.5; }
+    #modalBox.about p { line-height: 1.5; margin: 6px 0; }
+    #modalBox.about details { margin-top: 10px; }
+    #modalBox.about summary { cursor: pointer; color: #ffd34d; font-weight: 600; }
+    #modalBox .aboutLogo img { width: min(260px, 60vw); }
+    #modalBox.about .closeRow { text-align: center; margin-top: 16px; }
+    .menuSettings { display: flex; flex-direction: column; gap: 8px; margin: 12px auto 4px; max-width: 320px; }
+    .menuSettings button { width: 100%; }
     #modalBox .awayLogo { width: min(260px, 70vw); display: block; margin: -4px auto 4px; }   /* hidden elements always stay hidden */
 
     body {
@@ -1092,8 +1117,18 @@
     <div class="txt">Loading your empire…</div>
   </div>
 
+  <!-- ===== Main menu (start page) ===== -->
+  <div id="mainMenu" hidden>
+    <div id="menuStage">
+      <button class="menuBtn" data-menu="play"     style="left:968px;  top:372px; width:442px; height:100px" aria-label="Play">Play</button>
+      <button class="menuBtn" data-menu="settings" style="left:998px;  top:508px; width:386px; height:76px"  aria-label="Settings">Settings</button>
+      <button class="menuBtn" data-menu="about"    style="left:1002px; top:612px; width:378px; height:76px"  aria-label="About">About</button>
+      <button class="menuBtn soon" data-menu="donate" style="left:1002px; top:716px; width:378px; height:78px" aria-label="Donate (coming soon)" title="Coming soon">Donate</button>
+    </div>
+  </div>
+
   <!-- ===== Logo bar ===== -->
-  <header id="brand"><img src="assets/logo/logo-banner.webp" alt="Empire of Coins" width="413" height="144"></header>
+  <header id="brand"><img src="assets/logo/logo-banner.webp" alt="Empire of Coins" width="413" height="144" title="Main menu"></header>
 
   <!-- ===== Tabs to switch views ===== -->
   <nav id="tabs">
@@ -1107,6 +1142,7 @@
         <button data-setting="tips" id="tipsToggle">💡 Show tips: ON</button>
         <button data-setting="tipsReset">↺ Show all tips again</button>
         <button data-setting="tutorial">▶️ Replay the guided start</button>
+        <button data-setting="menu">🏠 Main menu</button>
         <button data-setting="reset" class="danger">🗑️ Reset game</button>
         <div class="muted" id="settingsNote">The game saves itself every 30 seconds and after every action.</div>
       </div>
@@ -2737,7 +2773,7 @@
 
     /* ----- Pop-up window ----- */
     function showModal(html) {
-      $("modalBox").classList.remove("gold", "wide", "welcome");
+      $("modalBox").classList.remove("gold", "wide", "about");
       $("modalBox").innerHTML = html;
       $("modal").hidden = false;
     }
@@ -4208,6 +4244,7 @@
       if (!btn) return;
       const what = btn.dataset.setting;
 
+      if (what === "menu") { $("settingsMenu").hidden = true; openMenu(); return; }
       if (what === "tips") {
         state.tips.on = !state.tips.on; save();
         $("tipsToggle").textContent = `💡 Show tips: ${state.tips.on ? "ON" : "OFF"}`;
@@ -9936,18 +9973,120 @@
       const d = state.taxDebts.find(x => x.id === state.pendingTaxId);
       if (d) showPaymentPopup(d); else state.pendingTaxId = null;
     }
-    else if (!loadedSave) showWelcome();
 
-    // 👑 Welcome screen for new players
-    function showWelcome() {
-      showModal(`<img class="welcomeLogo" src="assets/logo/logo-full.webp" alt="Empire of Coins">
-        <p><b>Start with one coin. Build an empire.</b></p>
-        <p class="muted">Click the coin, open businesses and hire workers. Then grow into casinos, investing,
-          world logistics, art and science.</p>
-        <button class="btn big" data-modal="close">▶️ Start playing</button>`);
-      $("modalBox").classList.add("gold", "welcome");
+
+    /* =====================================================================
+       🏠 MAIN MENU (start page)
+       Shown every time the game opens. The picture (1672 × 941) has the logo and buttons painted in;
+       invisible buttons sit on top of them. The picture covers the screen, but on narrow screens it shrinks
+       so the logo and buttons (x 890–1550, y 20–805 in the picture) always fit.
+       The game clock keeps running while the menu is open.
+       ===================================================================== */
+    const MENU_W = 1672, MENU_H = 941, MENU_FOCUS = { x0: 890, x1: 1550, y0: 20, y1: 805 };
+    function layoutMenu() {
+      const vw = innerWidth, vh = innerHeight, F = MENU_FOCUS, pad = 8;
+      let s = Math.max(vw / MENU_W, vh / MENU_H);                       // cover the screen
+      s = Math.min(s, (vw - 2 * pad) / (F.x1 - F.x0), (vh - 2 * pad) / (F.y1 - F.y0));   // ...but keep the buttons on screen
+      const place = (view, size, f0, f1) => {
+        let o = (view - size * s) / 2;                                   // centered
+        if (size * s >= view) o = Math.min(0, Math.max(view - size * s, o));
+        const lo = pad - f0 * s, hi = view - pad - f1 * s;               // keep the focus area visible
+        return lo <= hi ? Math.min(hi, Math.max(lo, o)) : (lo + hi) / 2;
+      };
+      const x = place(vw, MENU_W, F.x0, F.x1), y = place(vh, MENU_H, F.y0, F.y1);
+      $("menuStage").style.transform = `translate(${x}px, ${y}px) scale(${s})`;
     }
-    $("brand").addEventListener("click", () => showView("income"));
+    function openMenu() {
+      $("mainMenu").hidden = false; document.body.classList.add("menuOpen");
+      layoutMenu();
+    }
+    function closeMenu() {
+      $("mainMenu").hidden = true; document.body.classList.remove("menuOpen");
+      save();
+    }
+    addEventListener("resize", () => { if (!$("mainMenu").hidden) layoutMenu(); });
+    $("brand").addEventListener("click", openMenu);
+
+    function menuSettingsHtml() {
+      return `<h2>⚙️ Settings</h2>
+        <div class="menuSettings">
+          <button class="btn" data-ms="tips">${$("tipsToggle").textContent}</button>
+          <button class="btn" data-ms="tipsReset">↺ Show all tips again</button>
+          <button class="btn" data-ms="tutorial">▶️ Replay the guided start</button>
+          <button class="btn" data-ms="save">💾 Save game</button>
+          <button class="btn" data-ms="download">⬇️ Download progress file</button>
+          <button class="btn" data-ms="load">⬆️ Load progress file</button>
+          <button class="btn danger" data-ms="reset">🗑️ Reset game</button>
+        </div>
+        <p class="muted" id="msNote">The game saves itself every 30 seconds and after every action.</p>
+        <button class="btn ghost" data-modal="close">Close</button>`;
+    }
+    // The menu's Settings use the same actions as the ⚙️ menu in the game
+    $("modalBox").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-ms]"); if (!b) return;
+      const what = b.dataset.ms;
+      $("settingsMenu").querySelector(`[data-setting="${what}"]`).click();
+      if (what === "tutorial") { hideModal(); closeMenu(); return; }
+      if (what === "reset") return;                   // the reset question replaces this pop-up
+      const t = b.closest("#modalBox").querySelector('[data-ms="tips"]'); if (t) t.textContent = $("tipsToggle").textContent;
+      const n = $("msNote"); if (n) n.textContent = $("settingsNote").textContent;
+    });
+
+    // 📝 Patch notes: newest first. The first entry is shown open in About.
+    const PATCH_NOTES = [
+      { date: "13 November 2026", title: "Empire of Coins", items: [
+        "The game has a new name: <b>Empire of Coins</b>, with a new logo, browser tab icon, loading screen and this main menu.",
+        "New first business: the <b>🌭 Hot Dog Stand</b> (100, 2 workers, no accountant or HR, up to 3). The guided start now begins with it.",
+        "Hotels: at most <b>5 Concierges</b> per hotel. More Concierges stacked their bonus far too high.",
+        "Science: buildings now cost scientists (Research lab 20, Space Mission Center 50). Space missions run every 20 minutes and pay 2,000–5,000 scoin, with a 20% chance to fail (15% with the satellite).",
+      ] },
+      { date: "12 November 2026", title: "Science, rewards and card decks", items: [
+        "<b>🔬 Science</b>: University, Research lab with Nobel Prizes, Space Mission Center and the Logistics satellite.",
+        "<b>🎁 Rewards</b> in Achievements: 8 collections (backgrounds and coins) for finishing groups of achievements, plus a Hide / Show completed switch.",
+        "Casino: <b>🔥 Hot Tables</b> (+10 Gambler XP multiplier on one game for 15 minutes), per-table XP multipliers, new roulette wheel and fox card deck.",
+        "Shop: new <b>🃏 Cards</b> slot with 4 themed card decks.",
+        "Guided start and one-time tips for new players, Wiki search, more investing amount buttons, booster achievements and the Art studio Grab tool.",
+      ] },
+      { date: "11 November 2026", title: "Art Gallery and offline earnings", items: [
+        "<b>🖼️ Art Gallery</b>: copy paintings in the studio, sell them or keep them in your collection.",
+        "<b>🌙 Offline earnings</b>: 50% of your income for up to 8 hours while the game is closed, and background tabs now catch up.",
+        "Gold mines hold 20–30 scoin and can start a <b>gold rush</b>.",
+        "Safer saving, the Wiki, the live Logistics world map and Live trading improvements.",
+      ] },
+    ];
+    function showAbout() {
+      const notes = PATCH_NOTES.map((n, i) => `<details${i === 0 ? " open" : ""}>
+          <summary>${i === 0 ? "🆕 Latest update" : "Earlier update"} · ${n.date} · ${n.title}</summary>
+          <ul>${n.items.map(x => `<li>${x}</li>`).join("")}</ul></details>`).join("");
+      showModal(`<div class="aboutLogo"><img src="assets/logo/logo-banner.webp" alt="Empire of Coins"></div>
+        <h2>About the game</h2>
+        <p><b>Empire of Coins</b> is an idle tycoon game. You start with one coin and build a business empire that keeps earning, even while you're away.</p>
+        <h3>How to play</h3>
+        <ul>
+          <li>👆 <b>Click the coin</b> to earn your first money, and use boosters like the energy drink to speed up.</li>
+          <li>🏢 <b>Buy businesses and hire workers.</b> Every worker has a trait, and accountants and HR experts make a business earn more.</li>
+          <li>📈 <b>Grow into new areas</b> as you unlock them: 🎰 Casino, 📈 Investing, 🚢 Logistics, 🖼️ Art Gallery and 🔬 Science.</li>
+          <li>🏆 <b>Collect achievements</b> to win reward collections, and spend scoin in the 🛍️ Shop on looks for your coin and background.</li>
+          <li>⭐ <b>Prestige</b> at 1 gcoin: start over with a permanent Legacy bonus.</li>
+        </ul>
+        <p class="muted">💾 The game saves itself in this browser. Use ⚙️ Settings to download a backup of your progress.
+          The 📖 Wiki in the game explains every feature.</p>
+        <h3>📝 Patch notes</h3>
+        ${notes}
+        <div class="closeRow"><button class="btn big" data-modal="close">Close</button></div>`);
+      $("modalBox").classList.add("wide", "about");
+    }
+
+    $("mainMenu").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-menu]"); if (!b) return;
+      const what = b.dataset.menu;
+      if (what === "play") closeMenu();
+      if (what === "settings") showModal(menuSettingsHtml());
+      if (what === "about") showAbout();
+      // "donate": does nothing for now
+    });
+
+    openMenu();   // the game always opens on the main menu
 
     // Hide the loading screen once the game is ready (shown for at least 0.7 s so it doesn't just flash)
     (function hideLoading() {
