@@ -2600,6 +2600,7 @@
         showNotice("🧑‍💼 Recruitment Agency opened! Set your 📝 Staffing plan, then 👥 Hire staff for every empty hotel and casino.");
       }
       if (action === "recruitPlan") return showRecruitPlan();
+      if (action === "recruitAll") return showRecruitAll();
       if (action === "recruitHire") recruitHire();
       if (action === "toggleLaw") state.special.lawCollapsed = !state.special.lawCollapsed;
       if (action === "toggleAgency") state.special.agencyCollapsed = !state.special.agencyCollapsed;
@@ -6219,7 +6220,7 @@
     }
 
     function renderRecruit() {
-      const desc = `<div class="muted">Fills every empty 🎰 casino and 🏨 hotel with your staffing plan: accountant, HR and a chosen trait for every worker · ${fmt(RECRUIT_FILL)} per business filled · pay per second stays random · businesses that already have staff are not touched · no workers, HR or accountant · max 1</div>`;
+      const desc = `<div class="muted">Fills every empty 🎰 casino and 🏨 hotel with your staffing plan: accountant, HR and a chosen trait for every worker · ${fmt(RECRUIT_FILL)} per business filled · pay per second stays random · 👥 Hire staff only fills businesses with no staff · 🔄 Apply to all brings every hotel and casino in line with the plan · max 1</div>`;
       if (state.special.recruit) {
         const n = recruitTargets().length;
         return `<div class="card specialCard"><div class="row"><h3>🧑‍💼 Recruitment Agency</h3></div>${desc}
@@ -6227,6 +6228,7 @@
           <div class="row" style="justify-content:flex-start; gap:8px; margin-top:8px">
             <button class="btn ghost" data-action="recruitPlan">📝 Staffing plan</button>
             <button class="btn" data-action="recruitHire" ${n ? `data-cost="${RECRUIT_FILL}"` : ""} ${n && state.money >= RECRUIT_FILL ? "" : "disabled"}>👥 Hire staff</button>
+            <button class="btn ghost" data-action="recruitAll">🔄 Apply to all</button>
           </div></div>`;
       }
       if (recruitUnlocked()) {
@@ -6274,6 +6276,63 @@
       $("recruitErr").textContent = "";
       save();
     });
+
+    // 🔄 What applying the plan would change in one business:
+    // workers whose trait the plan asks for are kept (one per planned place), other workers fill the 🎲 Random places,
+    // workers that fit nowhere are replaced, missing places are hired. Accountant and HR are set to the plan.
+    function recruitDiff(c) {
+      const p = recruitPlan()[c.typeId], n = maxWorkers(c);
+      const want = p.traits.slice(0, n).filter(t => t !== "random"), randomPlaces = n - want.length;
+      const pool = c.workers.slice(), keep = [], add = [];
+      want.forEach(t => {
+        const k = pool.findIndex(w => w.trait === t);
+        if (k >= 0) keep.push(pool.splice(k, 1)[0]); else add.push(t);
+      });
+      const fillers = pool.splice(0, randomPlaces);   // any trait fits a Random place
+      keep.push(...fillers);
+      for (let i = fillers.length; i < randomPlaces; i++) add.push("random");
+      const staff = c.accountant !== p.accountant || c.hr !== p.hr;
+      return { keep, add, fired: pool, staff, changes: staff || add.length > 0 || pool.length > 0 };
+    }
+    function recruitAllTargets() {
+      return state.companies.filter(c => RECRUIT_TYPES.includes(c.typeId)).map(c => ({ c, d: recruitDiff(c) })).filter(x => x.d.changes);
+    }
+    function showRecruitAll() {
+      const list = recruitAllTargets(), n = list.length;
+      if (!n) return showModal(`<h2>🔄 Apply staffing plan</h2><p>Every hotel and casino already matches your plan. Nothing to change.</p>
+        <button class="btn" data-modal="close">OK</button>`);
+      const afford = Math.min(n, Math.floor(state.money / RECRUIT_FILL));
+      const hire = list.reduce((a, x) => a + x.d.add.length, 0), fire = list.reduce((a, x) => a + x.d.fired.length, 0);
+      const legends = list.reduce((a, x) => a + x.d.fired.filter(w => w.trait === "legend").length, 0);
+      const rows = list.map(({ c, d }) => {
+        const T = typeOf(c), no = state.companies.filter(x => x.typeId === c.typeId).indexOf(c) + 1;
+        const bits = [d.staff ? "accountant / HR" : "", d.add.length ? `hire ${d.add.length}` : "", d.fired.length ? `replace ${d.fired.length}` : ""].filter(Boolean).join(" · ");
+        return `<li>${T.emoji} ${T.name} #${no}: ${bits}</li>`;
+      }).join("");
+      showModal(`<h2>🔄 Apply staffing plan to all</h2>
+        <p><b>${n}</b> business${n === 1 ? "" : "es"} need${n === 1 ? "s" : ""} changes to match your plan. Total cost: <b>${fmt(n * RECRUIT_FILL)}</b> (${fmt(RECRUIT_FILL)} per business).</p>
+        <ul style="text-align:left; max-height:30vh; overflow-y:auto">${rows}</ul>
+        <p class="muted">${hire} worker${hire === 1 ? "" : "s"} hired${fire ? `, ${fire} replaced (workers whose trait isn't in the plan)` : ""}. Workers who fit the plan keep their pay; new workers get random pay.</p>
+        ${legends ? `<p style="color:#ff8a8a"><b>⚠️ ${legends} 🏆 Legend${legends === 1 ? "" : "s"} would be replaced.</b> Set a slot to 🎲 Random or The Legend can't stay.</p>` : ""}
+        ${afford < n ? `<p style="color:#ff8a8a">You can afford ${afford} of ${n}: the first ${afford} will be changed.</p>` : ""}
+        <button class="btn big" data-recruit="all" ${afford ? "" : "disabled"}>✅ Apply for ${fmt(afford * RECRUIT_FILL)}</button>
+        <button class="btn ghost" data-modal="close">Cancel</button>`);
+    }
+    function recruitApplyAll() {
+      let done = 0;
+      for (const { c } of recruitAllTargets()) {
+        if (state.money < RECRUIT_FILL) break;
+        const d = recruitDiff(c), p = recruitPlan()[c.typeId], T = typeOf(c);
+        state.money -= RECRUIT_FILL;
+        c.accountant = p.accountant; c.hr = p.hr; c.candidates = null;
+        c.workers = d.keep;
+        d.add.forEach(t => c.workers.push({ id: state.nextId++, name: randomItem(FIRST_NAMES), trait: t === "random" ? rollTrait(c) : t, base: randomInt(T.minIncome, T.maxIncome) }));
+        done++;
+      }
+      if (done) showNotice(`🔄 Staffing plan applied to ${done} business${done === 1 ? "" : "es"} for ${fmt(done * RECRUIT_FILL)}.`);
+      hideModal(); save(); updateCounter(); render();
+    }
+    $("modalBox").addEventListener("click", (e) => { if (e.target.closest('[data-recruit="all"]')) recruitApplyAll(); });
 
     // 👥 Fill every empty hotel and casino with the plan (1 scoin each, as many as you can afford)
     function recruitHire() {
@@ -8510,7 +8569,7 @@
         ${wt(["Business", "Price", "Unlock", "What it does"], [
           ["📦 Warehouse", fmt(WAREHOUSE_PRICE), `Max 5; slots open at ${WAREHOUSE_UNLOCKS.join(", ")} trucks`, `+${pctx(WAREHOUSE_BONUS)} on truck contract payouts each`],
           ["⚖️ Law Firm", fmt(LAW_PRICE), "Always", `Hire up to ${LAW_MAX} attorneys (slot n costs ${fmt(LAW_SLOT_PRICE)} × n); pick 1 of 3 each time`],
-          ["🧑‍💼 Recruitment Agency", fmt(RECRUIT_PRICE), `${RECRUIT_NEED.hotel} hotels and ${RECRUIT_NEED.casino} casinos`, `📝 Staffing plan: pick the accountant, HR and a trait for every worker place of a hotel and a casino. 👥 Hire staff fills every hotel and casino with no staff yet, ${fmt(RECRUIT_FILL)} per business (pay per second stays random). Businesses with staff are not touched; the plan is kept on prestige`],
+          ["🧑‍💼 Recruitment Agency", fmt(RECRUIT_PRICE), `${RECRUIT_NEED.hotel} hotels and ${RECRUIT_NEED.casino} casinos`, `📝 Staffing plan: pick the accountant, HR and a trait for every worker place of a hotel and a casino. 👥 Hire staff fills every hotel and casino with no staff yet, ${fmt(RECRUIT_FILL)} per business (pay per second stays random). Businesses with staff are not touched. 🔄 Apply to all brings every hotel and casino in line with the plan, ${fmt(RECRUIT_FILL)} per business that needs changes (workers who fit the plan are kept). The plan is kept on prestige`],
           ["🏢 Real Estate Agency", fmt(AGENCY_PRICE), `${fmt(AGENCY_UNLOCK)} all-time real estate profit`, `+${pctx(AGENCY_SALE_BONUS)} on property sales; 1 agent per ${fmt(AGENCY_PER_AGENT)} real estate profit (max ${AGENCY_MAX_AGENTS}), each earns 0/5/10/15 per second`],
           ["🎢 Amusement Park", fmt(PARK_PRICE), "One per hotel", `Earns ${pctx(PARK_SHARE)} of its paired hotel's income`],
           ["⛏️ Gold Mine", fmt(MINE_PRICE), `${fmt(MINE_UNLOCK)} all-time gold profit; max ${MINE_MAX}`, `${MINE_INCOME} / sec until its 20–30 scoin of gold is mined, then it closes. 🔥 Gold rush: 1 in ${RUSH_ODDS} chance per second per mine (2 mines: 1 in ${RUSH_ODDS / 2}) of 2× mine income for ${RUSH_SECONDS} sec`],
@@ -10200,7 +10259,7 @@
         "The game has a new name: <b>Empire of Coins</b>, with a new logo, browser tab icon, loading screen and this main menu.",
         "New first business: the <b>🌭 Hot Dog Stand</b> (100, 2 workers, no accountant or HR, up to 3). The guided start now begins with it.",
         "Hotels: at most <b>5 Concierges</b> per hotel. More Concierges stacked their bonus far too high.",
-        "New special business: the <b>🧑‍💼 Recruitment Agency</b> (10 scoin, needs 2 hotels and 2 casinos). Save a staffing plan once, then staff every new hotel and casino in one click for 1 scoin each.",
+        "New special business: the <b>🧑‍💼 Recruitment Agency</b> (10 scoin, needs 2 hotels and 2 casinos). Save a staffing plan once, then staff every new hotel and casino in one click for 1 scoin each, or apply the plan to all of them.",
         "Shop: the new <b>🦁 Emperor Collection</b> (background, coin and card deck, 1 gcoin each), with the achievement <b>Hail, Emperor!</b> for wearing all 3 at once.",
         "Shop: new prices per item: One Step Ahead 25 scoin, Royal 100 scoin, Make It Rain 500 scoin (Wow So Rich stays 5 scoin). Items you already own stay yours.",
         "Prestige: the 4 resets are now at <b>1, 5, 10 and 20 gcoin</b>, with new achievements for 5, 10 and 20 gcoin. 💼 Tycoon's Legacy also keeps your Science buildings (not the satellite), and every prestige gives a <b>10-minute tax holiday</b>.",
