@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Coin Clicker</title>
+  <title>Empire of Coins</title>
+  <meta name="description" content="Empire of Coins: an idle tycoon game. Start with one coin and build an empire of businesses, casino tables, investments, world logistics, art and science.">
+  <meta name="theme-color" content="#1a1a2e">
+  <meta property="og:title" content="Empire of Coins">
+  <meta property="og:description" content="Start with one coin. Build an empire.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👑</text></svg>">
   <style>
     /* ================= Page layout ================= */
     * { box-sizing: border-box; }
@@ -4175,7 +4180,7 @@
         const blob = new Blob([JSON.stringify(out, null, 2)], { type: "application/json" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = "coin-clicker-save-" + new Date().toISOString().slice(0, 10) + ".json";
+        a.download = "empire-of-coins-save-" + new Date().toISOString().slice(0, 10) + ".json";
         document.body.appendChild(a);
         a.click();
         a.remove();
@@ -4212,7 +4217,7 @@
           storage.savePrefs({ ...storage.loadPrefs(), ...prefs });
           location.reload();
         } catch (err) {
-          settingsNote("❌ That file is not a Coin Clicker save.");
+          settingsNote("❌ That file is not an Empire of Coins save.");
         }
         $("loadFile").value = "";
       };
@@ -8194,7 +8199,7 @@
 
     function wikiGeneral() {
       return `<h2>⭐ General</h2>
-        <p><b>Coin Clicker</b> is an idle money game. Click the coin, build businesses, play the casino, invest, run a logistics empire, and grow your fortune up to <b>1 gcoin</b>, where you can prestige.</p>
+        <p><b>Empire of Coins</b> is an idle tycoon game. Click the coin, build businesses, play the casino, invest, run a logistics empire, and grow your fortune up to <b>1 gcoin</b>, where you can prestige.</p>
         <h3>Money units</h3>
         ${wt(["Unit", "Value", "Where you see it"], [
           ["bcoin", "1", "Normal amounts"], ["scoin (sc)", "1,000,000 bcoin", "Amounts from 1 million (your main counter switches at 100 scoin)"], ["gcoin", "1,000,000 scoin", "The biggest amounts"]])}
