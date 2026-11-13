@@ -55,6 +55,8 @@
     .menuBtn.soon { cursor: default; }
     .menuBtn.soon:hover { background: rgba(255, 255, 255, 0.06); }
     body.menuOpen #tipCard, body.menuOpen #tutBubble, body.menuOpen #alerts { display: none !important; }
+    .secretCard { border-color: rgba(170, 120, 255, 0.55); box-shadow: 0 0 18px rgba(150, 100, 255, 0.18); }
+    .secretTag { font-size: 12px; font-weight: 800; color: #d7b8ff; background: rgba(140, 90, 255, 0.22); border: 1px solid rgba(170, 120, 255, 0.5); border-radius: 999px; padding: 2px 8px; vertical-align: middle; }
     .recruitCols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; text-align: left; max-height: 58vh; overflow-y: auto; margin: 10px 0 14px; }
     @media (max-width: 640px) { .recruitCols { grid-template-columns: 1fr; } }
     .recruitCol h3 { margin: 0 0 8px; color: #ffd34d; }
@@ -7960,7 +7962,11 @@
       { id: "income", name: "💰 Income" }, { id: "casino", name: "🎰 Casino" },
       { id: "invest", name: "📈 Investments" }, { id: "logistics", name: "🚢 Logistics" },
       { id: "art", name: "🖼️ Art Gallery" },
+      // 🌌 secret: invisible (also not counted) until the 1st prestige
+      { id: "secret", name: "🌌 Secrets", hidden: () => !((state.legacy && state.legacy.count) >= 1) },
     ];
+    const achCatsShown = () => ACH_CATEGORIES.filter(c => !(c.hidden && c.hidden()));
+    const achShown = () => { const ids = achCatsShown().map(c => c.id); return ACHIEVEMENTS.filter(a => ids.includes(a.cat)); };
     const flag = (k) => () => (state.stats[k] ? 1 : 0);
     // all-time profit of an investment: money taken out + what it is worth now - money put in
     const investProfit = (key) => { const st = inv.stats && inv.stats[key]; return st ? st.out + investCurrent(key) - st.in : 0; };
@@ -7986,6 +7992,8 @@
       { id: "cosmetic1",  cat: "general", icon: "🛍️", name: "Treat yourself",     desc: "Buy your first cosmetic item in the Shop", goal: 1, get: () => COSMETICS.some(c => c.price > 0 && state.cosmetics.owned[c.id]) ? 1 : 0 },
       { id: "emperor",    cat: "general", icon: "🦁", name: "Hail, Emperor!",     desc: "Buy the whole 🦁 Emperor Collection and wear all 3 items at once (background, coin and cards)", goal: 3,
         get: () => ["emperorBg", "emperorCoin", "emperorCards"].filter(id => state.cosmetics.owned[id] && state.cosmetics.on[id]).length },
+      { id: "uni2",     cat: "secret", icon: "🎓", name: "Double degree", desc: "Own two Universities", goal: 2, get: () => state.science ? (state.science.uni ? 1 : 0) + (state.science.uni2 ? 1 : 0) : 0 },
+      { id: "astro",    cat: "secret", icon: "🔭", name: "Stargazer", desc: "Build an Astronomy Research Center", goal: 1, get: () => state.science && state.science.astro ? 1 : 0 },
       { id: "fullSet",    cat: "general", icon: "🎨", name: "Dressed to impress", desc: "Wear the coin and background from the same collection", goal: 1, get: () => matchingSet() ? 1 : 0 },
       // Income
       { id: "click100",   cat: "income", icon: "👆", name: "Warming up",         desc: "Click the coin 100 times",            goal: 100,    get: () => state.stats.clicks },
@@ -8109,7 +8117,7 @@
       if (typeof state.stats[k] !== "number") state.stats[k] = v;
     if (!state.achievements) state.achievements = {};
 
-    const achDone = () => ACHIEVEMENTS.filter(a => state.achievements[a.id]).length;
+    const achDone = () => achShown().filter(a => state.achievements[a.id]).length;
     function achValue(a) { try { return Math.max(0, a.get() || 0); } catch (err) { return 0; } }
 
     let achFirstCheck = true;
@@ -8124,7 +8132,7 @@
       else fresh.forEach(a => showAlert(`🏆 Achievement unlocked!`, `${a.icon} <b style="display:inline">${a.name}</b>: ${a.desc}`, "good"));
       achFirstCheck = false;
       if (fresh.length) save();
-      $("achTab").textContent = `${achDone()}/${ACHIEVEMENTS.length}`;
+      $("achTab").textContent = `${achDone()}/${achShown().length}`;
       if (!$("achievementsView").hidden) renderAchievements();
     }
 
@@ -8181,15 +8189,15 @@
 
     function renderAchievements() {
       showAchPage(state.achPage);
-      $("achTotal").textContent = `${achDone()} / ${ACHIEVEMENTS.length}`;
+      $("achTotal").textContent = `${achDone()} / ${achShown().length}`;
       const hide = !!state.achHideDone;
-      const sel = ACH_CATEGORIES.some(c => c.id === state.achCat) ? state.achCat : "all";
+      const sel = achCatsShown().some(c => c.id === state.achCat) ? state.achCat : "all";
       const chip = (id, name, done, total) => `<button class="achCat ${sel === id ? "active" : ""}" data-achcat="${id}">${name} <span>${done}/${total}</span></button>`;
       const doneIn = (id) => ACHIEVEMENTS.filter(a => a.cat === id && state.achievements[a.id]).length;
-      $("achList").innerHTML = `<div class="achCats">${chip("all", "🏆 All", achDone(), ACHIEVEMENTS.length)}${ACH_CATEGORIES.map(c =>
+      $("achList").innerHTML = `<div class="achCats">${chip("all", "🏆 All", achDone(), achShown().length)}${achCatsShown().map(c =>
             chip(c.id, c.name, doneIn(c.id), ACHIEVEMENTS.filter(a => a.cat === c.id).length)).join("")}</div>
         <div class="achFilter"><button class="btn ghost small" id="achHideToggle">${hide ? "👁️ Show completed" : "🙈 Hide completed"}</button>
-          <span class="muted">${hide ? "Completed achievements are hidden." : ""}</span></div>` + ACH_CATEGORIES.filter(c => sel === "all" || c.id === sel).map(c => {
+          <span class="muted">${hide ? "Completed achievements are hidden." : ""}</span></div>` + achCatsShown().filter(c => sel === "all" || c.id === sel).map(c => {
         const all = ACHIEVEMENTS.filter(a => a.cat === c.id);
         const done = all.filter(a => state.achievements[a.id]).length;
         const list = hide ? all.filter(a => !state.achievements[a.id]) : all;
@@ -8703,11 +8711,11 @@
 
     function wikiAchievements() {
       return `<h2>🏆 Achievements</h2>
-        <p>${ACHIEVEMENTS.length} achievements in ${ACH_CATEGORIES.length} categories. They are checked every second, kept forever (also through prestige) and shown with progress bars in the 🏆 tab.</p>
+        <p>${achShown().length} achievements in ${achCatsShown().length} categories. They are checked every second, kept forever (also through prestige) and shown with progress bars in the 🏆 tab.</p>
         <h3>🎁 Rewards</h3>
         <p>Finishing every achievement of a category unlocks a cosmetic collection that can't be bought in the Shop. Turn it on in 🏆 Achievements → 🎁 Rewards.</p>
         ${wt(["Reward", "How to unlock"], COLLECTIONS.filter(c => c.reward).map(c => [c.name, c.reward.text]))}
-        ${ACH_CATEGORIES.map(c => `<h3>${c.name}</h3>` + wt(["", "Achievement", "Goal", ""],
+        ${achCatsShown().map(c => `<h3>${c.name}</h3>` + wt(["", "Achievement", "Goal", ""],
           ACHIEVEMENTS.filter(a => a.cat === c.id).map(a => [a.icon, `<b>${a.name}</b>`, a.desc, state.achievements[a.id] ? "✅" : ""]))).join("")}`;
     }
 
@@ -9637,7 +9645,22 @@
     const sci = () => state.science;
     const sciLevels = () => ({ logistics: logiLevel(), investor: levelInfo(inv.xp, INVEST_XP).level, gambler: levelInfo(state.casinoXp).level });
     const scienceOpen = () => { const L = sciLevels(); return L.logistics >= SCI_REQ.logistics && L.investor >= SCI_REQ.investor && L.gambler >= SCI_REQ.gambler; };
-    const uniIncome = () => { const u = sci().uni; if (!u) return 0; return u.scientists >= UNI_MAX ? UNI_FULL_INCOME : -UNI_COST_PER_EMPTY * (UNI_MAX - u.scientists); };
+    /* 🌌 Secret Science (no info anywhere until the 1st prestige): a 2nd University and the Astronomy Research Center.
+       Both Universities share one pool of scientists; buildings take scientists from the fullest one first. */
+    const secretsOpen = () => (state.legacy && state.legacy.count) >= 1;
+    const ASTRO_PRICE = 5e8, ASTRO_SCI = 20, SPACE_EVERY_ASTRO = 900;
+    const unis = () => [sci().uni, sci().uni2].filter(Boolean);
+    const sciPool = () => unis().reduce((a, u) => a + u.scientists, 0);
+    function spendScientists(n) {
+      while (n > 0) {
+        const u = unis().sort((a, b) => b.scientists - a.scientists)[0];
+        const k = Math.min(n, u.scientists); u.scientists -= k; n -= k; u.timer = Math.min(u.timer, UNI_EVERY);
+      }
+    }
+    const oneUniIncome = (u) => u.scientists >= UNI_MAX ? UNI_FULL_INCOME : -UNI_COST_PER_EMPTY * (UNI_MAX - u.scientists);
+    const uniIncome = () => unis().reduce((a, u) => a + oneUniIncome(u), 0);
+    const spaceEvery = () => sci().astro ? SPACE_EVERY_ASTRO : SPACE_EVERY;   // 🔭 Astronomy center: every 15 instead of 20 minutes
+    const spaceMin = () => spaceEvery() / 60;
     if (state.science.space && state.science.space.timer > SPACE_EVERY) state.science.space.timer = SPACE_EVERY;   // older saves: hourly timer
     const spaceFail = () => SPACE_FAIL - (sci().satellite ? SAT_FAIL_CUT : 0);   // 20%, 15% with the satellite
 
@@ -9734,21 +9757,21 @@
     // One game second of Science; returns its income per second (University)
     function scienceTick() {
       const S = sci();
-      if (S.uni && S.uni.scientists < UNI_MAX && --S.uni.timer <= 0) {
-        S.uni.scientists++; S.uni.timer = UNI_EVERY;
-        if (S.uni.scientists === UNI_MAX) showNotice(`🎓 Your University is full: ${UNI_MAX} scientists! It now earns +${fmt(UNI_FULL_INCOME)} / sec.`);
-        if (S.uni.scientists === UNI_MAX && state.view === "income") render();
+      for (const u of unis()) if (u.scientists < UNI_MAX && --u.timer <= 0) {
+        u.scientists++; u.timer = UNI_EVERY;
+        if (u.scientists === UNI_MAX) showNotice(`🎓 Your ${u === S.uni2 ? "2nd " : ""}University is full: ${UNI_MAX} scientists! It now earns +${fmt(UNI_FULL_INCOME)} / sec.`);
+        if (u.scientists === UNI_MAX && state.view === "income") render();
       }
       if (S.lab && !S.lab.pending) {
         S.lab.since = (S.lab.since || 0) + 1;
         if (S.lab.since >= LAB_ODDS || secureRandomInt(LAB_ODDS) === 0) breakthrough();
       }
       if (S.space && --S.space.timer <= 0) {
-        S.space.timer = SPACE_EVERY;
+        S.space.timer = spaceEvery();
         const m = launchMission();
         state.money += m.reward;
         if (m.reward) showNotice(`🚀 Mission ${m.name} succeeded: +${fmt(m.reward)}!`);
-        else showAlert(`🚀 Mission ${m.name} failed`, "The rocket didn't make it. No reward this time; the next launch is in 20 minutes.");
+        else showAlert(`🚀 Mission ${m.name} failed`, `The rocket didn't make it. No reward this time; the next launch is in ${spaceMin()} minutes.`);
         if (state.view === "income") render();
       }
       // 🛰️ satellite: broken trucks repair themselves for free after 5 seconds
@@ -9765,9 +9788,12 @@
       const set = (id, t) => { const el = $(id); if (el) el.textContent = t; };
       if (S.uni) {
         set("sci-uni-income", (uniIncome() >= 0 ? "+" : "") + fmt(uniIncome()) + " / sec");
-        set("sci-uni-count", S.uni.scientists);
-        set("sci-uni-next", S.uni.scientists >= UNI_MAX ? "full" : "next in " + clock(S.uni.timer));
-        const bar = $("sci-uni-bar"); if (bar) bar.style.width = (S.uni.scientists / UNI_MAX * 100) + "%";
+        [["", S.uni], ["2", S.uni2]].forEach(([k, u]) => {
+          if (!u) return;
+          set(`sci-uni${k}-count`, u.scientists);
+          set(`sci-uni${k}-next`, u.scientists >= UNI_MAX ? "full" : "next in " + clock(u.timer));
+          const bar = $(`sci-uni${k}-bar`); if (bar) bar.style.width = (u.scientists / UNI_MAX * 100) + "%";
+        });
       }
       if (S.lab) set("sci-lab-next", "guaranteed within " + clock(Math.max(0, LAB_ODDS - (S.lab.since || 0))));
       if (S.space) set("sci-space-next", clock(S.space.timer));
@@ -9786,11 +9812,16 @@
       }
       let html = "";
       // 🎓 University
+      const uniRows = (k, u, label) => `<div class="row"><span>${label}👩‍🔬 Scientists: <b id="sci-uni${k}-count">${u.scientists}</b> / ${UNI_MAX}</span><span class="muted" id="sci-uni${k}-next"></span></div>
+          <div class="xpBar"><div class="xpFill" id="sci-uni${k}-bar" style="width:${u.scientists / UNI_MAX * 100}%"></div></div>`;
       if (S.uni) {
-        html += `<div class="card specialCard"><div class="row"><h3>🎓 University</h3><span class="income" id="sci-uni-income">${fmt(uniIncome())} / sec</span></div>
-          <div class="row"><span>👩‍🔬 Scientists: <b id="sci-uni-count">${S.uni.scientists}</b> / ${UNI_MAX}</span><span class="muted" id="sci-uni-next"></span></div>
-          <div class="xpBar"><div class="xpFill" id="sci-uni-bar" style="width:${S.uni.scientists / UNI_MAX * 100}%"></div></div>
+        html += `<div class="card specialCard"><div class="row"><h3>🎓 University${S.uni2 ? " ×2" : ""}</h3><span class="income" id="sci-uni-income">${fmt(uniIncome())} / sec</span></div>
+          ${uniRows("", S.uni, S.uni2 ? "1st · " : "")}${S.uni2 ? uniRows("2", S.uni2, "2nd · ") : ""}
+          ${S.uni2 ? `<div class="muted">Both Universities share one pool: <b>${sciPool()}</b> scientists</div>` : ""}
           <div class="muted">1 new scientist every 2 minutes · −${UNI_COST_PER_EMPTY} / sec for each empty place · +${fmt(UNI_FULL_INCOME)} / sec when full</div></div>`;
+        if (secretsOpen() && !S.uni2) html += `<div class="card specialCard secretCard"><div class="row"><div><h3>🎓 2nd University <span class="secretTag">🌌 new</span></h3>
+            <div class="muted">A second University: trains its own scientists (1 every 2 minutes, up to ${UNI_MAX}) for the same shared pool. −${UNI_COST_PER_EMPTY} / sec per empty place, +${fmt(UNI_FULL_INCOME)} / sec when full.</div></div>
+          <button class="btn" data-sci="uni2" data-cost="${UNI_PRICE}">Buy ${fmt(UNI_PRICE)}</button></div></div>`;
       } else {
         html += `<div class="card specialCard"><div class="row"><div><h3>🎓 University</h3>
             <div class="muted">Trains 1 scientist every 2 minutes, up to ${UNI_MAX}. Until it's full it costs ${UNI_COST_PER_EMPTY} / sec per empty place (−${fmt(UNI_COST_PER_EMPTY * UNI_MAX)} / sec at the start); with ${UNI_MAX} scientists it earns +${fmt(UNI_FULL_INCOME)} / sec.</div></div>
@@ -9802,26 +9833,37 @@
             <span class="vialCount" title="Scientific breakthroughs (Nobel Prizes)">⚗️ × ${S.lab.prizes || 0}</span></div>
           <div class="muted">Every second: a 1 in ${LAB_ODDS.toLocaleString("en-US")} chance of a scientific breakthrough worth ${fmt(LAB_REWARD)} · <span id="sci-lab-next"></span></div></div>`;
       } else {
-        const ready = S.uni && S.uni.scientists >= LAB_SCI;
+        const ready = sciPool() >= LAB_SCI;
         html += `<div class="card specialCard" ${ready ? "" : `style="opacity:0.6"`}><div class="row"><div><h3>${ready ? "" : "🔒 "}🧪 Research lab</h3>
             <div class="muted">Every second a 1 in ${LAB_ODDS.toLocaleString("en-US")} chance of a scientific breakthrough: a Nobel Prize and ${fmt(LAB_REWARD)}. Guaranteed at least every 2 hours.</div>
-            <div class="muted">Costs ${fmt(LAB_PRICE)} + 👩‍🔬 ${LAB_SCI} scientists from your University${S.uni ? ` (you have ${S.uni.scientists})` : ""}</div></div>
+            <div class="muted">Costs ${fmt(LAB_PRICE)} + 👩‍🔬 ${LAB_SCI} scientists from your University${S.uni ? ` (you have ${sciPool()})` : ""}</div></div>
           ${ready ? `<button class="btn" data-sci="lab" data-cost="${LAB_PRICE}">Buy ${fmt(LAB_PRICE)} + 👩‍🔬 ${LAB_SCI}</button>` : `<span class="muted">${fmt(LAB_PRICE)} + 👩‍🔬 ${LAB_SCI}</span>`}</div></div>`;
       }
       // 🚀 Space Mission Center
       if (S.space) {
         const log = (S.space.log || []).map(m => `<div class="row"><span>🚀 ${m.name}</span><b class="${m.reward ? "income" : ""}">${m.reward ? "+" + fmt(m.reward) : "❌ failed"}</b></div>`).join("");
         html += `<div class="card specialCard"><div class="row"><h3>🚀 Space Mission Center</h3><span class="muted">next launch in <b id="sci-space-next">${clock(S.space.timer)}</b></span></div>
-          <div class="muted">Every 20 minutes: ${fmt(SPACE_MIN * 1e6)} – ${fmt(SPACE_MAX * 1e6)}, or nothing if the mission fails (${Math.round(spaceFail() * 100)}% chance${S.satellite ? ", lowered by your 🛰️ satellite" : ""})</div>
+          <div class="muted">Every ${spaceMin()} minutes${S.astro ? " (🔭 Astronomy Research Center)" : ""}: ${fmt(SPACE_MIN * 1e6)} – ${fmt(SPACE_MAX * 1e6)}, or nothing if the mission fails (${Math.round(spaceFail() * 100)}% chance${S.satellite ? ", lowered by your 🛰️ satellite" : ""})</div>
           ${log ? `<h4>Last missions</h4>${log}` : ""}
           ${S.satellite ? "" : `<div class="muted">🛰️ A satellite is now available in 🚢 Logistics.</div>`}</div>`;
       } else {
-        const unlocked = S.lab && (S.lab.prizes || 0) >= SPACE_NEED, ready = unlocked && S.uni && S.uni.scientists >= SPACE_SCI;
+        const unlocked = S.lab && (S.lab.prizes || 0) >= SPACE_NEED, ready = unlocked && sciPool() >= SPACE_SCI;
         html += `<div class="card specialCard" ${unlocked ? "" : `style="opacity:0.6"`}><div class="row"><div><h3>${unlocked ? "" : "🔒 "}🚀 Space Mission Center</h3>
-            <div class="muted">Launches a space mission every 20 minutes: ${fmt(SPACE_MIN * 1e6)} – ${fmt(SPACE_MAX * 1e6)}, with a ${Math.round(SPACE_FAIL * 100)}% chance the mission fails. Unlocks a 🛰️ satellite in Logistics.</div>
+            <div class="muted">Launches a space mission every ${spaceMin()} minutes: ${fmt(SPACE_MIN * 1e6)} – ${fmt(SPACE_MAX * 1e6)}, with a ${Math.round(SPACE_FAIL * 100)}% chance the mission fails. Unlocks a 🛰️ satellite in Logistics.</div>
             ${unlocked ? "" : `<div class="muted">Needs ${SPACE_NEED} breakthroughs in your Research lab${S.lab ? ` (you have ${S.lab.prizes || 0})` : ""}</div>`}
-            <div class="muted">Costs ${fmt(SPACE_PRICE)} + 👩‍🔬 ${SPACE_SCI} scientists from your University${S.uni ? ` (you have ${S.uni.scientists})` : ""}</div></div>
+            <div class="muted">Costs ${fmt(SPACE_PRICE)} + 👩‍🔬 ${SPACE_SCI} scientists from your University${S.uni ? ` (you have ${sciPool()})` : ""}</div></div>
           ${ready ? `<button class="btn" data-sci="space" data-cost="${SPACE_PRICE}">Buy ${fmt(SPACE_PRICE)} + 👩‍🔬 ${SPACE_SCI}</button>` : `<span class="muted">${fmt(SPACE_PRICE)} + 👩‍🔬 ${SPACE_SCI}</span>`}</div></div>`;
+      }
+      // 🔭 Astronomy Research Center (secret: only after the 1st prestige)
+      if (S.astro) {
+        html += `<div class="card specialCard secretCard"><div class="row"><h3>🔭 Astronomy Research Center</h3><span class="secretTag">🌌</span></div>
+          <div class="muted">Your astronomers plan the launch windows: space missions launch every <b>${SPACE_EVERY_ASTRO / 60} minutes</b> instead of ${SPACE_EVERY / 60}.${S.space ? "" : " (Build the 🚀 Space Mission Center to use it.)"}</div></div>`;
+      } else if (secretsOpen()) {
+        const ready = sciPool() >= ASTRO_SCI;
+        html += `<div class="card specialCard secretCard" ${ready ? "" : `style="opacity:0.75"`}><div class="row"><div><h3>🔭 Astronomy Research Center <span class="secretTag">🌌 new</span></h3>
+            <div class="muted">Space missions launch every ${SPACE_EVERY_ASTRO / 60} minutes instead of ${SPACE_EVERY / 60}.</div>
+            <div class="muted">Costs ${fmt(ASTRO_PRICE)} + 👩‍🔬 ${ASTRO_SCI} scientists from your Universities${S.uni ? ` (you have ${sciPool()})` : ""}</div></div>
+          ${ready ? `<button class="btn" data-sci="astro" data-cost="${ASTRO_PRICE}">Buy ${fmt(ASTRO_PRICE)} + 👩‍🔬 ${ASTRO_SCI}</button>` : `<span class="muted">${fmt(ASTRO_PRICE)} + 👩‍🔬 ${ASTRO_SCI}</span>`}</div></div>`;
       }
       return html;
     }
@@ -9839,8 +9881,14 @@
       const S = sci(), what = b.dataset.sci;
       const buy = (price) => { if (state.money < price) return false; state.money -= price; return true; };
       if (what === "uni" && !S.uni && buy(UNI_PRICE)) { S.uni = { scientists: 0, timer: UNI_EVERY }; showNotice("🎓 University built! Your first scientist arrives in 2 minutes."); }
-      else if (what === "lab" && !S.lab && S.uni && S.uni.scientists >= LAB_SCI && buy(LAB_PRICE)) { S.uni.scientists -= LAB_SCI; S.uni.timer = Math.min(S.uni.timer, UNI_EVERY); S.lab = { since: 0, prizes: 0, pending: null }; showNotice("🧪 Research lab opened! Breakthroughs can happen any second now."); }
-      else if (what === "space" && !S.space && S.lab && (S.lab.prizes || 0) >= SPACE_NEED && S.uni && S.uni.scientists >= SPACE_SCI && buy(SPACE_PRICE)) { S.uni.scientists -= SPACE_SCI; S.uni.timer = Math.min(S.uni.timer, UNI_EVERY); S.space = { timer: SPACE_EVERY, log: [], count: 0, earned: 0 }; showNotice("🚀 Space Mission Center built! The first launch is in 20 minutes. A 🛰️ satellite is now available in Logistics."); }
+      else if (what === "uni2" && secretsOpen() && S.uni && !S.uni2 && buy(UNI_PRICE)) { S.uni2 = { scientists: 0, timer: UNI_EVERY }; showNotice("🎓 2nd University built! Its scientists join the same pool."); }
+      else if (what === "astro" && secretsOpen() && !S.astro && sciPool() >= ASTRO_SCI && buy(ASTRO_PRICE)) {
+        spendScientists(ASTRO_SCI); S.astro = { bought: true };
+        if (S.space) S.space.timer = Math.min(S.space.timer, SPACE_EVERY_ASTRO);
+        showNotice(`🔭 Astronomy Research Center built! Space missions now launch every ${SPACE_EVERY_ASTRO / 60} minutes.`);
+      }
+      else if (what === "lab" && !S.lab && sciPool() >= LAB_SCI && buy(LAB_PRICE)) { spendScientists(LAB_SCI); S.lab = { since: 0, prizes: 0, pending: null }; showNotice("🧪 Research lab opened! Breakthroughs can happen any second now."); }
+      else if (what === "space" && !S.space && S.lab && (S.lab.prizes || 0) >= SPACE_NEED && sciPool() >= SPACE_SCI && buy(SPACE_PRICE)) { spendScientists(SPACE_SCI); S.space = { timer: spaceEvery(), log: [], count: 0, earned: 0 }; showNotice(`🚀 Space Mission Center built! The first launch is in ${spaceMin()} minutes. A 🛰️ satellite is now available in Logistics.`); }
       else return;
       updateCounter(); render(); save();
     });
@@ -10111,17 +10159,17 @@
       // 🔬 Science: scientists keep arriving, space missions keep launching, at most ONE breakthrough while away
       const S = state.science;
       let nobelAway = false;
-      if (S && S.uni && S.uni.scientists < UNI_MAX) {
-        if (away >= S.uni.timer) {
-          const n = 1 + Math.floor((away - S.uni.timer) / UNI_EVERY);
-          S.uni.scientists = Math.min(UNI_MAX, S.uni.scientists + n);
-          S.uni.timer = UNI_EVERY - ((away - S.uni.timer) % UNI_EVERY);
-        } else S.uni.timer -= away;
-        S.uni.timer = Math.max(1, Math.round(S.uni.timer));
+      if (S) for (const u of [S.uni, S.uni2]) if (u && u.scientists < UNI_MAX) {
+        if (away >= u.timer) {
+          const n = 1 + Math.floor((away - u.timer) / UNI_EVERY);
+          u.scientists = Math.min(UNI_MAX, u.scientists + n);
+          u.timer = UNI_EVERY - ((away - u.timer) % UNI_EVERY);
+        } else u.timer -= away;
+        u.timer = Math.max(1, Math.round(u.timer));
       }
       if (S && S.space) {
         let t = away, got = 0, launched = 0, failed = 0;
-        while (t >= S.space.timer) { t -= S.space.timer; S.space.timer = SPACE_EVERY; const m = launchMission(); got += m.reward; launched++; if (!m.reward) failed++; }
+        while (t >= S.space.timer) { t -= S.space.timer; S.space.timer = spaceEvery(); const m = launchMission(); got += m.reward; launched++; if (!m.reward) failed++; }
         S.space.timer = Math.max(1, Math.round(S.space.timer - t));
         if (launched) { rows.push([`🚀 Space missions (${launched}${failed ? `, ${failed} failed` : ""})`, got]); total += got; }
       }
@@ -10238,6 +10286,7 @@
     function closeMenu() {
       $("mainMenu").hidden = true; document.body.classList.remove("menuOpen");
       if (state.taxHoliday > 0) showNotice(`🛡️ Tax holiday: no tax inspections for the next ${Math.ceil(state.taxHoliday / 60)} minutes.`);
+      if (secretsOpen() && !state.legacy.secretsShown && $("modal").hidden) showSecrets();
       save();
     }
     addEventListener("resize", () => { if (!$("mainMenu").hidden) layoutMenu(); });
@@ -10335,6 +10384,18 @@
       if (what === "about") showAbout();
       // "donate": does nothing for now
     });
+
+    // 🌌 One-time pop-up after the 1st prestige: hidden unlocks that were never mentioned anywhere before
+    function showSecrets() {
+      state.legacy.secretsShown = true; save();
+      showModal(`<h2>🌌 New unlocks!</h2>
+        <p>Your first prestige opened doors that were hidden until now:</p>
+        <div class="card secretCard" style="text-align:left"><b>🎓 2nd University</b><div class="muted">A second University for ${fmt(UNI_PRICE)}. It trains its own scientists for the same shared pool.</div></div>
+        <div class="card secretCard" style="text-align:left"><b>🔭 Astronomy Research Center</b><div class="muted">${fmt(ASTRO_PRICE)} + 👩‍🔬 ${ASTRO_SCI} scientists: space missions launch every ${SPACE_EVERY_ASTRO / 60} minutes instead of ${SPACE_EVERY / 60}.</div></div>
+        <p class="muted">Find them in 💰 Income → 🔬 Science. A new 🌌 Secrets section has appeared in 🏆 Achievements.</p>
+        <button class="btn big" data-modal="close">✨ Great!</button>`);
+      $("modalBox").classList.add("gold");
+    }
 
     openMenu();   // the game always opens on the main menu
 
