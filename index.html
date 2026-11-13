@@ -916,19 +916,15 @@
       border: none;
       cursor: pointer;
       touch-action: manipulation;
-      background:
-        radial-gradient(circle at 35% 30%, #fff6c2 0%, #ffd84a 25%, #e8a800 65%, #a86f00 100%);
-      box-shadow:
-        inset 0 0 0 10px #f2b705,
-        inset 0 0 0 14px #b67c00,
-        0 12px 30px rgba(0, 0, 0, 0.5);
+      background: url("assets/coin.webp") center / contain no-repeat;   /* 👑 the Empire of Coins coin */
+      filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.55));
       transition: transform 0.08s ease;
     }
     #coin:hover  { transform: scale(1.04); }
     #coin:active { transform: scale(0.94); }
     #coin:focus-visible { outline: 4px solid #fff; outline-offset: 6px; }
     #coin::after {
-      content: "$";
+      content: none;   /* the old "$" sign (the coin picture has its own design) */
       position: absolute;
       inset: 0;
       display: flex;
