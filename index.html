@@ -8280,11 +8280,12 @@
         <p class="muted">When all ${LAW_MAX} slots are filled, you can fire any attorney and choose a replacement from 3 offers for ${fmt(LAW_REPLACE_PRICE)}.</p>
         <h3>🔬 Science</h3>
         <p>The 💰 Income tab has three pages: 🏢 Businesses, ⭐ Special and 🔬 Science. Science unlocks at Logistics level ${SCI_REQ.logistics}, Investor level ${SCI_REQ.investor} and Gambler level ${SCI_REQ.gambler}.</p>
+        <p>👩‍🔬 <b>Scientists are a resource:</b> the Research lab costs ${LAB_SCI} scientists and the Space Mission Center ${SPACE_SCI}. They leave your University, which then trains new ones (1 every 2 minutes) and costs money again until it's back to ${UNI_MAX}.</p>
         ${wt(["Building", "Price", "Needs", "What it does"], [
           ["🎓 University", fmt(UNI_PRICE), "Science unlocked", `1 scientist every 2 min, up to ${UNI_MAX}. Costs ${UNI_COST_PER_EMPTY} / sec per empty place (−${fmt(UNI_COST_PER_EMPTY * UNI_MAX)} / sec at first); full: +${fmt(UNI_FULL_INCOME)} / sec`],
-          ["🧪 Research lab", fmt(LAB_PRICE), `${UNI_MAX} scientists`, `Every second a 1 in ${LAB_ODDS.toLocaleString("en-US")} chance of a breakthrough (guaranteed after 2 hours): a Nobel Prize and ${fmt(LAB_REWARD)}. The game pauses until you accept it. Offline: at most 1`],
-          ["🚀 Space Mission Center", fmt(SPACE_PRICE), `${SPACE_NEED} breakthroughs`, `A mission every hour: ${fmt(SPACE_MIN * 1e6)} – ${fmt(SPACE_MAX * 1e6)}, 10% chance to fail (5% with the satellite)`],
-          ["🛰️ Satellite (🚢 Logistics)", fmt(SAT_PRICE), "Space Mission Center", "Missions fail 5% · cargo planes +5% pay · tankers 10% faster · broken trucks repaired for free after 5 sec"]])}
+          ["🧪 Research lab", `${fmt(LAB_PRICE)} + 👩‍🔬 ${LAB_SCI} scientists`, "University", `Every second a 1 in ${LAB_ODDS.toLocaleString("en-US")} chance of a breakthrough (guaranteed after 2 hours): a Nobel Prize and ${fmt(LAB_REWARD)}. The game pauses until you accept it. Offline: at most 1`],
+          ["🚀 Space Mission Center", `${fmt(SPACE_PRICE)} + 👩‍🔬 ${SPACE_SCI} scientists`, `${SPACE_NEED} breakthroughs`, `A mission every 20 minutes: ${fmt(SPACE_MIN * 1e6)} – ${fmt(SPACE_MAX * 1e6)}, ${Math.round(SPACE_FAIL * 100)}% chance to fail (${Math.round((SPACE_FAIL - SAT_FAIL_CUT) * 100)}% with the satellite)`],
+          ["🛰️ Satellite (🚢 Logistics)", fmt(SAT_PRICE), "Space Mission Center", "Missions fail 15% instead of 20% · cargo planes +5% pay · tankers 10% faster · broken trucks repaired for free after 5 sec"]])}
         <p class="muted">Nobel Prizes can be won in 10 fields: Physics, Chemistry, Medicine and Physiology, Biology, Genetics, Molecular Biology, Neuroscience, Astronomy and Astrophysics, Materials Science and Environmental Science. A prestige resets Science.</p>`;
     }
 
@@ -9294,26 +9295,30 @@
        🔬 SCIENCE (Income tab → Science). Unlocks at Logistics 50, Investor 50 and Gambler 25.
        🎓 University (100 scoin): 1 scientist every 2 min, up to 50. Costs 5 / sec per empty scientist place
           (starts at −250 / sec); with all 50 scientists it earns +500 / sec.
-       🧪 Research lab (500 scoin, needs 50 scientists): every second a 1 in 7,200 chance of a scientific breakthrough,
+       🧪 Research lab (500 scoin + 20 scientists from the University): every second a 1 in 7,200 chance of a scientific breakthrough,
           guaranteed after 7,200 seconds without one. A breakthrough pauses the game with a golden Nobel Prize pop-up
           and pays 1,000 scoin. Offline: at most one breakthrough while you were away.
-       🚀 Space Mission Center (10,000 scoin, after 2 breakthroughs): launches a mission every hour:
-          2,000 – 6,000 scoin, or 0 if it fails (10% chance, 5% with the satellite).
-       🛰️ Satellite (Logistics, 500 scoin, after the Space Mission Center): space missions fail only 5% of the time,
+       🚀 Space Mission Center (10,000 scoin + 50 scientists, after 2 breakthroughs): launches a mission every 20 minutes:
+          2,000 – 5,000 scoin, or 0 if it fails (20% chance, 15% with the satellite).
+       Scientists spent on buildings leave the University, which then trains new ones (and costs money again until it's full).
+       🛰️ Satellite (Logistics, 500 scoin, after the Space Mission Center): space mission failure chance −5 points (15%),
           cargo plane contracts pay +5%, tanker contracts take 10% less time, broken trucks repair themselves for free after 5 seconds.
        A prestige resets Science (the Nobel Prize count stays in your statistics).
        ===================================================================== */
     const SCI_REQ = { logistics: 50, investor: 50, gambler: 25 };
     const UNI_PRICE = 1e8, UNI_MAX = 50, UNI_EVERY = 120, UNI_COST_PER_EMPTY = 5, UNI_FULL_INCOME = 500;
     const LAB_PRICE = 5e8, LAB_ODDS = 7200, LAB_REWARD = 1e9;
-    const SPACE_PRICE = 1e10, SPACE_NEED = 2, SPACE_EVERY = 3600, SPACE_MIN = 2000, SPACE_MAX = 6000;
+    const SPACE_PRICE = 1e10, SPACE_NEED = 2, SPACE_EVERY = 1200, SPACE_MIN = 2000, SPACE_MAX = 5000;
+    // 👩‍🔬 Scientists are a resource: building the lab / mission center takes them out of the University (it then trains new ones)
+    const LAB_SCI = 20, SPACE_SCI = 50, SPACE_FAIL = 0.20, SAT_FAIL_CUT = 0.05;
     const SAT_PRICE = 5e8, SAT_PLANE_BONUS = 0.05, SAT_TANKER_SPEED = 0.9, SAT_REPAIR_SECONDS = 5;
     if (!state.science) state.science = { uni: null, lab: null, space: null, satellite: false };
     const sci = () => state.science;
     const sciLevels = () => ({ logistics: logiLevel(), investor: levelInfo(inv.xp, INVEST_XP).level, gambler: levelInfo(state.casinoXp).level });
     const scienceOpen = () => { const L = sciLevels(); return L.logistics >= SCI_REQ.logistics && L.investor >= SCI_REQ.investor && L.gambler >= SCI_REQ.gambler; };
     const uniIncome = () => { const u = sci().uni; if (!u) return 0; return u.scientists >= UNI_MAX ? UNI_FULL_INCOME : -UNI_COST_PER_EMPTY * (UNI_MAX - u.scientists); };
-    const spaceFail = () => sci().satellite ? 0.05 : 0.10;
+    if (state.science.space && state.science.space.timer > SPACE_EVERY) state.science.space.timer = SPACE_EVERY;   // older saves: hourly timer
+    const spaceFail = () => SPACE_FAIL - (sci().satellite ? SAT_FAIL_CUT : 0);   // 20%, 15% with the satellite
 
     // ----- Nobel Prize texts: one field is chosen at random for each breakthrough -----
     const NOBEL_FIELDS = [
@@ -9397,7 +9402,7 @@
     function launchMission() {
       const s = sci().space, n = (s.count = (s.count || 0) + 1);
       const name = `${MISSION_NAMES[secureRandomInt(MISSION_NAMES.length)]}-${n}`;
-      const failed = secureRandomInt(1000) < spaceFail() * 1000;
+      const failed = secureRandomInt(1000) < Math.round(spaceFail() * 1000);
       const reward = failed ? 0 : (SPACE_MIN + secureRandomInt(SPACE_MAX - SPACE_MIN + 1)) * 1e6;
       s.log = [{ name, reward, at: Date.now() }, ...(s.log || [])].slice(0, 5);
       if (reward) state.stats.spaceOk = (state.stats.spaceOk || 0) + 1; else state.stats.spaceFail = (state.stats.spaceFail || 0) + 1;
@@ -9422,7 +9427,7 @@
         const m = launchMission();
         state.money += m.reward;
         if (m.reward) showNotice(`🚀 Mission ${m.name} succeeded: +${fmt(m.reward)}!`);
-        else showAlert(`🚀 Mission ${m.name} failed`, "The rocket didn't make it. No reward this time; the next launch is in 1 hour.");
+        else showAlert(`🚀 Mission ${m.name} failed`, "The rocket didn't make it. No reward this time; the next launch is in 20 minutes.");
         if (state.view === "income") render();
       }
       // 🛰️ satellite: broken trucks repair themselves for free after 5 seconds
@@ -9476,25 +9481,26 @@
             <span class="vialCount" title="Scientific breakthroughs (Nobel Prizes)">⚗️ × ${S.lab.prizes || 0}</span></div>
           <div class="muted">Every second: a 1 in ${LAB_ODDS.toLocaleString("en-US")} chance of a scientific breakthrough worth ${fmt(LAB_REWARD)} · <span id="sci-lab-next"></span></div></div>`;
       } else {
-        const ready = S.uni && S.uni.scientists >= UNI_MAX;
+        const ready = S.uni && S.uni.scientists >= LAB_SCI;
         html += `<div class="card specialCard" ${ready ? "" : `style="opacity:0.6"`}><div class="row"><div><h3>${ready ? "" : "🔒 "}🧪 Research lab</h3>
             <div class="muted">Every second a 1 in ${LAB_ODDS.toLocaleString("en-US")} chance of a scientific breakthrough: a Nobel Prize and ${fmt(LAB_REWARD)}. Guaranteed at least every 2 hours.</div>
-            ${ready ? "" : `<div class="muted">Needs ${UNI_MAX} scientists in your University${S.uni ? ` (you have ${S.uni.scientists})` : ""}</div>`}</div>
-          ${ready ? `<button class="btn" data-sci="lab" data-cost="${LAB_PRICE}">Buy ${fmt(LAB_PRICE)}</button>` : `<span class="muted">${fmt(LAB_PRICE)}</span>`}</div></div>`;
+            <div class="muted">Costs ${fmt(LAB_PRICE)} + 👩‍🔬 ${LAB_SCI} scientists from your University${S.uni ? ` (you have ${S.uni.scientists})` : ""}</div></div>
+          ${ready ? `<button class="btn" data-sci="lab" data-cost="${LAB_PRICE}">Buy ${fmt(LAB_PRICE)} + 👩‍🔬 ${LAB_SCI}</button>` : `<span class="muted">${fmt(LAB_PRICE)} + 👩‍🔬 ${LAB_SCI}</span>`}</div></div>`;
       }
       // 🚀 Space Mission Center
       if (S.space) {
         const log = (S.space.log || []).map(m => `<div class="row"><span>🚀 ${m.name}</span><b class="${m.reward ? "income" : ""}">${m.reward ? "+" + fmt(m.reward) : "❌ failed"}</b></div>`).join("");
         html += `<div class="card specialCard"><div class="row"><h3>🚀 Space Mission Center</h3><span class="muted">next launch in <b id="sci-space-next">${clock(S.space.timer)}</b></span></div>
-          <div class="muted">Every hour: ${fmt(SPACE_MIN * 1e6)} – ${fmt(SPACE_MAX * 1e6)}, or nothing if the mission fails (${Math.round(spaceFail() * 100)}% chance${S.satellite ? ", lowered by your 🛰️ satellite" : ""})</div>
+          <div class="muted">Every 20 minutes: ${fmt(SPACE_MIN * 1e6)} – ${fmt(SPACE_MAX * 1e6)}, or nothing if the mission fails (${Math.round(spaceFail() * 100)}% chance${S.satellite ? ", lowered by your 🛰️ satellite" : ""})</div>
           ${log ? `<h4>Last missions</h4>${log}` : ""}
           ${S.satellite ? "" : `<div class="muted">🛰️ A satellite is now available in 🚢 Logistics.</div>`}</div>`;
       } else {
-        const ready = S.lab && (S.lab.prizes || 0) >= SPACE_NEED;
-        html += `<div class="card specialCard" ${ready ? "" : `style="opacity:0.6"`}><div class="row"><div><h3>${ready ? "" : "🔒 "}🚀 Space Mission Center</h3>
-            <div class="muted">Launches a space mission every hour: ${fmt(SPACE_MIN * 1e6)} – ${fmt(SPACE_MAX * 1e6)}, with a 10% chance the mission fails. Unlocks a 🛰️ satellite in Logistics.</div>
-            ${ready ? "" : `<div class="muted">Needs ${SPACE_NEED} breakthroughs in your Research lab${S.lab ? ` (you have ${S.lab.prizes || 0})` : ""}</div>`}</div>
-          ${ready ? `<button class="btn" data-sci="space" data-cost="${SPACE_PRICE}">Buy ${fmt(SPACE_PRICE)}</button>` : `<span class="muted">${fmt(SPACE_PRICE)}</span>`}</div></div>`;
+        const unlocked = S.lab && (S.lab.prizes || 0) >= SPACE_NEED, ready = unlocked && S.uni && S.uni.scientists >= SPACE_SCI;
+        html += `<div class="card specialCard" ${unlocked ? "" : `style="opacity:0.6"`}><div class="row"><div><h3>${unlocked ? "" : "🔒 "}🚀 Space Mission Center</h3>
+            <div class="muted">Launches a space mission every 20 minutes: ${fmt(SPACE_MIN * 1e6)} – ${fmt(SPACE_MAX * 1e6)}, with a ${Math.round(SPACE_FAIL * 100)}% chance the mission fails. Unlocks a 🛰️ satellite in Logistics.</div>
+            ${unlocked ? "" : `<div class="muted">Needs ${SPACE_NEED} breakthroughs in your Research lab${S.lab ? ` (you have ${S.lab.prizes || 0})` : ""}</div>`}
+            <div class="muted">Costs ${fmt(SPACE_PRICE)} + 👩‍🔬 ${SPACE_SCI} scientists from your University${S.uni ? ` (you have ${S.uni.scientists})` : ""}</div></div>
+          ${ready ? `<button class="btn" data-sci="space" data-cost="${SPACE_PRICE}">Buy ${fmt(SPACE_PRICE)} + 👩‍🔬 ${SPACE_SCI}</button>` : `<span class="muted">${fmt(SPACE_PRICE)} + 👩‍🔬 ${SPACE_SCI}</span>`}</div></div>`;
       }
       return html;
     }
@@ -9512,8 +9518,8 @@
       const S = sci(), what = b.dataset.sci;
       const buy = (price) => { if (state.money < price) return false; state.money -= price; return true; };
       if (what === "uni" && !S.uni && buy(UNI_PRICE)) { S.uni = { scientists: 0, timer: UNI_EVERY }; showNotice("🎓 University built! Your first scientist arrives in 2 minutes."); }
-      else if (what === "lab" && !S.lab && S.uni && S.uni.scientists >= UNI_MAX && buy(LAB_PRICE)) { S.lab = { since: 0, prizes: 0, pending: null }; showNotice("🧪 Research lab opened! Breakthroughs can happen any second now."); }
-      else if (what === "space" && !S.space && S.lab && (S.lab.prizes || 0) >= SPACE_NEED && buy(SPACE_PRICE)) { S.space = { timer: SPACE_EVERY, log: [], count: 0, earned: 0 }; showNotice("🚀 Space Mission Center built! The first launch is in 1 hour. A 🛰️ satellite is now available in Logistics."); }
+      else if (what === "lab" && !S.lab && S.uni && S.uni.scientists >= LAB_SCI && buy(LAB_PRICE)) { S.uni.scientists -= LAB_SCI; S.uni.timer = Math.min(S.uni.timer, UNI_EVERY); S.lab = { since: 0, prizes: 0, pending: null }; showNotice("🧪 Research lab opened! Breakthroughs can happen any second now."); }
+      else if (what === "space" && !S.space && S.lab && (S.lab.prizes || 0) >= SPACE_NEED && S.uni && S.uni.scientists >= SPACE_SCI && buy(SPACE_PRICE)) { S.uni.scientists -= SPACE_SCI; S.uni.timer = Math.min(S.uni.timer, UNI_EVERY); S.space = { timer: SPACE_EVERY, log: [], count: 0, earned: 0 }; showNotice("🚀 Space Mission Center built! The first launch is in 20 minutes. A 🛰️ satellite is now available in Logistics."); }
       else return;
       updateCounter(); render(); save();
     });
@@ -9524,7 +9530,7 @@
       if (!box) return;
       box.hidden = !S.space && !S.satellite;
       if (box.hidden) return;
-      const perks = `<ul class="satPerks"><li>🚀 Space missions fail only 5% of the time (instead of 10%)</li>
+      const perks = `<ul class="satPerks"><li>🚀 Space missions fail 5% less often (${Math.round((SPACE_FAIL - SAT_FAIL_CUT) * 100)}% instead of ${Math.round(SPACE_FAIL * 100)}%)</li>
         <li>✈️ Cargo plane contracts pay +5%</li><li>🛢️ Tanker contracts take 10% less time</li>
         <li>🔧 Broken trucks repair themselves for free after 5 seconds</li></ul>`;
       box.innerHTML = S.satellite
