@@ -12,6 +12,10 @@
   <link rel="icon" type="image/png" sizes="64x64" href="assets/logo/icon-64.png">
   <link rel="icon" type="image/png" sizes="192x192" href="assets/logo/icon-192.png">
   <link rel="apple-touch-icon" href="assets/logo/apple-touch-icon.png">
+  <!-- Main menu button font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
   <meta property="og:image" content="assets/logo/share.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <style>
@@ -38,22 +42,36 @@
     @keyframes loadPulse { 50% { transform: scale(1.04); } }
     @keyframes loadBar { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
 
-    /* 🏠 Main menu (start page): the picture has the logo and buttons painted in; clickable areas sit on top */
+    /* 🏠 Main menu (start page): background picture + separate logo and buttons */
     #mainMenu { position: fixed; inset: 0; z-index: 90; overflow: hidden;
       background: #1b1140 url("assets/logo/menu-bg-blur.webp") center / cover; }
     #mainMenu::before { content: ""; position: absolute; inset: -40px; background: inherit; filter: blur(24px) brightness(0.55); }
     #menuStage { position: absolute; left: 0; top: 0; width: 1672px; height: 941px; transform-origin: 0 0;
       background: url("assets/logo/menu-bg.webp") 0 0 / 100% 100%; box-shadow: 0 0 80px rgba(0, 0, 0, 0.6); }
-    /* the painted buttons are long hexagons: the click areas use the same shape */
-    .menuBtn { position: absolute; border: 0; padding: 0; margin: 0; background: transparent;
-      clip-path: polygon(5% 0, 95% 0, 100% 50%, 95% 100%, 5% 100%, 0 50%);
-      cursor: pointer; transition: background 0.15s, transform 0.1s; color: transparent; font-size: 1px; }
-    .menuBtn:hover, .menuBtn:focus-visible { background: rgba(255, 240, 180, 0.22); outline: none; }
-    .menuBtn[data-menu="play"]:not(:hover) { animation: playGlow 2.2s ease-in-out infinite; }
-    @keyframes playGlow { 50% { background: rgba(255, 255, 255, 0.12); } }
-    .menuBtn:active { transform: scale(0.97); background: rgba(0, 0, 0, 0.12); }
+    /* Logo and buttons are separate pictures on top of the background; button text is real text.
+       A button element covers only the frame; its picture (crown, ornaments) overhangs it. */
+    #menuLogo { position: absolute; left: 900px; top: 92px; width: 420px; pointer-events: none; user-select: none;
+      filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.45)); }
+    .menuBtn { position: absolute; border: 0; padding: 0; margin: 0; background: transparent; cursor: pointer;
+      overflow: visible; transition: transform 0.12s ease; -webkit-tap-highlight-color: transparent; }
+    .menuBtn img { position: absolute; left: -2.63%; top: -53.7%; width: 105.26%; pointer-events: none; user-select: none; }
+    .menuLabel { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 0.32em;
+      font-family: "Lilita One", "Arial Black", system-ui, sans-serif; font-size: 30px; letter-spacing: 0.5px; color: #fff;
+      -webkit-text-stroke: 1.5px rgba(40, 20, 0, 0.55); paint-order: stroke fill;
+      text-shadow: 0 2px 0 rgba(0, 0, 0, 0.45), 0 0 10px rgba(0, 0, 0, 0.35); pointer-events: none; padding-top: 2px; }
+    .menuBtn.mGreen .menuLabel { font-size: 36px; }
+    .menuLabel svg { width: 0.95em; height: 0.95em; fill: url(#menuGold); filter: drop-shadow(0 1.5px 0 rgba(60, 30, 0, 0.7)); }
+    /* effects go on the picture (not the button box), so the glow follows the real outline */
+    .menuBtn img { transition: filter 0.15s ease; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45)); }
+    .menuBtn:hover, .menuBtn:focus-visible { transform: scale(1.045); outline: none; }
+    .menuBtn:hover img, .menuBtn:focus-visible img { filter: brightness(1.13) drop-shadow(0 0 14px rgba(255, 214, 90, 0.9)); }
+    .menuBtn:active { transform: scale(0.97) translateY(2px); transition-duration: 0.05s; }
+    .menuBtn:active img { filter: brightness(0.95) drop-shadow(0 3px 5px rgba(0, 0, 0, 0.5)); }
+    .menuBtn.mGreen:not(:hover) img { animation: playGlow 2.4s ease-in-out infinite; }
+    @keyframes playGlow { 50% { filter: brightness(1.08) drop-shadow(0 0 14px rgba(130, 255, 150, 0.6)); } }
     .menuBtn.soon { cursor: default; }
-    .menuBtn.soon:hover { background: rgba(255, 255, 255, 0.06); }
+    .menuBtn.soon:hover { transform: none; }
+    .menuBtn.soon:hover img { filter: brightness(1.04) drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45)); }
     body.menuOpen #tipCard, body.menuOpen #tutBubble, body.menuOpen #alerts { display: none !important; }
     .secretCard { border-color: rgba(170, 120, 255, 0.55); box-shadow: 0 0 18px rgba(150, 100, 255, 0.18); }
     .secretTag { font-size: 12px; font-weight: 800; color: #d7b8ff; background: rgba(140, 90, 255, 0.22); border: 1px solid rgba(170, 120, 255, 0.5); border-radius: 999px; padding: 2px 8px; vertical-align: middle; }
@@ -1145,10 +1163,17 @@
   <!-- ===== Main menu (start page) ===== -->
   <div id="mainMenu" hidden>
     <div id="menuStage">
-      <button class="menuBtn" data-menu="play"     style="left:970px; top:378px; width:234px; height:62px" aria-label="Play">Play</button>
-      <button class="menuBtn" data-menu="settings" style="left:980px; top:456px; width:216px; height:50px"  aria-label="Settings">Settings</button>
-      <button class="menuBtn" data-menu="about"    style="left:980px; top:519px; width:216px; height:50px"  aria-label="About">About</button>
-      <button class="menuBtn soon" data-menu="donate" style="left:980px; top:582px; width:216px; height:50px" aria-label="Donate (coming soon)" title="Coming soon">Donate</button>
+      <svg width="0" height="0" style="position:absolute"><defs><linearGradient id="menuGold" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fff3b0"/><stop offset="0.5" stop-color="#ffc83a"/><stop offset="1" stop-color="#d98a00"/></linearGradient></defs></svg>
+      <img id="menuLogo" src="assets/logo/menu-logo.webp" alt="Empire of Coins" draggable="false">
+      <button class="menuBtn mGreen" data-menu="play" style="left:948px; top:360px; width:323px; height:61px">
+        <img src="assets/logo/btn-green.webp" alt="" draggable="false"><span class="menuLabel"><svg viewBox="0 0 24 24"><path d="M6 3.5v17l14-8.5z"/></svg>Play</span></button>
+      <button class="menuBtn mBlue" data-menu="settings" style="left:963px; top:435px; width:294px; height:56px">
+        <img src="assets/logo/btn-blue.webp" alt="" draggable="false"><span class="menuLabel"><svg viewBox="0 0 24 24"><path d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.4 7.4 0 0 0-1.7-1L15 3.3h-4l-.4 2.6a7.4 7.4 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.5 7.5 0 0 0 0 2l-2.2 1.6 2 3.5 2.5-1c.5.4 1.1.8 1.7 1l.4 2.6h4l.4-2.6c.6-.2 1.2-.6 1.7-1l2.5 1 2-3.5zM13 15.4a3.4 3.4 0 1 1 0-6.8 3.4 3.4 0 0 1 0 6.8z" transform="translate(-1 0)"/></svg>Settings</span></button>
+      <button class="menuBtn mBlue" data-menu="about" style="left:963px; top:505px; width:294px; height:56px">
+        <img src="assets/logo/btn-blue.webp" alt="" draggable="false"><span class="menuLabel"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1.3 15.5h-2.6v-7h2.6zM12 8.8a1.6 1.6 0 1 1 0-3.2 1.6 1.6 0 0 1 0 3.2z"/></svg>About</span></button>
+      <button class="menuBtn mBlue soon" data-menu="donate" style="left:963px; top:575px; width:294px; height:56px" aria-label="Donate (coming soon)" title="Coming soon">
+        <img src="assets/logo/btn-blue.webp" alt="" draggable="false"><span class="menuLabel"><svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 5.3 3.2 1.7-2 3.2-3.2 5.3-3.2 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg>Donate</span></button>
     </div>
   </div>
 
@@ -10319,8 +10344,8 @@
        The game clock keeps running while the menu is open.
        ===================================================================== */
     const MENU_W = 1672, MENU_H = 941;
-    const MENU_SAFE = { x0: 220, x1: 1640, y0: 140, y1: 870 };    // everything important (penguin with his feet, logo, buttons, roulette): never cut off
-    const MENU_FOCUS = { x0: 925, x1: 1270, y0: 165, y1: 650 };   // logo + buttons: what phones zoom in on
+    const MENU_SAFE = { x0: 220, x1: 1640, y0: 70, y1: 870 };    // everything important (penguin with his feet, logo, buttons, roulette): never cut off
+    const MENU_FOCUS = { x0: 895, x1: 1325, y0: 85, y1: 656 };   // logo + buttons: what phones zoom in on
     function layoutMenu() {
       const vw = innerWidth, vh = innerHeight, pad = 8;
       // Landscape screens: fill the screen; only the plain edges (sky and sea) may be cut off, never the safe area.
