@@ -577,10 +577,11 @@ $("coin").addEventListener("click", (event) => {
   if (isPaused()) return;
   const coin = $("coin");
   if (!canClick(performance.now())) {
-    coin.classList.remove("blocked");
-    void coin.offsetWidth;
-    coin.classList.add("blocked");
-    $("hint").textContent = "Max " + MAX_CLICKS_PER_SECOND + " clicks per second!";
+    // shake (only if not already shaking: no forced page re-layout on every extra click)
+    if (!coin.shake || coin.shake.playState === "finished")
+      coin.shake = coin.animate([{ translate: "0" }, { translate: "-6px" }, { translate: "6px" }, { translate: "0" }], { duration: 200 });
+    const msg = "Max " + MAX_CLICKS_PER_SECOND + " clicks per second!";
+    if ($("hint").textContent !== msg) $("hint").textContent = msg;
     return;
   }
   // clear the "too fast" warning, but keep tax messages on screen
