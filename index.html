@@ -18,7 +18,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
   <meta property="og:image" content="assets/logo/share.jpg">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="stylesheet" href="css/style.css?v=20261114c">
+  <link rel="stylesheet" href="css/style.css?v=20261114d">
 </head>
 <body>
   <!-- ===== Loading screen (removed when the game has started) ===== -->
@@ -104,16 +104,7 @@
     <div id="boosters">
     <div id="energyWrap" class="booster">
       <button id="energyBtn" aria-describedby="energyTip" aria-label="Energy drink: 5x click value for 30 seconds, costs 50">
-        <svg viewBox="0 0 40 64" width="40" height="64" aria-hidden="true">
-          <rect x="4" y="6" width="32" height="54" rx="6" fill="#1fbf5a"/>
-          <rect x="4" y="6" width="32" height="54" rx="6" fill="url(#canShine)"/>
-          <rect x="7" y="1" width="26" height="7" rx="3" fill="#c9ced6"/>
-          <rect x="4" y="18" width="32" height="26" fill="#111"/>
-          <path d="M23 20 L14 33 H20 L17 43 L27 29 H21 Z" fill="#ffd34d"/>
-          <defs><linearGradient id="canShine" x1="0" x2="1">
-            <stop offset="0" stop-color="#fff" stop-opacity="0.35"/><stop offset="0.35" stop-color="#fff" stop-opacity="0"/>
-            <stop offset="1" stop-color="#000" stop-opacity="0.25"/></linearGradient></defs>
-        </svg>
+        <img class="boostImg" src="assets/boost/energy.webp" alt="" draggable="false">
         <span id="energyTimer" hidden></span>
       </button>
       <div id="energyTip" role="tooltip">
@@ -126,24 +117,7 @@
 
     <div id="pillWrap" class="booster">
       <button id="pillBtn" aria-describedby="pillTip" aria-label="Magical pill: each click gives 10% of your income per second for 30 seconds, costs 2000">
-        <svg viewBox="0 0 48 64" width="44" height="60" aria-hidden="true">
-          <!-- capsule -->
-          <g transform="rotate(-25 24 42)">
-            <rect x="10" y="30" width="28" height="26" rx="13" fill="#1e88e5"/>
-            <path d="M10 43 a13 13 0 0 1 13 -13 h2 a13 13 0 0 1 13 13 z" fill="#64b5f6"/>
-            <rect x="10" y="30" width="28" height="26" rx="13" fill="url(#pillShine)"/>
-          </g>
-          <!-- wizard hat -->
-          <path d="M8 30 Q24 24 40 30 Q24 35 8 30 Z" fill="#4a2c8a"/>
-          <path d="M14 29 L26 2 L34 29 Z" fill="#6a3fc0"/>
-          <path d="M26 2 Q32 6 30 12" stroke="#6a3fc0" stroke-width="3" fill="none" stroke-linecap="round"/>
-          <path d="M16 25 Q24 28 32 25" stroke="#ffd34d" stroke-width="2.5" fill="none"/>
-          <text x="22" y="18" font-size="7" fill="#ffd34d">★</text>
-          <text x="25.5" y="11" font-size="5" fill="#fff6c2">✦</text>
-          <defs><linearGradient id="pillShine" x1="0" x2="1">
-            <stop offset="0" stop-color="#fff" stop-opacity="0.4"/><stop offset="0.4" stop-color="#fff" stop-opacity="0"/>
-            <stop offset="1" stop-color="#000" stop-opacity="0.2"/></linearGradient></defs>
-        </svg>
+        <img class="boostImg" src="assets/boost/pill.webp" alt="" draggable="false">
         <span id="pillTimer" hidden></span>
       </button>
       <div id="pillTip" role="tooltip">
@@ -157,18 +131,7 @@
 
     <div id="influenceWrap" class="booster">
       <button id="influenceBtn" aria-describedby="influenceTip" aria-label="Political influence: doubles income from all businesses for 2 minutes, costs 250,000">
-        <svg viewBox="0 0 56 48" width="52" height="46" aria-hidden="true">
-          <ellipse cx="28" cy="40" rx="26" ry="6" fill="#1b1b22"/>
-          <ellipse cx="28" cy="39" rx="26" ry="5" fill="#2b2b36"/>
-          <rect x="13" y="6" width="30" height="33" rx="3" fill="#24242e"/>
-          <rect x="13" y="6" width="30" height="33" rx="3" fill="url(#hatShine)"/>
-          <ellipse cx="28" cy="6" rx="15" ry="3.5" fill="#33333f"/>
-          <rect x="13" y="28" width="30" height="7" fill="#b71c1c"/>
-          <rect x="23" y="28" width="8" height="7" rx="1" fill="#ffd34d"/>
-          <defs><linearGradient id="hatShine" x1="0" x2="1">
-            <stop offset="0" stop-color="#fff" stop-opacity="0.18"/><stop offset="0.3" stop-color="#fff" stop-opacity="0"/>
-            <stop offset="1" stop-color="#000" stop-opacity="0.3"/></linearGradient></defs>
-        </svg>
+        <img class="boostImg" src="assets/boost/influence.webp" alt="" draggable="false">
         <span id="influenceTimer" hidden></span>
       </button>
       <div id="influenceTip" role="tooltip">
@@ -594,28 +557,28 @@
   <div id="tipCard" hidden role="status"></div>
   <div id="tutBubble" hidden role="dialog" aria-label="Guided start"></div>
   <!-- Game code, split by section. Files share one global scope and must load in this order. -->
-  <script src="js/01-core.js?v=20261114c"></script>
-  <script src="js/02-income.js?v=20261114c"></script>
-  <script src="js/03-casino.js?v=20261114c"></script>
-  <script src="js/04-investing.js?v=20261114c"></script>
-  <script src="js/05-settings.js?v=20261114c"></script>
-  <script src="js/06-casino-cards.js?v=20261114c"></script>
-  <script src="js/07-boosters.js?v=20261114c"></script>
-  <script src="js/08-sky-climb.js?v=20261114c"></script>
-  <script src="js/09-special.js?v=20261114c"></script>
-  <script src="js/10-plinko.js?v=20261114c"></script>
-  <script src="js/11-cosmetics.js?v=20261114c"></script>
-  <script src="js/12-logistics.js?v=20261114c"></script>
-  <script src="js/13-live-trading.js?v=20261114c"></script>
-  <script src="js/14-world-map.js?v=20261114c"></script>
-  <script src="js/15-achievements.js?v=20261114c"></script>
-  <script src="js/16-prestige.js?v=20261114c"></script>
-  <script src="js/17-wiki.js?v=20261114c"></script>
-  <script src="js/18-art.js?v=20261114c"></script>
-  <script src="js/19-science.js?v=20261114c"></script>
-  <script src="js/20-tips.js?v=20261114c"></script>
-  <script src="js/21-clock.js?v=20261114c"></script>
-  <script src="js/22-main-menu.js?v=20261114c"></script>
-  <script src="js/23-minigames.js?v=20261114c"></script>
+  <script src="js/01-core.js?v=20261114d"></script>
+  <script src="js/02-income.js?v=20261114d"></script>
+  <script src="js/03-casino.js?v=20261114d"></script>
+  <script src="js/04-investing.js?v=20261114d"></script>
+  <script src="js/05-settings.js?v=20261114d"></script>
+  <script src="js/06-casino-cards.js?v=20261114d"></script>
+  <script src="js/07-boosters.js?v=20261114d"></script>
+  <script src="js/08-sky-climb.js?v=20261114d"></script>
+  <script src="js/09-special.js?v=20261114d"></script>
+  <script src="js/10-plinko.js?v=20261114d"></script>
+  <script src="js/11-cosmetics.js?v=20261114d"></script>
+  <script src="js/12-logistics.js?v=20261114d"></script>
+  <script src="js/13-live-trading.js?v=20261114d"></script>
+  <script src="js/14-world-map.js?v=20261114d"></script>
+  <script src="js/15-achievements.js?v=20261114d"></script>
+  <script src="js/16-prestige.js?v=20261114d"></script>
+  <script src="js/17-wiki.js?v=20261114d"></script>
+  <script src="js/18-art.js?v=20261114d"></script>
+  <script src="js/19-science.js?v=20261114d"></script>
+  <script src="js/20-tips.js?v=20261114d"></script>
+  <script src="js/21-clock.js?v=20261114d"></script>
+  <script src="js/22-main-menu.js?v=20261114d"></script>
+  <script src="js/23-minigames.js?v=20261114d"></script>
 </body>
 </html>

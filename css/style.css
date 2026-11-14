@@ -875,6 +875,11 @@ button.btn.dangerBtn:hover:not(:disabled) { background: #e63939; }
   position: relative; background: rgba(255, 255, 255, 0.05); border: 1px solid #555566; border-radius: 14px;
   padding: 8px 12px; cursor: pointer; transition: transform 0.1s;
 }
+/* booster pictures (energy drink, magical pill, political influence) */
+.boostImg { display: block; width: 58px; height: 58px; object-fit: contain; pointer-events: none; user-select: none;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45)); transition: filter 0.2s; }
+#energyBtn.cantAfford .boostImg, #pillBtn.cantAfford .boostImg, #influenceBtn.cantAfford .boostImg { filter: grayscale(1) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45)); }
+#energyBtn, #pillBtn, #influenceBtn { padding: 6px 8px; }
 #energyBtn:hover:not(.cantAfford) { border-color: #1fbf5a; transform: scale(1.06); }
 #pillBtn:hover:not(.cantAfford) { border-color: #64b5f6; transform: scale(1.06); }
 #energyBtn.cantAfford, #pillBtn.cantAfford, #influenceBtn.cantAfford { opacity: 0.45; cursor: not-allowed; }
