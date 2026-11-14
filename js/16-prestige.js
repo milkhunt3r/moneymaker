@@ -281,3 +281,41 @@ document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-levels]");
   if (b && !isPaused()) showLevelTable(b.dataset.levels);
 });
+
+/* ---------------------------------------------------------------------
+   ⭐ LEGACY BADGE + PANEL: shows your prestige level and the bonuses you picked
+   --------------------------------------------------------------------- */
+function legacyBonuses() {
+  const L = state.legacy;
+  return [
+    { icon: "💼", name: "Tycoon's Legacy", on: L.tycoon > 0, level: L.tycoon ? `×${L.tycoon}` : "",
+      text: L.tycoon ? `+${L.tycoon * 25}% income from businesses, special businesses and clicks` : "Not picked yet: +25% income per pick" },
+    { icon: "🚢", name: "Global Empire", on: L.empire > 0, level: `${L.empire || 0}/2`,
+      text: L.empire >= 2 ? "Fleet, warehouses, Trading Port and Logistics Center kept on every reset · contracts take half the time"
+        : L.empire ? "Fleet, warehouses, Trading Port and Logistics Center kept on every reset" : "Not picked yet: keep your logistics fleet on every reset" },
+    { icon: "🎟️", name: "VIP Coins", on: L.vip > 0, level: `${L.vip || 0}/2`,
+      text: L.vip ? `A free 500 scoin VIP chip every ${L.vip >= 2 ? 10 : 20} minutes for the Super high roller tables` : "Not picked yet: free 500 scoin VIP chips" },
+  ];
+}
+function updateLegacyBadge() {
+  const b = $("legacyBadge"), L = state.legacy; if (!b) return;
+  b.hidden = !(L.count > 0);
+  if (b.hidden) return;
+  const icons = legacyBonuses().filter(x => x.on).map(x => x.icon).join("");
+  b.innerHTML = `⭐ Prestige ${L.count}/${PRESTIGE_MAX} <span class="lgIcons">${icons}</span>`;
+}
+function showLegacy() {
+  const L = state.legacy, done = L.count >= PRESTIGE_MAX;
+  const NAMES = { tycoon: "💼 Tycoon's Legacy", empire: "🚢 Global Empire", vip: "🎟️ VIP Coins" };
+  showModal(`<h2>⭐ Your Legacy</h2>
+    <div class="legacySteps">${PRESTIGE_STEPS.map((v, i) => `<span class="${i < L.count ? "done" : ""}">${i + 1}. ${fmt(v)}</span>`).join("")}</div>
+    <p>${done ? "🏆 All 4 prestiges done: you finished the game! You can keep playing." :
+      `Prestige <b>${L.count} of ${PRESTIGE_MAX}</b> · next at <b>${fmt(prestigeAt())}</b> (you have ${fmt(state.money)})`}</p>
+    <div class="legacyList">${legacyBonuses().map(x => `<div class="legacyRow ${x.on ? "" : "off"}"><span class="big">${x.icon}</span>
+      <div><b>${x.name}</b> <span class="muted">${x.level}</span><div>${x.text}</div></div></div>`).join("")}</div>
+    ${(L.history || []).length ? `<p class="muted">Your picks: ${L.history.map((h, i) => `${i + 1}. ${NAMES[h.choice] || h.choice}`).join(" · ")}</p>` : ""}
+    <button class="btn" data-modal="close">Close</button>`);
+  $("modalBox").classList.add("gold");
+}
+$("legacyBadge").addEventListener("click", () => { if (!isPaused()) showLegacy(); });
+updateLegacyBadge();
