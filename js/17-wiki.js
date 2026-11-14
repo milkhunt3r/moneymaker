@@ -237,6 +237,14 @@ function wikiArt() {
       Your bag holds ${MINE_BAG} ore. Walk back to the surface to sell; if the lamp runs out underground, the rescue team keeps you safe but you keep only ${MINE_RESCUE_KEEP * 100}%.</p>
     <p>Ore is worth seconds of your income (your average business income over the last minute, at least ${fmt(MINE_MIN_BASE)} / sec): ${mineSec}.
       Deeper ore is rarer and worth more. 🔥 A gold rush in your real mines doubles ore value while it lasts.</p>
+    <h3>🏦 Vault and ⬆️ upgrades</h3>
+    <p>At the end of a run you choose: <b>💰 sell</b> your ore, or <b>🏦 keep it in the vault</b>. Your vault (shown under the energy) pays for upgrades, and you can still sell vault ore later at its normal value (no gold rush bonus). If you're rescued, the team saves half your ore, starting with the most valuable piece.</p>
+    ${wt(["Upgrade", "Levels", "Effect per level", "Cost per level (money + ore)"], Object.keys(MINE_UPS).map(k => {
+      const U = MINE_UPS[k];
+      return [U.icon + " " + U.name, U.max, U.costs.map((_, i) => U.eff(i + 1)).join(" → "),
+        U.costs.map(c => fmt(c[0]) + " + " + Object.keys(c[1]).map(o => c[1][o] + " " + ORES[o].emoji).join(" ")).join(" · ")];
+    }))}
+    <p class="muted">Upgrades and the vault are kept on prestige.</p>
     <h2>🖼️ Art Gallery</h2>
     <p>Copy a painting as closely as you can. The closer the match, the more your copy is worth. After you earn the 💵 Millionaire achievement (${fmt(1e6)} on hand), the gallery can be opened for <b>${fmt(ART_UNLOCK)}</b>.</p>
     <h3>Tiers</h3>

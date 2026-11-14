@@ -7,6 +7,8 @@ if (!state.mine) state.mine = {};
 const M = state.mine;
 if (typeof M.energy !== "number") M.energy = 5;
 M.runs = M.runs || 0; M.best = M.best || 0; M.earned = M.earned || 0; M.ores = M.ores || {};
+M.vault = M.vault || {};   // 🏦 ore you kept instead of selling (used to pay for upgrades)
+M.up = M.up || {};         // ⬆️ upgrade levels
 
 /* ---------------------------------------------------------------------
    ⛏️ GOLD MINE DIG (test version, no upgrades yet)
@@ -32,6 +34,46 @@ const ORES = {
   diamond: { name: "Diamond", emoji: "💎", sec: 250, color: "#5ee7ff", shine: "#e8fdff" },
 };
 const ORE_KEYS = Object.keys(ORES);
+
+/* ----- ⬆️ UPGRADES: each level costs money AND ore from your 🏦 vault ----- */
+const MINE_UPS = {
+  lamp: { icon: "🪔", name: "Bigger lamp", max: 5, eff: (l) => `${MINE_LAMP + 25 * l} lamp oil`,
+    costs: [[5e6, { coal: 10 }], [25e6, { copper: 10 }], [125e6, { silver: 8 }], [600e6, { gold: 8 }], [3e9, { diamond: 3 }]] },
+  bag: { icon: "🎒", name: "Bigger bag", max: 4, eff: (l) => `holds ${MINE_BAG + 10 * l} ore`,
+    costs: [[5e6, { coal: 8 }], [25e6, { copper: 8 }], [125e6, { silver: 6 }], [600e6, { gold: 6 }]] },
+  pick: { icon: "⛏️", name: "Better pickaxe", max: 3,
+    eff: (l) => ["stone 2 hits · granite 3 hits", "stone 1 hit · granite 3 hits", "stone 1 hit · granite 2 hits", "stone 1 · granite 2 · −25% oil per dig"][l],
+    costs: [[15e6, { copper: 15 }], [150e6, { silver: 10 }], [1.5e9, { gold: 6 }]] },
+  boots: { icon: "🥾", name: "Mining boots", max: 2, eff: (l) => `walking costs ${[0.25, 0.15, 0.1][l]} oil`,
+    costs: [[10e6, { coal: 12 }], [250e6, { silver: 6 }]] },
+  appraiser: { icon: "💰", name: "Ore appraiser", max: 5, eff: (l) => l ? `+${l * 10}% ore value` : "normal ore value",
+    costs: [[20e6, { copper: 5 }], [100e6, { silver: 5 }], [500e6, { gold: 5 }], [2.5e9, { diamond: 2 }], [12.5e9, { diamond: 5 }]] },
+};
+const upLv = (k) => Math.min(M.up[k] || 0, MINE_UPS[k].max);
+const mineLampMax = () => MINE_LAMP + 25 * upLv("lamp");
+const mineBagMax = () => MINE_BAG + 10 * upLv("bag");
+const tileHits = (t) => t === 2 ? (upLv("pick") >= 1 ? 1 : 2) : t === 3 ? (upLv("pick") >= 2 ? 2 : 3) : TILE_HITS[t];
+const digCost = (t) => (t === 1 ? MINE_COST.dirt : t === 2 ? MINE_COST.stone : MINE_COST.granite) * (upLv("pick") >= 3 ? 0.75 : 1);
+const walkCost = () => [0.25, 0.15, 0.1][upLv("boots")];
+const sellMult = () => 1 + 0.1 * upLv("appraiser");
+const oreValue = (k, rush = false) => Math.round(ORES[k].sec * mineBase() * sellMult() * (rush ? 2 : 1));
+function upCost(k) { const l = upLv(k); return l >= MINE_UPS[k].max ? null : MINE_UPS[k].costs[l]; }
+function canBuyUp(k) {
+  const c = upCost(k); if (!c) return false;
+  return state.money >= c[0] && Object.keys(c[1]).every(o => (M.vault[o] || 0) >= c[1][o]);
+}
+function buyUp(k) {
+  if (!canBuyUp(k) || M.run) return;
+  const [money, ores] = upCost(k);
+  state.money -= money;
+  for (const o in ores) M.vault[o] -= ores[o];
+  M.up[k] = upLv(k) + 1;
+  showNotice(`${MINE_UPS[k].icon} ${MINE_UPS[k].name} level ${M.up[k]}: ${MINE_UPS[k].eff(M.up[k])}!`);
+  save(); updateCounter(); renderMine();
+}
+// 🏦 the vault line (under the energy): how much of each ore you have
+const vaultLine = (cls = "") => `<div class="mineVault ${cls}">${ORE_KEYS.map(k =>
+  `<span title="${ORES[k].name}">${ORES[k].emoji} <b>${M.vault[k] || 0}</b></span>`).join("")}</div>`;
 
 const mineUnlocked = () => (state.stats.minesBought || 0) > 0 || (state.special.mines || []).length > 0;
 // value of one "second" of ore: your average business income over the last minute (no gold mines), at least 500
@@ -82,40 +124,87 @@ function newMineMap() {
     if (y >= 1 && y <= 3 && Math.abs(x - MINE_START_X) <= 1 && t === 4) t = 1;   // no bedrock right under the start
     tile.push(t); ore.push(o); hits.push(0);
   }
-  return { tile, ore, hits, x: MINE_START_X, y: 0, face: 1, lamp: MINE_LAMP, bag: [], deepest: 0, msg: "", seen: [] };
+  return { tile, ore, hits, x: MINE_START_X, y: 0, face: 1, lamp: mineLampMax(), lampMax: mineLampMax(), bag: [], deepest: 0, msg: "", seen: [] };
 }
 const mIdx = (x, y) => y * MINE_W + x;
 
 // ----- run flow -----
 function mineStart() {
-  if (M.run || !mineUnlocked() || mineEnergy() < 1) return;
+  if (M.run || M.pending || !mineUnlocked() || mineEnergy() < 1) return;
   if (M.energy >= MINE_ENERGY_MAX) M.regenAt = Date.now() + MINE_REGEN_MS;
   M.energy--;
   M.run = newMineMap();
   M.run.msg = "Dig down with the arrow keys (or the buttons). Come back up before your lamp runs out!";
   save(); renderMine();
 }
-function bagValue(bag, mult = 1) {
-  const base = mineBase() * (mineRush() ? 2 : 1);
-  return Math.round(bag.reduce((a, k) => a + ORES[k].sec, 0) * base * mult);
-}
+// value of a bag of ore if sold right now (🔥 a gold rush doubles it)
+const bagValue = (bag) => bag.reduce((a, k) => a + oreValue(k, mineRush()), 0);
+const oreCounts = (bag) => { const c = {}; bag.forEach(k => c[k] = (c[k] || 0) + 1); return c; };
+const oreList = (bag) => { const c = oreCounts(bag); return ORE_KEYS.filter(k => c[k]).map(k => `${ORES[k].emoji} ${ORES[k].name} ×${c[k]}`).join(" · "); };
+// End of a run: the ore waits in M.pending until you choose 💰 Sell or 🏦 Keep in the vault
 function mineFinish(rescued) {
   const R = M.run; if (!R) return;
-  const keep = rescued ? MINE_RESCUE_KEEP : 1, value = bagValue(R.bag, keep);
-  state.money += value; M.earned += value; M.runs++;
-  M.best = Math.max(M.best, R.deepest);
-  R.bag.forEach(k => M.ores[k] = (M.ores[k] || 0) + 1);
-  const counts = {}; R.bag.forEach(k => counts[k] = (counts[k] || 0) + 1);
-  const list = ORE_KEYS.filter(k => counts[k]).map(k => `${ORES[k].emoji} ${ORES[k].name} ×${counts[k]}`).join(" · ") || "nothing this time";
-  M.run = null; save(); updateCounter(); renderMine();
-  showModal(`<h2>${rescued ? "🆘 Rescued!" : "⛏️ Run complete!"}</h2>
-    ${rescued ? `<p>Your lamp ran out underground. The rescue team brought you up, but you could only keep <b>half</b> of your ore.</p>` : ""}
-    <p>${list}</p>
-    <p>Deepest point: <b>${R.deepest * 2} m</b>${R.deepest >= M.best && R.deepest > 0 ? " · 🏆 new record!" : ""}</p>
-    <p style="font-size:22px">You earned <b>${fmt(value)}</b>${mineRush() ? " (🔥 gold rush ×2)" : ""}</p>
-    <button class="btn big" data-modal="close">OK</button>`);
+  let bag = R.bag.slice();
+  if (rescued) {   // 🆘 the rescue team saves half: every other piece, starting with the most valuable
+    bag.sort((x, y) => ORES[y].sec - ORES[x].sec);
+    bag = bag.filter((_, i) => i % 2 === 0);
+  }
+  const record = R.deepest > M.best;
+  M.runs++; M.best = Math.max(M.best, R.deepest);
+  bag.forEach(k => M.ores[k] = (M.ores[k] || 0) + 1);
+  M.run = null;
+  if (bag.length) M.pending = { bag, rescued, deepest: R.deepest, record, lost: R.bag.length - bag.length };
+  else showNotice(rescued ? "🆘 Rescued! You had no ore with you." : `⛏️ Run over: no ore this time. Deepest point ${R.deepest * 2} m.`);
+  save(); renderMine();
+  if (M.pending) showMinePending();
+}
+function showMinePending() {
+  const P = M.pending; if (!P) return;
+  const value = bagValue(P.bag);
+  showModal(`<h2>${P.rescued ? "🆘 Rescued!" : "⛏️ Run complete!"}</h2>
+    ${P.rescued ? `<p>Your lamp ran out underground. The rescue team brought you up with <b>half</b> of your ore (${P.lost} lost).</p>` : ""}
+    <p>${oreList(P.bag)}</p>
+    <p>Deepest point: <b>${P.deepest * 2} m</b>${P.record ? " · 🏆 new record!" : ""}</p>
+    <div class="moneyRow" style="justify-content:center; margin-top:10px">
+      <button class="btn big" data-minep="sell">💰 Sell for ${fmt(value)}${mineRush() ? " 🔥" : ""}</button>
+      <button class="btn big ghost" data-minep="store">🏦 Keep in the vault</button></div>
+    <p class="muted">Ore in the vault pays for ⬆️ upgrades. You can also sell it later (without the 🔥 gold rush bonus).</p>`);
   $("modalBox").classList.add("gold");
 }
+$("modalBox").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-minep]"); if (!b || !M.pending) return;
+  const bag = M.pending.bag;
+  if (b.dataset.minep === "sell") {
+    const value = bagValue(bag);
+    state.money += value; M.earned += value; clickedThisSecond += value;   // counts as income (taxes)
+    showNotice(`💰 Sold your ore for ${fmt(value)}!`);
+  } else {
+    bag.forEach(k => M.vault[k] = (M.vault[k] || 0) + 1);
+    showNotice(`🏦 ${bag.length} ore stored in your vault.`);
+  }
+  M.pending = null; hideModal(); save(); updateCounter(); renderMine();
+});
+// 💰 sell ore from the vault (normal value, no gold rush bonus)
+function showVaultSell() {
+  const have = ORE_KEYS.filter(k => (M.vault[k] || 0) > 0);
+  const total = have.reduce((a, k) => a + M.vault[k] * oreValue(k), 0);
+  showModal(`<h2>🏦 Sell ore from your vault</h2>
+    ${have.length ? `<div class="vaultSell">${have.map(k => `<div class="row"><span>${ORES[k].emoji} ${ORES[k].name} ×${M.vault[k]} <span class="muted">(${fmt(oreValue(k))} each)</span></span>
+        <button class="btn small" data-vsell="${k}">Sell for ${fmt(M.vault[k] * oreValue(k))}</button></div>`).join("")}</div>
+      <button class="btn big" data-vsell="all">💰 Sell everything for ${fmt(total)}</button>` : `<p>Your vault is empty.</p>`}
+    <button class="btn ghost" data-modal="close">Close</button>`);
+}
+$("modalBox").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-vsell]"); if (!b) return;
+  const keys = b.dataset.vsell === "all" ? ORE_KEYS : [b.dataset.vsell];
+  let value = 0;
+  keys.forEach(k => { value += (M.vault[k] || 0) * oreValue(k); M.vault[k] = 0; });
+  if (!value) return;
+  state.money += value; M.earned += value; clickedThisSecond += value;
+  showNotice(`💰 Sold vault ore for ${fmt(value)}!`);
+  save(); updateCounter(); renderMine();
+  if (ORE_KEYS.some(k => M.vault[k] > 0)) showVaultSell(); else hideModal();
+});
 
 // one step in direction (dx, dy): walk into an empty tile, or hit a solid one
 function mineStep(dx, dy) {
@@ -127,12 +216,12 @@ function mineStep(dx, dy) {
   const i = mIdx(nx, ny), t = R.tile[i];
   if (t === 4) { R.msg = "🪨 Bedrock: too hard to dig. Find another way."; return mineDraw(); }
   if (t === 0) {
-    R.x = nx; R.y = ny; R.lamp -= ny === 0 ? 0 : MINE_COST.walk;
+    R.x = nx; R.y = ny; R.lamp -= ny === 0 ? 0 : walkCost();
   } else {
-    if (R.ore[i] && R.bag.length >= MINE_BAG) { R.msg = "🎒 Your bag is full! Head back up to sell."; return mineDraw(); }
-    R.lamp -= t === 1 ? MINE_COST.dirt : t === 2 ? MINE_COST.stone : MINE_COST.granite;
+    if (R.ore[i] && R.bag.length >= mineBagMax()) { R.msg = "🎒 Your bag is full! Head back up."; return mineDraw(); }
+    R.lamp -= digCost(t);
     R.hits[i]++;
-    if (R.hits[i] >= TILE_HITS[t]) {
+    if (R.hits[i] >= tileHits(t)) {
       R.tile[i] = 0;
       if (R.ore[i]) { R.bag.push(R.ore[i]); R.msg = `${ORES[R.ore[i]].emoji} +1 ${ORES[R.ore[i]].name}!`; R.ore[i] = null; }
       else R.msg = "";
@@ -207,7 +296,7 @@ function mineDraw() {
   // darkness: the lamp lights a circle around the miner (smaller as the oil runs out)
   const mx = R.x * TS + TS / 2, my = R.y * TS - camY + TS / 2;
   if (R.y > 0 || camY > 0) {
-    const rad = TS * (2.3 + 2.2 * (R.lamp / MINE_LAMP));
+    const rad = TS * (2.3 + 2.2 * Math.min(1, R.lamp / MINE_LAMP));
     const g = ctx.createRadialGradient(mx, my, rad * 0.35, mx, my, rad);
     g.addColorStop(0, "rgba(5,4,10,0)"); g.addColorStop(1, "rgba(5,4,10,0.94)");
     ctx.save(); ctx.beginPath(); ctx.rect(0, Math.max(0, gy), W, H); ctx.clip();
@@ -225,23 +314,22 @@ function mineDraw() {
 
 function mineHud() {
   const R = M.run, hud = $("mineHud"); if (!hud || !R) return;
-  const lampPct = Math.max(0, R.lamp / MINE_LAMP * 100);
-  const back = R.y * MINE_COST.walk;   // oil needed to walk back up an open shaft
+  const lampMax = R.lampMax || MINE_LAMP, lampPct = Math.max(0, R.lamp / lampMax * 100);
+  const back = R.y * walkCost();   // oil needed to walk back up an open shaft
   const counts = {}; R.bag.forEach(k => counts[k] = (counts[k] || 0) + 1);
   hud.innerHTML = `
-    <div class="mineStat"><span>🪔 Lamp</span><b>${Math.ceil(R.lamp)} / ${MINE_LAMP}</b></div>
+    <div class="mineStat"><span>🪔 Lamp</span><b>${Math.ceil(R.lamp)} / ${lampMax}</b></div>
     <div class="mineBar"><div style="width:${lampPct}%;background:${lampPct < 25 ? "#ff6b6b" : lampPct < 50 ? "#ffb347" : "#ffd34d"}"></div></div>
     ${R.y > 0 && R.lamp < back + 6 ? `<div class="mineWarn">⚠️ Head back up! About ${Math.ceil(back)} oil to get out.</div>` : ""}
     <div class="mineStat"><span>📏 Depth</span><b>${R.y * 2} m</b></div>
     <div class="mineStat"><span>🏆 Deepest</span><b>${R.deepest * 2} m</b></div>
-    <div class="mineStat"><span>🎒 Bag</span><b>${R.bag.length} / ${MINE_BAG}</b></div>
+    <div class="mineStat"><span>🎒 Bag</span><b>${R.bag.length} / ${mineBagMax()}</b></div>
     <div class="mineOres">${ORE_KEYS.filter(k => counts[k]).map(k => `<span>${ORES[k].emoji} ${counts[k]}</span>`).join("") || `<span class="muted">empty</span>`}</div>
     <div class="mineStat"><span>💰 Worth</span><b>${fmt(bagValue(R.bag))}</b></div>
     ${mineRush() ? `<div class="mineRush">🔥 Gold rush: ore ×2!</div>` : ""}
     <div class="mineMsg">${R.msg || "&nbsp;"}</div>
     ${R.y === 0
-      ? `<button class="btn big" data-mine="sell" ${R.bag.length ? "" : "disabled"}>💰 Sell & end run</button>
-         ${R.bag.length ? "" : `<button class="btn ghost small" data-mine="quit">End run</button>`}`
+      ? `<button class="btn big" data-mine="end">⛏️ End run</button>`
       : `<button class="btn ghost small" data-mine="quit" title="You keep only half your ore">🆘 Call the rescue team (keep 50%)</button>`}`;
 }
 
@@ -253,13 +341,33 @@ function renderMine() {
       <div class="card mineIntro">
         <h2>⛏️ Gold Mine Dig</h2>
         <p>Dig down into your gold mine and grab as much ore as your bag can hold. The deeper you go, the better the ore,
-          but every step burns lamp oil. Get back to the surface to sell. If the lamp runs out underground, you keep only half.</p>
-        <div class="mineOreRow">${ORE_KEYS.map(k => `<span>${ORES[k].emoji} ${ORES[k].name}: <b>${fmt(ORES[k].sec * mineBase())}</b></span>`).join("")}</div>
+          but every step burns lamp oil. Back at the surface, sell your ore or keep it in your 🏦 vault to pay for upgrades. If the lamp runs out underground, you keep only half.</p>
+        <div class="mineOreRow">${ORE_KEYS.map(k => `<span>${ORES[k].emoji} ${ORES[k].name}: <b>${fmt(oreValue(k))}</b></span>`).join("")}</div>
         <p class="muted">Ore is worth seconds of your income (${ORES.coal.sec}–${ORES.diamond.sec} sec each, based on your business income over the last minute). 🔥 A gold rush in your mines doubles it.</p>
         <div class="mineEnergy">${"⚡".repeat(e)}${"<span class='off'>⚡</span>".repeat(MINE_ENERGY_MAX - e)}
           <span class="muted">${e < MINE_ENERGY_MAX && M.regenAt ? `+1 in <b id="mineRegen">${clockMs(M.regenAt - Date.now())}</b>` : "full"}</span></div>
-        <button class="btn big" data-mine="start" ${e >= 1 ? "" : "disabled"}>⛏️ Start a run (⚡ 1)</button>
+        ${vaultLine()}
+        <div class="moneyRow" style="justify-content:center">
+          ${M.pending ? `<button class="btn big" data-mine="pending">🎒 Ore from your last run: sell or keep</button>`
+            : `<button class="btn big" data-mine="start" ${e >= 1 ? "" : "disabled"}>⛏️ Start a run (⚡ 1)</button>`}
+          <button class="btn ghost" data-mine="vault" ${ORE_KEYS.some(k => M.vault[k] > 0) ? "" : "disabled"}>💰 Sell vault ore</button></div>
         <p class="muted">Runs: ${M.runs} · Deepest ever: ${M.best * 2} m · Earned: ${fmt(M.earned)}</p>
+      </div>
+      <div class="card mineUps">
+        <h3>⬆️ Upgrades</h3>
+        <p class="muted">Each level costs money and ore from your 🏦 vault. Keep ore after a run to save up for them.</p>
+        <div class="mineUpGrid">${Object.keys(MINE_UPS).map(k => {
+          const U = MINE_UPS[k], l = upLv(k), c = upCost(k);
+          return `<div class="mineUp ${c ? "" : "maxed"}">
+            <div class="mineUpHead"><span class="mineUpIcon">${U.icon}</span><b>${U.name}</b><span class="mineUpLv">Lv ${l}/${U.max}</span></div>
+            <div class="mineUpEff">Now: ${U.eff(l)}</div>
+            ${c ? `<div class="mineUpEff next">Next: ${U.eff(l + 1)}</div>
+              <div class="mineUpCost"><span class="${state.money >= c[0] ? "" : "short"}">${fmt(c[0])}</span>
+                ${Object.keys(c[1]).map(o => `<span class="${(M.vault[o] || 0) >= c[1][o] ? "" : "short"}">${ORES[o].emoji} ${M.vault[o] || 0}/${c[1][o]}</span>`).join("")}</div>
+              <button class="btn small" data-mup="${k}" ${canBuyUp(k) ? "" : "disabled"}>⬆️ Upgrade</button>`
+            : `<div class="mineUpEff next">✅ Max level</div>`}
+          </div>`;
+        }).join("")}</div>
       </div>`;
     return;
   }
@@ -302,12 +410,12 @@ $("mineView").addEventListener("pointerdown", (e) => {
 $("mineView").addEventListener("click", (e) => {
   const b = e.target.closest("[data-mine]"); if (!b) return;
   if (b.dataset.mine === "start") mineStart();
-  if (b.dataset.mine === "sell" && M.run && M.run.y === 0) mineFinish(false);
-  if (b.dataset.mine === "quit" && M.run) {
-    if (M.run.y === 0) { M.runs++; M.run = null; save(); renderMine(); }
-    else mineFinish(true);
-  }
+  if (b.dataset.mine === "end" && M.run && M.run.y === 0) mineFinish(false);
+  if (b.dataset.mine === "quit" && M.run && M.run.y > 0) mineFinish(true);
+  if (b.dataset.mine === "pending") showMinePending();
+  if (b.dataset.mine === "vault") showVaultSell();
 });
+$("mineView").addEventListener("click", (e) => { const b = e.target.closest("[data-mup]"); if (b) buyUp(b.dataset.mup); });
 
 /* ---------------------------------------------------------------------
    🎮 HUB
@@ -331,6 +439,7 @@ function renderGames() {
         <div class="gameIcon">⛏️</div><h3>Gold Mine Dig</h3>
         <p class="muted">Dig deep for coal, copper, silver, gold and diamonds before your lamp runs out.</p>
         <div class="gameStatus">${mine ? `${"⚡".repeat(e)}${"<span class='off'>⚡</span>".repeat(MINE_ENERGY_MAX - e)}${M.run ? " · ⛏️ run in progress" : ""}` : "🔒 Buy your first ⛏️ gold mine (💰 Income → ⭐ Special)"}</div>
+        ${mine ? vaultLine("small") : ""}
         <button class="btn" data-game="mine" ${mine ? "" : "disabled"}>${M.run ? "▶ Continue" : "▶ Play"}</button>
       </div>
       <div class="card gameCard soon"><div class="gameIcon">❔</div><h3>More coming soon</h3>
