@@ -25,7 +25,7 @@ function applyOffline(seconds) {
   if (biz > 0) { rows.push(["💼 Businesses", biz]); total += biz; }
   // gold mines: limited by the gold that is left
   let gold = 0;
-  const perMine = MINE_INCOME * (1 + 0.10 * lawCount("immigration"));
+  const perMine = MINE_INCOME * (1 + LAW_IMMIGRATION * lawCount("immigration"));
   for (const m of state.special.mines) { const p = Math.min(m.capacity - m.mined, perMine * eff); m.mined += p; gold += p; }
   gold = Math.floor(gold * legacyIncomeMult());
   if (gold > 0) { rows.push(["⛏️ Gold mines", gold]); total += gold; }

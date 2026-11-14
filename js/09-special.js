@@ -102,7 +102,7 @@ function mineTick() {
   for (const m of mines) {
     let pay = MINE_INCOME * (rush ? 2 : 1)                       // gold rush doubles it
               * (state.influenceLeft > 0 ? 2 : 1)                 // political influence doubles it
-              * (1 + 0.10 * lawCount("immigration"));             // immigration lawyers: +10% each
+              * (1 + LAW_IMMIGRATION * lawCount("immigration"));   // immigration lawyers: +25% each
     pay = Math.min(pay, m.capacity - m.mined);                    // the last bit of gold
     m.mined += pay;
     income += pay;
@@ -167,11 +167,11 @@ const LAW_REPLACE_PRICE = 1000000;   // fire an attorney and pick a new one (onl
 const lawSlotPrice = () => LAW_SLOT_PRICE * (((state.special.law && state.special.law.attorneys.length) || 0) + 1);
 const ATTORNEYS = {
   criminal:    { name: "Criminal defense lawyer",     emoji: "🚔", desc: "+5% cashback on lost casino bets" },
-  immigration: { name: "Immigration lawyer",          emoji: "🛂", desc: "Gold mines and car washes earn +10%" },
+  immigration: { name: "Immigration lawyer",          emoji: "🛂", desc: "Gold mines and car washes earn +25%" },
   divorce:     { name: "Divorce & family lawyer",     emoji: "💔", desc: "Earns 90–100 per second (changes every second)" },
   employment:  { name: "Employment lawyer",           emoji: "👷", desc: "+1 worker slot in every business (only one allowed)" },
   realestate:  { name: "Real estate lawyer",          emoji: "🏠", desc: "Real estate sales pay +2% more" },
-  business:    { name: "Business lawyer",             emoji: "💼", desc: "+2% income for one random business, changes every 10 seconds" },
+  business:    { name: "Business lawyer",             emoji: "💼", desc: "+10% income for one random business, changes every 10 seconds" },
   debt:        { name: "Debt & financial lawyer",     emoji: "🧾", desc: "Get 25% of every tax payment back (up to 100% with 4 of them)" },
   civil:       { name: "Civil litigation lawyer",     emoji: "🏛️", desc: "Earns 70–100 per second (changes every second)" },
 };

@@ -1,6 +1,8 @@
 /* =====================================================================
    SETTINGS: change these numbers to balance the game
    ===================================================================== */
+const LAW_IMMIGRATION = 0.25;   // ⚖️ immigration lawyer: +25% for car washes and gold mines (per lawyer)
+const LAW_BUSINESS = 0.10;      // ⚖️ business lawyer: +10% for one random business (per lawyer)
 const MONEY_PER_CLICK = 1;
 const MAX_CLICKS_PER_SECOND = 10;
 const LAZY_CHANCE = 0.3;            // 30% chance a lazy worker earns nothing that second

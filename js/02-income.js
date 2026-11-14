@@ -143,8 +143,8 @@ function runCompany(company) {
   let total = earn.reduce((a, b) => a + b, 0);
 
   // Law firm: immigration lawyers boost car washes, business lawyers boost their current target
-  if (company.typeId === "carwash") total *= 1 + 0.10 * lawCount("immigration");
-  total *= 1 + 0.02 * businessLawyerTargets(company);
+  if (company.typeId === "carwash") total *= 1 + LAW_IMMIGRATION * lawCount("immigration");
+  total *= 1 + LAW_BUSINESS * businessLawyerTargets(company);
 
   // Car salons boost the car businesses
   if (company.typeId === "carwash" || company.typeId === "repair") {
