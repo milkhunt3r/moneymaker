@@ -347,8 +347,8 @@ button.btn.dangerBtn:hover:not(:disabled) { background: #e63939; }
   justify-content: center;
   gap: 8px;
   /* frosted, almost solid bar: content scrolling underneath can't show through */
-  background: rgba(14, 12, 30, 0.9);
-  -webkit-backdrop-filter: blur(12px) saturate(1.2); backdrop-filter: blur(12px) saturate(1.2);
+  background: rgba(14, 12, 30, 0.96);
+  /* (no backdrop blur: it was recalculated on the graphics card every frame and slowed other browser tabs) */
   border-bottom: 1px solid rgba(255, 211, 77, 0.35);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
   position: sticky;
@@ -414,7 +414,7 @@ button.btn.dangerBtn:hover:not(:disabled) { background: #e63939; }
 .subLayout { display: grid; grid-template-columns: 180px 1fr; gap: 16px; align-items: start; }
 .subNav { position: sticky; top: 80px; display: flex; flex-direction: column; gap: 8px; }
 .subTab { text-align: left; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.12);
-          background: rgba(22, 18, 44, 0.82); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+          background: rgba(22, 18, 44, 0.92);
           color: #fff; font: inherit; font-weight: 800; cursor: pointer; }
 .subTab:hover { background: rgba(48, 40, 84, 0.9); }
 .subTab.active { background: #ffd34d; color: #2b2200; border-color: #ffd34d; }
@@ -1006,6 +1006,7 @@ button.btn.big { font-size: 18px; padding: 12px 24px; margin-top: 10px; }
   background: url("../assets/coin.webp") center / contain no-repeat;   /* 👑 the Empire of Coins coin */
   filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.55));
   transition: transform 0.08s ease;
+  will-change: transform;   /* own layer: hover/press only scale it, nothing is redrawn */
 }
 #coin:hover  { transform: scale(1.04); }
 #coin:active { transform: scale(0.94); }
@@ -1148,7 +1149,7 @@ button.btn.small { padding: 4px 8px; font-size: 12px; }
 #saveWarn .btn { margin-left: 8px; }
 /* Businesses / Special / Science: a frosted strip across the whole panel that stays on top while scrolling */
 .incomeTabs { display: flex; gap: 6px; position: sticky; top: -20px; z-index: 3; margin: -20px -20px 14px; padding: 14px 20px 10px;
-  background: rgba(16, 14, 34, 0.92); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  background: rgba(16, 14, 34, 0.97);
   border-bottom: 1px solid rgba(255, 211, 77, 0.25); }
 .incomeTabs::after { content: ""; position: absolute; left: 0; right: 0; bottom: -14px; height: 14px; pointer-events: none;
   background: linear-gradient(rgba(16, 14, 34, 0.75), rgba(16, 14, 34, 0)); }   /* soft fade instead of a hard cut */
@@ -1300,7 +1301,9 @@ button.btn.small { padding: 4px 8px; font-size: 12px; }
    📱 PHONE MODE (body.phone: screens up to 760 px wide, see js/00-phone.js)
    ===================================================================== */
 #bgLayer { position: fixed; inset: 0; z-index: -2; pointer-events: none; background-position: center; background-size: cover; background-repeat: no-repeat; }
-body.phone:not(.bgProbe) { background: #14151f !important; }   /* the picture is on #bgLayer instead (no "fixed" repaint on scroll) */
+/* the background picture is drawn once on #bgLayer (its own still layer) instead of as a "fixed" page background,
+   which made the browser repaint it on scrolling and animations (all screen sizes) */
+body:not(.bgProbe) { background: #14151f !important; }
 
 /* Tab bar at the bottom, one scrollable row (thumb-friendly) */
 body.phone { --navH: 64px; padding-bottom: calc(var(--navH) + env(safe-area-inset-bottom)); }
@@ -1351,3 +1354,20 @@ body.phone #boosters { order: 3; position: static; transform: none; flex-directi
 body.phone #hint { order: 4; }
 body.phone #energyTip, body.phone #pillTip, body.phone #influenceTip { left: 50%; top: auto; bottom: calc(100% + 10px); transform: translateX(-50%); }
 body.phone #pillTip { left: 50%; } body.phone #energyTip { left: 0; transform: none; } body.phone #influenceTip { left: auto; right: 0; transform: none; }
+
+/* ✨ Floating "+1" click numbers: drawn in an isolated layer (#fx); a small pool of elements is reused */
+#fx { position: fixed; inset: 0; pointer-events: none; z-index: 40; contain: strict; }
+#fx .plus { position: absolute; left: 0; top: 0; animation: none; will-change: transform, opacity; opacity: 0; white-space: nowrap; }
+/* the money counter's size changes never move the rest of the page */
+#counter { contain: layout paint; font-variant-numeric: tabular-nums; }
+
+/* Booster glows: the glow is drawn once (::after) and only its opacity pulses (no repaint every frame) */
+#energyBtn.active, #pillBtn.active, #influenceBtn.active { animation: none; }
+#energyBtn.active::after, #pillBtn.active::after, #influenceBtn.active::after {
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; opacity: 0;
+  will-change: opacity; animation: glowFade 1s ease-in-out infinite; }
+#energyBtn.active::after { box-shadow: 0 0 28px rgba(31, 191, 90, 0.9); }
+#pillBtn.active::after { box-shadow: 0 0 28px rgba(160, 120, 255, 0.9); }
+#influenceBtn.active::after { box-shadow: 0 0 30px rgba(255, 211, 77, 0.95); }
+@keyframes glowFade { 50% { opacity: 1; } }
+#prestigeBtn { will-change: transform; }   /* its pulse only scales: keep it on its own layer */

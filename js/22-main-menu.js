@@ -54,6 +54,7 @@ const PATCH_NOTES = [
     "The game has a new name: <b>Empire of Coins</b>, with a new logo, browser tab icon, loading screen and this main menu.",
     "New first business: the <b>🌭 Hot Dog Stand</b> (100, 2 workers, no accountant or HR, up to 3). The guided start now begins with it.",
     "Hotels: at most <b>5 Concierges</b> per hotel. More Concierges stacked their bonus far too high.",
+    "⚡ Smoother clicking: the game no longer slows down other browser tabs (lighter booster glows, click numbers and background).",
     "📱 <b>Phone mode</b>: on screens up to 760 px the tabs move to the bottom, the game no longer zooms out, the casino jumps straight to the table, and blur effects and endless glows are turned off so phones run smoother.",
     "New <b>⛏️ Mining</b> achievements section: 16 achievements for the Gold Mine Dig.",
     "⭐ Your prestige level and Legacy bonuses are now shown in the 💰 Income tab: click the ⭐ Prestige badge for details.",

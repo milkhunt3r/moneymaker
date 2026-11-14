@@ -359,7 +359,14 @@ function updateAffordability() {
   });
 }
 
-function updateCounter() {
+let counterQueued = false;
+function updateCounter() {   // batched: many calls in one frame (fast clicks, income) update the page once
+  if (counterQueued) return;
+  counterQueued = true;
+  requestAnimationFrame(() => { counterQueued = false; updateCounterNow(); });
+  if (document.hidden) setTimeout(() => { if (counterQueued) { counterQueued = false; updateCounterNow(); } }, 0);
+}
+function updateCounterNow() {
   // Main counter: stays in bcoin until 100M, then switches to scoin (and gcoin at 1M scoin)
   const [num, unit] = splitCoins(state.money, 100 * SCOIN);
   $("counter").firstChild.nodeValue = num + " ";
@@ -550,15 +557,20 @@ function canClick(now) {
   return true;
 }
 
+// Floating "+1": a pool of reused elements in the #fx layer, animated with transform/opacity only
+// (no new elements, no page layout: the graphics card moves them)
+const plusPool = [];
+let plusNext = 0;
 function showPlus(x, y) {
-  const el = document.createElement("div");
-  el.className = "plus";
+  if (!plusPool.length) for (let i = 0; i < 14; i++) { const el = document.createElement("div"); el.className = "plus"; $("fx").appendChild(el); plusPool.push(el); }
+  const el = plusPool[plusNext]; plusNext = (plusNext + 1) % plusPool.length;
   el.textContent = "+" + fmt(clickValue());
-  if (energyActive()) el.style.color = "#5be08f";
-  el.style.left = x + "px";
-  el.style.top = y + "px";
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 800);
+  el.style.color = energyActive() ? "#5be08f" : "";
+  if (el.anim) el.anim.cancel();
+  el.anim = el.animate([
+    { transform: `translate(${x}px, ${y}px) translate(-50%, -50%)`, opacity: 1 },
+    { transform: `translate(${x}px, ${y - 80}px) translate(-50%, -50%)`, opacity: 0 }],
+    { duration: 800, easing: "ease-out", fill: "forwards" });
 }
 
 $("coin").addEventListener("click", (event) => {

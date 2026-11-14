@@ -16,11 +16,10 @@ function applyPhoneMode() {
 applyPhoneMode();
 phoneQuery.addEventListener ? phoneQuery.addEventListener("change", applyPhoneMode) : phoneQuery.addListener(applyPhoneMode);
 
-/* Background art on phones: "fixed" backgrounds make phones repaint the whole screen on every scroll.
-   In phone mode the picture is drawn once on its own fixed layer (#bgLayer) instead. */
+/* Background art: "fixed" page backgrounds make the browser repaint the whole screen on scrolls and animations.
+   The picture is drawn once on its own fixed layer (#bgLayer) instead, on every screen size. */
 function syncBgLayer() {
   const layer = document.getElementById("bgLayer"); if (!layer) return;
-  if (!isPhone()) { layer.style.backgroundImage = ""; return; }
   document.body.classList.add("bgProbe");                       // read the picture the body would show...
   const img = getComputedStyle(document.body).backgroundImage;
   document.body.classList.remove("bgProbe");                    // ...then let the layer show it
