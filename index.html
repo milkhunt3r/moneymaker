@@ -335,7 +335,7 @@
     @media (max-width: 800px) {
       #incomeView { flex-direction: column; }
       #game { min-height: 70vh; }
-      #shop { width: 100%; max-height: none; border-left: none; }
+      #shop { width: 100%; max-height: none; border-left: none; overflow: visible; }   /* the page scrolls, so the sub-tabs can stick */
     }
 
     /* ================= Tabs ================= */
@@ -367,8 +367,11 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      background: rgba(0, 0, 0, 0.45);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      /* frosted, almost solid bar: content scrolling underneath can't show through */
+      background: rgba(14, 12, 30, 0.9);
+      -webkit-backdrop-filter: blur(12px) saturate(1.2); backdrop-filter: blur(12px) saturate(1.2);
+      border-bottom: 1px solid rgba(255, 211, 77, 0.35);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
       position: sticky;
       top: 0;
       z-index: 10;
@@ -432,8 +435,9 @@
     .subLayout { display: grid; grid-template-columns: 180px 1fr; gap: 16px; align-items: start; }
     .subNav { position: sticky; top: 80px; display: flex; flex-direction: column; gap: 8px; }
     .subTab { text-align: left; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.12);
-              background: rgba(255,255,255,0.04); color: #fff; font: inherit; font-weight: 800; cursor: pointer; }
-    .subTab:hover { background: rgba(255,255,255,0.09); }
+              background: rgba(22, 18, 44, 0.82); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+              color: #fff; font: inherit; font-weight: 800; cursor: pointer; }
+    .subTab:hover { background: rgba(48, 40, 84, 0.9); }
     .subTab.active { background: #ffd34d; color: #2b2200; border-color: #ffd34d; }
     .subMain > div > .card:first-child { margin-top: 0; }
     #investPane[hidden], #livePane[hidden] { display: none; }
@@ -1158,10 +1162,16 @@
                  background: #b71c1c; color: #fff; padding: 10px 14px; border-radius: 12px; box-shadow: 0 6px 24px rgba(0,0,0,0.5); font-size: 14px; }
     #saveWarn[hidden] { display: none; }
     #saveWarn .btn { margin-left: 8px; }
-    .incomeTabs { display: flex; gap: 6px; margin-bottom: 12px; position: sticky; top: 0; z-index: 3; padding: 6px 0; background: inherit; }
-    .incomeTab { flex: 1; padding: 9px 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); color: inherit; font-weight: 700; cursor: pointer; font-size: 14px; }
+    /* Businesses / Special / Science: a frosted strip across the whole panel that stays on top while scrolling */
+    .incomeTabs { display: flex; gap: 6px; position: sticky; top: -20px; z-index: 3; margin: -20px -20px 14px; padding: 14px 20px 10px;
+      background: rgba(16, 14, 34, 0.92); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 211, 77, 0.25); }
+    .incomeTabs::after { content: ""; position: absolute; left: 0; right: 0; bottom: -14px; height: 14px; pointer-events: none;
+      background: linear-gradient(rgba(16, 14, 34, 0.75), rgba(16, 14, 34, 0)); }   /* soft fade instead of a hard cut */
+    @media (max-width: 800px) { .incomeTabs { top: var(--tabsH, 56px); } }   /* phones: the page scrolls, so stick below the top bar */
+    .incomeTab { flex: 1; padding: 9px 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.14); background: #24203c; color: inherit; font-weight: 700; cursor: pointer; font-size: 14px; }
     .incomeTab:hover { background: rgba(255,255,255,0.09); }
-    .incomeTab.active { background: rgba(255, 211, 77, 0.16); border-color: #ffd34d; color: #ffd34d; }
+    .incomeTab.active { background: #4a3d16; border-color: #ffd34d; color: #ffd34d; }
     #incBiz[hidden], #incSpecial[hidden], #incScience[hidden] { display: none; }
     .vialCount { font-size: 18px; font-weight: 900; color: #ffd34d; background: rgba(255,211,77,0.12); border: 1px solid rgba(255,211,77,0.5); padding: 2px 10px; border-radius: 999px; }
     .nobel { text-align: center; }
@@ -10513,6 +10523,7 @@
       $("brandIcon").hidden = !(room < 138 && room >= 44);
     }
     new ResizeObserver(fitBrand).observe($("tabs"));
+    new ResizeObserver(() => document.documentElement.style.setProperty("--tabsH", $("tabs").offsetHeight + "px")).observe($("tabs"));
     addEventListener("resize", fitBrand); fitBrand();
 
     // 📝 Patch notes: newest first. The first entry is shown open in About.
