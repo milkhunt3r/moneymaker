@@ -232,6 +232,11 @@
     }
     #coin.goldrushCoin { background: url("assets/goldrush-coin.webp") center / contain no-repeat; box-shadow: none; filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.55)); }
     #coin.goldrushCoin::after { content: none; }
+    body.strongmanBg {   /* muted, grey picture: medium overlay */
+      background: linear-gradient(rgba(12, 12, 22, 0.66), rgba(12, 12, 22, 0.8)), url("assets/strongman-background.jpg") center / cover fixed;
+    }
+    #coin.strongmanCoin { background: url("assets/strongman-coin.webp") center / contain no-repeat; box-shadow: none; filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.55)); }
+    #coin.strongmanCoin::after { content: none; }
     #coin.aheadCoin::after { content: none; }
 
     #shop {
@@ -6745,6 +6750,7 @@
       { id: "global", name: "🌍 The Global Network Collection", reward: { cat: "logistics", text: "Unlock every 🚢 Logistics achievement" } },
       { id: "jackpot", name: "🎰 The Jackpot Collection", reward: { cat: "casino", text: "Unlock every 🎰 Casino achievement" } },
       { id: "goldrush", name: "⛏️ The Gold Rush Collection", reward: { ids: ["mine1", "mine4"], text: "Unlock ⛏️ Gold digger and ⛏️ Mining magnate" } },
+      { id: "strongman", name: "🦛 The Strongman Collection", reward: { ids: ["boost-energy-100", "click100k"], text: "Unlock ⚡ Wired for life and 🦾 Iron finger" } },
     ];
     const COSMETICS = [
       { id: "wowBg",   collection: "wow", slot: "background", name: "Wow So Rich Background", price: 5000000, desc: "A very rich Shiba Inu tycoon counts his cash in a glittering office, behind the whole game.",
@@ -6805,6 +6811,10 @@
         preview: `<div class="preview" style="background-image:url('assets/goldrush-background-thumb.jpg')"></div>` },
       { id: "goldrushCoin", collection: "goldrush", slot: "coin", name: "Gold Rush Coin", price: 0, desc: "Replaces the coin you click with the mole miner's golden medallion.",
         preview: `<div class="preview"><img src="assets/goldrush-coin.webp" alt="Gold Rush coin"></div>` },
+      { id: "strongmanBg", collection: "strongman", slot: "background", name: "Strongman Background", price: 0, desc: "A hippo strongman loads the last Atlas stone onto its pillar while the crowd roars, behind the whole game.",
+        preview: `<div class="preview" style="background-image:url('assets/strongman-background-thumb.jpg')"></div>` },
+      { id: "strongmanCoin", collection: "strongman", slot: "coin", name: "Strongman Coin", price: 0, desc: "Replaces the coin you click with the hippo strongman's hammered iron medallion.",
+        preview: `<div class="preview"><img src="assets/strongman-coin.webp" alt="Strongman coin"></div>` },
     ];
     if (!state.cosmetics) state.cosmetics = { owned: {}, on: {} };
 
@@ -6834,6 +6844,8 @@
       document.body.classList.toggle("jackpotBg", !!state.cosmetics.on.jackpotBg);
       document.body.classList.toggle("goldrushBg", !!state.cosmetics.on.goldrushBg);
       $("coin").classList.toggle("goldrushCoin", !!state.cosmetics.on.goldrushCoin);
+      document.body.classList.toggle("strongmanBg", !!state.cosmetics.on.strongmanBg);
+      $("coin").classList.toggle("strongmanCoin", !!state.cosmetics.on.strongmanCoin);
       $("coin").classList.toggle("jackpotCoin", !!state.cosmetics.on.jackpotCoin);
       $("coin").classList.toggle("globalCoin", !!state.cosmetics.on.globalCoin);
       $("coin").classList.toggle("spaceCoin", !!state.cosmetics.on.spaceCoin);
@@ -10358,6 +10370,7 @@
         "The game has a new name: <b>Empire of Coins</b>, with a new logo, browser tab icon, loading screen and this main menu.",
         "New first business: the <b>🌭 Hot Dog Stand</b> (100, 2 workers, no accountant or HR, up to 3). The guided start now begins with it.",
         "Hotels: at most <b>5 Concierges</b> per hotel. More Concierges stacked their bonus far too high.",
+        "New reward: <b>🦛 The Strongman Collection</b> (background and coin) for finishing ⚡ Wired for life and 🦾 Iron finger.",
         "New special business: the <b>🧑‍💼 Recruitment Agency</b> (10 scoin, needs 2 hotels and 2 casinos). Save a staffing plan once, then staff every new hotel and casino in one click for 1 scoin each, or apply the plan to all of them.",
         "Shop: the new <b>🦁 Emperor Collection</b> (background, coin and card deck, 1 gcoin each), with the achievement <b>Hail, Emperor!</b> for wearing all 3 at once.",
         "Shop: new prices per item: One Step Ahead 25 scoin, Royal 100 scoin, Make It Rain 500 scoin (Wow So Rich stays 5 scoin). Items you already own stay yours.",
