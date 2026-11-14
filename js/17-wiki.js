@@ -231,14 +231,14 @@ function wikiArt() {
     <p>The 🎮 Mini-games tab holds games you unlock with your buildings and achievements. Play them to earn extra money.</p>
     <h2>⛏️ Gold Mine Dig</h2>
     <p>Unlocks when you buy your first ⛏️ gold mine and stays unlocked even after the mine runs dry or a prestige.
-      Each run costs ⚡ 1 energy: you have up to ${MINE_ENERGY_MAX}, and 1 comes back every ${MINE_REGEN_MS / 60000} minutes (also while the game is closed).</p>
+      Each run costs ⚡ 1 energy: you have up to ${MINE_ENERGY_MAX} (more with the ⚡ Energy tank), and 1 comes back every ${MINE_REGEN_MS / 60000} minutes (faster with ⏱️ Fast recharge), also while the game is closed.</p>
     <p>Dig with the arrow keys / WASD or the on-screen buttons. Every step burns lamp oil (${MINE_LAMP} at the start): walking through a tunnel ${MINE_COST.walk},
       digging dirt ${MINE_COST.dirt}, each hit on stone ${MINE_COST.stone} (2 hits) and on granite ${MINE_COST.granite} (3 hits). 🪨 Bedrock can't be dug.
-      Your bag holds ${MINE_BAG} ore. Walk back to the surface to sell; if the lamp runs out underground, the rescue team keeps you safe but you keep only ${MINE_RESCUE_KEEP * 100}%.</p>
+      Your bag holds ${MINE_BAG} ore. Walk back to the surface to sell; if the lamp runs out underground, the rescue team keeps you safe but you keep only ${MINE_RESCUE_KEEP * 100}% of your ore (more with 🆘 Rescue insurance).</p>
     <p>Ore is worth seconds of your income (your average business income over the last minute, at least ${fmt(MINE_MIN_BASE)} / sec): ${mineSec}.
       Deeper ore is rarer and worth more. 🔥 A gold rush in your real mines doubles ore value while it lasts.</p>
     <h3>🏦 Vault and ⬆️ upgrades</h3>
-    <p>At the end of a run you choose: <b>💰 sell</b> your ore, or <b>🏦 keep it in the vault</b>. Your vault (shown under the energy) pays for upgrades, and you can still sell vault ore later at its normal value (no gold rush bonus). If you're rescued, the team saves half your ore, starting with the most valuable piece.</p>
+    <p>At the end of a run you choose: <b>💰 sell</b> your ore, or <b>🏦 keep it in the vault</b>. Your vault (shown under the energy) pays for upgrades, and you can still sell vault ore later at its normal value (no gold rush bonus). If you're rescued, the team saves 50% of your ore (65% / 80% with insurance), starting with the most valuable piece.</p>
     ${wt(["Upgrade", "Levels", "Effect per level", "Cost per level (money + ore)"], Object.keys(MINE_UPS).map(k => {
       const U = MINE_UPS[k];
       return [U.icon + " " + U.name, U.max, U.costs.map((_, i) => U.eff(i + 1)).join(" → "),
