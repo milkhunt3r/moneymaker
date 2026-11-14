@@ -288,7 +288,8 @@ setTimeout(() => {
   all.forEach(n => { const im = new Image(); im.src = `${deckDir()}/${n}.webp`; });
 }, 1500);
 function applyDeck() {   // card backs follow the deck; preload the new deck's pictures
-  document.documentElement.style.setProperty("--card-back", `url("${deckDir()}/back.webp")`);
+  // full address: a relative path inside a CSS variable would be read from the css/ folder
+  document.documentElement.style.setProperty("--card-back", `url("${new URL(deckDir() + "/back.webp", document.baseURI).href}")`);
 }
 function cardHtml(c) {
   if (c.hidden) return `<div class="pcard back ${c.fresh ? "deal" : ""}" role="img" aria-label="Face-down card"></div>`;
