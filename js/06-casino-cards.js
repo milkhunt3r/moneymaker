@@ -76,7 +76,7 @@ async function bjDeal() {
   t.hands = [];
   bets.forEach((b, seat) => { if (b > 0) t.hands.push({ seat, bet: b, cards: [], done: false, result: null }); });
   if (bets.some(b => b >= 500000000)) state.stats.bj500 = true;
-  countPlay("blackjack");
+  countPlay("blackjack", t.hands.length);   // one game per seat with a bet (splits don't add games)
   state.bj[t.id].bets = [0, 0, 0];
   t.dealer = [];
   save();
@@ -836,7 +836,7 @@ async function uthDeal() {
   t.lastBets = seats.map(s => ({ ...s }));
   state.uth[t.id].inPlay = uthCost(seats);   // free chips included; on a reload they go back as free chips
   freeStart(t.id);
-  countPlay("uth");
+  countPlay("uth", seats.filter(s => s.ante > 0).length);   // one game per seat with a bet
   t.hands = [];
   seats.forEach((s, seat) => {
     if (s.ante > 0) t.hands.push({ seat, ante: s.ante, blind: s.ante, trips: s.trips, play: 0, cards: [], folded: false, decided: false });

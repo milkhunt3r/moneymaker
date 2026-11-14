@@ -34,7 +34,7 @@ const ACHIEVEMENTS = [
   { id: "prestige4",  cat: "general", icon: "🏆", name: "Legend",             desc: "Prestige 4 times and finish the game", goal: 4, get: () => state.legacy.count },
   { id: "tax10",      cat: "general", icon: "🧾", name: "Good citizen",       desc: "Pay 10 tax bills",                    goal: 10,   get: () => state.stats.taxPaid || 0 },
   { id: "tax100",     cat: "general", icon: "🧾", name: "Model taxpayer",     desc: "Pay 100 tax bills",                   goal: 100,  get: () => state.stats.taxPaid || 0 },
-  { id: "tax1000",    cat: "general", icon: "🏛️", name: "Pillar of society",  desc: "Pay 1,000 tax bills",                 goal: 1000, get: () => state.stats.taxPaid || 0 },
+  { id: "tax1000",    cat: "general", icon: "🏛️", name: "Pillar of society",  desc: "Pay 500 tax bills",                   goal: 500, get: () => state.stats.taxPaid || 0 },
   { id: "cosmetic1",  cat: "general", icon: "🛍️", name: "Treat yourself",     desc: "Buy your first cosmetic item in the Shop", goal: 1, get: () => COSMETICS.some(c => c.price > 0 && state.cosmetics.owned[c.id]) ? 1 : 0 },
   { id: "emperor",    cat: "general", icon: "🦁", name: "Hail, Emperor!",     desc: "Buy the whole 🦁 Emperor Collection and wear all 3 items at once (background, coin and cards)", goal: 3,
     get: () => ["emperorBg", "emperorCoin", "emperorCards"].filter(id => state.cosmetics.owned[id] && state.cosmetics.on[id]).length },
@@ -98,11 +98,11 @@ const ACHIEVEMENTS = [
   { id: "rb500",      cat: "casino", icon: "🔴", name: "Red or black?",      desc: "Bet 500 scoin on red or black in a single spin", goal: 1, get: flag("redBlack500") },
   { id: "vp500",      cat: "casino", icon: "🎴", name: "Max credits",        desc: "Play a Video Poker hand with a 500 scoin bet", goal: 1, get: flag("vp500") },
   { id: "uth500",     cat: "casino", icon: "🤠", name: "All in",             desc: "Play an Ultimate Texas Hold'em hand with a 500 scoin ante", goal: 1, get: flag("uth500") },
-  ...[["roulette", "🎡", "Roulette", "spins"], ["blackjack", "🃏", "Blackjack", "rounds"], ["plinko", "🔻", "Plinko", "balls"],
+  ...[["roulette", "🎡", "Roulette", "spins"], ["blackjack", "🃏", "Blackjack", "hands"], ["plinko", "🔻", "Plinko", "balls"],
       ["climb", "🎈", "Sky Climb", "rounds"], ["vp", "🎴", "Video Poker", "hands"], ["uth", "🤠", "Ultimate Texas Hold'em", "hands"]]
     .flatMap(([g, icon, label, unit]) => [100, 1000].map(n => ({
       id: `play-${g}-${n}`, cat: "casino", icon, name: `${label} ${n === 100 ? "regular" : "veteran"}`,
-      desc: `${unit === "balls" ? "Drop" : "Play"} ${n.toLocaleString()} ${label} ${unit}`, goal: n, get: () => (state.stats.played && state.stats.played[g]) || 0 }))),
+      desc: `${unit === "balls" ? "Drop" : "Play"} ${n.toLocaleString()} ${label} ${unit}${g === "blackjack" || g === "uth" ? " (each seat you bet on counts)" : ""}`, goal: n, get: () => (state.stats.played && state.stats.played[g]) || 0 }))),
   // Investments
   { id: "prop1",      cat: "invest", icon: "🏠", name: "Landlord",           desc: "Buy your first property",             goal: 1,  get: () => Math.max(inv.properties.length, state.invest.stats && state.invest.stats.re && state.invest.stats.re.in > 0 ? 1 : 0) },
   { id: "prop10",     cat: "invest", icon: "🏘️", name: "Property portfolio", desc: "Own 10 properties at once",           goal: 10, get: () => inv.properties.length },
