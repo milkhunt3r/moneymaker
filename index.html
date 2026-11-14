@@ -7994,6 +7994,7 @@
         get: () => ["emperorBg", "emperorCoin", "emperorCards"].filter(id => state.cosmetics.owned[id] && state.cosmetics.on[id]).length },
       { id: "uni2",     cat: "secret", icon: "🎓", name: "Double degree", desc: "Own two Universities", goal: 2, get: () => state.science ? (state.science.uni ? 1 : 0) + (state.science.uni2 ? 1 : 0) : 0 },
       { id: "astro",    cat: "secret", icon: "🔭", name: "Stargazer", desc: "Build an Astronomy Research Center", goal: 1, get: () => state.science && state.science.astro ? 1 : 0 },
+      { id: "station",  cat: "secret", icon: "🛸", name: "Home among the stars", desc: "Put an Orbital Space Station in orbit", goal: 1, get: () => state.science && state.science.station ? 1 : 0 },
       { id: "fullSet",    cat: "general", icon: "🎨", name: "Dressed to impress", desc: "Wear the coin and background from the same collection", goal: 1, get: () => matchingSet() ? 1 : 0 },
       // Income
       { id: "click100",   cat: "income", icon: "👆", name: "Warming up",         desc: "Click the coin 100 times",            goal: 100,    get: () => state.stats.clicks },
@@ -9648,7 +9649,7 @@
     /* 🌌 Secret Science (no info anywhere until the 1st prestige): a 2nd University and the Astronomy Research Center.
        Both Universities share one pool of scientists; buildings take scientists from the fullest one first. */
     const secretsOpen = () => (state.legacy && state.legacy.count) >= 1;
-    const ASTRO_PRICE = 5e8, ASTRO_SCI = 20, SPACE_EVERY_ASTRO = 900;
+    const ASTRO_PRICE = 5e8, ASTRO_SCI = 20, ASTRO_TIME_CUT = 300;
     const unis = () => [sci().uni, sci().uni2].filter(Boolean);
     const sciPool = () => unis().reduce((a, u) => a + u.scientists, 0);
     function spendScientists(n) {
@@ -9659,10 +9660,15 @@
     }
     const oneUniIncome = (u) => u.scientists >= UNI_MAX ? UNI_FULL_INCOME : -UNI_COST_PER_EMPTY * (UNI_MAX - u.scientists);
     const uniIncome = () => unis().reduce((a, u) => a + oneUniIncome(u), 0);
-    const spaceEvery = () => sci().astro ? SPACE_EVERY_ASTRO : SPACE_EVERY;   // 🔭 Astronomy center: every 15 instead of 20 minutes
+    // 20 minutes; −5 with the 🔭 Astronomy Research Center; −5 with the 🛸 Orbital Space Station
+    const spaceEvery = () => SPACE_EVERY - (sci().astro ? ASTRO_TIME_CUT : 0) - (sci().station ? STATION_TIME_CUT : 0);
     const spaceMin = () => spaceEvery() / 60;
     if (state.science.space && state.science.space.timer > SPACE_EVERY) state.science.space.timer = SPACE_EVERY;   // older saves: hourly timer
-    const spaceFail = () => SPACE_FAIL - (sci().satellite ? SAT_FAIL_CUT : 0);   // 20%, 15% with the satellite
+    const STATION_PRICE = 5e10, STATION_SCI = 100, STATION_FAIL_CUT = 0.05, STATION_TIME_CUT = 300, STATION_LAB_ODDS = 3600;
+    // 20%; −5% with the 🛰️ satellite; −5% with the 🛸 Orbital Space Station
+    const spaceFail = () => SPACE_FAIL - (sci().satellite ? SAT_FAIL_CUT : 0) - (sci().station ? STATION_FAIL_CUT : 0);
+    // 🧪 1 in 7,200 per second (guaranteed after 2 hours); with the 🛸 station 1 in 3,600 (guaranteed after 1 hour)
+    const labOdds = () => sci().station ? STATION_LAB_ODDS : LAB_ODDS;
 
     // ----- Nobel Prize texts: one field is chosen at random for each breakthrough -----
     const NOBEL_FIELDS = [
@@ -9764,7 +9770,7 @@
       }
       if (S.lab && !S.lab.pending) {
         S.lab.since = (S.lab.since || 0) + 1;
-        if (S.lab.since >= LAB_ODDS || secureRandomInt(LAB_ODDS) === 0) breakthrough();
+        if (S.lab.since >= labOdds() || secureRandomInt(labOdds()) === 0) breakthrough();
       }
       if (S.space && --S.space.timer <= 0) {
         S.space.timer = spaceEvery();
@@ -9795,7 +9801,7 @@
           const bar = $(`sci-uni${k}-bar`); if (bar) bar.style.width = (u.scientists / UNI_MAX * 100) + "%";
         });
       }
-      if (S.lab) set("sci-lab-next", "guaranteed within " + clock(Math.max(0, LAB_ODDS - (S.lab.since || 0))));
+      if (S.lab) set("sci-lab-next", "guaranteed within " + clock(Math.max(0, labOdds() - (S.lab.since || 0))));
       if (S.space) set("sci-space-next", clock(S.space.timer));
       return uniIncome();
     }
@@ -9831,11 +9837,11 @@
       if (S.lab) {
         html += `<div class="card specialCard"><div class="row"><h3>🧪 Research lab</h3>
             <span class="vialCount" title="Scientific breakthroughs (Nobel Prizes)">⚗️ × ${S.lab.prizes || 0}</span></div>
-          <div class="muted">Every second: a 1 in ${LAB_ODDS.toLocaleString("en-US")} chance of a scientific breakthrough worth ${fmt(LAB_REWARD)} · <span id="sci-lab-next"></span></div></div>`;
+          <div class="muted">Every second: a 1 in ${labOdds().toLocaleString("en-US")} chance of a scientific breakthrough worth ${fmt(LAB_REWARD)}${S.station ? " (🛸 space station)" : ""} · <span id="sci-lab-next"></span></div></div>`;
       } else {
         const ready = sciPool() >= LAB_SCI;
         html += `<div class="card specialCard" ${ready ? "" : `style="opacity:0.6"`}><div class="row"><div><h3>${ready ? "" : "🔒 "}🧪 Research lab</h3>
-            <div class="muted">Every second a 1 in ${LAB_ODDS.toLocaleString("en-US")} chance of a scientific breakthrough: a Nobel Prize and ${fmt(LAB_REWARD)}. Guaranteed at least every 2 hours.</div>
+            <div class="muted">Every second a 1 in ${labOdds().toLocaleString("en-US")} chance of a scientific breakthrough: a Nobel Prize and ${fmt(LAB_REWARD)}. Guaranteed at least every ${labOdds() / 3600 === 1 ? "hour" : labOdds() / 3600 + " hours"}.</div>
             <div class="muted">Costs ${fmt(LAB_PRICE)} + 👩‍🔬 ${LAB_SCI} scientists from your University${S.uni ? ` (you have ${sciPool()})` : ""}</div></div>
           ${ready ? `<button class="btn" data-sci="lab" data-cost="${LAB_PRICE}">Buy ${fmt(LAB_PRICE)} + 👩‍🔬 ${LAB_SCI}</button>` : `<span class="muted">${fmt(LAB_PRICE)} + 👩‍🔬 ${LAB_SCI}</span>`}</div></div>`;
       }
@@ -9843,7 +9849,8 @@
       if (S.space) {
         const log = (S.space.log || []).map(m => `<div class="row"><span>🚀 ${m.name}</span><b class="${m.reward ? "income" : ""}">${m.reward ? "+" + fmt(m.reward) : "❌ failed"}</b></div>`).join("");
         html += `<div class="card specialCard"><div class="row"><h3>🚀 Space Mission Center</h3><span class="muted">next launch in <b id="sci-space-next">${clock(S.space.timer)}</b></span></div>
-          <div class="muted">Every ${spaceMin()} minutes${S.astro ? " (🔭 Astronomy Research Center)" : ""}: ${fmt(SPACE_MIN * 1e6)} – ${fmt(SPACE_MAX * 1e6)}, or nothing if the mission fails (${Math.round(spaceFail() * 100)}% chance${S.satellite ? ", lowered by your 🛰️ satellite" : ""})</div>
+          <div class="muted">Every ${spaceMin()} minutes: ${fmt(SPACE_MIN * 1e6)} – ${fmt(SPACE_MAX * 1e6)}, or nothing if the mission fails (${Math.round(spaceFail() * 100)}% chance)</div>
+          ${S.satellite || S.astro || S.station ? `<div class="muted">Boosted by: ${[S.satellite && "🛰️ satellite (−5% fail)", S.astro && "🔭 Astronomy center (−5 min)", S.station && "🛸 space station (−5% fail, −5 min)"].filter(Boolean).join(" · ")}</div>` : ""}
           ${log ? `<h4>Last missions</h4>${log}` : ""}
           ${S.satellite ? "" : `<div class="muted">🛰️ A satellite is now available in 🚢 Logistics.</div>`}</div>`;
       } else {
@@ -9857,13 +9864,25 @@
       // 🔭 Astronomy Research Center (secret: only after the 1st prestige)
       if (S.astro) {
         html += `<div class="card specialCard secretCard"><div class="row"><h3>🔭 Astronomy Research Center</h3><span class="secretTag">🌌</span></div>
-          <div class="muted">Your astronomers plan the launch windows: space missions launch every <b>${SPACE_EVERY_ASTRO / 60} minutes</b> instead of ${SPACE_EVERY / 60}.${S.space ? "" : " (Build the 🚀 Space Mission Center to use it.)"}</div></div>`;
+          <div class="muted">Your astronomers plan the launch windows: space missions launch <b>${ASTRO_TIME_CUT / 60} minutes sooner</b> (now every ${spaceMin()} minutes).${S.space ? "" : " (Build the 🚀 Space Mission Center to use it.)"}</div></div>`;
       } else if (secretsOpen()) {
         const ready = sciPool() >= ASTRO_SCI;
         html += `<div class="card specialCard secretCard" ${ready ? "" : `style="opacity:0.75"`}><div class="row"><div><h3>🔭 Astronomy Research Center <span class="secretTag">🌌 new</span></h3>
-            <div class="muted">Space missions launch every ${SPACE_EVERY_ASTRO / 60} minutes instead of ${SPACE_EVERY / 60}.</div>
+            <div class="muted">Space missions launch ${ASTRO_TIME_CUT / 60} minutes sooner (every ${spaceEvery() / 60 - ASTRO_TIME_CUT / 60} instead of ${spaceMin()} minutes).</div>
             <div class="muted">Costs ${fmt(ASTRO_PRICE)} + 👩‍🔬 ${ASTRO_SCI} scientists from your Universities${S.uni ? ` (you have ${sciPool()})` : ""}</div></div>
           ${ready ? `<button class="btn" data-sci="astro" data-cost="${ASTRO_PRICE}">Buy ${fmt(ASTRO_PRICE)} + 👩‍🔬 ${ASTRO_SCI}</button>` : `<span class="muted">${fmt(ASTRO_PRICE)} + 👩‍🔬 ${ASTRO_SCI}</span>`}</div></div>`;
+      }
+      // 🛸 Orbital Space Station (secret: only after the 1st prestige)
+      const stationPerks = `space missions fail ${STATION_FAIL_CUT * 100}% less often and launch ${STATION_TIME_CUT / 60} minutes sooner; the 🧪 Research lab's odds become 1 in ${STATION_LAB_ODDS.toLocaleString("en-US")} (a breakthrough guaranteed within 1 hour)`;
+      if (S.station) {
+        html += `<div class="card specialCard secretCard"><div class="row"><h3>🛸 Orbital Space Station</h3><span class="secretTag">🌌</span></div>
+          <div class="muted">In orbit: ${stationPerks}.</div></div>`;
+      } else if (secretsOpen()) {
+        const ready = sciPool() >= STATION_SCI;
+        html += `<div class="card specialCard secretCard" ${ready ? "" : `style="opacity:0.75"`}><div class="row"><div><h3>🛸 Orbital Space Station <span class="secretTag">🌌 new</span></h3>
+            <div class="muted">${stationPerks[0].toUpperCase() + stationPerks.slice(1)}.</div>
+            <div class="muted">Costs ${fmt(STATION_PRICE)} + 👩‍🔬 ${STATION_SCI} scientists from your Universities${S.uni ? ` (you have ${sciPool()})` : ""}${S.uni2 ? "" : " · needs both Universities full"}</div></div>
+          ${ready ? `<button class="btn" data-sci="station" data-cost="${STATION_PRICE}">Buy ${fmt(STATION_PRICE)} + 👩‍🔬 ${STATION_SCI}</button>` : `<span class="muted">${fmt(STATION_PRICE)} + 👩‍🔬 ${STATION_SCI}</span>`}</div></div>`;
       }
       return html;
     }
@@ -9884,8 +9903,14 @@
       else if (what === "uni2" && secretsOpen() && S.uni && !S.uni2 && buy(UNI_PRICE)) { S.uni2 = { scientists: 0, timer: UNI_EVERY }; showNotice("🎓 2nd University built! Its scientists join the same pool."); }
       else if (what === "astro" && secretsOpen() && !S.astro && sciPool() >= ASTRO_SCI && buy(ASTRO_PRICE)) {
         spendScientists(ASTRO_SCI); S.astro = { bought: true };
-        if (S.space) S.space.timer = Math.min(S.space.timer, SPACE_EVERY_ASTRO);
-        showNotice(`🔭 Astronomy Research Center built! Space missions now launch every ${SPACE_EVERY_ASTRO / 60} minutes.`);
+        if (S.space) S.space.timer = Math.min(S.space.timer, spaceEvery());
+        showNotice(`🔭 Astronomy Research Center built! Space missions now launch every ${spaceMin()} minutes.`);
+      }
+      else if (what === "station" && secretsOpen() && !S.station && sciPool() >= STATION_SCI && buy(STATION_PRICE)) {
+        spendScientists(STATION_SCI); S.station = { bought: true };
+        if (S.space) S.space.timer = Math.min(S.space.timer, spaceEvery());
+        if (S.lab && !S.lab.pending) S.lab.since = Math.floor((S.lab.since || 0) * STATION_LAB_ODDS / LAB_ODDS);   // same progress toward the guarantee, now on a 1-hour clock
+        showNotice(`🛸 Orbital Space Station in orbit! Missions every ${spaceMin()} minutes with a ${Math.round(spaceFail() * 100)}% fail chance, and lab breakthroughs twice as likely.`);
       }
       else if (what === "lab" && !S.lab && sciPool() >= LAB_SCI && buy(LAB_PRICE)) { spendScientists(LAB_SCI); S.lab = { since: 0, prizes: 0, pending: null }; showNotice("🧪 Research lab opened! Breakthroughs can happen any second now."); }
       else if (what === "space" && !S.space && S.lab && (S.lab.prizes || 0) >= SPACE_NEED && sciPool() >= SPACE_SCI && buy(SPACE_PRICE)) { spendScientists(SPACE_SCI); S.space = { timer: spaceEvery(), log: [], count: 0, earned: 0 }; showNotice(`🚀 Space Mission Center built! The first launch is in ${spaceMin()} minutes. A 🛰️ satellite is now available in Logistics.`); }
@@ -10174,8 +10199,8 @@
         if (launched) { rows.push([`🚀 Space missions (${launched}${failed ? `, ${failed} failed` : ""})`, got]); total += got; }
       }
       if (S && S.lab && !S.lab.pending) {
-        const p = 1 - Math.pow(1 - 1 / LAB_ODDS, away);
-        if ((S.lab.since || 0) + away >= LAB_ODDS || secureRandomInt(1e6) < p * 1e6) nobelAway = true;
+        const p = 1 - Math.pow(1 - 1 / labOdds(), away);
+        if ((S.lab.since || 0) + away >= labOdds() || secureRandomInt(1e6) < p * 1e6) nobelAway = true;
         else S.lab.since = (S.lab.since || 0) + away;
       }
       state.money += total;
@@ -10286,7 +10311,7 @@
     function closeMenu() {
       $("mainMenu").hidden = true; document.body.classList.remove("menuOpen");
       if (state.taxHoliday > 0) showNotice(`🛡️ Tax holiday: no tax inspections for the next ${Math.ceil(state.taxHoliday / 60)} minutes.`);
-      if (secretsOpen() && !state.legacy.secretsShown && $("modal").hidden) showSecrets();
+      if (secretsOpen() && secretsUnseen().length && $("modal").hidden) showSecrets();
       save();
     }
     addEventListener("resize", () => { if (!$("mainMenu").hidden) layoutMenu(); });
@@ -10386,12 +10411,21 @@
     });
 
     // 🌌 One-time pop-up after the 1st prestige: hidden unlocks that were never mentioned anywhere before
+    const SECRETS = [
+      { id: "uni2", html: () => `<b>🎓 2nd University</b><div class="muted">A second University for ${fmt(UNI_PRICE)}. It trains its own scientists for the same shared pool.</div>` },
+      { id: "astro", html: () => `<b>🔭 Astronomy Research Center</b><div class="muted">${fmt(ASTRO_PRICE)} + 👩‍🔬 ${ASTRO_SCI} scientists: space missions launch ${ASTRO_TIME_CUT / 60} minutes sooner.</div>` },
+      { id: "station", html: () => `<b>🛸 Orbital Space Station</b><div class="muted">${fmt(STATION_PRICE)} + 👩‍🔬 ${STATION_SCI} scientists: missions fail ${STATION_FAIL_CUT * 100}% less often and launch ${STATION_TIME_CUT / 60} minutes sooner; lab breakthroughs become 1 in ${STATION_LAB_ODDS.toLocaleString("en-US")} (guaranteed within 1 hour).</div>` },
+    ];
+    const secretsUnseen = () => {
+      const seen = state.legacy.secretsSeen || (state.legacy.secretsShown ? ["uni2", "astro"] : []);
+      return SECRETS.filter(x => !seen.includes(x.id));
+    };
     function showSecrets() {
-      state.legacy.secretsShown = true; save();
+      const list = secretsUnseen();
+      state.legacy.secretsSeen = SECRETS.map(x => x.id); save();
       showModal(`<h2>🌌 New unlocks!</h2>
-        <p>Your first prestige opened doors that were hidden until now:</p>
-        <div class="card secretCard" style="text-align:left"><b>🎓 2nd University</b><div class="muted">A second University for ${fmt(UNI_PRICE)}. It trains its own scientists for the same shared pool.</div></div>
-        <div class="card secretCard" style="text-align:left"><b>🔭 Astronomy Research Center</b><div class="muted">${fmt(ASTRO_PRICE)} + 👩‍🔬 ${ASTRO_SCI} scientists: space missions launch every ${SPACE_EVERY_ASTRO / 60} minutes instead of ${SPACE_EVERY / 60}.</div></div>
+        <p>Your prestige opened doors that were hidden until now:</p>
+        ${list.map(x => `<div class="card secretCard" style="text-align:left">${x.html()}</div>`).join("")}
         <p class="muted">Find them in 💰 Income → 🔬 Science. A new 🌌 Secrets section has appeared in 🏆 Achievements.</p>
         <button class="btn big" data-modal="close">✨ Great!</button>`);
       $("modalBox").classList.add("gold");
