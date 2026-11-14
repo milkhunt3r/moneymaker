@@ -233,7 +233,7 @@ let state = {
    ===================================================================== */
 const SAVE_KEY = "coinClickerSave", PREFS_KEY = "coinClickerPrefs", IMG_DB = "coinClickerArt";
 // Screen preferences: kept per device, never part of the progress that is saved (and later sent to the server)
-const PREF_KEYS = ["view", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage",
+const PREF_KEYS = ["view", "gamePage", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage",
                    "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage"];
 function splitState(st) {   // -> { progress, prefs }
   const progress = {}, prefs = {};

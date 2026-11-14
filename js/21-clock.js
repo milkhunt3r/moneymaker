@@ -157,7 +157,7 @@ renderProperties();
 updateInvestLive();
 renderCosmetics(); applyCosmetics();
 renderTankers(); updateAgentButton(); updateLogiLevel();
-showView(["casino", "invest", "shop", "logistics", "achievements", "wiki", "art"].includes(state.view) ? state.view : "income");
+showView(["casino", "invest", "shop", "logistics", "achievements", "wiki", "art", "games"].includes(state.view) ? state.view : "income");
 if (state.gameOver) showGameOver(state.taxDebts[0] || { amount: 0 });
 else if (state.pendingTaxId !== null) {
   const d = state.taxDebts.find(x => x.id === state.pendingTaxId);

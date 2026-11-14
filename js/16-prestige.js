@@ -82,6 +82,8 @@ function doPrestige(id) {
     cosmetics: state.cosmetics, legacy: L, vip: state.vip, nextId: state.nextId, xpVersion: state.xpVersion, logiXp: state.logiXp, freeChips: state.freeChips, freeTimers: state.freeTimers,
     vpPayHidden: state.vpPayHidden, uthPayHidden: state.uthPayHidden, view: "income",
     tips: state.tips,   // 💡 tips already seen and the guided start stay done
+    // ⛏️ Gold Mine Dig: records stay (a run in progress is dropped)
+    mine: state.mine ? { energy: state.mine.energy, regenAt: state.mine.regenAt, runs: state.mine.runs, best: state.mine.best, earned: state.mine.earned, ores: state.mine.ores } : undefined,
     taxHoliday: TAX_HOLIDAY,   // 🛡️ no tax inspections for the first 10 minutes
     recruitPlan: state.recruitPlan,   // 🧑‍💼 the Recruitment Agency's staffing plan (the building itself resets)
     // 🖼️ Art Gallery: stays unlocked and keeps its bought slots and all kept paintings

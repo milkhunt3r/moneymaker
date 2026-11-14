@@ -4,7 +4,7 @@
 const WIKI_SECTIONS = [
   { id: "general", name: "⭐ General" }, { id: "income", name: "💰 Income" }, { id: "casino", name: "🎰 Casino" },
   { id: "investing", name: "📈 Investing" }, { id: "logistics", name: "🚢 Logistics" },
-  { id: "art", name: "🖼️ Art Gallery" }, { id: "achievements", name: "🏆 Achievements" }, { id: "shop", name: "🛍️ Shop" },
+  { id: "art", name: "🎮 Mini-games" }, { id: "achievements", name: "🏆 Achievements" }, { id: "shop", name: "🛍️ Shop" },
 ];
 const wt = (head, rows) => `<table class="wikiTable"><thead><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr></thead>
   <tbody>${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
@@ -24,7 +24,7 @@ function wikiGeneral() {
       ["🎰 Casino", "Move money into casino chips and play table games"],
       ["📈 Investing", "Real estate, ETFs, gold, Broker ETF and live crypto trading"],
       ["🚢 Logistics", "Trucks, oil tankers and cargo planes on contracts, with a world map"],
-      ["🖼️ Art Gallery", "Copy paintings and sell them, or keep them in your collection"],
+      ["🎮 Mini-games", "🖼️ Art Gallery: copy paintings and sell them or keep them · ⛏️ Gold Mine Dig: dig for ore (needs a gold mine)"],
       ["🏆 Achievements", "Goals across the whole game"], ["🛍️ Shop", "Cosmetics: backgrounds and coins"], ["📖 Wiki", "This guide"]])}
     <h3>🧾 Taxes</h3>
     <p>Every second there is a 1 in ${Math.round(1 / TAX_CHANCE).toLocaleString()} chance of a tax inspection (and always after ${TAX_FORCED_AFTER / 60} minutes without one).
@@ -226,7 +226,18 @@ function wikiShop() {
 }
 
 function wikiArt() {
-  return `<h2>🖼️ Art Gallery</h2>
+  const mineSec = (typeof ORES === "object") ? ORE_KEYS.map(k => `${ORES[k].emoji} ${ORES[k].name} ${ORES[k].sec} sec`).join(" · ") : "";
+  return `<h2>🎮 Mini-games</h2>
+    <p>The 🎮 Mini-games tab holds games you unlock with your buildings and achievements. Play them to earn extra money.</p>
+    <h2>⛏️ Gold Mine Dig</h2>
+    <p>Unlocks when you buy your first ⛏️ gold mine and stays unlocked even after the mine runs dry or a prestige.
+      Each run costs ⚡ 1 energy: you have up to ${MINE_ENERGY_MAX}, and 1 comes back every ${MINE_REGEN_MS / 60000} minutes (also while the game is closed).</p>
+    <p>Dig with the arrow keys / WASD or the on-screen buttons. Every step burns lamp oil (${MINE_LAMP} at the start): walking through a tunnel ${MINE_COST.walk},
+      digging dirt ${MINE_COST.dirt}, each hit on stone ${MINE_COST.stone} (2 hits) and on granite ${MINE_COST.granite} (3 hits). 🪨 Bedrock can't be dug.
+      Your bag holds ${MINE_BAG} ore. Walk back to the surface to sell; if the lamp runs out underground, the rescue team keeps you safe but you keep only ${MINE_RESCUE_KEEP * 100}%.</p>
+    <p>Ore is worth seconds of your income (your average business income over the last minute, at least ${fmt(MINE_MIN_BASE)} / sec): ${mineSec}.
+      Deeper ore is rarer and worth more. 🔥 A gold rush in your real mines doubles ore value while it lasts.</p>
+    <h2>🖼️ Art Gallery</h2>
     <p>Copy a painting as closely as you can. The closer the match, the more your copy is worth. After you earn the 💵 Millionaire achievement (${fmt(1e6)} on hand), the gallery can be opened for <b>${fmt(ART_UNLOCK)}</b>.</p>
     <h3>Tiers</h3>
     <p>🟡 Medium unlocks after you submit (sell or keep) ${ART_TIER_NEED.medium.count} Easy paintings; 🔴 Hard unlocks after ${ART_TIER_NEED.hard.count} Medium paintings.</p>

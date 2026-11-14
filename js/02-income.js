@@ -823,6 +823,7 @@ function gameTick() {
    VIEWS: switch between Income and Casino (income keeps running either way)
    ===================================================================== */
 function showView(view) {
+  if (view === "art") { view = "games"; state.gamePage = "art"; }   // the Art Gallery now lives in 🎮 Mini-games
   state.view = view;
   $("incomeView").hidden = view !== "income";
   $("casinoView").hidden = view !== "casino";
@@ -831,9 +832,13 @@ function showView(view) {
   $("logisticsView").hidden = view !== "logistics";
   $("achievementsView").hidden = view !== "achievements";
   $("wikiView").hidden = view !== "wiki";
-  $("artView").hidden = view !== "art";
+  // 🎮 Mini-games: the hub, or one game page (state.gamePage: null = hub, "art", "mine")
+  const gp = view === "games" ? (state.gamePage || null) : undefined;
+  $("gamesView").hidden = view !== "games" || gp === "art";
+  $("artView").hidden = gp !== "art";
   if (view === "logistics" && typeof renderSatellite === "function") renderSatellite();
-  if (view === "art" && typeof renderArt === "function") renderArt();
+  if (gp === "art" && typeof renderArt === "function") renderArt();
+  if (view === "games" && gp !== "art" && typeof renderGames === "function") renderGames();
   if (view === "wiki" && typeof renderWiki === "function") renderWiki();
   if (view === "achievements" && typeof renderAchievements === "function") renderAchievements();
   document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.view === view));

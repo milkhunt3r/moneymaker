@@ -623,9 +623,10 @@ function showArtPage(p) {
   document.querySelectorAll("[data-art]").forEach(b => b.classList.toggle("active", b.dataset.art === state.art.page));
   if (state.art.page === "collection") renderArtCollection();
 }
-function updateArtTab() {   // 🔒 on the tab while the gallery is locked (like Logistics)
-  const tab = document.querySelector('.tab[data-view="art"]');
-  if (tab) tab.textContent = (state.art.unlocked ? "" : "🔒 ") + "🖼️ Art Gallery";
+function updateArtTab() {   // the 🎮 Mini-games tab shows 🔒 until at least one mini-game is open
+  const tab = document.querySelector('.tab[data-view="games"]');
+  const any = state.art.unlocked || (typeof mineUnlocked === "function" && mineUnlocked());
+  if (tab) tab.textContent = (any ? "" : "🔒 ") + "🎮 Mini-games";
 }
 function renderArt() {
   const open = state.art.unlocked;

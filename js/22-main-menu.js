@@ -54,6 +54,7 @@ const PATCH_NOTES = [
     "The game has a new name: <b>Empire of Coins</b>, with a new logo, browser tab icon, loading screen and this main menu.",
     "New first business: the <b>🌭 Hot Dog Stand</b> (100, 2 workers, no accountant or HR, up to 3). The guided start now begins with it.",
     "Hotels: at most <b>5 Concierges</b> per hotel. More Concierges stacked their bonus far too high.",
+    "New <b>🎮 Mini-games</b> tab: the 🖼️ Art Gallery moved here, plus a new game, <b>⛏️ Gold Mine Dig</b> (test version): dig for ore with your mole miner, unlocked by your first gold mine.",
     "Plinko: new table limits, 5,000 – 5 scoin per ball (Super high rollers: 10 – 500 scoin).",
     "New look for ⚙️ Settings: a royal gold panel, a tips switch, a 🌗 background brightness slider and a 🐞 Report a bug button (coming soon).",
     "New rewards: three <b>Master coins</b> for reaching level 99: 🦊 Gambler, 🦉 Investor and 🦅 Logistics.",
@@ -89,7 +90,7 @@ function showAbout() {
     <ul>
       <li>👆 <b>Click the coin</b> to earn your first money, and use boosters like the energy drink to speed up.</li>
       <li>🏢 <b>Buy businesses and hire workers.</b> Every worker has a trait, and accountants and HR experts make a business earn more.</li>
-      <li>📈 <b>Grow into new areas</b> as you unlock them: 🎰 Casino, 📈 Investing, 🚢 Logistics, 🖼️ Art Gallery and 🔬 Science.</li>
+      <li>📈 <b>Grow into new areas</b> as you unlock them: 🎰 Casino, 📈 Investing, 🚢 Logistics, 🎮 Mini-games (🖼️ Art Gallery, ⛏️ Gold Mine Dig) and 🔬 Science.</li>
       <li>🏆 <b>Collect achievements</b> to win reward collections, and spend scoin in the 🛍️ Shop on looks for your coin and background.</li>
       <li>⭐ <b>Prestige</b> at 1, 5, 10 and 20 gcoin: start over with a permanent Legacy bonus.</li>
     </ul>
