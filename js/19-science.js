@@ -173,6 +173,7 @@ function scienceTick() {
     set("sci-uni-income", (uniIncome() >= 0 ? "+" : "") + fmt(uniIncome()) + " / sec");
     const ui = $("sci-uni-income"); if (ui) ui.classList.toggle("neg", uniIncome() < 0);
     set("sci-pool", sciPool());
+    updateSciNeeds();
     [["", S.uni], ["2", S.uni2]].forEach(([k, u]) => {
       if (!u) return;
       set(`sci-uni${k}-count`, u.scientists);
@@ -186,6 +187,26 @@ function scienceTick() {
 }
 
 // ----- Science page (Income → 🔬 Science) -----
+// 💰 / 👩‍🔬 what a building needs, with ✅ / ❌ (updated every second by the science tick)
+const sciNeed = (price, n) => `<div class="sciNeed" data-money="${price}" data-sci="${n}">
+  <span data-k="m">💰 ${fmt(price)}</span><span data-k="s">👩‍🔬 <b>${sciPool()}</b> / ${n} scientists</span></div>`;
+// buy button: enabled only when you have both the money AND the scientists (both Universities count together)
+const sciBtn = (what, price, n, open = true) => `<button class="btn" data-sci="${what}" data-scibtn="${price},${n}" ${open ? "" : "data-locked"}
+  ${open && state.money >= price && sciPool() >= n ? "" : "disabled"}>Buy</button>`;
+function updateSciNeeds() {
+  const pool = sciPool();
+  document.querySelectorAll(".sciNeed").forEach(el => {
+    const okM = state.money >= Number(el.dataset.money), okS = pool >= Number(el.dataset.sci);
+    const m = el.querySelector('[data-k="m"]'), sc = el.querySelector('[data-k="s"]');
+    m.classList.toggle("ok", okM); m.classList.toggle("short", !okM);
+    sc.classList.toggle("ok", okS); sc.classList.toggle("short", !okS);
+    const b = sc.querySelector("b"); if (b) b.textContent = pool;
+  });
+  document.querySelectorAll("[data-scibtn]").forEach(btn => {
+    const [price, n] = btn.dataset.scibtn.split(",").map(Number);
+    btn.disabled = btn.hasAttribute("data-locked") || state.money < price || pool < n;
+  });
+}
 function renderScience() {
   const S = sci(), L = sciLevels();
   if (!scienceOpen()) {
@@ -218,11 +239,10 @@ function renderScience() {
         <span class="vialCount" title="Scientific breakthroughs (Nobel Prizes)">⚗️ × ${S.lab.prizes || 0}</span></div>
       <div class="muted">Every second: a 1 in ${labOdds().toLocaleString("en-US")} chance of a scientific breakthrough worth ${fmt(LAB_REWARD)}${S.station ? " (🛸 space station)" : ""} · <span id="sci-lab-next"></span></div></div>`;
   } else {
-    const ready = sciPool() >= LAB_SCI;
-    html += `<div class="card specialCard" ${ready ? "" : `style="opacity:0.6"`}><div class="row"><div><h3>${ready ? "" : "🔒 "}🧪 Research lab</h3>
+    html += `<div class="card specialCard"><div class="row"><div><h3>🧪 Research lab</h3>
         <div class="muted">Every second a 1 in ${labOdds().toLocaleString("en-US")} chance of a scientific breakthrough: a Nobel Prize and ${fmt(LAB_REWARD)}. Guaranteed at least every ${labOdds() / 3600 === 1 ? "hour" : labOdds() / 3600 + " hours"}.</div>
-        <div class="muted">Costs ${fmt(LAB_PRICE)} + 👩‍🔬 ${LAB_SCI} scientists from your University${S.uni ? ` (you have ${sciPool()})` : ""}</div></div>
-      ${ready ? `<button class="btn" data-sci="lab" data-cost="${LAB_PRICE}">Buy ${fmt(LAB_PRICE)} + 👩‍🔬 ${LAB_SCI}</button>` : `<span class="muted">${fmt(LAB_PRICE)} + 👩‍🔬 ${LAB_SCI}</span>`}</div></div>`;
+        ${sciNeed(LAB_PRICE, LAB_SCI)}</div>
+      ${sciBtn("lab", LAB_PRICE, LAB_SCI)}</div></div>`;
   }
   // 🚀 Space Mission Center
   if (S.space) {
@@ -233,23 +253,22 @@ function renderScience() {
       ${log ? `<h4>Last missions</h4>${log}` : ""}
       ${S.satellite ? "" : `<div class="muted">🛰️ A satellite is now available in 🚢 Logistics.</div>`}</div>`;
   } else {
-    const unlocked = S.lab && (S.lab.prizes || 0) >= SPACE_NEED, ready = unlocked && sciPool() >= SPACE_SCI;
+    const unlocked = S.lab && (S.lab.prizes || 0) >= SPACE_NEED;
     html += `<div class="card specialCard" ${unlocked ? "" : `style="opacity:0.6"`}><div class="row"><div><h3>${unlocked ? "" : "🔒 "}🚀 Space Mission Center</h3>
         <div class="muted">Launches a space mission every ${spaceMin()} minutes: ${fmt(SPACE_MIN * 1e6)} – ${fmt(SPACE_MAX * 1e6)}, with a ${Math.round(SPACE_FAIL * 100)}% chance the mission fails. Unlocks a 🛰️ satellite in Logistics.</div>
         ${unlocked ? "" : `<div class="muted">Needs ${SPACE_NEED} breakthroughs in your Research lab${S.lab ? ` (you have ${S.lab.prizes || 0})` : ""}</div>`}
-        <div class="muted">Costs ${fmt(SPACE_PRICE)} + 👩‍🔬 ${SPACE_SCI} scientists from your University${S.uni ? ` (you have ${sciPool()})` : ""}</div></div>
-      ${ready ? `<button class="btn" data-sci="space" data-cost="${SPACE_PRICE}">Buy ${fmt(SPACE_PRICE)} + 👩‍🔬 ${SPACE_SCI}</button>` : `<span class="muted">${fmt(SPACE_PRICE)} + 👩‍🔬 ${SPACE_SCI}</span>`}</div></div>`;
+        ${sciNeed(SPACE_PRICE, SPACE_SCI)}</div>
+      ${sciBtn("space", SPACE_PRICE, SPACE_SCI, !!unlocked)}</div></div>`;
   }
   // 🔭 Astronomy Research Center (secret: only after the 1st prestige)
   if (S.astro) {
     html += `<div class="card specialCard secretCard"><div class="row"><h3>🔭 Astronomy Research Center</h3><span class="secretTag">🌌</span></div>
       <div class="muted">Your astronomers plan the launch windows: space missions launch <b>${ASTRO_TIME_CUT / 60} minutes sooner</b> (now every ${spaceMin()} minutes).${S.space ? "" : " (Build the 🚀 Space Mission Center to use it.)"}</div></div>`;
   } else if (secretsOpen()) {
-    const ready = sciPool() >= ASTRO_SCI;
-    html += `<div class="card specialCard secretCard" ${ready ? "" : `style="opacity:0.75"`}><div class="row"><div><h3>🔭 Astronomy Research Center <span class="secretTag">🌌 new</span></h3>
+    html += `<div class="card specialCard secretCard"><div class="row"><div><h3>🔭 Astronomy Research Center <span class="secretTag">🌌 new</span></h3>
         <div class="muted">Space missions launch ${ASTRO_TIME_CUT / 60} minutes sooner (every ${spaceEvery() / 60 - ASTRO_TIME_CUT / 60} instead of ${spaceMin()} minutes).</div>
-        <div class="muted">Costs ${fmt(ASTRO_PRICE)} + 👩‍🔬 ${ASTRO_SCI} scientists from your Universities${S.uni ? ` (you have ${sciPool()})` : ""}</div></div>
-      ${ready ? `<button class="btn" data-sci="astro" data-cost="${ASTRO_PRICE}">Buy ${fmt(ASTRO_PRICE)} + 👩‍🔬 ${ASTRO_SCI}</button>` : `<span class="muted">${fmt(ASTRO_PRICE)} + 👩‍🔬 ${ASTRO_SCI}</span>`}</div></div>`;
+        ${sciNeed(ASTRO_PRICE, ASTRO_SCI)}</div>
+      ${sciBtn("astro", ASTRO_PRICE, ASTRO_SCI)}</div></div>`;
   }
   // 🛸 Orbital Space Station (secret: only after the 1st prestige)
   const stationPerks = `space missions fail ${STATION_FAIL_CUT * 100}% less often and launch ${STATION_TIME_CUT / 60} minutes sooner; the 🧪 Research lab's odds become 1 in ${STATION_LAB_ODDS.toLocaleString("en-US")} (a breakthrough guaranteed within 1 hour)`;
@@ -257,11 +276,10 @@ function renderScience() {
     html += `<div class="card specialCard secretCard"><div class="row"><h3>🛸 Orbital Space Station</h3><span class="secretTag">🌌</span></div>
       <div class="muted">In orbit: ${stationPerks}.</div></div>`;
   } else if (secretsOpen()) {
-    const ready = sciPool() >= STATION_SCI;
-    html += `<div class="card specialCard secretCard" ${ready ? "" : `style="opacity:0.75"`}><div class="row"><div><h3>🛸 Orbital Space Station <span class="secretTag">🌌 new</span></h3>
+    html += `<div class="card specialCard secretCard"><div class="row"><div><h3>🛸 Orbital Space Station <span class="secretTag">🌌 new</span></h3>
         <div class="muted">${stationPerks[0].toUpperCase() + stationPerks.slice(1)}.</div>
-        <div class="muted">Costs ${fmt(STATION_PRICE)} + 👩‍🔬 ${STATION_SCI} scientists from your Universities${S.uni ? ` (you have ${sciPool()})` : ""}${S.uni2 ? "" : " · needs both Universities full"}</div></div>
-      ${ready ? `<button class="btn" data-sci="station" data-cost="${STATION_PRICE}">Buy ${fmt(STATION_PRICE)} + 👩‍🔬 ${STATION_SCI}</button>` : `<span class="muted">${fmt(STATION_PRICE)} + 👩‍🔬 ${STATION_SCI}</span>`}</div></div>`;
+        ${sciNeed(STATION_PRICE, STATION_SCI)}${S.uni2 ? "" : `<div class="muted">Needs both Universities full (2 × ${UNI_MAX})</div>`}</div>
+      ${sciBtn("station", STATION_PRICE, STATION_SCI)}</div></div>`;
   }
   return html;
 }
