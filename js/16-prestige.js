@@ -82,7 +82,6 @@ function doPrestige(id) {
     cosmetics: state.cosmetics, legacy: L, vip: state.vip, nextId: state.nextId, xpVersion: state.xpVersion, logiXp: state.logiXp, freeChips: state.freeChips, freeTimers: state.freeTimers,
     vpPayHidden: state.vpPayHidden, uthPayHidden: state.uthPayHidden, view: "income",
     tips: state.tips,   // 💡 tips already seen and the guided start stay done
-    // ⛏️ Gold Mine Dig: records stay (a run in progress is dropped)
     // ⛏️ Gold Mine Dig: records, upgrades and the 🏦 vault stay (unsold ore from the last run goes into the vault; a run in progress is dropped)
     mine: state.mine ? { energy: state.mine.energy, regenAt: state.mine.regenAt, runs: state.mine.runs, best: state.mine.best, earned: state.mine.earned, ores: state.mine.ores,
       up: state.mine.up, vault: (state.mine.pending ? state.mine.pending.bag : []).reduce((v, k) => (v[k] = (v[k] || 0) + 1, v), { ...(state.mine.vault || {}) }) } : undefined,
@@ -98,6 +97,11 @@ function doPrestige(id) {
   if (id === "tycoon" && state.science) keep.science = { ...state.science, satellite: false };
   if (L.empire > 0) {   // Global Empire keeps the fleet on every reset after it was picked
     keep.logistics = state.logistics;
+    // 🚢 Global Empire level 2 just picked: offers on screen and deliveries under way get the half time right away
+    if (id === "empire" && L.empire === 2) for (const list of [logi.trucks, logi.tankers, logi.planes]) for (const v of (list || [])) {
+      (v.offers || []).forEach(o => { o.seconds = Math.max(1, Math.round(o.seconds / 2)); });
+      if (v.contract) { v.contract.seconds = Math.max(1, Math.round(v.contract.seconds / 2)); v.contract.left = Math.max(1, Math.round(v.contract.left / 2)); }
+    }
     keep.special = { agency: null, warehouses: state.special.warehouses, port: state.special.port, center: state.special.center };
   }
   stopSaving = true;
