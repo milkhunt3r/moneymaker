@@ -51,6 +51,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "13 November 2026", title: "Empire of Coins", items: [
+    "Achievement <b>Art market mogul</b> now needs <b>250</b> paintings sold instead of 1,000.",
     "Smoother clicking: the coin's shadow is drawn once instead of being re-blurred on every frame, so fast clicking no longer slows down other browser tabs.",
     "The game has a new name: <b>Empire of Coins</b>, with a new logo, browser tab icon, loading screen and this main menu.",
     "New first business: the <b>🌭 Hot Dog Stand</b> (100, 2 workers, no accountant or HR, up to 3). The guided start now begins with it.",

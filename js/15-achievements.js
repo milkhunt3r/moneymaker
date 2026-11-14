@@ -154,7 +154,7 @@ const ACHIEVEMENTS = [
   { id: "artsold1", cat: "art", icon: "💰", name: "First sale", desc: "Sell 1 painting", goal: 1, get: () => state.stats.artSold || 0 },
   { id: "artsold50", cat: "art", icon: "💰", name: "Art dealer", desc: "Sell 50 paintings", goal: 50, get: () => state.stats.artSold || 0 },
   { id: "artsold100", cat: "art", icon: "💰", name: "Gallery regular", desc: "Sell 100 paintings", goal: 100, get: () => state.stats.artSold || 0 },
-  { id: "artsold1000", cat: "art", icon: "💰", name: "Art market mogul", desc: "Sell 1,000 paintings", goal: 1000, get: () => state.stats.artSold || 0 },
+  { id: "artsold1000", cat: "art", icon: "💰", name: "Art market mogul", desc: "Sell 250 paintings", goal: 250, get: () => state.stats.artSold || 0 },
   // ⛏️ Mining (🎮 Mini-games → Gold Mine Dig). state.mine is set up by js/23-minigames.js, so every check is guarded.
   ...(() => {
     const Mn = () => state.mine || {}, ore = (k) => () => ((Mn().ores || {})[k] || 0), depth = () => (Mn().best || 0) * 2;
