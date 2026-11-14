@@ -994,6 +994,7 @@
     .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
     .muted { color: #9a9ab0; font-size: 13px; }
     .income { color: #9fe39f; font-weight: 700; }
+    .income.neg, #perSecond.neg { color: #ff7b7b; }   /* 🔴 negative income per second */
     .flash { color: #ff8a8a; font-weight: 700; font-size: 13px; height: 16px; }
 
     button.btn {
@@ -2925,7 +2926,7 @@
         companyIncomeNow[ci] = r.total;   // used by amusement parks
 
         const incomeEl = $("c-income-" + ci);
-        if (incomeEl) incomeEl.textContent = signed(r.total) + " / sec";
+        if (incomeEl) { incomeEl.textContent = signed(r.total) + " / sec"; incomeEl.classList.toggle("neg", r.total < 0); }
 
         const flashEl = $("c-flash-" + ci);
         if (r.flash) flashUntil[ci] = now + 3000;
@@ -2949,7 +2950,7 @@
 
       for (const typeId in groupIncome) {
         const el = $("g-income-" + typeId);
-        if (el) el.textContent = signed(groupIncome[typeId]) + " / sec";
+        if (el) { el.textContent = signed(groupIncome[typeId]) + " / sec"; el.classList.toggle("neg", groupIncome[typeId] < 0); }
       }
 
       // Special businesses
@@ -2976,6 +2977,7 @@
       energyTick();
       updateDebt();
       $("perSecond").textContent = signed(perSecond) + " / sec";
+      $("perSecond").classList.toggle("neg", perSecond < 0);
       state.lastIncome = perSecond;   // used by the magical pill
       updateCounter();
     }
@@ -9823,6 +9825,8 @@
       const set = (id, t) => { const el = $(id); if (el) el.textContent = t; };
       if (S.uni) {
         set("sci-uni-income", (uniIncome() >= 0 ? "+" : "") + fmt(uniIncome()) + " / sec");
+        const ui = $("sci-uni-income"); if (ui) ui.classList.toggle("neg", uniIncome() < 0);
+        set("sci-pool", sciPool());
         [["", S.uni], ["2", S.uni2]].forEach(([k, u]) => {
           if (!u) return;
           set(`sci-uni${k}-count`, u.scientists);
@@ -9850,9 +9854,9 @@
       const uniRows = (k, u, label) => `<div class="row"><span>${label}👩‍🔬 Scientists: <b id="sci-uni${k}-count">${u.scientists}</b> / ${UNI_MAX}</span><span class="muted" id="sci-uni${k}-next"></span></div>
           <div class="xpBar"><div class="xpFill" id="sci-uni${k}-bar" style="width:${u.scientists / UNI_MAX * 100}%"></div></div>`;
       if (S.uni) {
-        html += `<div class="card specialCard"><div class="row"><h3>🎓 University${S.uni2 ? " ×2" : ""}</h3><span class="income" id="sci-uni-income">${fmt(uniIncome())} / sec</span></div>
+        html += `<div class="card specialCard"><div class="row"><h3>🎓 University${S.uni2 ? " ×2" : ""}</h3><span class="income ${uniIncome() < 0 ? "neg" : ""}" id="sci-uni-income">${uniIncome() >= 0 ? "+" : ""}${fmt(uniIncome())} / sec</span></div>
           ${uniRows("", S.uni, S.uni2 ? "1st · " : "")}${S.uni2 ? uniRows("2", S.uni2, "2nd · ") : ""}
-          ${S.uni2 ? `<div class="muted">Both Universities share one pool: <b>${sciPool()}</b> scientists</div>` : ""}
+          ${S.uni2 ? `<div class="muted">Both Universities share one pool: <b id="sci-pool">${sciPool()}</b> scientists</div>` : ""}
           <div class="muted">1 new scientist every 2 minutes · −${UNI_COST_PER_EMPTY} / sec for each empty place · +${fmt(UNI_FULL_INCOME)} / sec when full</div></div>`;
         if (secretsOpen() && !S.uni2) html += `<div class="card specialCard secretCard"><div class="row"><div><h3>🎓 2nd University <span class="secretTag">🌌 new</span></h3>
             <div class="muted">A second University: trains its own scientists (1 every 2 minutes, up to ${UNI_MAX}) for the same shared pool. −${UNI_COST_PER_EMPTY} / sec per empty place, +${fmt(UNI_FULL_INCOME)} / sec when full.</div></div>
