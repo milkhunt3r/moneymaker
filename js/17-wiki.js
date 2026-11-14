@@ -255,8 +255,9 @@ function wikiArt() {
     ${wt(["Tool", "What it does"], [["🖌️ Brush", "Paints with the selected color: round or square tip, 6 sizes from 1 px to 44 px"],
       ["⬛ Square / ⚫ Circle / 🔺 Triangle", "Drag a box to draw a filled shape. Hold Shift for a perfect square or circle. Turn an oval or a triangle to any angle (180° = upside down) with the ↻ slider or the mouse wheel, while drawing it or right after"], ["🪣 Fill", "Fills an area of one color"], ["✋ Grab", "Drag the last shape you drew to move it; pick a color to recolor it (works until you draw or paint something else)"], ["🧽 Eraser", "Paints white"], ["↶ Undo / 🗑️ Clear", "Takes back the last step / starts over"]])}
     <h3>How the match is scored</h3>
-    <p>Both pictures are compared in small blocks. <b>🎨 Colors</b> checks that each part has the right color; <b>📐 Shapes</b> checks that the shapes are in the right places.
-      Small wobbles are forgiven, but missing parts and extra paint both cost points. Easy and Medium are judged most strictly (the shape tools make clean copies simple), so aim for exact positions and sizes there. An empty canvas scores 0%.</p>
+    <p>Your copy is judged three ways: <b>🎨 Colors</b> (each part has the right color), <b>📐 Layout</b> (things are in the right places) and
+      <b>🔷 Shapes found</b>: every separate shape in the original (each planet, star, sail, sun…) must appear in your copy in the same color, in about the same place and size.
+      The shape count is worth the most, so painting only the background (sky, sea, space) scores low; drawing every object scores high. Extra scribbles cost points, small wobbles are forgiven, and an empty canvas scores 0%.</p>
     <h3>Sell or keep</h3>
     <p>After submitting, <b>sell</b> the copy for its value right away, or <b>keep</b> it in your 🖼️ Collection (no money now; sell it there any time for the same value).
       The collection starts with ${ART_SLOTS_START} slots; each +${ART_SLOTS_STEP} slots costs ${fmt(ART_SLOT_PRICE)}, then ${fmt(ART_SLOT_PRICE + ART_SLOT_PRICE_STEP)}, ${fmt(ART_SLOT_PRICE + 2 * ART_SLOT_PRICE_STEP)}… up to a maximum of ${ART_SLOTS_MAX} slots. A prestige keeps the gallery unlocked, your bought slots and all your paintings; only the 🏛️ Art Gallery business is reset (buy it again to earn from the paintings).</p>

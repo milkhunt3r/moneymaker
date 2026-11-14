@@ -407,15 +407,83 @@ let blankCanvas = null;
 // How forgiving each tier is: Easy accepts shapes up to 2 cells (16 px) off and blurs more
 // passes = blur, reach = how many cells off still counts, slack = color distance allowed, power = how hard the final % is curved down
 // Easy and Medium are judged harder because the shape tools and square brush make clean copies easy
-window.ART_TOLERANCE = { easy: { passes: 1, reach: 1, slack: 30, power: 2.6 }, medium: { passes: 1, reach: 1, slack: 30, power: 2.1 }, hard: { passes: 1, reach: 1, slack: 50, power: 1 } };
+/* Score = 40% colour/layout check (cell by cell) + 60% 🔷 shape count check (each separate shape: right colour, place and size),
+   then raised to "power" (higher = stricter). objTol: how far (in 4 px cells) a shape may be off. */
+window.ART_TOLERANCE = { easy:   { passes: 1, reach: 1, slack: 30, power: 1,   objTol: 10 },
+                         medium: { passes: 1, reach: 1, slack: 30, power: 1.4, objTol: 7 },
+                         hard:   { passes: 1, reach: 1, slack: 50, power: 1.4, objTol: 6 } };
+// 🔷 Shape count check: find each separate shape (same palette colour, connected) and see if the copy has a matching one
+const OBJ_CELL = 4;                       // work on 80 × 60 cells of 4 × 4 pixels
+const PAL_RGB = Object.values(ART_PAL).map(h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]);
+function artLabels(canvas) {
+  const W = ART_W / OBJ_CELL, H = ART_H / OBJ_CELL, d = canvas.getContext("2d").getImageData(0, 0, ART_W, ART_H).data;
+  const lab = new Int16Array(W * H), votes = new Uint16Array(PAL_RGB.length);
+  for (let cy = 0; cy < H; cy++) for (let cx = 0; cx < W; cx++) {
+    votes.fill(0);
+    for (let y = cy * OBJ_CELL; y < cy * OBJ_CELL + OBJ_CELL; y++) for (let x = cx * OBJ_CELL; x < cx * OBJ_CELL + OBJ_CELL; x++) {
+      const i = (y * ART_W + x) * 4; let best = 0, bd = 1e9;
+      for (let p = 0; p < PAL_RGB.length; p++) { const q = PAL_RGB[p], dd = (q[0] - d[i]) ** 2 + (q[1] - d[i + 1]) ** 2 + (q[2] - d[i + 2]) ** 2; if (dd < bd) { bd = dd; best = p; } }
+      votes[best]++;
+    }
+    let m = 0; for (let p = 1; p < votes.length; p++) if (votes[p] > votes[m]) m = p;
+    lab[cy * W + cx] = m;
+  }
+  return { lab, W, H };
+}
+function artComponents(L) {
+  const { lab, W, H } = L, seen = new Int32Array(W * H).fill(-1), comps = [];
+  for (let s = 0; s < W * H; s++) {
+    if (seen[s] >= 0) continue;
+    const col = lab[s], id = comps.length, st = [s]; seen[s] = id;
+    let n = 0, sx = 0, sy = 0, x0 = 1e9, y0 = 1e9, x1 = -1, y1 = -1;
+    while (st.length) {
+      const p = st.pop(), x = p % W, y = (p - x) / W; n++; sx += x; sy += y;
+      if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+      for (const q of [x > 0 ? p - 1 : -1, x < W - 1 ? p + 1 : -1, y > 0 ? p - W : -1, y < H - 1 ? p + W : -1])
+        if (q >= 0 && seen[q] < 0 && lab[q] === col) { seen[q] = id; st.push(q); }
+    }
+    comps.push({ col, n, cx: sx / n, cy: sy / n, w: x1 - x0 + 1, h: y1 - y0 + 1 });
+  }
+  return comps;
+}
+// how well each shape in A is found in B (weighted by √size, so the background can't carry the score alone)
+function artObjDir(A, B, tol) {
+  let got = 0, tot = 0, found = 0;
+  for (const a of A) {
+    const w = Math.sqrt(a.n); tot += w;
+    let best = 0;
+    for (const b of B) {
+      if (b.col !== a.col) continue;
+      const reach = tol * (1 + Math.sqrt(a.n) / 6);                  // bigger shapes may be a little further off
+      const dist = Math.hypot(a.cx - b.cx, a.cy - b.cy);
+      const pos = Math.max(0, 1 - dist / reach);
+      const size = Math.min(a.n, b.n) / Math.max(a.n, b.n);
+      const s = pos * Math.pow(size, 0.5);
+      if (s > best) best = s;
+    }
+    got += w * best; if (best >= 0.5) found++;
+  }
+  return { s: tot ? got / tot : 1, found };
+}
+const OBJ_BG = 0.15;   // a shape covering 15%+ of the picture counts as background (checked by the colour check instead)
+function artObjects(refCanvas, copyCanvas, tol) {
+  const cells = (ART_W / OBJ_CELL) * (ART_H / OBJ_CELL), fg = (list) => list.filter(c => c.n < cells * OBJ_BG);
+  const R = fg(artComponents(artLabels(refCanvas))), C = fg(artComponents(artLabels(copyCanvas)));
+  if (!R.length) return { score: 1, found: 0, count: 0 };
+  const miss = artObjDir(R, C, tol), extra = C.length ? artObjDir(C, R, tol).s : 0;   // nothing drawn = nothing found
+  return { score: miss.s * 0.75 + extra * 0.25, found: miss.found, count: R.length };   // 75%: shapes found, 25%: nothing extra
+}
+
 function artScore(refCanvas, copyCanvas, tier = "medium") {
   const T = ART_TOLERANCE[tier] || ART_TOLERANCE.medium;
   if (!blankCanvas) { blankCanvas = document.createElement("canvas"); blankCanvas.width = ART_W; blankCanvas.height = ART_H; const c = blankCanvas.getContext("2d"); c.fillStyle = "#fff"; c.fillRect(0, 0, ART_W, ART_H); }
   const rg = artGrid(refCanvas, T.passes), cg = artGrid(copyCanvas, T.passes), bg = artGrid(blankCanvas, T.passes);
   const got = artRaw(rg, cg, T.reach, T.slack), base = artRaw(rg, bg, T.reach, T.slack);
   const norm = (v, b) => b >= 0.999 ? 1 : Math.max(0, Math.min(1, (v - b) / (1 - b)));
-  const colors = norm(got.col, base.col), shapes = norm(got.shp, base.shp);
-  return { colors, shapes, total: Math.round(Math.pow(colors * 0.5 + shapes * 0.5, T.power) * 1000) / 10 };   // one decimal, in %
+  const colors = norm(got.col, base.col), shapes = norm(got.shp, base.shp), obj = artObjects(refCanvas, copyCanvas, T.objTol);
+  const sim = (colors + shapes) / 2 * 0.4 + obj.score * 0.6;
+  return { colors, shapes, objects: obj.score, found: obj.found, count: obj.count,
+    total: Math.round(Math.pow(sim, T.power) * 1000) / 10 };   // one decimal, in %
 }
 
 /* ----- Drawing on the "Your copy" canvas: brush, fill bucket, eraser, undo, clear. Mouse and touch. ----- */
@@ -539,7 +607,7 @@ function artSubmit() {
   if (score.total < ART_MIN_MATCH) {   // ❌ too far from the original: no sale, no collection
     $("artResult").innerHTML = `<div class="artResult">
       <div class="artScore" style="color:#ff8a8a">${score.total.toFixed(1)}%<small>match</small></div>
-      <div><div>🎨 Colors <b>${(score.colors * 100).toFixed(0)}%</b> · 📐 Shapes <b>${(score.shapes * 100).toFixed(0)}%</b></div>
+      <div><div>🎨 Colors <b>${(score.colors * 100).toFixed(0)}%</b> · 📐 Layout <b>${(score.shapes * 100).toFixed(0)}%</b> · 🔷 Shapes found <b>${score.found}/${score.count}</b></div>
         <div style="color:#ff8a8a"><b>Not close enough.</b> A copy needs at least ${ART_MIN_MATCH}% to be sold or kept, so this one isn't worth anything.</div>
         <div class="moneyRow" style="margin-top:8px">
           <button class="btn" id="artRetry">🖌️ Keep working on it</button>
@@ -549,7 +617,7 @@ function artSubmit() {
   const full = state.art.items.length >= state.art.slots;
   $("artResult").innerHTML = `<div class="artResult">
     <div class="artScore">${score.total.toFixed(1)}%<small>match</small></div>
-    <div><div>🎨 Colors <b>${(score.colors * 100).toFixed(0)}%</b> · 📐 Shapes <b>${(score.shapes * 100).toFixed(0)}%</b></div>
+    <div><div>🎨 Colors <b>${(score.colors * 100).toFixed(0)}%</b> · 📐 Layout <b>${(score.shapes * 100).toFixed(0)}%</b> · 🔷 Shapes found <b>${score.found}/${score.count}</b></div>
       <div class="muted">${score.total >= 90 ? "Masterpiece! 🏆" : score.total >= 75 ? "Great copy! 👏" : score.total >= 50 ? "Not bad. 🙂" : "Keep practicing. 🖌️"}
         Worth <b>${fmt(value)}</b> (${score.total.toFixed(1)}% of ${fmt(t.value)}).</div>
       <div class="moneyRow" style="margin-top:8px">

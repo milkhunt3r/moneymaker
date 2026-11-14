@@ -54,6 +54,7 @@ const PATCH_NOTES = [
     "The game has a new name: <b>Empire of Coins</b>, with a new logo, browser tab icon, loading screen and this main menu.",
     "New first business: the <b>🌭 Hot Dog Stand</b> (100, 2 workers, no accountant or HR, up to 3). The guided start now begins with it.",
     "Hotels: at most <b>5 Concierges</b> per hotel. More Concierges stacked their bonus far too high.",
+    "🖼️ Art studio: fairer scoring with a new 🔷 shape count check. Easy copies that are a little off score higher; Medium and Hard need every shape, not just the background.",
     "⚖️ Lawyers: 🛂 Immigration lawyer now +25% (was 10%), 💼 Business lawyer now +10% (was 2%).",
     "⛏️ Gold Mine Dig: <b>upgrades</b> (lamp, bag, pickaxe, boots, appraiser, energy tank, fast recharge, rescue insurance) paid with money and ore, and an <b>🏦 ore vault</b>: keep ore after a run or sell it.",
     "Art Gallery: a copy needs at least <b>50% match</b> to be sold or kept.",
