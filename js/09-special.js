@@ -3,12 +3,17 @@
    🏢 Real estate agency: needs 100k all-time real estate profit, costs 1M, only one.
    - Selling a property gives +2% of its value.
    - No workers / HR / accountant. Instead: real estate agents. Every second each agent earns a random 0, 5, 10 or 15.
-     One agent for every 100k of all-time real estate profit.
+     Agents join as all-time real estate profit grows, each one needing a bigger step:
+     1st at 100k, 2nd after +200k (300k), 3rd after +300k (600k), 4th at 1M, …
    ===================================================================== */
 const AGENCY_PRICE = 1000000;
 const AGENCY_UNLOCK = 100000;
 const AGENCY_SALE_BONUS = 0.02;
-const AGENCY_PER_AGENT = 100000;
+const AGENCY_PER_AGENT = 100000;   // step size: agent N needs N × 100k more than agent N-1
+// total profit needed for n agents: 100k × (1 + 2 + … + n) = 100k × n(n+1)/2
+const agencyNeedFor = (n) => AGENCY_PER_AGENT * n * (n + 1) / 2;
+const agentsForProfit = (p) => { let n = Math.floor((Math.sqrt(1 + 8 * Math.max(0, p) / AGENCY_PER_AGENT) - 1) / 2);
+  while (agencyNeedFor(n + 1) <= p) n++; while (n > 0 && agencyNeedFor(n) > p) n--; return n; };
 const AGENT_RATES = [0, 5, 10, 15];
 const AGENCY_MAX_AGENTS = 100;     // safety cap: without it, huge real estate profits created thousands of agents and crashed the page
 if (!state.special) state.special = { agency: null };
@@ -21,11 +26,11 @@ function reProfit() {
   return st.out + state.invest.properties.reduce((a, p) => a + p.value, 0) - st.in;
 }
 
-// Add agents until there is one for every 100k of real estate profit (agents are never taken away)
+// Add agents as real estate profit grows (agents are never taken away)
 function agencyHireAgents() {
   const ag = state.special.agency;
   if (!ag) return 0;
-  const target = Math.min(AGENCY_MAX_AGENTS, Math.floor(Math.max(0, reProfit()) / AGENCY_PER_AGENT));
+  const target = Math.min(AGENCY_MAX_AGENTS, agentsForProfit(reProfit()));
   if (ag.agents.length > AGENCY_MAX_AGENTS) ag.agents.length = AGENCY_MAX_AGENTS;   // fix saves from before the cap
   let added = 0;
   while (ag.agents.length < target) {
@@ -673,11 +678,11 @@ function renderAgency() {
 
   if (ag) {
     const income = ag.agents.reduce((a, b) => a + b, 0);
-    const next = (ag.agents.length + 1) * AGENCY_PER_AGENT;
+    const next = agencyNeedFor(ag.agents.length + 1);
     const full = ag.agents.length >= AGENCY_MAX_AGENTS;
     html += `<div class="card specialCard">
       <div class="row"><h3>🏢 Real Estate Agency</h3><span class="income" id="agency-income">+${income.toFixed(1)} / sec</span></div>
-      <div class="muted">+2% bonus every time you sell a property · one new agent for every 100k of real estate profit · each agent earns 0, 5, 10 or 15 at random every second (7.5 / sec on average)</div>
+      <div class="muted">+2% bonus every time you sell a property · new agents at 100k, 300k, 600k, 1M… real estate profit (each step 100k bigger) · each agent earns 0, 5, 10 or 15 at random every second (7.5 / sec on average)</div>
       <div class="muted" style="margin-top:4px">${full ? "Your agency is full (max " + AGENCY_MAX_AGENTS + " agents)." :
         `Next agent at ${fmt(next)} real estate profit (now ${profit >= 0 ? "" : "−"}${fmt(Math.abs(profit))})`}</div>
       <div class="row"><h4>Agents (${ag.agents.length} / ${AGENCY_MAX_AGENTS})</h4>
@@ -692,7 +697,7 @@ function renderAgency() {
     html += `<div class="card specialCard"><div class="row">
       <div><h3>🏢 Real Estate Agency</h3>
         <div class="muted">+2% when you sell real estate · each agent earns 0, 5, 10 or 15 at random every second</div>
-        <div class="muted">One agent for every 100k of real estate profit (you'd start with ${Math.floor(profit / AGENCY_PER_AGENT)})</div>
+        <div class="muted">Agents join at 100k, 300k, 600k, 1M… real estate profit (you'd start with ${agentsForProfit(profit)})</div>
         <div class="muted">Owned: 0 / 1</div></div>
       <button class="btn" data-action="buySpecial" data-special="agency" data-cost="${AGENCY_PRICE}">Buy ${fmt(AGENCY_PRICE)}</button>
     </div></div>`;
