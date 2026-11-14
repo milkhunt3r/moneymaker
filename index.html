@@ -18,7 +18,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
   <meta property="og:image" content="assets/logo/share.jpg">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="stylesheet" href="css/style.css?v=20261114g">
+  <link rel="stylesheet" href="css/style.css?v=20261114h">
 </head>
 <body>
   <!-- ===== Loading screen (removed when the game has started) ===== -->
@@ -49,6 +49,10 @@
   </div>
 
 
+  <!-- ⭐ Prestige button: floats in the bottom-left corner (kept outside the tab bar: the bar's frosted
+       glass effect would otherwise pin it inside the bar) -->
+  <button id="prestigeBtn" hidden title="Reset the game for a permanent Legacy bonus">⭐ Prestige</button>
+
   <!-- ===== Tabs to switch views ===== -->
   <nav id="tabs">
     <!-- Logo (left): the wide logo, or only the coin icon when the tabs need the room; click = main menu -->
@@ -56,7 +60,6 @@
       <img id="brandWide" src="assets/logo/logo-banner.webp" alt="Empire of Coins" width="138" height="48">
       <img id="brandIcon" class="icon" src="assets/logo/icon-192.png" alt="Empire of Coins" width="40" height="40" hidden>
     </div>
-    <button id="prestigeBtn" hidden title="Reset the game for a permanent Legacy bonus">⭐ Prestige</button>
     <div id="settingsWrap">
       <button id="settingsBtn" title="Settings" aria-label="Settings">⚙️</button>
       <div id="settingsMenu" hidden>
@@ -557,28 +560,28 @@
   <div id="tipCard" hidden role="status"></div>
   <div id="tutBubble" hidden role="dialog" aria-label="Guided start"></div>
   <!-- Game code, split by section. Files share one global scope and must load in this order. -->
-  <script src="js/01-core.js?v=20261114g"></script>
-  <script src="js/02-income.js?v=20261114g"></script>
-  <script src="js/03-casino.js?v=20261114g"></script>
-  <script src="js/04-investing.js?v=20261114g"></script>
-  <script src="js/05-settings.js?v=20261114g"></script>
-  <script src="js/06-casino-cards.js?v=20261114g"></script>
-  <script src="js/07-boosters.js?v=20261114g"></script>
-  <script src="js/08-sky-climb.js?v=20261114g"></script>
-  <script src="js/09-special.js?v=20261114g"></script>
-  <script src="js/10-plinko.js?v=20261114g"></script>
-  <script src="js/11-cosmetics.js?v=20261114g"></script>
-  <script src="js/12-logistics.js?v=20261114g"></script>
-  <script src="js/13-live-trading.js?v=20261114g"></script>
-  <script src="js/14-world-map.js?v=20261114g"></script>
-  <script src="js/15-achievements.js?v=20261114g"></script>
-  <script src="js/16-prestige.js?v=20261114g"></script>
-  <script src="js/17-wiki.js?v=20261114g"></script>
-  <script src="js/18-art.js?v=20261114g"></script>
-  <script src="js/19-science.js?v=20261114g"></script>
-  <script src="js/20-tips.js?v=20261114g"></script>
-  <script src="js/21-clock.js?v=20261114g"></script>
-  <script src="js/22-main-menu.js?v=20261114g"></script>
-  <script src="js/23-minigames.js?v=20261114g"></script>
+  <script src="js/01-core.js?v=20261114h"></script>
+  <script src="js/02-income.js?v=20261114h"></script>
+  <script src="js/03-casino.js?v=20261114h"></script>
+  <script src="js/04-investing.js?v=20261114h"></script>
+  <script src="js/05-settings.js?v=20261114h"></script>
+  <script src="js/06-casino-cards.js?v=20261114h"></script>
+  <script src="js/07-boosters.js?v=20261114h"></script>
+  <script src="js/08-sky-climb.js?v=20261114h"></script>
+  <script src="js/09-special.js?v=20261114h"></script>
+  <script src="js/10-plinko.js?v=20261114h"></script>
+  <script src="js/11-cosmetics.js?v=20261114h"></script>
+  <script src="js/12-logistics.js?v=20261114h"></script>
+  <script src="js/13-live-trading.js?v=20261114h"></script>
+  <script src="js/14-world-map.js?v=20261114h"></script>
+  <script src="js/15-achievements.js?v=20261114h"></script>
+  <script src="js/16-prestige.js?v=20261114h"></script>
+  <script src="js/17-wiki.js?v=20261114h"></script>
+  <script src="js/18-art.js?v=20261114h"></script>
+  <script src="js/19-science.js?v=20261114h"></script>
+  <script src="js/20-tips.js?v=20261114h"></script>
+  <script src="js/21-clock.js?v=20261114h"></script>
+  <script src="js/22-main-menu.js?v=20261114h"></script>
+  <script src="js/23-minigames.js?v=20261114h"></script>
 </body>
 </html>
