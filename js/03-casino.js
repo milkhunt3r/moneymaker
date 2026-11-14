@@ -263,6 +263,10 @@ function addXp(amount) {
 }
 
 function renderCasino() {
+  // 📱 phone: the table sits below the lobby cards, so jump to it when a game is opened
+  if (currentGame && currentGame !== renderCasino.shown && typeof isPhone === "function" && isPhone() && !$("casinoView").hidden)
+    setTimeout(() => { const g = $("casinoGame"); if (g) window.scrollTo({ top: g.getBoundingClientRect().top + scrollY - 8, behavior: "smooth" }); }, 50);
+  renderCasino.shown = currentGame;
   const box = $("casinoGame");
   setTimeout(updateVipBar, 0);
   if (!currentGame) {

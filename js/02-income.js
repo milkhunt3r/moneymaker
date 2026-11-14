@@ -824,6 +824,11 @@ function gameTick() {
    ===================================================================== */
 function showView(view) {
   if (view === "art") { view = "games"; state.gamePage = "art"; }   // the Art Gallery now lives in 🎮 Mini-games
+  // 📱 phone: empty the two biggest pages when leaving them (they are rebuilt when shown again) to keep the page light
+  if (typeof isPhone === "function" && isPhone() && state.view !== view) {
+    if (state.view === "achievements" && $("achList")) $("achList").innerHTML = "";
+    if (state.view === "wiki" && $("wikiBody")) $("wikiBody").innerHTML = "";
+  }
   state.view = view;
   $("incomeView").hidden = view !== "income";
   $("casinoView").hidden = view !== "casino";
@@ -842,6 +847,11 @@ function showView(view) {
   if (view === "wiki" && typeof renderWiki === "function") renderWiki();
   if (view === "achievements" && typeof renderAchievements === "function") renderAchievements();
   document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.view === view));
+  // 📱 phone: keep the selected tab visible in the scrollable bottom bar
+  if (typeof isPhone === "function" && isPhone()) {
+    const t = document.querySelector(`.tab[data-view="${view}"]`), bar = $("tabs");
+    if (t && bar) bar.scrollTo({ left: t.offsetLeft - (bar.clientWidth - t.offsetWidth) / 2, behavior: "smooth" });
+  }
   save();
 }
 $("tabs").addEventListener("click", (e) => {

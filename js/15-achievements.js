@@ -202,8 +202,21 @@ function checkAchievements() {
   else fresh.forEach(a => showAlert(`🏆 Achievement unlocked!`, `${a.icon} <b style="display:inline">${a.name}</b>: ${a.desc}`, "good"));
   achFirstCheck = false;
   if (fresh.length) save();
-  $("achTab").textContent = `${achDone()}/${achShown().length}`;
-  if (!$("achievementsView").hidden) renderAchievements();
+  const tabText = `${achDone()}/${achShown().length}`;
+  if ($("achTab").textContent !== tabText) $("achTab").textContent = tabText;
+  // the page is only rebuilt when something unlocks; otherwise just the progress bars move (much less work, esp. on phones)
+  if (!$("achievementsView").hidden) { if (fresh.length) renderAchievements(); else updateAchProgress(); }
+}
+const ACH_BY_ID = {};
+function updateAchProgress() {
+  if (!ACH_BY_ID.__ready) { ACHIEVEMENTS.forEach(a => ACH_BY_ID[a.id] = a); ACH_BY_ID.__ready = true; }
+  document.querySelectorAll("#achList [data-achbar]").forEach(el => {
+    const a = ACH_BY_ID[el.dataset.achbar]; if (!a) return;
+    const v = Math.min(a.goal, achValue(a)), w = (100 * v / a.goal) + "%";
+    if (el.style.width !== w) el.style.width = w;
+    const num = el.parentElement.nextElementSibling;
+    if (num) { const show = (x) => a.money ? fmt(x) : x.toLocaleString(), t = `${show(Math.floor(v))} / ${show(a.goal)}`; if (num.textContent !== t) num.textContent = t; }
+  });
 }
 
 /* ----- 🎁 Rewards: cosmetic collections earned by finishing a whole achievement category ----- */
@@ -283,7 +296,7 @@ function renderAchievements() {
             <div class="nm">${a.name}</div>
             <div class="muted">${a.desc}</div>
             ${got ? `<div class="muted" style="color:#ffd34d">✔ Unlocked ${new Date(got).toLocaleDateString()}</div>`
-                  : a.goal > 1 ? `<div class="bar"><div style="width:${100 * v / a.goal}%"></div></div><div class="muted">${show(Math.floor(v))} / ${show(a.goal)}</div>` : ""}
+                  : a.goal > 1 ? `<div class="bar"><div data-achbar="${a.id}" style="width:${100 * v / a.goal}%"></div></div><div class="muted" data-achnum="${a.id}">${show(Math.floor(v))} / ${show(a.goal)}</div>` : ""}
           </div></div>`;
       }).join("")}</div>`;
   }).join("");

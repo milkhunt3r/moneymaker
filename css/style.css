@@ -1295,3 +1295,59 @@ button.btn.small { padding: 4px 8px; font-size: 12px; }
 .sciNeed span.ok::after { content: " ✅"; }
 .sciNeed span.short { border-color: rgba(255, 120, 120, 0.6); color: #ff9a9a; }
 .sciNeed span.short::after { content: " ❌"; }
+
+/* =====================================================================
+   📱 PHONE MODE (body.phone: screens up to 760 px wide, see js/00-phone.js)
+   ===================================================================== */
+#bgLayer { position: fixed; inset: 0; z-index: -2; pointer-events: none; background-position: center; background-size: cover; background-repeat: no-repeat; }
+body.phone:not(.bgProbe) { background: #14151f !important; }   /* the picture is on #bgLayer instead (no "fixed" repaint on scroll) */
+
+/* Tab bar at the bottom, one scrollable row (thumb-friendly) */
+body.phone { --navH: 64px; padding-bottom: calc(var(--navH) + env(safe-area-inset-bottom)); }
+body.phone #tabs {
+  position: fixed; top: auto; bottom: 0; left: 0; right: 0; height: auto; z-index: 70;
+  justify-content: flex-start; gap: 6px; padding: 8px 10px calc(8px + env(safe-area-inset-bottom)); overflow-x: auto; overflow-y: hidden;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch; scroll-padding: 0 10px;
+  border-bottom: 0; border-top: 1px solid rgba(255, 211, 77, 0.35); box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.45);
+  background: #120f24; -webkit-backdrop-filter: none; backdrop-filter: none;
+}
+body.phone #tabs::-webkit-scrollbar { display: none; }
+body.phone .tab { flex: 0 0 auto; padding: 9px 13px; font-size: 13px; white-space: nowrap; }
+body.phone #brand { display: none; }
+body.phone #settingsWrap { position: static; transform: none; order: -1; flex: 0 0 auto; }   /* ⚙️ first in the row */
+body.phone #settingsBtn { width: 40px; height: 40px; }
+/* pages fill the screen above the bottom bar */
+body.phone #incomeView, body.phone #game { min-height: 0; }
+body.phone #shop { max-height: none; }
+body.phone .incomeTabs { top: 0 !important; margin: -20px -20px 14px; }
+/* floating things move up, above the bottom bar */
+body.phone #prestigeBtn { bottom: calc(var(--navH) + 12px + env(safe-area-inset-bottom)); left: 12px; }
+body.phone #tipCard { bottom: calc(var(--navH) + 12px + env(safe-area-inset-bottom)); left: 8px; }
+body.phone #saveWarn { bottom: calc(var(--navH) + 12px); }
+body.phone #alerts { top: 10px; right: 8px; left: 8px; max-width: none; }
+/* pop-ups fit the screen */
+body.phone #modalBox { max-width: calc(100vw - 20px); max-height: calc(100vh - 40px); overflow-y: auto; padding: 20px 16px; box-sizing: border-box; }
+body.phone #modalBox.ornate { overflow: visible; max-height: none; }
+/* side menus become a scrollable row of buttons */
+body.phone .subLayout { grid-template-columns: 1fr; }
+body.phone .subNav { position: static; flex-direction: row; overflow-x: auto; gap: 6px; scrollbar-width: none; }
+body.phone .subNav::-webkit-scrollbar { display: none; }
+body.phone .subTab { flex: 0 0 auto; white-space: nowrap; padding: 9px 12px; }
+/* wide tables scroll sideways inside their card instead of stretching the page */
+body.phone .wikiTable { display: block; overflow-x: auto; max-width: 100%; }
+body.phone #investView, body.phone #gamesView, body.phone #wikiView, body.phone #achievementsView, body.phone #shopView, body.phone #logisticsView { padding: 12px; }
+
+/* Performance: no blur, no endless glow animations (they repaint the screen 60 times a second) */
+body.phone *, body.phone *::before, body.phone *::after { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+body.phone .incomeTabs { background-color: #1b1735; }
+body.phone .subTab:not(.active) { background-color: #1b1735; }
+body.phone #prestigeBtn, body.phone .menuBtn.mGreen img, body.phone #energyBtn.active, body.phone #pillBtn.active, body.phone #influenceBtn.active,
+body.phone .rushBadge, body.phone .nobelMedal, body.phone .destRing, body.phone #debt { animation: none !important; }
+
+/* 💰 Income on phones: money → coin → boosters in a row (no overlap), tips open above the boosters */
+body.phone #game { gap: 16px; padding: 56px 16px 20px; justify-content: flex-start; }
+body.phone #debt { order: 0; } body.phone #counter { order: 1; } body.phone #coin { order: 2; }
+body.phone #boosters { order: 3; position: static; transform: none; flex-direction: row; justify-content: center; gap: 16px; }
+body.phone #hint { order: 4; }
+body.phone #energyTip, body.phone #pillTip, body.phone #influenceTip { left: 50%; top: auto; bottom: calc(100% + 10px); transform: translateX(-50%); }
+body.phone #pillTip { left: 50%; } body.phone #energyTip { left: 0; transform: none; } body.phone #influenceTip { left: auto; right: 0; transform: none; }

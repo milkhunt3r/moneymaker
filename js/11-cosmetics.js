@@ -135,6 +135,7 @@ function applyCosmetics() {
   $("coin").classList.toggle("royalCoin", !!state.cosmetics.on.royalCoin);
   $("coin").classList.toggle("rainCoin", !!state.cosmetics.on.rainCoin);
   $("coin").classList.toggle("aheadCoin", !!state.cosmetics.on.aheadCoin);
+  if (typeof syncBgLayer === "function") syncBgLayer();   // 📱 phone mode: background picture on its own layer
 }
 
 function cosmeticCard(c) {
