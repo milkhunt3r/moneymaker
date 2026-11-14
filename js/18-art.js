@@ -516,7 +516,7 @@ function renderArtTools() {
     return `<button class="seg" disabled title="Submit (sell or keep) ${n.count} ${ART_TIERS[n.tier].name} paintings to unlock">🔒 ${t.name} · ${have}/${n.count} ${ART_TIERS[n.tier].name}</button>`;
   }).join("");
   const t = ART_TIERS[state.art.tier];
-  $("artTierInfo").textContent = `${t.icon} ${t.name}: ${t.desc}. You earn your match % of ${fmt(t.value)}: an 85% copy is worth ${fmt(t.value * 0.85)}.`;
+  $("artTierInfo").textContent = `${t.icon} ${t.name}: ${t.desc}. You earn your match % of ${fmt(t.value)}: an 85% copy is worth ${fmt(t.value * 0.85)}. Under ${ART_MIN_MATCH}% it can't be sold or kept.`;
 }
 function artNewPainting(keepSeed) {
   if (!keepSeed || !state.art.seed) state.art.seed = 1 + secureRandomInt(2 ** 31 - 2);
@@ -526,6 +526,7 @@ function artNewPainting(keepSeed) {
   $("artResult").innerHTML = ""; $("artSubmit").disabled = false;
   save();
 }
+const ART_MIN_MATCH = 50;   // copies under 50% can't be sold or kept
 function artSubmit() {
   const score = artScore($("artRef"), $("artDraw"), state.art.tier);
   const t = ART_TIERS[state.art.tier], value = Math.floor(t.value * score.total / 100);
@@ -535,6 +536,16 @@ function artSubmit() {
   best[state.art.tier] = Math.max(best[state.art.tier] || 0, score.total);
   artUI.result = { tier: state.art.tier, seed: state.art.seed, score: score.total, colors: score.colors, shapes: score.shapes, value, img: thumb.toDataURL("image/jpeg", 0.7) };
   $("artSubmit").disabled = true;
+  if (score.total < ART_MIN_MATCH) {   // ❌ too far from the original: no sale, no collection
+    $("artResult").innerHTML = `<div class="artResult">
+      <div class="artScore" style="color:#ff8a8a">${score.total.toFixed(1)}%<small>match</small></div>
+      <div><div>🎨 Colors <b>${(score.colors * 100).toFixed(0)}%</b> · 📐 Shapes <b>${(score.shapes * 100).toFixed(0)}%</b></div>
+        <div style="color:#ff8a8a"><b>Not close enough.</b> A copy needs at least ${ART_MIN_MATCH}% to be sold or kept, so this one isn't worth anything.</div>
+        <div class="moneyRow" style="margin-top:8px">
+          <button class="btn" id="artRetry">🖌️ Keep working on it</button>
+          <button class="btn ghost" id="artSkip">🔄 New painting</button></div></div></div>`;
+    return;
+  }
   const full = state.art.items.length >= state.art.slots;
   $("artResult").innerHTML = `<div class="artResult">
     <div class="artScore">${score.total.toFixed(1)}%<small>match</small></div>
@@ -548,7 +559,7 @@ function artSubmit() {
 }
 function artFinish(keep) {
   const r = artUI.result;
-  if (!r) return;
+  if (!r || r.score < ART_MIN_MATCH) return;
   if (keep && state.art.items.length >= state.art.slots) return;
   const before = Object.keys(ART_TIERS).filter(artTierOpen);
   state.art.done[r.tier] = (state.art.done[r.tier] || 0) + 1;
@@ -635,7 +646,7 @@ function renderArt() {
   if (!open) {
     $("artLocked").innerHTML = `<h2>🔒 🖼️ Art Gallery</h2>
       <p>Copy paintings as closely as you can: the better the match, the more they're worth. Sell your copies right away or keep them in your collection.</p>
-      <p class="muted">🟢 Easy ${fmt(ART_TIERS.easy.value)} · 🟡 Medium ${fmt(ART_TIERS.medium.value)} · 🔴 Hard ${fmt(ART_TIERS.hard.value)} (you earn your match %)</p>
+      <p class="muted">🟢 Easy ${fmt(ART_TIERS.easy.value)} · 🟡 Medium ${fmt(ART_TIERS.medium.value)} · 🔴 Hard ${fmt(ART_TIERS.hard.value)} (you earn your match %; at least ${ART_MIN_MATCH}% to sell or keep)</p>
       ${artGalleryReady()
         ? `<button class="btn big" id="artUnlock" ${state.money >= ART_UNLOCK ? "" : "disabled"}>🔓 Open the gallery for ${fmt(ART_UNLOCK)}</button>`
         : `<p><b>🔒 Unlocks with the 💵 Millionaire achievement:</b> have ${fmt(1e6)} on hand.</p>`}`;
@@ -673,6 +684,8 @@ $("artView").addEventListener("click", (e) => {
   if (e.target.closest("#artNew")) { artNewPainting(false); return; }
   if (e.target.closest("#artSubmit")) { artSubmit(); return; }
   if (e.target.closest("#artSell")) { artFinish(false); return; }
+  if (e.target.closest("#artRetry")) { artUI.result = null; $("artResult").innerHTML = ""; $("artSubmit").disabled = false; return; }
+  if (e.target.closest("#artSkip")) { artUI.result = null; artNewPainting(false); return; }
   if (e.target.closest("#artKeep")) { artFinish(true); return; }
   if (e.target.closest("#artBuySlots")) {
     const price = artSlotPrice();

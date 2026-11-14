@@ -54,6 +54,7 @@ const PATCH_NOTES = [
     "The game has a new name: <b>Empire of Coins</b>, with a new logo, browser tab icon, loading screen and this main menu.",
     "New first business: the <b>🌭 Hot Dog Stand</b> (100, 2 workers, no accountant or HR, up to 3). The guided start now begins with it.",
     "Hotels: at most <b>5 Concierges</b> per hotel. More Concierges stacked their bonus far too high.",
+    "Art Gallery: a copy needs at least <b>50% match</b> to be sold or kept.",
     "New <b>🎮 Mini-games</b> tab: the 🖼️ Art Gallery moved here, plus a new game, <b>⛏️ Gold Mine Dig</b> (test version): dig for ore with your mole miner, unlocked by your first gold mine.",
     "Plinko: new table limits, 5,000 – 5 scoin per ball (Super high rollers: 10 – 500 scoin).",
     "New look for ⚙️ Settings: a royal gold panel, a tips switch, a 🌗 background brightness slider and a 🐞 Report a bug button (coming soon).",
