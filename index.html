@@ -3183,8 +3183,8 @@
       { id: "uthLow",   name: "Ultimate Texas Hold'em: Classic table", emoji: "🤠", desc: "Beat the dealer's poker hand. Play 1 or 2 seats. Ante 500 to 50,000 (+ equal Blind, optional Trips)." },
       { id: "uthHigh",  name: "Ultimate Texas Hold'em: High rollers",  emoji: "🤠💎", desc: "Beat the dealer's poker hand. Play 1 or 2 seats. Ante 50,000 to 5 scoin (+ equal Blind, optional Trips)." },
       { id: "uthSuper", name: "Ultimate Texas Hold'em: Super high rollers", emoji: "🤠💎💎", desc: "Beat the dealer's poker hand. Play 1 or 2 seats. Ante 10 to 500 scoin (+ equal Blind, optional Trips)." },
-      { id: "plinkoSuper", name: "Plinko: Super high rollers", emoji: "💎🔻", desc: "Same pyramid, 0.3× to 250×, up to 20 balls. Bets from 10 to 50 scoin per ball." },
-      { id: "plinko", name: "Plinko", emoji: "🔻", desc: "Drop up to 20 balls down a peg pyramid into multipliers from 0.3× to 250×. Bets 5,000 – 250,000 per ball." },
+      { id: "plinkoSuper", name: "Plinko: Super high rollers", emoji: "💎🔻", desc: "Same pyramid, 0.3× to 250×, up to 20 balls. Bets from 10 to 500 scoin per ball." },
+      { id: "plinko", name: "Plinko", emoji: "🔻", desc: "Drop up to 20 balls down a peg pyramid into multipliers from 0.3× to 250×. Bets 5,000 – 5 scoin per ball." },
       { id: "climb",  name: "Sky Climb", emoji: "🎈", desc: "Draw balls to climb a 20-step ladder up to 50,000×. Cash out before a red ball pops your balloon! Bets 10,000 – 500,000." },
     ];
     // Game groups in the casino lobby (games show in this order inside each group)
@@ -6669,14 +6669,14 @@
        PLINKO: 12 rows of pegs, ball always dropped from the top centre.
        At each peg it bounces left or right (50/50), landing in one of 13 slots.
        Multipliers (edges to middle): 250, 10, 3, 1.5, 1, 0.6, 0.3 -> exact payback 97.99%.
-       Up to 20 balls in the air at once. 5,000 - 250,000 per ball.
+       Up to 20 balls in the air at once. 5,000 - 5 scoin per ball (Super high rollers: 10 - 500 scoin).
        ===================================================================== */
     const PLINKO_ROWS = 12;
     const PLINKO_MULTS = [250, 10, 3, 1.5, 1, 0.6, 0.3, 0.6, 1, 1.5, 3, 10, 250];
     const PLINKO_MAX_BALLS = 20;
     const PLINKO_TABLES = {
-      plinko:      { title: "Plinko", emoji: "🔻", min: 5000, max: 250000, chips: [5000, 10000, 25000, 50000, 100000, 250000] },
-      plinkoSuper: { title: "Plinko: Super high rollers", emoji: "💎🔻", min: 10000000, max: 50000000, chips: [10000000, 25000000, 50000000] },
+      plinko:      { title: "Plinko", emoji: "🔻", min: 5000, max: 5000000, chips: [5000, 25000, 100000, 500000, 1000000, 5000000] },
+      plinkoSuper: { title: "Plinko: Super high rollers", emoji: "💎🔻", min: 10000000, max: 500000000, chips: [10000000, 25000000, 50000000, 100000000, 250000000, 500000000] },
     };
     const isPlinko = () => !!PLINKO_TABLES[currentGame];
     const plinkoCfg = () => PLINKO_TABLES[currentGame] || PLINKO_TABLES.plinko;
@@ -10521,6 +10521,7 @@
         "The game has a new name: <b>Empire of Coins</b>, with a new logo, browser tab icon, loading screen and this main menu.",
         "New first business: the <b>🌭 Hot Dog Stand</b> (100, 2 workers, no accountant or HR, up to 3). The guided start now begins with it.",
         "Hotels: at most <b>5 Concierges</b> per hotel. More Concierges stacked their bonus far too high.",
+        "Plinko: new table limits, 5,000 – 5 scoin per ball (Super high rollers: 10 – 500 scoin).",
         "New look for ⚙️ Settings: a royal gold panel, a tips switch, a 🌗 background brightness slider and a 🐞 Report a bug button (coming soon).",
         "New rewards: three <b>Master coins</b> for reaching level 99: 🦊 Gambler, 🦉 Investor and 🦅 Logistics.",
         "New reward: <b>🦛 The Strongman Collection</b> (background and coin) for finishing ⚡ Wired for life and 🦾 Iron finger.",
