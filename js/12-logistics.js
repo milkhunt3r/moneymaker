@@ -220,6 +220,7 @@ function logisticsTick() {
         if (key === "truck" && secureRandomInt(TRUCK_BREAKDOWN_CHANCE) === 0) {
           v.broken = { cost: TRUCK_REPAIR_MIN + secureRandomInt(TRUCK_REPAIR_MAX - TRUCK_REPAIR_MIN + 1) };
           v.offers = null;
+          if (typeof refreshUnlocks === "function") refreshUnlocks(false);
           if (state.science && state.science.satellite) showNotice(`🔧 ${v.name} broke down. 🛰️ The satellite will repair it in 5 seconds.`);
           else showAlert(`🔧 ${v.name} broke down!`, `It needs repairs before it can take new contracts. Repair cost: <b style="display:inline">${fmt(v.broken.cost)}</b> (🚢 Logistics).`);
         } else {
@@ -351,7 +352,7 @@ function fleetClick(e) {
     v.broken = null;
     v.offers = makeContracts("truck");
     v.wait = 0;
-    updateCounter(); renderFleet("truck"); save();
+    updateCounter(); renderFleet("truck"); save(); refreshUnlocks(false);
     return;
   }
   const offer = e.target.closest("[data-offer]");

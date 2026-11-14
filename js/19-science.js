@@ -349,7 +349,10 @@ function refreshUnlocks(first) {
     if (!first) showNotice("🚢 Logistics unlocked! Buy trucks and deliver contracts around the world.");
   }
   const tab = document.querySelector('.tab[data-view="logistics"]');
-  if (tab) tab.textContent = (open ? "" : "🔒 ") + "🚢 Logistics";
+  // ⚠️ red warning on the tab while a truck is broken down and not repaired yet
+  const broken = open && (logi.trucks || []).some(v => v.broken);
+  const html = (open ? "" : "🔒 ") + "🚢 Logistics" + (broken ? ' <span class="tabWarn" title="A truck is broken down: repair it in 🚢 Logistics">!</span>' : "");
+  if (tab && tab.innerHTML !== html) tab.innerHTML = html;
   $("logisticsView").classList.toggle("locked", !open);
   $("logiLocked").hidden = open;
   if (!open) $("logiLocked").innerHTML = `<h2>🔒 🚢 Logistics</h2>

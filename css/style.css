@@ -1377,3 +1377,7 @@ body.phone #pillTip { left: 50%; } body.phone #energyTip { left: 0; transform: n
 #influenceBtn.active::after { box-shadow: 0 0 30px rgba(255, 211, 77, 0.95); }
 @keyframes glowFade { 50% { opacity: 1; } }
 #prestigeBtn { will-change: transform; }   /* its pulse only scales: keep it on its own layer */
+
+/* ⚠️ red warning badge on a tab (e.g. a broken-down truck in Logistics) */
+.tabWarn { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; margin-left: 6px; vertical-align: 1px;
+  border-radius: 50%; background: #e53935; color: #fff; font-size: 12px; font-weight: 900; line-height: 1; box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35); }
