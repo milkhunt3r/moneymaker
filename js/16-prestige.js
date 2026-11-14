@@ -308,7 +308,7 @@ function showLegacy() {
   const L = state.legacy, done = L.count >= PRESTIGE_MAX;
   const NAMES = { tycoon: "💼 Tycoon's Legacy", empire: "🚢 Global Empire", vip: "🎟️ VIP Coins" };
   showModal(`<h2>⭐ Your Legacy</h2>
-    <div class="legacySteps">${PRESTIGE_STEPS.map((v, i) => `<span class="${i < L.count ? "done" : ""}">${i + 1}. ${fmt(v)}</span>`).join("")}</div>
+    <div class="legacySteps">${PRESTIGE_STEPS.map((v, i) => `<span class="${i < L.count ? "done" : ""}">${fmt(v)}</span>`).join("")}</div>
     <p>${done ? "🏆 All 4 prestiges done: you finished the game! You can keep playing." :
       `Prestige <b>${L.count} of ${PRESTIGE_MAX}</b> · next at <b>${fmt(prestigeAt())}</b> (you have ${fmt(state.money)})`}</p>
     <div class="legacyList">${legacyBonuses().map(x => `<div class="legacyRow ${x.on ? "" : "off"}"><span class="big">${x.icon}</span>
