@@ -1,0 +1,144 @@
+/* =====================================================================
+   🏠 MAIN MENU (start page)
+   Shown every time the game opens. The picture (1672 × 941) has the logo and buttons painted in;
+   invisible buttons sit on top of them. The picture covers the screen, but on narrow screens it shrinks
+   so the logo and buttons (x 975–1450, y 35–700 in the picture) always fit.
+   The game clock keeps running while the menu is open.
+   ===================================================================== */
+const MENU_W = 1672, MENU_H = 941;
+const MENU_SAFE = { x0: 220, x1: 1640, y0: 70, y1: 870 };    // everything important (penguin with his feet, logo, buttons, roulette): never cut off
+const MENU_FOCUS = { x0: 895, x1: 1325, y0: 85, y1: 656 };   // logo + buttons: what phones zoom in on
+function layoutMenu() {
+  const vw = innerWidth, vh = innerHeight, pad = 8;
+  // Landscape screens: fill the screen; only the plain edges (sky and sea) may be cut off, never the safe area.
+  // Portrait screens (phones): zoom in on the logo and buttons.
+  const F = vw >= vh ? MENU_SAFE : MENU_FOCUS;
+  let s = Math.max(vw / MENU_W, vh / MENU_H);                       // cover the screen
+  s = Math.min(s, (vw - 2 * pad) / (F.x1 - F.x0), (vh - 2 * pad) / (F.y1 - F.y0));   // ...but keep the important part on screen
+  const place = (view, size, f0, f1) => {
+    let o = (view - size * s) / 2;                                   // centered
+    if (size * s >= view) o = Math.min(0, Math.max(view - size * s, o));
+    const lo = pad - f0 * s, hi = view - pad - f1 * s;               // keep the focus area visible
+    return lo <= hi ? Math.min(hi, Math.max(lo, o)) : (lo + hi) / 2;
+  };
+  const x = place(vw, MENU_W, F.x0, F.x1), y = place(vh, MENU_H, F.y0, F.y1);
+  $("menuStage").style.transform = `translate(${x}px, ${y}px) scale(${s})`;
+}
+function openMenu() {
+  $("mainMenu").hidden = false; document.body.classList.add("menuOpen");
+  layoutMenu();
+}
+function closeMenu() {
+  $("mainMenu").hidden = true; document.body.classList.remove("menuOpen");
+  if (state.taxHoliday > 0) showNotice(`🛡️ Tax holiday: no tax inspections for the next ${Math.ceil(state.taxHoliday / 60)} minutes.`);
+  if (secretsOpen() && secretsUnseen().length && $("modal").hidden) showSecrets();
+  save();
+}
+addEventListener("resize", () => { if (!$("mainMenu").hidden) layoutMenu(); });
+$("brand").addEventListener("click", openMenu);
+// The logo sits left of the tabs: the wide logo if there is room, else the coin icon, else nothing
+function fitBrand() {
+  const first = document.querySelector("#tabs .tab:not([hidden])");
+  if (!first) return;
+  const room = first.getBoundingClientRect().left - 14 - 12;   // free space left of the first tab
+  $("brandWide").hidden = room < 138;
+  $("brandIcon").hidden = !(room < 138 && room >= 44);
+}
+new ResizeObserver(fitBrand).observe($("tabs"));
+new ResizeObserver(() => document.documentElement.style.setProperty("--tabsH", $("tabs").offsetHeight + "px")).observe($("tabs"));
+addEventListener("resize", fitBrand); fitBrand();
+
+// 📝 Patch notes: newest first. The first entry is shown open in About.
+const PATCH_NOTES = [
+  { date: "13 November 2026", title: "Empire of Coins", items: [
+    "The game has a new name: <b>Empire of Coins</b>, with a new logo, browser tab icon, loading screen and this main menu.",
+    "New first business: the <b>🌭 Hot Dog Stand</b> (100, 2 workers, no accountant or HR, up to 3). The guided start now begins with it.",
+    "Hotels: at most <b>5 Concierges</b> per hotel. More Concierges stacked their bonus far too high.",
+    "Plinko: new table limits, 5,000 – 5 scoin per ball (Super high rollers: 10 – 500 scoin).",
+    "New look for ⚙️ Settings: a royal gold panel, a tips switch, a 🌗 background brightness slider and a 🐞 Report a bug button (coming soon).",
+    "New rewards: three <b>Master coins</b> for reaching level 99: 🦊 Gambler, 🦉 Investor and 🦅 Logistics.",
+    "New reward: <b>🦛 The Strongman Collection</b> (background and coin) for finishing ⚡ Wired for life and 🦾 Iron finger.",
+    "New special business: the <b>🧑‍💼 Recruitment Agency</b> (10 scoin, needs 2 hotels and 2 casinos). Save a staffing plan once, then staff every new hotel and casino in one click for 1 scoin each, or apply the plan to all of them.",
+    "Shop: the new <b>🦁 Emperor Collection</b> (background, coin and card deck, 1 gcoin each), with the achievement <b>Hail, Emperor!</b> for wearing all 3 at once.",
+    "Shop: new prices per item: One Step Ahead 25 scoin, Royal 100 scoin, Make It Rain 500 scoin (Wow So Rich stays 5 scoin). Items you already own stay yours.",
+    "Prestige: the 4 resets are now at <b>1, 5, 10 and 20 gcoin</b>, with new achievements for 5, 10 and 20 gcoin. 💼 Tycoon's Legacy also keeps your Science buildings (not the satellite), and every prestige gives a <b>10-minute tax holiday</b>.",
+    "Science: buildings now cost scientists (Research lab 20, Space Mission Center 50). Space missions run every 20 minutes and pay 2,000–5,000 scoin, with a 20% chance to fail (15% with the satellite).",
+  ] },
+  { date: "12 November 2026", title: "Science, rewards and card decks", items: [
+    "<b>🔬 Science</b>: University, Research lab with Nobel Prizes, Space Mission Center and the Logistics satellite.",
+    "<b>🎁 Rewards</b> in Achievements: 8 collections (backgrounds and coins) for finishing groups of achievements, plus a Hide / Show completed switch.",
+    "Casino: <b>🔥 Hot Tables</b> (+10 Gambler XP multiplier on one game for 15 minutes), per-table XP multipliers, new roulette wheel and fox card deck.",
+    "Shop: new <b>🃏 Cards</b> slot with 4 themed card decks.",
+    "Guided start and one-time tips for new players, Wiki search, more investing amount buttons, booster achievements and the Art studio Grab tool.",
+  ] },
+  { date: "11 November 2026", title: "Art Gallery and offline earnings", items: [
+    "<b>🖼️ Art Gallery</b>: copy paintings in the studio, sell them or keep them in your collection.",
+    "<b>🌙 Offline earnings</b>: 50% of your income for up to 8 hours while the game is closed, and background tabs now catch up.",
+    "Gold mines hold 20–30 scoin and can start a <b>gold rush</b>.",
+    "Safer saving, the Wiki, the live Logistics world map and Live trading improvements.",
+  ] },
+];
+function showAbout() {
+  const notes = PATCH_NOTES.map((n, i) => `<details${i === 0 ? " open" : ""}>
+      <summary>${i === 0 ? "🆕 Latest update" : "Earlier update"} · ${n.date} · ${n.title}</summary>
+      <ul>${n.items.map(x => `<li>${x}</li>`).join("")}</ul></details>`).join("");
+  showModal(`<div class="aboutLogo"><img src="assets/logo/logo-banner.webp" alt="Empire of Coins"></div>
+    <h2>About the game</h2>
+    <p><b>Empire of Coins</b> is an idle tycoon game. You start with one coin and build a business empire that keeps earning, even while you're away.</p>
+    <h3>How to play</h3>
+    <ul>
+      <li>👆 <b>Click the coin</b> to earn your first money, and use boosters like the energy drink to speed up.</li>
+      <li>🏢 <b>Buy businesses and hire workers.</b> Every worker has a trait, and accountants and HR experts make a business earn more.</li>
+      <li>📈 <b>Grow into new areas</b> as you unlock them: 🎰 Casino, 📈 Investing, 🚢 Logistics, 🖼️ Art Gallery and 🔬 Science.</li>
+      <li>🏆 <b>Collect achievements</b> to win reward collections, and spend scoin in the 🛍️ Shop on looks for your coin and background.</li>
+      <li>⭐ <b>Prestige</b> at 1, 5, 10 and 20 gcoin: start over with a permanent Legacy bonus.</li>
+    </ul>
+    <p class="muted">💾 The game saves itself in this browser. Use ⚙️ Settings to download a backup of your progress.
+      The 📖 Wiki in the game explains every feature.</p>
+    <h3>📝 Patch notes</h3>
+    ${notes}
+    <div class="closeRow"><button class="btn big" data-modal="close">Close</button></div>`);
+  $("modalBox").classList.add("wide", "about");
+}
+
+$("mainMenu").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-menu]"); if (!b) return;
+  const what = b.dataset.menu;
+  if (what === "play") closeMenu();
+  if (what === "settings") showSettings(true);
+  if (what === "about") showAbout();
+  // "donate": does nothing for now
+});
+
+// 🌌 One-time pop-up after the 1st prestige: hidden unlocks that were never mentioned anywhere before
+const SECRETS = [
+  { id: "uni2", html: () => `<b>🎓 2nd University</b><div class="muted">A second University for ${fmt(UNI_PRICE)}. It trains its own scientists for the same shared pool.</div>` },
+  { id: "astro", html: () => `<b>🔭 Astronomy Research Center</b><div class="muted">${fmt(ASTRO_PRICE)} + 👩‍🔬 ${ASTRO_SCI} scientists: space missions launch ${ASTRO_TIME_CUT / 60} minutes sooner.</div>` },
+  { id: "station", html: () => `<b>🛸 Orbital Space Station</b><div class="muted">${fmt(STATION_PRICE)} + 👩‍🔬 ${STATION_SCI} scientists: missions fail ${STATION_FAIL_CUT * 100}% less often and launch ${STATION_TIME_CUT / 60} minutes sooner; lab breakthroughs become 1 in ${STATION_LAB_ODDS.toLocaleString("en-US")} (guaranteed within 1 hour).</div>` },
+];
+const secretsUnseen = () => {
+  const seen = state.legacy.secretsSeen || (state.legacy.secretsShown ? ["uni2", "astro"] : []);
+  return SECRETS.filter(x => !seen.includes(x.id));
+};
+function showSecrets() {
+  const list = secretsUnseen();
+  state.legacy.secretsSeen = SECRETS.map(x => x.id); save();
+  showModal(`<h2>🌌 New unlocks!</h2>
+    <p>Your prestige opened doors that were hidden until now:</p>
+    ${list.map(x => `<div class="card secretCard" style="text-align:left">${x.html()}</div>`).join("")}
+    <p class="muted">Find them in 💰 Income → 🔬 Science. A new 🌌 Secrets section has appeared in 🏆 Achievements.</p>
+    <button class="btn big" data-modal="close">✨ Great!</button>`);
+  $("modalBox").classList.add("gold");
+}
+
+openMenu();   // the game always opens on the main menu
+
+// Hide the loading screen once the game is ready (shown for at least 0.7 s so it doesn't just flash)
+(function hideLoading() {
+  const el = $("loading");
+  let done = false;
+  const go = () => { if (done) return; done = true;
+    setTimeout(() => { el.classList.add("fade"); setTimeout(() => el.remove(), 500); }, Math.max(0, 700 - performance.now())); };
+  if (document.readyState === "complete") go(); else addEventListener("load", go, { once: true });
+  setTimeout(go, 4000);   // never wait more than 4 s for slow images
+})();

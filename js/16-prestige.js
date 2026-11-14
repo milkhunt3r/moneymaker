@@ -1,0 +1,279 @@
+/* =====================================================================
+   ⭐ PRESTIGE: at 1 / 5 / 10 / 20 gcoin in your main money (1st / 2nd / 3rd / 4th prestige) you can reset the game for a Legacy bonus.
+   Every prestige gives a 10-minute tax holiday afterwards (no tax inspections), whatever bonus is chosen.
+   Always kept: achievements, Gambler & Investor levels, cosmetics, statistics, Legacy, VIP coins.
+   Choices (each can be picked again on later prestiges):
+     tycoon  +25% income (businesses, special businesses, clicks) for every pick; this reset also keeps your Science buildings (not the satellite)
+     empire  (max 2) 1st: keep your trucks, tankers, cargo planes, warehouses, Trading Port and Logistics Center on every reset from now on (not the satellite)
+                     2nd: all logistics contracts take half the time (same pay)
+     vip     (max 2) VIP coins: 500 scoin every 20 min for the Super high roller tables; 2nd pick: every 10 min
+   ===================================================================== */
+const PRESTIGE_STEPS = [1e12, 5e12, 10e12, 20e12];   // money needed for the 1st, 2nd, 3rd and 4th prestige (1 / 5 / 10 / 20 gcoin)
+const PRESTIGE_MAX = PRESTIGE_STEPS.length;            // the 4th prestige finishes the game (you can keep playing)
+const prestigeAt = () => PRESTIGE_STEPS[Math.min(state.legacy.count, PRESTIGE_MAX - 1)];
+const canPrestige = () => state.legacy.count < PRESTIGE_MAX && state.money >= prestigeAt();
+const TAX_HOLIDAY = 600;     // seconds without tax inspections after every prestige
+const TYCOON_BONUS = 0.25;
+if (!state.legacy) state.legacy = { count: 0, tycoon: 0, empire: 0, vip: 0, history: [] };
+function legacyIncomeMult() { return 1 + TYCOON_BONUS * ((state.legacy && state.legacy.tycoon) || 0); }
+
+const PRESTIGE_CHOICES = [
+  { id: "tycoon", icon: "💼", name: "Tycoon's Legacy", text: "+25% income from businesses, special businesses and clicks, forever. This reset also keeps your 🔬 Science buildings (not the satellite).",
+    now: () => `Now: +${state.legacy.tycoon * 25}% → after: +${(state.legacy.tycoon + 1) * 25}%` },
+  { id: "empire", icon: "🚢", name: "Global Empire", max: 2,
+    text: () => state.legacy.empire
+      ? "Level 2: every logistics contract takes half the time, for the same pay."
+      : "Keep all your trucks, oil tankers and cargo planes, plus warehouses, Trading Port and Logistics Center, on this and every future reset (not the 🛰️ satellite).",
+    now: () => { const n = (x, w) => `${x} ${w}${x === 1 ? "" : "s"}`; return state.legacy.empire ? "Your fleet is already kept on every reset" : `You'd keep ${n(logi.trucks.length, "truck")}, ${n(logi.tankers.length, "tanker")}, ${n(logi.planes.length, "plane")}`; } },
+  { id: "vip", icon: "🎟️", name: "VIP Coins", max: 2,
+    text: () => state.legacy.vip
+      ? "Level 2: your free 500 scoin VIP chips come every 10 minutes instead of every 20."
+      : "A free 500 scoin bet chip every 20 minutes for the Super high roller tables. What it wins goes to your casino chips.",
+    now: () => state.legacy.vip ? "Now every 20 min → after: every 10 min" : "Saves up to 100 chips" },
+];
+
+function showPrestigeOffer() {
+  const n = state.legacy.count + 1;
+  showModal(`<h2>⭐ You made it: ${fmt(prestigeAt())}!</h2>
+    <p>You can <b>prestige</b>: start the game over and choose a permanent Legacy bonus.</p>
+    <p><b style="color:#ffd34d">Prestige ${n} of ${PRESTIGE_MAX}</b>${n === PRESTIGE_MAX ? " · this is the final one: it finishes the game" : ""}</p>
+    <p class="muted">Always kept: achievements, levels, cosmetics, statistics and your 🖼️ Art Gallery (unlock, slots and paintings)${state.legacy.count ? ` · Prestiges so far: ${state.legacy.count}` : ""}.
+      After every prestige: 🛡️ no tax inspections for the first 10 minutes.</p>
+    <div class="prestigeChoices">${PRESTIGE_CHOICES.map(c => {
+      const maxed = c.max && state.legacy[c.id] >= c.max;
+      const level = c.max ? ` <span class="muted">(${state.legacy[c.id] || 0}/${c.max})</span>` : "";
+      const text = typeof c.text === "function" ? c.text() : c.text;
+      return maxed
+        ? `<button class="prestigeChoice" disabled style="opacity:0.45; cursor:default">
+            <div class="big">${c.icon}</div><b>${c.name}${level}</b>Fully upgraded: you can't pick this again.</button>`
+        : `<button class="prestigeChoice" data-prestige-pick="${c.id}">
+            <div class="big">${c.icon}</div><b>${c.name}${level}</b>${text}<small>${c.now()}</small></button>`;
+    }).join("")}</div>
+    <button class="btn ghost" data-prestige="later">Not yet</button>`);
+  $("modalBox").classList.add("gold");
+}
+
+function showPrestigeConfirm(id) {
+  const c = PRESTIGE_CHOICES.find(x => x.id === id);
+  let lost = id === "empire" || state.legacy.empire > 0
+    ? "your money, casino chips, businesses, workers, other special businesses and investments"
+    : "your money, casino chips, businesses, workers, special businesses, investments and logistics fleet";
+  lost += id === "tycoon" ? " (your 🔬 Science buildings are kept, the 🛰️ satellite is not)" : " and 🔬 Science";
+  showModal(`<h2>${c.icon} ${c.name}</h2>
+    <p>Are you sure? This <b>resets</b> ${lost}.</p>
+    <p class="muted">Kept: achievements, levels, cosmetics, statistics, Legacy bonuses, free bet chips, Art Gallery unlock, slots and paintings.
+      🛡️ No tax inspections for the first 10 minutes after the reset.</p>
+    <p>This can't be undone.</p>
+    ${state.legacy.count + 1 === PRESTIGE_MAX ? `<p style="color:#ffd34d"><b>This is your final prestige.</b> After it, no more resets are possible, but you can keep playing.</p>` : ""}
+    <button class="btn big" data-prestige="confirm" data-choice="${id}">⭐ Prestige now</button>
+    <button class="btn ghost" data-prestige="back">Back</button>`);
+  $("modalBox").classList.add("gold");
+}
+
+function doPrestige(id) {
+  if (!canPrestige()) return;
+  const choice = PRESTIGE_CHOICES.find(c => c.id === id);
+  if (!choice || (choice.max && state.legacy[id] >= choice.max)) return;
+  const L = state.legacy;
+  L.count++; L[id] = (L[id] || 0) + 1;
+  L.history.push({ choice: id, at: Date.now() });
+  const keep = {
+    achievements: state.achievements, stats: state.stats, casinoXp: state.casinoXp, casinoStats: state.casinoStats,
+    cosmetics: state.cosmetics, legacy: L, vip: state.vip, nextId: state.nextId, xpVersion: state.xpVersion, logiXp: state.logiXp, freeChips: state.freeChips, freeTimers: state.freeTimers,
+    vpPayHidden: state.vpPayHidden, uthPayHidden: state.uthPayHidden, view: "income",
+    tips: state.tips,   // 💡 tips already seen and the guided start stay done
+    taxHoliday: TAX_HOLIDAY,   // 🛡️ no tax inspections for the first 10 minutes
+    recruitPlan: state.recruitPlan,   // 🧑‍💼 the Recruitment Agency's staffing plan (the building itself resets)
+    // 🖼️ Art Gallery: stays unlocked and keeps its bought slots and all kept paintings
+    art: state.art ? { unlocked: !!state.art.unlocked, slots: state.art.slots, slotBuys: state.art.slotBuys || 0, items: state.art.items || [], done: state.art.done, tier: state.art.tier || "easy", seed: 0, page: "studio", sold: state.art.sold || 0 } : undefined,
+    invest: { xp: inv.xp, properties: [], etf: 0, etfTimer: ETF_EVERY, etfHistory: [] },
+    // all-time logistics counters are statistics: always kept
+    logistics: { tankers: [], trucks: [], planes: [], earned: logi.earned, contracts: logi.contracts || 0 },
+  };
+  // 💼 Tycoon's Legacy: this reset keeps the Science buildings (University, Research lab, Space Mission Center), not the satellite
+  if (id === "tycoon" && state.science) keep.science = { ...state.science, satellite: false };
+  if (L.empire > 0) {   // Global Empire keeps the fleet on every reset after it was picked
+    keep.logistics = state.logistics;
+    keep.special = { agency: null, warehouses: state.special.warehouses, port: state.special.port, center: state.special.center };
+  }
+  stopSaving = true;
+  const { progress, prefs } = splitState(keep);
+  try { storage.saveGame(progress); } catch (e) {}
+  storage.savePrefs({ ...storage.loadPrefs(), ...prefs });
+  location.reload();
+}
+
+$("modal").addEventListener("click", (e) => {
+  const pick = e.target.closest("[data-prestige-pick]");
+  if (pick) return showPrestigeConfirm(pick.dataset.prestigePick);
+  const btn = e.target.closest("[data-prestige]");
+  if (!btn) return;
+  const a = btn.dataset.prestige;
+  if (a === "later") hideModal();
+  if (a === "back") showPrestigeOffer();
+  if (a === "confirm") doPrestige(btn.dataset.choice);
+});
+$("prestigeBtn").addEventListener("click", () => { if (!isPaused() && canPrestige()) showPrestigeOffer(); });
+
+/* =====================================================================
+   🎁 FREE BET CHIPS from the Gambler level (and 500 scoin chips from the VIP Coins prestige bonus).
+   Each chip type has its own timer; you can hold up to 100 of each, then its timer stops.
+   Timers: 20 min, 15 min from level 45, 10 min from level 85. Not usable in Plinko and Sky Climb.
+   ===================================================================== */
+const FREE_CHIP_TYPES = [
+  { value: 10000, level: 5 }, { value: 50000, level: 15 }, { value: 100000, level: 25 }, { value: 1000000, level: 35 },
+  { value: 10000000, level: 55 }, { value: 100000000, level: 65 }, { value: 250000000, level: 75 }, { value: 500000000, level: 99 },
+];
+const FREE_CHIP_MAX = 100;
+const VIP_CHIP = 500000000;
+function freeChipMinutes() { const L = levelInfo(state.casinoXp).level; return L >= 85 ? 10 : L >= 45 ? 15 : 20; }
+function vipMinutes(n = state.legacy.vip) { return n >= 2 ? 10 : 20; }   // VIP Coins: 1st pick every 20 min, 2nd pick every 10 min
+const freeUnlocked = () => FREE_CHIP_TYPES.filter(c => levelInfo(state.casinoXp).level >= c.level);
+
+// Old VIP coins (a balance) become 500 scoin free chips; any leftover goes to casino chips
+if (state.vip && state.vip.coins > 0) {
+  const n = Math.floor(state.vip.coins / VIP_CHIP);
+  state.freeChips[VIP_CHIP] = Math.min(FREE_CHIP_MAX, (state.freeChips[VIP_CHIP] || 0) + n);
+  state.casinoChips += state.vip.coins - n * VIP_CHIP;
+  state.vip.coins = 0;
+}
+if (state.plinkoVipInPlay > 0) { state.casinoChips += state.plinkoVipInPlay; state.plinkoVipInPlay = 0; }
+state.vipMode = {};
+
+function freeTick() {
+  if (isPaused()) return;
+  const gap = freeChipMinutes() * 60;
+  for (const c of freeUnlocked()) {
+    const v = c.value, have = state.freeChips[v] || 0;
+    if (!state.freeTimers[v] || state.freeTimers[v] > gap) state.freeTimers[v] = gap;
+    if (have >= FREE_CHIP_MAX) { state.freeTimers[v] = gap; continue; }     // full: the timer waits
+    if (--state.freeTimers[v] <= 0) { state.freeChips[v] = have + 1; state.freeTimers[v] = gap; showNotice(`🎁 Free ${chipLabel(v)} chip!`); }
+  }
+  if (state.legacy.vip > 0) {   // ⭐ VIP Coins prestige bonus
+    const gapV = vipMinutes() * 60, have = state.freeChips[VIP_CHIP] || 0;
+    if (!state.vip.timer || state.vip.timer > gapV) state.vip.timer = gapV;
+    if (have >= FREE_CHIP_MAX) state.vip.timer = gapV;
+    else if (--state.vip.timer <= 0) {
+      state.freeChips[VIP_CHIP] = have + 1; state.vip.timer = gapV;
+      showAlert("🎫 VIP: free 500 scoin chip!", "Use it as a free bet at the Super high roller tables.", "good");
+    }
+  }
+  updateVipBar();
+}
+// (freeTick is run every game second by the game clock)
+
+// The line under the Gambler level: every free chip you have, how many, and when the next one comes
+var vipReady;   // set once everything below exists (updateCounter can run earlier during start-up)
+function updateVipBar() {
+  if (!vipReady) return;
+  $("vipStat").hidden = true;
+  $("vipBar").hidden = true;
+  const L = levelInfo(state.casinoXp).level, gap = freeChipMinutes();
+  const slots = FREE_CHIP_TYPES.map(c => {
+    const open = L >= c.level, n = state.freeChips[c.value] || 0;
+    return { value: c.value, open, n, vip: false,
+      time: !open ? `Level ${c.level}` : n >= FREE_CHIP_MAX ? "full" : clock(state.freeTimers[c.value] || gap * 60),
+      tip: open ? `Free ${chipLabel(c.value)} bet chip: a new one every ${gap} min, even while the game is closed (max ${FREE_CHIP_MAX}). Unlocked at Gambler level ${c.level}.`
+                : `🔒 Unlocks at Gambler level ${c.level} (you are level ${L}). Then you get a free ${chipLabel(c.value)} bet chip every ${gap} min.` };
+  });
+  const vip = state.legacy.vip > 0, nV = state.freeChips[VIP_CHIP] || 0;
+  slots.push({ value: VIP_CHIP, open: vip, n: nV, vip: true,
+    time: !vip ? "Prestige" : nV >= FREE_CHIP_MAX ? "full" : clock(state.vip.timer || vipMinutes() * 60),
+    tip: vip ? `🎫 VIP chip from the ⭐ VIP Coins prestige bonus: a free 500 scoin bet chip every ${vipMinutes()} min (shares the 500 scoin count, max ${FREE_CHIP_MAX}).`
+             : "🔒 Unlocks when you choose ⭐ VIP Coins as a prestige bonus (from 1 gcoin): a free 500 scoin bet chip every 20 min." });
+  // build the slots once, then only update their numbers (so the hover box doesn't flicker)
+  const key = slots.map(x => x.open).join();
+  if ($("freeChipsGrid").dataset.key !== key) {
+    $("freeChipsGrid").dataset.key = key;
+    $("freeChipsGrid").innerHTML = slots.map((x, i) => `
+      <div class="freeSlot ${x.open ? "" : "locked"} ${x.vip ? "vip" : ""}" id="fslot-${i}">
+        ${chipMark(x.value)}${x.open ? "" : `<span class="lock">🔒</span>`}${x.vip ? `<span class="vipTag">🎫</span>` : ""}
+        <span class="ftime" id="ftime-${i}"></span><span class="fcount" id="fcount-${i}"></span></div>`).join("");
+  }
+  slots.forEach((x, i) => {
+    $("fslot-" + i).dataset.tip = x.tip;
+    $("fslot-" + i).classList.toggle("full", x.open && x.n >= FREE_CHIP_MAX);
+    $("ftime-" + i).textContent = x.time;
+    $("fcount-" + i).textContent = `${x.n}/${FREE_CHIP_MAX}`;
+  });
+}
+
+// Row of free chips under a table's normal chips. Only chips that fit the table's limit are shown.
+function freeChipRow(t, selectedFree) {
+  const owned = Object.keys(state.freeChips).map(Number).filter(v => state.freeChips[v] > 0 && v <= t.max).sort((a, b) => a - b);
+  if (!owned.length) return "";
+  return `<div class="chipsRow freeRow"><span class="muted">🎁 Free:</span>
+    ${owned.map(v => `<button class="chip free ${selectedFree && t.chip === v ? "selected" : ""}" data-freechip="${v}"
+        style="background:${CHIP_COLORS[v].bg}; color:${CHIP_COLORS[v].text}">${chipLabel(v)}<i>×${state.freeChips[v]}</i></button>`).join("")}
+    <span class="muted">Free bet chips: what the bet pays goes to your casino chips.${freePlacedSum(t.id) ? ` On the table now: ${fmt(freePlacedSum(t.id))} free.` : ""}</span></div>`;
+}
+vipReady = true;
+
+// Checked every second: show the button when the next prestige goal (1 / 5 / 10 / 20 gcoin) is reached
+setInterval(() => {
+  const ready = canPrestige();
+  $("prestigeBtn").hidden = !ready;
+  // after the final prestige: tell the player once that the game is finished
+  if (state.legacy.count >= PRESTIGE_MAX && !state.legacy.finishedShown && !isPaused() && $("modal").hidden) {
+    state.legacy.finishedShown = true;
+    save();
+    const picks = PRESTIGE_CHOICES.filter(c => state.legacy[c.id]).map(c => `${c.icon} ${c.name} ×${state.legacy[c.id]}`).join(" · ");
+    showModal(`<h2>🏆 You finished the game!</h2>
+      <p>That was your ${PRESTIGE_MAX}th and final prestige. No more resets are possible.</p>
+      <p class="muted">Your Legacy: ${picks}</p>
+      <p>You can keep playing as long as you like: collect the remaining achievements and enjoy your empire!</p>
+      <button class="btn big" data-prestige="later">Keep playing</button>`);
+    $("modalBox").classList.add("gold");
+  }
+  if (ready && !state.prestigeOffered && !isPaused() && $("modal").hidden) {
+    state.prestigeOffered = true;
+    save();
+    showPrestigeOffer();
+  }
+}, 1000);
+
+/* ----- 📋 Table of every level (Gambler and Investor use the same XP curve) ----- */
+function showLevelTable(kind) {
+  const gam = kind === "gambler", lg = kind === "logistics";
+  const xp = gam ? state.casinoXp : lg ? state.logiXp : inv.xp;
+  const curve = gam ? LEVEL_XP : lg ? LOGI_XP : INVEST_XP;
+  const cur = levelInfo(xp, curve).level;
+  const unlock = (L) => {
+    const u = [];
+    if (lg) for (const k in AGENT_LEVEL) if (AGENT_LEVEL[k] === L) u.push(`🤖 ${FLEETS[k].label} agent`);
+    if (gam) {
+      const fc = FREE_CHIP_TYPES.find(c => c.level === L);
+      if (fc) u.push(`🎁 Free ${chipLabel(fc.value)} chip`);
+      if (L === 45) u.push("🎁 Free chips every 15 min");
+      if (L === 85) u.push("🎁 Free chips every 10 min");
+    }
+    if (gam && L >= 5 && (L - 5) % 10 === 0) u.push(`🎰 Casino #${(L - 5) / 10 + 1}`);
+    if (kind === "investor" && L >= 5 && (L - 5) % 10 === 0) u.push(`🏨 Hotel #${(L - 5) / 10 + 1}`);
+    if (kind === "investor" && L === 10) u.push("🏦 Brokerage Firm");
+    return u.join(", ");
+  };
+  const perk = (L) => lg ? "" : gam ? `${(CASHBACK_PER_LEVEL * L * 100).toFixed(1)}% cashback`
+                          : `${(Math.max(0, ETF_BASE_FEE - ETF_FEE_PER_LEVEL * (L - 1)) * 100).toFixed(1)}% ETF fee · +${(RE_LEVEL_BONUS * L * 100).toFixed(1)}% property sales`;
+  let rows = "";
+  for (let L = 1; L <= MAX_LEVEL; L++) {
+    const step = L === 1 ? 0 : curve[L] - curve[L - 1];
+    rows += `<tr class="${L === cur ? "now" : L < cur ? "done" : ""}" ${L === cur ? 'id="levelNow"' : ""}>
+      <td>${L}</td><td>${fmtNum(curve[L])}</td><td>${L === 1 ? "—" : "+" + fmtNum(step)}</td>${lg ? "" : `<td>${perk(L)}</td>`}<td>${unlock(L)}</td></tr>`;
+  }
+  const next = cur < MAX_LEVEL ? `${fmtNum(curve[cur + 1] - xp)} XP to level ${cur + 1}` : "Max level reached!";
+  showModal(`<h2>${gam ? "🎲 Gambler" : lg ? "🚚 Logistics" : "📈 Investor"} levels</h2>
+    <p class="muted">${lg ? "XP when a contract is delivered: contract minutes × 1 (trucks), × 3 (tankers), × 6 (cargo planes)" : gam ? "XP = bcoin bet × the table's XP multiplier (from ×1 at Classic Roulette to ×10 at Super high roller Hold'em; see 📖 Wiki → Casino) · 🔥 Hot Tables add +10"
+                           : "Every minute with money invested gives 4 XP, 8 XP from 1 scoin invested, 16 XP from 100 scoin"} ·
+      You: level ${cur}, ${fmtNum(xp)} XP · ${next}</p>
+    <div class="levelTableWrap"><table class="levelTable">
+      <thead><tr><th>Level</th><th>Total XP</th><th>This level</th>${lg ? "" : `<th>${gam ? "Cashback" : "Perks"}</th>`}<th>Unlocks</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
+    <button class="btn" onclick="hideModal()">Close</button>`);
+  $("modalBox").classList.add("wide");
+  const now = $("levelNow");
+  if (now) now.scrollIntoView({ block: "center" });
+}
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-levels]");
+  if (b && !isPaused()) showLevelTable(b.dataset.levels);
+});

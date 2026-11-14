@@ -1,0 +1,338 @@
+/* =====================================================================
+   📖 WIKI: how to play, with tables built from the game's own data (always up to date).
+   ===================================================================== */
+const WIKI_SECTIONS = [
+  { id: "general", name: "⭐ General" }, { id: "income", name: "💰 Income" }, { id: "casino", name: "🎰 Casino" },
+  { id: "investing", name: "📈 Investing" }, { id: "logistics", name: "🚢 Logistics" },
+  { id: "art", name: "🖼️ Art Gallery" }, { id: "achievements", name: "🏆 Achievements" }, { id: "shop", name: "🛍️ Shop" },
+];
+const wt = (head, rows) => `<table class="wikiTable"><thead><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr></thead>
+  <tbody>${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+const infoText = (id) => ($("info-" + id) ? $("info-" + id).innerHTML : "");
+const pctx = (x) => (x * 100).toFixed(x * 100 % 1 ? 1 : 0) + "%";
+
+function wikiGeneral() {
+  return `<h2>⭐ General</h2>
+    <p><b>Empire of Coins</b> is an idle tycoon game. Click the coin, build businesses, play the casino, invest, run a logistics empire, and grow your fortune up to <b>1 gcoin</b>, where you can prestige (then 5, 10 and 20 gcoin).</p>
+    <h3>Money units</h3>
+    ${wt(["Unit", "Value", "Where you see it"], [
+      ["bcoin", "1", "Normal amounts"], ["scoin (sc)", "1,000,000 bcoin", "Amounts from 1 million (your main counter switches at 100 scoin)"], ["gcoin", "1,000,000 scoin", "The biggest amounts"]])}
+    <p class="muted">Hover your money counter to see it in the other unit.</p>
+    <h3>The tabs</h3>
+    ${wt(["Tab", "What you do there"], [
+      ["💰 Income", "Click the coin, buy businesses and special businesses, hire workers, use boosters"],
+      ["🎰 Casino", "Move money into casino chips and play table games"],
+      ["📈 Investing", "Real estate, ETFs, gold, Broker ETF and live crypto trading"],
+      ["🚢 Logistics", "Trucks, oil tankers and cargo planes on contracts, with a world map"],
+      ["🖼️ Art Gallery", "Copy paintings and sell them, or keep them in your collection"],
+      ["🏆 Achievements", "Goals across the whole game"], ["🛍️ Shop", "Cosmetics: backgrounds and coins"], ["📖 Wiki", "This guide"]])}
+    <h3>🧾 Taxes</h3>
+    <p>Every second there is a 1 in ${Math.round(1 / TAX_CHANCE).toLocaleString()} chance of a tax inspection (and always after ${TAX_FORCED_AFTER / 60} minutes without one).
+      The bill is <b>${pctx(TAX_RATE)} of everything you earned in the last ${TAX_LOOKBACK / 60} minutes</b>. You have <b>${TAX_TIME_TO_PAY / 60} minutes</b> to pay it with the red button.
+      If you can't, the bill grows by ${pctx(TAX_LATE_PENALTY)} and you get ${TAX_TIME_TO_PAY / 60} more minutes. Miss it again and it's <b>game over</b>. Bills stack, so keep some money ready.
+      A Debt &amp; financial lawyer gives part of every tax payment back.</p>
+    <h3>📊 Levels</h3>
+    ${wt(["Level", "How you get XP", "What it gives"], [
+      ["🎲 Gambler (Casino)", "XP = bcoin you bet × the table's XP multiplier", "0.1% cashback on lost bets per level, casino businesses, free bet chips"],
+      ["📈 Investor (Investing)", "XP every minute you have money invested, plus XP per crypto trade", "Lower ETF fee, +0.1% on property sales per level, hotels, Brokerage Firm, lower crypto fee"],
+      ["🚚 Logistics", "XP for every delivered contract (contract minutes × 1 truck / 3 tanker / 6 plane)", "Logistics agents: trucks at 5, tankers at 25, planes at 50"]])}
+    <p class="muted">Each level card has a "📋 All levels" button with every level's XP and unlocks.</p>
+    <h3>⭐ Prestige</h3>
+    <p>When the money on hand reaches <b>1 gcoin</b> (1st prestige), <b>5 gcoin</b> (2nd), <b>10 gcoin</b> (3rd) or <b>20 gcoin</b> (4th), you can reset the game for a permanent Legacy bonus (max ${PRESTIGE_MAX} prestiges; the 4th finishes the game, but you can keep playing).
+      After every prestige there are <b>no tax inspections for the first 10 minutes</b>, whichever bonus you pick.
+      <b>Always kept:</b> achievements, Gambler, Investor and Logistics levels, cosmetics, statistics, free bet chips, the 🖼️ Art Gallery unlock, its collection slots and your paintings.</p>
+    ${wt(["Bonus", "Effect", "Max"], [
+      ["💼 Tycoon's Legacy", "+25% income from businesses, special businesses and clicks, for each pick. That reset also keeps your Science buildings (University, Research lab, Space Mission Center), but not the satellite", "Unlimited"],
+      ["🚢 Global Empire", "1st: keep trucks, tankers, planes, warehouses, Trading Port and Logistics Center on every reset (the satellite resets with Science). 2nd: all contracts take half the time (same pay)", "2"],
+      ["🎟️ VIP Coins", "A free 500 scoin bet chip every 20 min (2nd pick: every 10 min) for the Super high roller tables", "2"]])}
+    <h3>💾 Saving</h3>
+    <p>The game saves automatically in your browser. In ⚙️ Settings you can save, download a backup file, load one, or reset the game.</p>
+    <h3>💡 Tips and guided start</h3>
+    <p>New players get a short guided start (click the coin, buy a business, hire staff). After that, a small tip appears the first time you meet something new, with a link to the matching Wiki page.
+      ⚙️ Settings: turn tips on/off, show all tips again, or replay the guided start.</p>
+    <h3>🌙 Background and offline</h3>
+    <p>The game counts real time: in a background tab it earns at full speed (it catches up when the browser wakes it).
+      When the game is closed (or the computer sleeps) for more than 5 minutes, you get <b>offline earnings</b> when you come back:
+      up to 8 hours count, and businesses, special businesses, gold mines and rent pay 50%. Contracts on their way, free bet chips and VIP chips keep their timers running.
+      Nothing random happens while you're away (no taxes, crashes, breakdowns or market moves), and Logistics agents only start new contracts while the game is open.</p>
+    <p>Art Gallery paintings are stored separately in the browser so a big collection never fills up the save; a downloaded backup includes them. If the browser ever refuses to save, a red warning appears at the bottom of the screen.</p>`;
+}
+
+function wikiIncome() {
+  const biz = BUSINESS_TYPES.map(t => {
+    let unlock = "Always";
+    try { if (t.unlockText) unlock = t.unlockText(0).replace(/\s*\([^)]*\)/g, ""); } catch (e) {}
+    return [`${t.emoji} <b>${t.name}</b>`, fmt(t.price) + (t.maxOwned > 1 ? `, then ×${t.priceMultiplier || 2} each` : ""), t.maxOwned,
+            t.noStaff ? `${t.maxEmployees} workers (no accountant or HR)` : `${t.maxEmployees - 2} workers + accountant + HR`, `${t.minIncome}–${t.maxIncome} / sec per worker`, unlock];
+  });
+  const traitRows = Object.entries(TRAITS).filter(([k]) => k !== "normal").map(([k, t]) =>
+    [`${t.emoji} ${t.name}`, t.desc, t.onlyFor ? t.onlyFor.map(id => (BUSINESS_TYPES.find(b => b.id === id) || {}).name).join(", ") : "All", k === "legend" ? "1%" : pctx(t.chance)]);
+  return `<h2>💰 Income</h2>
+    <h3>👆 Clicking</h3>
+    <p>Every click on the coin gives 1 bcoin (up to 10 clicks per second). Boosters and Tycoon's Legacy increase it.</p>
+    <h3>🏢 Businesses</h3>
+    <p>Buy a business, then hire workers. Each worker earns a random amount per second and has one trait. The first worker is free; each one after that costs more. You choose from 3 candidates, and "New options" refreshes them for a small growing price.</p>
+    ${wt(["Business", "Price", "Max", "Staff", "Worker income", "Unlock"], biz)}
+    <h3>👤 Worker traits</h3>
+    ${wt(["Trait", "Effect", "Businesses", "Chance"], traitRows)}
+    <h3>🧮 Accountants (one per business)</h3>
+    ${wt(["Accountant", "Effect"], Object.values(ACCOUNTANTS).map(a => [`${a.emoji} ${a.name}`, a.desc]))}
+    <h3>🤝 HR managers (one per business)</h3>
+    ${wt(["HR", "Effect"], Object.values(HR_OPTIONS).map(a => [`${a.emoji} ${a.name}`, a.desc]))}
+    <h3>⚡ Boosters</h3>
+    ${wt(["Booster", "Price", "Effect", "Cooldown"], [
+      ["⚡ Energy drink", fmt(ENERGY_PRICE), `Clicks ×${ENERGY_MULTIPLIER} for ${ENERGY_SECONDS} s`, `${ENERGY_COOLDOWN / 60} min`],
+      ["🧙 Magical pill", fmt(PILL_PRICE), `Each click also gives ${pctx(PILL_SHARE)} of your income per second, for ${PILL_SECONDS} s`, `${PILL_COOLDOWN / 60} min`],
+      ["🎩 Political influence", fmt(INFLUENCE_PRICE), `Business income ×2 for ${INFLUENCE_SECONDS / 60} min`, `${INFLUENCE_COOLDOWN / 60} min`]])}
+    <h3>⭐ Special businesses</h3>
+    <p>No workers, HR manager or accountant. Sorted from cheapest to most expensive.</p>
+    ${wt(["Business", "Price", "Unlock", "What it does"], [
+      ["📦 Warehouse", fmt(WAREHOUSE_PRICE), `Max 5; slots open at ${WAREHOUSE_UNLOCKS.join(", ")} trucks`, `+${pctx(WAREHOUSE_BONUS)} on truck contract payouts each`],
+      ["⚖️ Law Firm", fmt(LAW_PRICE), "Always", `Hire up to ${LAW_MAX} attorneys (slot n costs ${fmt(LAW_SLOT_PRICE)} × n); pick 1 of 3 each time`],
+      ["🧑‍💼 Recruitment Agency", fmt(RECRUIT_PRICE), `${RECRUIT_NEED.hotel} hotels and ${RECRUIT_NEED.casino} casinos`, `📝 Staffing plan: pick the accountant, HR and a trait for every worker place of a hotel and a casino. 👥 Hire staff fills every hotel and casino with no staff yet, ${fmt(RECRUIT_FILL)} per business (pay per second stays random). Businesses with staff are not touched. 🔄 Apply to all brings every hotel and casino in line with the plan, ${fmt(RECRUIT_FILL)} per business that needs changes (workers who fit the plan are kept). The plan is kept on prestige`],
+      ["🏢 Real Estate Agency", fmt(AGENCY_PRICE), `${fmt(AGENCY_UNLOCK)} all-time real estate profit`, `+${pctx(AGENCY_SALE_BONUS)} on property sales; 1 agent per ${fmt(AGENCY_PER_AGENT)} real estate profit (max ${AGENCY_MAX_AGENTS}), each earns 0/5/10/15 per second`],
+      ["🎢 Amusement Park", fmt(PARK_PRICE), "One per hotel", `Earns ${pctx(PARK_SHARE)} of its paired hotel's income`],
+      ["⛏️ Gold Mine", fmt(MINE_PRICE), `${fmt(MINE_UNLOCK)} all-time gold profit; max ${MINE_MAX}`, `${MINE_INCOME} / sec until its 20–30 scoin of gold is mined, then it closes. 🔥 Gold rush: 1 in ${RUSH_ODDS} chance per second per mine (2 mines: 1 in ${RUSH_ODDS / 2}) of 2× mine income for ${RUSH_SECONDS} sec`],
+      ["⚓ Trading Port", fmt(PORT_PRICE), "Own an oil tanker; max 1", `${PORT_PER_TANKER} / sec per tanker and +${pctx(PORT_BONUS)} on tanker contracts`],
+      ["🏛️ Art Gallery", fmt(GALLERY_PRICE), `${GALLERY_NEED} paintings in your Art Gallery collection; max 1`, `${fmt(GALLERY_PER_PAINTING)} / sec per painting in your collection, max ${fmt(GALLERY_MAX)} / sec`],
+      ["🏬 Logistics Center", fmt(CENTER_PRICE), `Logistics level ${CENTER_LEVEL}; max 1`, `Choose 1 agent upgrade (fee 1%, best contract, or 3-second picks); the other two cost ${fmt(CENTER_UPGRADE_PRICE)} each`]])}
+    <h3>⚖️ Attorneys</h3>
+    ${wt(["Attorney", "Effect"], Object.values(ATTORNEYS).map(a => [`${a.emoji} ${a.name}`, a.desc]))}
+    <p class="muted">When all ${LAW_MAX} slots are filled, you can fire any attorney and choose a replacement from 3 offers for ${fmt(LAW_REPLACE_PRICE)}.</p>
+    <h3>🔬 Science</h3>
+    <p>The 💰 Income tab has three pages: 🏢 Businesses, ⭐ Special and 🔬 Science. Science unlocks at Logistics level ${SCI_REQ.logistics}, Investor level ${SCI_REQ.investor} and Gambler level ${SCI_REQ.gambler}.</p>
+    <p>👩‍🔬 <b>Scientists are a resource:</b> the Research lab costs ${LAB_SCI} scientists and the Space Mission Center ${SPACE_SCI}. They leave your University, which then trains new ones (1 every 2 minutes) and costs money again until it's back to ${UNI_MAX}.</p>
+    ${wt(["Building", "Price", "Needs", "What it does"], [
+      ["🎓 University", fmt(UNI_PRICE), "Science unlocked", `1 scientist every 2 min, up to ${UNI_MAX}. Costs ${UNI_COST_PER_EMPTY} / sec per empty place (−${fmt(UNI_COST_PER_EMPTY * UNI_MAX)} / sec at first); full: +${fmt(UNI_FULL_INCOME)} / sec`],
+      ["🧪 Research lab", `${fmt(LAB_PRICE)} + 👩‍🔬 ${LAB_SCI} scientists`, "University", `Every second a 1 in ${LAB_ODDS.toLocaleString("en-US")} chance of a breakthrough (guaranteed after 2 hours): a Nobel Prize and ${fmt(LAB_REWARD)}. The game pauses until you accept it. Offline: at most 1`],
+      ["🚀 Space Mission Center", `${fmt(SPACE_PRICE)} + 👩‍🔬 ${SPACE_SCI} scientists`, `${SPACE_NEED} breakthroughs`, `A mission every 20 minutes: ${fmt(SPACE_MIN * 1e6)} – ${fmt(SPACE_MAX * 1e6)}, ${Math.round(SPACE_FAIL * 100)}% chance to fail (${Math.round((SPACE_FAIL - SAT_FAIL_CUT) * 100)}% with the satellite)`],
+      ["🛰️ Satellite (🚢 Logistics)", fmt(SAT_PRICE), "Space Mission Center", "Missions fail 15% instead of 20% · cargo planes +5% pay · tankers 10% faster · broken trucks repaired for free after 5 sec"]])}
+    <p class="muted">Nobel Prizes can be won in 10 fields: Physics, Chemistry, Medicine and Physiology, Biology, Genetics, Molecular Biology, Neuroscience, Astronomy and Astrophysics, Materials Science and Environmental Science. A prestige resets Science.</p>`;
+}
+
+function wikiCasino() {
+  const lim = (t) => `${fmt(t.min)} – ${fmt(t.max)}`;
+  const tables = (map) => Object.values(map).map(t => `${t.title || t.name}: ${lim(t)}`).join("<br>");
+  const vpRows = VP_HANDS.slice(1).reverse().map(h => [h.name, h.pays + "×", h.jackpot ? `+${h.jackpot * 100}% of the jackpot (× your bet / max bet)` : ""]);
+  const pk = (map) => Object.keys(map).map(Number).sort((a, b) => b - a).map(c => [PK_NAMES[c], map[c] === 1.5 ? "3:2" : map[c] + ":1"]);
+  return `<h2>🎰 Casino</h2>
+    <p>Move money into <b>casino chips</b> at the top of the Casino tab, play, then cash out. Most games have Classic, High roller and Super high roller tables.
+      Bets give <b>Gambler XP</b> (bet × the table's XP multiplier) and you get <b>cashback</b> on lost bets (0.1% per Gambler level, +5% per Criminal defense lawyer).
+      Random results use your browser's secure random generator.</p>
+    ${wt(["Game", "Classic", "High rollers", "Super high rollers"], [
+      ["🎡 Roulette", "×" + XP_TABLE_MULT.rouletteLow, "×" + XP_TABLE_MULT.rouletteHigh, "×" + XP_TABLE_MULT.rouletteSuper],
+      ["🃏 Blackjack", "×" + XP_TABLE_MULT.bjLow, "×" + XP_TABLE_MULT.bjHigh, "×" + XP_TABLE_MULT.bjSuper],
+      ["🎴 Video Poker", "×" + XP_TABLE_MULT.vpLow, "×" + XP_TABLE_MULT.vpHigh, "×" + XP_TABLE_MULT.vpSuper],
+      ["🤠 Ultimate Texas Hold'em", "×" + XP_TABLE_MULT.uthLow, "×" + XP_TABLE_MULT.uthHigh, "×" + XP_TABLE_MULT.uthSuper],
+      ["🔻 Plinko", "×" + XP_TABLE_MULT.plinko, "–", "×" + XP_TABLE_MULT.plinkoSuper],
+      ["🎈 Sky Climb", "×" + XP_TABLE_MULT.climb, "–", "–"]])}
+    <h3>🔥 Hot Tables</h3>
+    <p>Every 30 minutes one game type becomes <b>hot</b>: for 15 minutes <b>all</b> its tables get <b>+${HOT_BONUS} on their XP multiplier</b> (High roller Blackjack ×4 becomes ×${4 + HOT_BONUS}),
+      then there are 15 minutes with no bonus. The hot game is chosen at random and is never the same twice in a row. The timer is shown under your Gambler level, together with the next hot game.</p>
+    <h3>🎁 Free bet chips</h3>
+    <p>From Gambler level 5 you get free chips on timers (see the frame under the Gambler level). Use them at Roulette, Blackjack, Video Poker and Hold'em (not Plinko or Sky Climb).
+      A free chip is a bet: whatever it wins goes to your casino chips. At Hold'em, a free Ante needs 2 chips (Ante + Blind).</p>
+    ${wt(["Gambler level", "Free chip"], FREE_CHIP_TYPES.map(c => [c.level, "Free " + chipLabel(c.value) + " chip"]).concat([[45, "All timers 20 → 15 min"], [85, "All timers 15 → 10 min"]]).sort((x, y) => x[0] - y[0]))}
+
+    <h3>🎡 Roulette (European, 0–36)</h3>
+    <p>${tables(ROULETTE_TABLES)} per spot.</p>
+    ${wt(["Bet", "Covers", "Pays"], [["Straight", "1 number (incl. 0)", "35:1"], ["Split", "2 numbers next to each other (incl. 0–1/2/3)", "17:1"],
+      ["Street", "3 numbers in a row (incl. 0-1-2, 0-2-3)", "11:1"], ["Corner", "4 numbers (incl. 0-1-2-3)", "8:1"], ["Six line", "2 rows, 6 numbers", "5:1"],
+      ["Dozen / Column", "12 numbers", "2:1"], ["Red / Black, Odd / Even, 1–18 / 19–36", "18 numbers", "1:1"]])}
+    <p class="muted">0 loses all outside bets. House edge 2.7%.</p>
+
+    <h3>🃏 Blackjack</h3>
+    <p>${tables(BJ_TABLES)} per hand. Play up to 3 seats.</p>
+    <ul><li>${BJ_DECKS}-deck shoe, the dealer stands on 17. <b>Blackjack pays 3:2</b>, other wins 1:1, ties push.</li>
+      <li><b>Double</b> on any first two cards (one more card). <b>Split</b> pairs once per seat; split aces get one card each.</li>
+      <li><b>Surrender</b> a first-two-card hand to get half your bet back. <b>Insurance</b> (half your bet) pays 2:1 when the dealer shows an Ace and has blackjack.</li></ul>
+
+    <h3>🎴 Video Poker (Jacks or Better + Joker)</h3>
+    <p>${tables(VP_TABLES)}. 53 cards with one wild joker. Get 5 cards, hold the ones you like, draw new ones for the rest. Pays from a pair of Jacks or better.
+      <b>Jackpot</b> = 50× the table's max bet; your share is your bet ÷ the max bet. About 98% return with perfect play.</p>
+    ${wt(["Hand", "Pays", "Jackpot"], vpRows)}
+
+    <h3>🤠 Ultimate Texas Hold'em</h3>
+    <p>${tables(UTH_TABLES)} Ante per seat. Play 1 or 2 seats. Ante + equal Blind, optional Trips.</p>
+    <ul><li>Before the flop: check or raise 3×/4× the ante. After the flop: check or raise 2×. After the river: raise 1× or fold. You can raise only once.</li>
+      <li>Best 5 of 7 cards vs the dealer. <b>Play</b> pays 1:1 if you win. <b>Ante</b> pays 1:1, but pushes if the dealer has less than a pair.
+        <b>Blind</b> pays the table below when you win with a straight or better (otherwise pushes on a win). Ties push. Folding loses Ante and Blind.</li>
+      <li><b>Trips</b> pays on your own hand, even if you fold.</li></ul>
+    <div class="wikiCols"><div><b>Blind</b>${wt(["Hand", "Pays"], pk(UTH_BLIND_PAYS))}</div><div><b>Trips</b>${wt(["Hand", "Pays"], pk(UTH_TRIPS_PAYS))}</div></div>
+
+    <h3>🔻 Plinko</h3>
+    <p>${tables(PLINKO_TABLES)} per ball, up to 20 balls at once. Each ball falls through 12 rows into a slot (about 98% return):</p>
+    ${wt(["Slot", ...PLINKO_MULTS.map((m, i) => i + 1)], [["Pays", ...PLINKO_MULTS.map(m => m + "×")]])}
+
+    <h3>🎈 Sky Climb</h3>
+    <p>Bets ${fmt(CLIMB_MIN)} – ${fmt(CLIMB_MAX)}. A bag has 28 balls: 19 green, 8 red, 1 gold, not put back during a round.
+      Green climbs one step, gold climbs one step and gives a shield against the next red, red pops your balloon (you lose what is still riding).
+      After each step: <b>cash out</b>, <b>take half</b> (once per round), or <b>draw again</b>. About 97.7% return with perfect play.</p>
+    ${wt(["Step", ...CLIMB_LADDER.slice(1, 11).map((m, i) => i + 1)], [["Pays", ...CLIMB_LADDER.slice(1, 11).map(m => m + "×")]])}
+    ${wt(["Step", ...CLIMB_LADDER.slice(11).map((m, i) => i + 11)], [["Pays", ...CLIMB_LADDER.slice(11).map(m => m.toLocaleString() + "×")]])}`;
+}
+
+function wikiInvesting() {
+  return `<h2>📈 Investing</h2>
+    <p><b>Investor XP</b>: every minute you have money invested gives 4 XP (8 XP from 1 scoin invested, 16 XP from 100 scoin), plus XP per crypto trade.
+      Each level lowers the ETF fee, adds +0.1% to property sales and lowers the crypto fee every 10 levels. Hotels unlock at levels 5, 15, 25…, the Brokerage Firm at 10.</p>
+    <h3>🏠 Real estate</h3><p>${infoText("re")}</p>
+    <h3>📊 ETF</h3><p>${infoText("etf")}</p>
+    <h3>🪙 Gold</h3><p>${infoText("gold")}</p>
+    <h3>🏦 Broker ETF</h3><p>${infoText("petf")}</p>
+    <h3>📡 Live trading (crypto)</h3><p class="muted">🔒 Unlocks at Investor level ${LIVE_LEVEL}.</p><p>${infoText("crypto")}</p>
+    <p class="muted">Chart tools: Line or Candles (1 min, 5 min, 15 min, 4 hours), volume bars, and MA5 / MA10 / MA20 / MA50 moving averages. Hover the chart for details.</p>`;
+}
+
+function wikiLogistics() {
+  const fleetRow = (k) => { const F = FLEETS[k]; const mins = F.routes.map(r => r.min), maxs = F.routes.map(r => r.max);
+    return [`${F.icon} ${F.label}`, fmt(F.price), F.slots, `${Math.min(...mins)}–${Math.max(...maxs)} min`, F.unlock ? `Own ${F.unlock.tankers} oil tankers` : "Always", `Level ${AGENT_LEVEL[k]}`]; };
+  return `<h2>🚢 Logistics</h2>
+    <p class="muted">🔒 Logistics unlocks when you buy your first 🚘 Car Salon.</p>
+    <p>Buy vehicles, then pick one of 4 contract offers for each. When the trip ends, the contract is paid to your money and a new set of offers appears.
+      Trips keep moving while the game is closed.</p>
+    ${wt(["Fleet", "Price", "Slots", "Trip length", "Unlock", "🤖 Agent unlock"], ["truck", "tanker", "plane"].map(fleetRow))}
+    <h3>🚚 Logistics level</h3>
+    <p>XP for every delivered contract: contract minutes × 1 (truck), × 3 (tanker), × 6 (plane). The level unlocks the <b>Logistics agents</b>:
+      turn one on and it picks a random contract 5 seconds after the offers appear, for 2% of that contract's profit.
+      The 🏬 Logistics Center (Logistics level ${CENTER_LEVEL}) upgrades all agents: 1% fee, the most profitable contract, and picks after 3 seconds.</p>
+    <h3>🚛 Semi-trucks</h3><p>${infoText("truck")}</p>
+    <h3>🛢️ Oil tankers</h3><p>${infoText("logi")}</p>
+    <h3>✈️ Cargo planes</h3><p>${infoText("plane")}</p>
+    <h3>🗺️ World map</h3>
+    <p>Shows every vehicle moving along its route (trucks on roads, tankers on sea lanes, planes on flight paths), and every contract city as a dot in the fleet's color.
+      Hover a vehicle or city for details. A glowing ring means a vehicle is on its way there.</p>
+    <h3>Bonuses</h3>
+    <ul><li>📦 Warehouses: +2% on truck contracts each (max 5).</li><li>⚓ Trading Port: +2.5% on tanker contracts and ${PORT_PER_TANKER} / sec per tanker.</li>
+      <li>🚢 Global Empire prestige: keep your fleet on resets; level 2 halves every contract's time.</li></ul>`;
+}
+
+function wikiAchievements() {
+  return `<h2>🏆 Achievements</h2>
+    <p>${achShown().length} achievements in ${achCatsShown().length} categories. They are checked every second, kept forever (also through prestige) and shown with progress bars in the 🏆 tab.</p>
+    <h3>🎁 Rewards</h3>
+    <p>Finishing every achievement of a category unlocks a cosmetic collection that can't be bought in the Shop. Turn it on in 🏆 Achievements → 🎁 Rewards.</p>
+    ${wt(["Reward", "How to unlock"], COLLECTIONS.filter(c => c.reward).map(c => [c.name, c.reward.text]))}
+    ${achCatsShown().map(c => `<h3>${c.name}</h3>` + wt(["", "Achievement", "Goal", ""],
+      ACHIEVEMENTS.filter(a => a.cat === c.id).map(a => [a.icon, `<b>${a.name}</b>`, a.desc, state.achievements[a.id] ? "✅" : ""]))).join("")}`;
+}
+
+function wikiShop() {
+  return `<h2>🛍️ Shop</h2>
+    <p>Cosmetics only: they change how the game looks, not how it plays. Each item belongs to a collection and a slot (background, coin or 🃏 cards, which changes the deck in every card game). You can wear one item per slot and switch any time in the Shop.</p>
+    ${wt(["Item", "Collection", "Slot", "Price", ""], COSMETICS.map(c => [`<b>${c.name}</b><br><span class="muted">${c.desc}</span>`,
+      (COLLECTIONS.find(x => x.id === c.collection) || {}).name || "", c.slot, c.price ? fmt(c.price) : "🎁 Reward", state.cosmetics.owned[c.id] ? "✅ owned" : ""]))}
+    <p class="muted">Wearing the coin and background from the same collection unlocks the 🎨 "Dressed to impress" achievement.</p>`;
+}
+
+function wikiArt() {
+  return `<h2>🖼️ Art Gallery</h2>
+    <p>Copy a painting as closely as you can. The closer the match, the more your copy is worth. After you earn the 💵 Millionaire achievement (${fmt(1e6)} on hand), the gallery can be opened for <b>${fmt(ART_UNLOCK)}</b>.</p>
+    <h3>Tiers</h3>
+    <p>🟡 Medium unlocks after you submit (sell or keep) ${ART_TIER_NEED.medium.count} Easy paintings; 🔴 Hard unlocks after ${ART_TIER_NEED.hard.count} Medium paintings.</p>
+    ${wt(["Tier", "Paintings", "Full value"], Object.values(ART_TIERS).map(t => [`${t.icon} ${t.name}`, t.desc, fmt(t.value)]))}
+    <p>Your copy is worth <b>match % × the full value</b>: an 80% copy of a Hard painting is worth ${fmt(ART_TIERS.hard.value * 0.8)}. There is no timer.</p>
+    <h3>Tools</h3>
+    ${wt(["Tool", "What it does"], [["🖌️ Brush", "Paints with the selected color: round or square tip, 6 sizes from 1 px to 44 px"],
+      ["⬛ Square / ⚫ Circle / 🔺 Triangle", "Drag a box to draw a filled shape. Hold Shift for a perfect square or circle. Turn an oval or a triangle to any angle (180° = upside down) with the ↻ slider or the mouse wheel, while drawing it or right after"], ["🪣 Fill", "Fills an area of one color"], ["✋ Grab", "Drag the last shape you drew to move it; pick a color to recolor it (works until you draw or paint something else)"], ["🧽 Eraser", "Paints white"], ["↶ Undo / 🗑️ Clear", "Takes back the last step / starts over"]])}
+    <h3>How the match is scored</h3>
+    <p>Both pictures are compared in small blocks. <b>🎨 Colors</b> checks that each part has the right color; <b>📐 Shapes</b> checks that the shapes are in the right places.
+      Small wobbles are forgiven, but missing parts and extra paint both cost points. Easy and Medium are judged most strictly (the shape tools make clean copies simple), so aim for exact positions and sizes there. An empty canvas scores 0%.</p>
+    <h3>Sell or keep</h3>
+    <p>After submitting, <b>sell</b> the copy for its value right away, or <b>keep</b> it in your 🖼️ Collection (no money now; sell it there any time for the same value).
+      The collection starts with ${ART_SLOTS_START} slots; each +${ART_SLOTS_STEP} slots costs ${fmt(ART_SLOT_PRICE)}, then ${fmt(ART_SLOT_PRICE + ART_SLOT_PRICE_STEP)}, ${fmt(ART_SLOT_PRICE + 2 * ART_SLOT_PRICE_STEP)}… up to a maximum of ${ART_SLOTS_MAX} slots. A prestige keeps the gallery unlocked, your bought slots and all your paintings; only the 🏛️ Art Gallery business is reset (buy it again to earn from the paintings).</p>
+    <h3>🏛️ Art Gallery business</h3>
+    <p>With ${GALLERY_NEED} paintings in your collection you can buy the 🏛️ Art Gallery special business (💰 Income tab) for ${fmt(GALLERY_PRICE)}.
+      It earns ${fmt(GALLERY_PER_PAINTING)} / sec for every painting in your collection, up to ${fmt(GALLERY_MAX)} / sec. Selling paintings lowers it.</p>`;
+}
+const WIKI_RENDER = { art: wikiArt, general: wikiGeneral, income: wikiIncome, casino: wikiCasino, investing: wikiInvesting, logistics: wikiLogistics, achievements: wikiAchievements, shop: wikiShop };
+function renderWiki() {
+  const page = WIKI_RENDER[state.wikiPage] ? state.wikiPage : "general";
+  $("wikiNav").innerHTML = WIKI_SECTIONS.map(s => `<button class="subTab ${s.id === page ? "active" : ""}" data-wiki="${s.id}">${s.name}</button>`).join("");
+  $("wikiBody").innerHTML = WIKI_RENDER[page]();
+}
+/* ----- 🔍 Wiki search: looks through every section (headings, paragraphs, list items, table rows) ----- */
+const escHtml = (t) => String(t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const escRe = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const WIKI_BLOCKS = "h2, h3, h4, p, li, tr";
+function wikiWords(q) { return q.toLowerCase().split(/\s+/).filter(w => w.length >= 2); }
+function wikiSearch(q) {
+  const words = wikiWords(q), hits = [];
+  if (!words.length) return hits;
+  const tmp = document.createElement("div");
+  for (const sec of WIKI_SECTIONS) {
+    try { tmp.innerHTML = WIKI_RENDER[sec.id](); } catch (e) { continue; }
+    let heading = sec.name;
+    tmp.querySelectorAll(WIKI_BLOCKS).forEach((el, idx) => {
+      const raw = el.tagName === "TR" ? [...el.cells].map(c => c.textContent.trim()).filter(Boolean).join(" · ") : el.textContent;
+      const text = raw.replace(/\s+/g, " ").trim();
+      if (/^H[234]$/.test(el.tagName)) heading = text;
+      const low = text.toLowerCase();
+      if (!text || !words.every(w => low.includes(w))) return;
+      const score = (/^H[234]$/.test(el.tagName) ? 10 : 0) + words.reduce((a, w) => a + low.split(w).length - 1, 0);
+      hits.push({ sec: sec.id, secName: sec.name, heading, text, idx, score });
+    });
+  }
+  return hits.sort((a, b) => b.score - a.score).slice(0, 40);
+}
+function wikiMark(text, words) {
+  let html = escHtml(text);
+  for (const w of words) html = html.replace(new RegExp("(" + escRe(escHtml(w)) + ")", "gi"), "<mark>$1</mark>");
+  return html;
+}
+function wikiSnippet(text, words) {
+  const low = text.toLowerCase(), at = Math.max(0, low.indexOf(words[0]) - 60);
+  const cut = (at > 0 ? "…" : "") + text.slice(at, at + 170) + (at + 170 < text.length ? "…" : "");
+  return wikiMark(cut, words);
+}
+let wikiQuery = "";
+function renderWikiResults() {
+  const q = wikiQuery.trim(), words = wikiWords(q);
+  if (!words.length) { $("wikiSearchInfo").textContent = ""; renderWiki(); return; }
+  const hits = wikiSearch(q);
+  $("wikiSearchInfo").textContent = hits.length ? `${hits.length}${hits.length === 40 ? "+" : ""} result${hits.length === 1 ? "" : "s"}` : "";
+  $("wikiNav").querySelectorAll(".subTab").forEach(b => b.classList.remove("active"));
+  $("wikiBody").innerHTML = `<h2>🔍 Results for “${escHtml(q)}”</h2>` + (hits.length
+    ? hits.map((h, i) => `<button class="wikiHitRow" data-hit="${i}">
+        <span class="wikiHitWhere">${h.secName}${h.heading && h.heading !== h.secName ? " › " + escHtml(h.heading) : ""}</span>
+        <span class="wikiHitText">${wikiSnippet(h.text, words)}</span></button>`).join("")
+    : `<p class="muted">Nothing found. Try another word, e.g. a game, a building or a vehicle.</p>`);
+  $("wikiBody")._hits = hits;
+}
+function openWikiHit(h) {
+  const words = wikiWords(wikiQuery);
+  state.wikiPage = h.sec; renderWiki(); save();
+  // highlight the search words in the opened section and jump to the matching block
+  const walker = document.createTreeWalker($("wikiBody"), NodeFilter.SHOW_TEXT), nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  const re = new RegExp("(" + words.map(escRe).join("|") + ")", "gi");
+  for (const n of nodes) {
+    if (!re.test(n.nodeValue)) continue;
+    re.lastIndex = 0;
+    const span = document.createElement("span");
+    span.innerHTML = escHtml(n.nodeValue).replace(new RegExp("(" + words.map(w => escRe(escHtml(w))).join("|") + ")", "gi"), "<mark>$1</mark>");
+    n.replaceWith(span);
+  }
+  const el = $("wikiBody").querySelectorAll(WIKI_BLOCKS)[h.idx];
+  if (el) { el.classList.add("wikiFlash"); el.scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(() => el.classList.remove("wikiFlash"), 2200); }
+}
+let wikiSearchTimer = null;
+$("wikiSearch").addEventListener("input", () => {
+  clearTimeout(wikiSearchTimer);
+  wikiSearchTimer = setTimeout(() => { wikiQuery = $("wikiSearch").value; renderWikiResults(); }, 150);
+});
+$("wikiSearch").addEventListener("keydown", (e) => {
+  if (e.key === "Escape") { $("wikiSearch").value = ""; wikiQuery = ""; renderWikiResults(); }
+  if (e.key === "Enter") { const h = ($("wikiBody")._hits || [])[0]; if (h && wikiWords(wikiQuery).length) openWikiHit(h); }
+});
+$("wikiBody").addEventListener("click", (e) => {
+  const r = e.target.closest("[data-hit]");
+  if (r) openWikiHit($("wikiBody")._hits[Number(r.dataset.hit)]);
+});
+$("wikiNav").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-wiki]");
+  if (!b) return;
+  state.wikiPage = b.dataset.wiki;
+  renderWiki(); save();
+  $("wikiView").scrollIntoView({ behavior: "smooth", block: "start" });
+});
