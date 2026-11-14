@@ -7,7 +7,7 @@ const ACH_CATEGORIES = [
   { id: "general", name: "⭐ General" },
   { id: "income", name: "💰 Income" }, { id: "casino", name: "🎰 Casino" },
   { id: "invest", name: "📈 Investments" }, { id: "logistics", name: "🚢 Logistics" },
-  { id: "art", name: "🖼️ Art Gallery" },
+  { id: "art", name: "🖼️ Art Gallery" }, { id: "mine", name: "⛏️ Mining" },
   // 🌌 secret: invisible (also not counted) until the 1st prestige
   { id: "secret", name: "🌌 Secrets", hidden: () => !((state.legacy && state.legacy.count) >= 1) },
 ];
@@ -155,6 +155,29 @@ const ACHIEVEMENTS = [
   { id: "artsold50", cat: "art", icon: "💰", name: "Art dealer", desc: "Sell 50 paintings", goal: 50, get: () => state.stats.artSold || 0 },
   { id: "artsold100", cat: "art", icon: "💰", name: "Gallery regular", desc: "Sell 100 paintings", goal: 100, get: () => state.stats.artSold || 0 },
   { id: "artsold1000", cat: "art", icon: "💰", name: "Art market mogul", desc: "Sell 1,000 paintings", goal: 1000, get: () => state.stats.artSold || 0 },
+  // ⛏️ Mining (🎮 Mini-games → Gold Mine Dig). state.mine is set up by js/23-minigames.js, so every check is guarded.
+  ...(() => {
+    const Mn = () => state.mine || {}, ore = (k) => () => ((Mn().ores || {})[k] || 0), depth = () => (Mn().best || 0) * 2;
+    const ups = () => (typeof MINE_UPS === "object" ? Object.keys(MINE_UPS) : []);
+    return [
+      { id: "mineRun1",    icon: "⛏️", name: "First dig",          desc: "Finish your first Gold Mine Dig run",       goal: 1,   get: () => Mn().runs || 0 },
+      { id: "mineRun50",   icon: "🪨", name: "Regular miner",      desc: "Finish 50 runs",                             goal: 50,  get: () => Mn().runs || 0 },
+      { id: "mineRun250",  icon: "⛏️", name: "Mine foreman",       desc: "Finish 250 runs",                            goal: 250, get: () => Mn().runs || 0 },
+      { id: "mineDeep50",  icon: "🕳️", name: "Going down",         desc: "Reach a depth of 50 m",                      goal: 50,  get: depth },
+      { id: "mineDeep80",  icon: "🔦", name: "Deep shaft",         desc: "Reach a depth of 80 m",                      goal: 80,  get: depth },
+      { id: "mineDeep100", icon: "🌋", name: "Into the dark",      desc: "Reach a depth of 100 m",                     goal: 100, get: depth },
+      { id: "mineCoal",    icon: "⚫", name: "Coal collector",     desc: "Bring back 100 coal",                        goal: 100, get: ore("coal") },
+      { id: "mineSilver",  icon: "⚪", name: "Silver lining",      desc: "Bring back 100 silver",                      goal: 100, get: ore("silver") },
+      { id: "mineGold",    icon: "🟡", name: "Golden touch",       desc: "Bring back 100 gold",                        goal: 100, get: ore("gold") },
+      { id: "mineDiamond", icon: "💎", name: "Shine bright",       desc: "Bring back your first diamond",              goal: 1,   get: ore("diamond") },
+      { id: "mineFullBag", icon: "🎒", name: "Packed bag",         desc: "Come back to the surface with a completely full bag", goal: 1, get: () => Mn().fullBag ? 1 : 0 },
+      { id: "mineClose",   icon: "🪔", name: "Close call",         desc: "Reach the surface with less than 3 lamp oil left", goal: 1, get: () => Mn().closeCall ? 1 : 0 },
+      { id: "mineRescue",  icon: "🆘", name: "Saved by the bell",  desc: "Get rescued for the first time",             goal: 1,   get: () => Mn().rescued ? 1 : 0 },
+      { id: "mineUp1",     icon: "⬆️", name: "First upgrade",      desc: "Buy any Gold Mine Dig upgrade",              goal: 1,   get: () => ups().some(k => (Mn().up || {})[k] > 0) ? 1 : 0 },
+      { id: "mineHoard",   icon: "🏦", name: "Hoarder",            desc: "Have 100 ore in your vault at once",         goal: 100, get: () => Object.values(Mn().vault || {}).reduce((a, b) => a + b, 0) },
+      { id: "mineMaxUp",   icon: "🪔", name: "Fully lit",          desc: "Max out any Gold Mine Dig upgrade",          goal: 1,   get: () => ups().some(k => ((Mn().up || {})[k] || 0) >= MINE_UPS[k].max) ? 1 : 0 },
+    ].map(a => ({ ...a, cat: "mine" }));
+  })(),
   { id: "satellite", cat: "logistics", icon: "🛰️", name: "Eye in the sky", desc: "Launch a satellite", goal: 1, get: () => state.science && state.science.satellite ? 1 : 0 },
   { id: "logi100s",   cat: "logistics", icon: "💎", name: "Shipping tycoon",  desc: "Earn 100 scoin from logistics",      goal: 100 * SC, get: () => logi.earned, money: true },
 ];

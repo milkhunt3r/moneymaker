@@ -84,7 +84,7 @@ function doPrestige(id) {
     tips: state.tips,   // 💡 tips already seen and the guided start stay done
     // ⛏️ Gold Mine Dig: records, upgrades and the 🏦 vault stay (unsold ore from the last run goes into the vault; a run in progress is dropped)
     mine: state.mine ? { energy: state.mine.energy, regenAt: state.mine.regenAt, runs: state.mine.runs, best: state.mine.best, earned: state.mine.earned, ores: state.mine.ores,
-      up: state.mine.up, vault: (state.mine.pending ? state.mine.pending.bag : []).reduce((v, k) => (v[k] = (v[k] || 0) + 1, v), { ...(state.mine.vault || {}) }) } : undefined,
+      up: state.mine.up, rescued: state.mine.rescued, fullBag: state.mine.fullBag, closeCall: state.mine.closeCall, vault: (state.mine.pending ? state.mine.pending.bag : []).reduce((v, k) => (v[k] = (v[k] || 0) + 1, v), { ...(state.mine.vault || {}) }) } : undefined,
     taxHoliday: TAX_HOLIDAY,   // 🛡️ no tax inspections for the first 10 minutes
     recruitPlan: state.recruitPlan,   // 🧑‍💼 the Recruitment Agency's staffing plan (the building itself resets)
     // 🖼️ Art Gallery: stays unlocked and keeps its bought slots and all kept paintings

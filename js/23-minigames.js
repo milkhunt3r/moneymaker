@@ -161,6 +161,12 @@ function mineFinish(rescued) {
     bag = bag.filter((_, i) => Math.ceil((i + 1) * f) > Math.ceil(i * f));
   }
   const record = R.deepest > M.best;
+  // 🏆 achievement flags
+  if (rescued) M.rescued = true;
+  else if (R.deepest > 0) {
+    if (R.bag.length >= mineBagMax()) M.fullBag = true;   // came back up with a completely full bag
+    if (R.lamp < 3) M.closeCall = true;                    // made it out with less than 3 oil
+  }
   M.runs++; M.best = Math.max(M.best, R.deepest);
   bag.forEach(k => M.ores[k] = (M.ores[k] || 0) + 1);
   M.run = null;

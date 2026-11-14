@@ -54,6 +54,7 @@ const PATCH_NOTES = [
     "The game has a new name: <b>Empire of Coins</b>, with a new logo, browser tab icon, loading screen and this main menu.",
     "New first business: the <b>🌭 Hot Dog Stand</b> (100, 2 workers, no accountant or HR, up to 3). The guided start now begins with it.",
     "Hotels: at most <b>5 Concierges</b> per hotel. More Concierges stacked their bonus far too high.",
+    "New <b>⛏️ Mining</b> achievements section: 16 achievements for the Gold Mine Dig.",
     "⭐ Your prestige level and Legacy bonuses are now shown in the 💰 Income tab: click the ⭐ Prestige badge for details.",
     "Achievements: 🏛️ Pillar of society needs 500 tax bills (was 1,000). Blackjack and Ultimate Texas Hold'em count one game per seat you bet on (splits don't add games).",
     "🏢 Real estate agency: each new agent needs a bigger profit step (100k, +200k, +300k…). Agents you already have stay.",
