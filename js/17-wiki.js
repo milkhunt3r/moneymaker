@@ -257,6 +257,7 @@ function wikiArt() {
     <h3>How the match is scored</h3>
     <p>Your copy is judged three ways: <b>🎨 Colors</b> (each part has the right color), <b>📐 Layout</b> (things are in the right places) and
       <b>🔷 Shapes found</b>: every separate shape in the original (each planet, star, sail, sun…) must appear in your copy in the same color, in about the same place and size.
+      Brush strokes count as shapes too (a painted arm or branch is one shape), and if your whole drawing is a bit shifted, the shapes are lined up before they're compared.
       The shape count is worth the most, so painting only the background (sky, sea, space) scores low; drawing every object scores high. Extra scribbles cost points, small wobbles are forgiven, and an empty canvas scores 0%.</p>
     <h3>Sell or keep</h3>
     <p>After submitting, <b>sell</b> the copy for its value right away, or <b>keep</b> it in your 🖼️ Collection (no money now; sell it there any time for the same value).

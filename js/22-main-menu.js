@@ -55,7 +55,7 @@ const PATCH_NOTES = [
     "New first business: the <b>🌭 Hot Dog Stand</b> (100, 2 workers, no accountant or HR, up to 3). The guided start now begins with it.",
     "Hotels: at most <b>5 Concierges</b> per hotel. More Concierges stacked their bonus far too high.",
     "🏢 Real estate agency: each new agent needs a bigger profit step (100k, +200k, +300k…). Agents you already have stay.",
-    "🖼️ Art studio: fairer scoring with a new 🔷 shape count check. Easy copies that are a little off score higher; Medium and Hard need every shape, not just the background.",
+    "🖼️ Art studio: fairer scoring with a new 🔷 shape count check. Easy copies that are a little off score higher; Medium and Hard need every shape, not just the background. Brush strokes count as shapes, and a drawing that is a bit shifted overall is lined up before comparing.",
     "⚖️ Lawyers: 🛂 Immigration lawyer now +25% (was 10%), 💼 Business lawyer now +10% (was 2%).",
     "⛏️ Gold Mine Dig: <b>upgrades</b> (lamp, bag, pickaxe, boots, appraiser, energy tank, fast recharge, rescue insurance) paid with money and ore, and an <b>🏦 ore vault</b>: keep ore after a run or sell it.",
     "Art Gallery: a copy needs at least <b>50% match</b> to be sold or kept.",

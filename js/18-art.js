@@ -439,15 +439,19 @@ function artComponents(L) {
     while (st.length) {
       const p = st.pop(), x = p % W, y = (p - x) / W; n++; sx += x; sy += y;
       if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
-      for (const q of [x > 0 ? p - 1 : -1, x < W - 1 ? p + 1 : -1, y > 0 ? p - W : -1, y < H - 1 ? p + W : -1])
-        if (q >= 0 && seen[q] < 0 && lab[q] === col) { seen[q] = id; st.push(q); }
+      // look 2 cells around (diagonals too): a thin or diagonal brush line stays ONE shape instead of many small pieces
+      for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) {
+        if ((!dx && !dy) || Math.abs(dx) > 1 || Math.abs(dy) > 1) continue;   // touching cells, diagonals included
+        const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= W || yy >= H) continue;
+        const q = yy * W + xx; if (seen[q] < 0 && lab[q] === col) { seen[q] = id; st.push(q); }
+      }
     }
     comps.push({ col, n, cx: sx / n, cy: sy / n, w: x1 - x0 + 1, h: y1 - y0 + 1 });
   }
   return comps;
 }
 // how well each shape in A is found in B (weighted by √size, so the background can't carry the score alone)
-function artObjDir(A, B, tol) {
+function artObjDir(A, B, tol, ox = 0, oy = 0) {   // ox, oy: how far B is shifted compared to A (in cells)
   let got = 0, tot = 0, found = 0;
   for (const a of A) {
     const w = Math.sqrt(a.n); tot += w;
@@ -455,13 +459,13 @@ function artObjDir(A, B, tol) {
     for (const b of B) {
       if (b.col !== a.col) continue;
       const reach = tol * (1 + Math.sqrt(a.n) / 6);                  // bigger shapes may be a little further off
-      const dist = Math.hypot(a.cx - b.cx, a.cy - b.cy);
+      const dist = Math.hypot(a.cx + ox - b.cx, a.cy + oy - b.cy);
       const pos = Math.max(0, 1 - dist / reach);
       const size = Math.min(a.n, b.n) / Math.max(a.n, b.n);
       const s = pos * Math.pow(size, 0.5);
       if (s > best) best = s;
     }
-    got += w * best; if (best >= 0.5) found++;
+    got += w * best; if (best >= 0.35) found++;   // "found" = a reasonable match (partial matches still give partial points)
   }
   return { s: tot ? got / tot : 1, found };
 }
@@ -470,8 +474,15 @@ function artObjects(refCanvas, copyCanvas, tol) {
   const cells = (ART_W / OBJ_CELL) * (ART_H / OBJ_CELL), fg = (list) => list.filter(c => c.n < cells * OBJ_BG);
   const R = fg(artComponents(artLabels(refCanvas))), C = fg(artComponents(artLabels(copyCanvas)));
   if (!R.length) return { score: 1, found: 0, count: 0 };
-  const miss = artObjDir(R, C, tol), extra = C.length ? artObjDir(C, R, tol).s : 0;   // nothing drawn = nothing found
-  return { score: miss.s * 0.75 + extra * 0.25, found: miss.found, count: R.length };   // 75%: shapes found, 25%: nothing extra
+  // People often draw the whole picture a bit shifted: find the shift (up to 10 cells = 40 px) that lines the shapes up best,
+  // then compare. The 📐 layout check still takes points off for the shift itself.
+  let ox = 0, oy = 0, bestS = -1;
+  if (C.length) for (let dy = -10; dy <= 10; dy++) for (let dx = -10; dx <= 10; dx++) {
+    const sc = artObjDir(R, C, tol * 0.6, dx, dy).s - Math.hypot(dx, dy) * 0.004;   // small preference for no shift
+    if (sc > bestS) { bestS = sc; ox = dx; oy = dy; }
+  }
+  const miss = artObjDir(R, C, tol, ox, oy), extra = C.length ? artObjDir(C, R, tol, -ox, -oy).s : 0;   // nothing drawn = nothing found
+  return { score: miss.s * 0.75 + extra * 0.25, found: miss.found, count: R.length, shift: [ox, oy] };   // 75%: shapes found, 25%: nothing extra
 }
 
 function artScore(refCanvas, copyCanvas, tier = "medium") {
