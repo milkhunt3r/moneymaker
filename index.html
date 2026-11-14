@@ -73,6 +73,54 @@
     .menuBtn.soon:hover { transform: none; }
     .menuBtn.soon:hover img { filter: brightness(1.04) drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45)); }
     body.menuOpen #tipCard, body.menuOpen #tutBubble, body.menuOpen #alerts { display: none !important; }
+    /* ⚙️ Ornate settings panel (9-slice gold frame + crown ribbon + gold buttons) */
+    #modalBox.ornate { background: none; border: 0; box-shadow: none; padding: 0; max-width: 470px; width: min(470px, 94vw); overflow: visible; }
+    .orPanel { position: relative; border-style: solid; border-width: 58px 52px 52px;
+      border-image: url("assets/ui/panel.webp") 150 fill / 58px 52px 52px stretch;
+      filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.6)); margin-top: 52px; padding-top: 26px; text-align: left; color: #fff; }
+    .orRibbon { position: absolute; left: 50%; top: -112px; width: 112%; transform: translateX(-50%); aspect-ratio: 1100 / 346;
+      background: url("assets/ui/ribbon.webp") 0 0 / 100% 100%; pointer-events: none; }
+    .orRibbon span { position: absolute; left: 0; right: 0; top: 60.6%; transform: translateY(-50%); text-align: center;
+      font-family: "Lilita One", "Arial Black", system-ui, sans-serif; font-size: 30px; color: #fff3c4; letter-spacing: 1px;
+      -webkit-text-stroke: 1.5px rgba(70, 0, 0, 0.6); paint-order: stroke fill; text-shadow: 0 2px 0 rgba(0,0,0,0.45); }
+    .orClose { position: absolute; right: -40px; top: -46px; width: 38px; height: 38px; border-radius: 50%; cursor: pointer;
+      border: 2px solid #ffd34d; background: radial-gradient(circle at 35% 30%, #5b3fa8, #1d1050); color: #ffe7a0;
+      font-size: 18px; font-weight: 900; line-height: 1; box-shadow: 0 3px 8px rgba(0,0,0,0.5); }
+    .orClose:hover { filter: brightness(1.2); transform: scale(1.06); }
+    .orSec { font-family: "Lilita One", "Arial Black", system-ui, sans-serif; color: #ffd34d; font-size: 15px; letter-spacing: 1.5px;
+      text-transform: uppercase; margin: 8px 4px 6px; display: flex; align-items: center; gap: 8px; }
+    .orSec::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(255, 211, 77, 0.6), transparent); }
+    .orSec:first-of-type { margin-top: 0; }
+    .orRow { display: flex; align-items: center; gap: 12px; width: 100%; margin: 0 0 6px; padding: 9px 12px; border-radius: 10px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)); border: 1px solid rgba(255, 211, 77, 0.22);
+      color: #fff; font: 600 15px system-ui, sans-serif; text-align: left; cursor: pointer; transition: background 0.12s, border-color 0.12s, transform 0.08s; }
+    .orRow:hover { background: linear-gradient(180deg, rgba(255, 211, 77, 0.18), rgba(255, 211, 77, 0.06)); border-color: rgba(255, 211, 77, 0.7); }
+    .orRow:active { transform: scale(0.985); }
+    .orRow svg { width: 22px; height: 22px; flex: 0 0 22px; fill: url(#menuGold); filter: drop-shadow(0 1px 0 rgba(60, 30, 0, 0.7)); }
+    .orRow .grow { flex: 1; }
+    .orRow.off { cursor: default; opacity: 0.55; }
+    .orRow.off:hover { background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)); border-color: rgba(255, 211, 77, 0.22); }
+    .orSoon { font-size: 11px; font-weight: 800; color: #2b2100; background: #ffd34d; border-radius: 999px; padding: 2px 8px; }
+    .orSwitch { width: 46px; height: 24px; border-radius: 999px; background: #3a3355; border: 2px solid #8a7a40; position: relative; transition: background 0.15s; flex: 0 0 46px; }
+    .orSwitch::after { content: ""; position: absolute; left: 2px; top: 2px; width: 16px; height: 16px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #fff6c8, #d9a400); transition: left 0.15s; }
+    .orSwitch.on { background: #2e8b3a; border-color: #ffd34d; }
+    .orSwitch.on::after { left: 24px; }
+    .orNote { color: #c6bfe8; font-size: 13px; text-align: center; min-height: 18px; margin: 4px 0 8px; }
+    .orBtns { display: flex; gap: 10px; }
+    .orBtn { position: relative; flex: 1; border: 0; padding: 0; background: 0 / 100% 100% no-repeat; cursor: pointer;
+      transition: transform 0.12s, filter 0.15s; }
+    .orBtn.orBlue { aspect-ratio: 1000 / 256; background-image: url("assets/ui/btn-blue.webp"); }
+    .orBtn.orRed { aspect-ratio: 1000 / 268; background-image: url("assets/ui/btn-red.webp"); }
+    .orBtn span { position: absolute; left: 0; right: 0; transform: translateY(-50%); display: flex; align-items: center; justify-content: center; gap: 6px;
+      font-family: "Lilita One", "Arial Black", system-ui, sans-serif; font-size: 18px; color: #fff; letter-spacing: 0.3px;
+      -webkit-text-stroke: 1px rgba(30, 10, 0, 0.55); paint-order: stroke fill; text-shadow: 0 2px 0 rgba(0, 0, 0, 0.45); }
+    .orBtn.orBlue span { top: 47%; } .orBtn.orRed span { top: 43.5%; }
+    .orBtn span svg { width: 17px; height: 17px; fill: url(#menuGold); }
+    .orBtn:hover { transform: scale(1.04); filter: brightness(1.12) drop-shadow(0 0 10px rgba(255, 214, 90, 0.7)); }
+    .orBtn:active { transform: scale(0.97) translateY(1px); }
+    @media (max-width: 520px) { .orPanel { padding-top: 14px; border-width: 50px 34px 44px; border-image-width: 50px 34px 44px; } .orClose { right: -22px; } .orBtn span { font-size: 15px; } }
+
     .secretCard { border-color: rgba(170, 120, 255, 0.55); box-shadow: 0 0 18px rgba(150, 100, 255, 0.18); }
     .secretTag { font-size: 12px; font-weight: 800; color: #d7b8ff; background: rgba(140, 90, 255, 0.22); border: 1px solid rgba(170, 120, 255, 0.5); border-radius: 999px; padding: 2px 8px; vertical-align: middle; }
     .recruitCols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; text-align: left; max-height: 58vh; overflow-y: auto; margin: 10px 0 14px; }
@@ -1160,11 +1208,13 @@
     <div class="txt">Loading your empire…</div>
   </div>
 
+  <!-- gold gradient used by the menu and settings icons -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="menuGold" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fff3b0"/><stop offset="0.5" stop-color="#ffc83a"/><stop offset="1" stop-color="#d98a00"/></linearGradient></defs></svg>
+
   <!-- ===== Main menu (start page) ===== -->
   <div id="mainMenu" hidden>
     <div id="menuStage">
-      <svg width="0" height="0" style="position:absolute"><defs><linearGradient id="menuGold" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#fff3b0"/><stop offset="0.5" stop-color="#ffc83a"/><stop offset="1" stop-color="#d98a00"/></linearGradient></defs></svg>
       <img id="menuLogo" src="assets/logo/menu-logo.webp" alt="Empire of Coins" draggable="false">
       <button class="menuBtn mGreen" data-menu="play" style="left:948px; top:360px; width:323px; height:61px">
         <img src="assets/logo/btn-green.webp" alt="" draggable="false"><span class="menuLabel"><svg viewBox="0 0 24 24"><path d="M6 3.5v17l14-8.5z"/></svg>Play</span></button>
@@ -2841,11 +2891,11 @@
 
     /* ----- Pop-up window ----- */
     function showModal(html) {
-      $("modalBox").classList.remove("gold", "wide", "about");
+      $("modalBox").classList.remove("gold", "wide", "about", "ornate");
       $("modalBox").innerHTML = html;
       $("modal").hidden = false;
     }
-    function hideModal() { $("modal").hidden = true; $("modalBox").classList.remove("gold", "wide"); }
+    function hideModal() { $("modal").hidden = true; $("modalBox").classList.remove("gold", "wide", "about", "ornate"); }
 
     function showPaymentPopup(d) {
       showModal(`<h2>🧾 Tax payment due</h2>
@@ -4295,7 +4345,7 @@
        ===================================================================== */
     $("settingsBtn").addEventListener("click", (e) => {
       e.stopPropagation();
-      $("settingsMenu").hidden = !$("settingsMenu").hidden;
+      showSettings(false);
     });
     // click anywhere else closes the menu
     document.addEventListener("click", (e) => {
@@ -4303,10 +4353,64 @@
       if (e.isTrusted && !e.target.closest("#settingsWrap")) $("settingsMenu").hidden = true;
     });
 
+    const SETTINGS_NOTE = "The game saves itself every 30 seconds and after every action.";
     function settingsNote(text) {
       $("settingsNote").textContent = text;
-      setTimeout(() => { $("settingsNote").textContent = "The game saves itself every 30 seconds and after every action."; }, 3000);
+      const n = $("orNote"); if (n) n.textContent = text;
+      setTimeout(() => {
+        $("settingsNote").textContent = SETTINGS_NOTE;
+        const n2 = $("orNote"); if (n2) n2.textContent = SETTINGS_NOTE;
+      }, 3000);
     }
+
+    // ⚙️ The ornate settings panel (from the ⚙️ button and from Settings on the main menu).
+    // Its rows run the same actions as the (hidden) #settingsMenu buttons.
+    const OR_ICONS = {
+      save: '<path d="M4 3h12.5L21 7.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm3 2v5h9V5zm5 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>',
+      download: '<path d="M11 3h2v10.2l3.6-3.6 1.4 1.4-6 6-6-6 1.4-1.4 3.6 3.6zM4 19h16v2H4z"/>',
+      load: '<path d="M13 21h-2V10.8l-3.6 3.6L6 13l6-6 6 6-1.4 1.4-3.6-3.6zM4 3h16v2H4z"/>',
+      tips: '<path d="M12 2a7 7 0 0 0-4 12.7V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.3A7 7 0 0 0 12 2zM9 20h6v1.2a.8.8 0 0 1-.8.8H9.8a.8.8 0 0 1-.8-.8z"/>',
+      tipsReset: '<path d="M12 4a8 8 0 1 1-7.7 10h2.1A6 6 0 1 0 12 6V9L7 5l5-4z"/>',
+      tutorial: '<path d="M6 3.5v17l14-8.5z"/>',
+      bug: '<path d="M9 4.5 7.6 3.1 9 1.7l2 2a5 5 0 0 1 2 0l2-2 1.4 1.4L15 4.5A5 5 0 0 1 17 8H7a5 5 0 0 1 2-3.5zM6 10h12v4a6 6 0 0 1-12 0zm-4 1h3v2H2zm17 0h3v2h-3zM2 17l3-1 .6 1.9-3 1zm19.4 1.9-3-1 .6-1.9 3 1zM11 12h2v7h-2z"/>',
+      menu: '<path d="M12 3 2 11h3v10h5v-6h4v6h5V11h3z"/>',
+      reset: '<path d="M8 2h8l1 2h4v2H3V4h4zM5 8h14l-1.2 13a1 1 0 0 1-1 1H7.2a1 1 0 0 1-1-1zm4 2v9h2v-9zm4 0v9h2v-9z"/>',
+    };
+    const orIcon = (k) => `<svg viewBox="0 0 24 24">${OR_ICONS[k]}</svg>`;
+    let settingsFromMenu = false;
+    function showSettings(fromMenu) {
+      settingsFromMenu = !!fromMenu;
+      $("settingsMenu").hidden = true;
+      const row = (k, text, extra = "") => `<button class="orRow" data-or="${k}">${orIcon(k)}<span class="grow">${text}</span>${extra}</button>`;
+      showModal(`<div class="orPanel">
+          <div class="orRibbon"><span>Settings</span></div>
+          <button class="orClose" data-modal="close" aria-label="Close">✕</button>
+          <div class="orSec">Game</div>
+          ${row("save", "Save game")}
+          ${row("download", "Download progress file")}
+          ${row("load", "Load progress file")}
+          <div class="orSec">Help</div>
+          ${row("tips", "Show tips", `<span class="orSwitch ${state.tips.on ? "on" : ""}" id="orTips"></span>`)}
+          ${row("tipsReset", "Show all tips again")}
+          ${row("tutorial", "Replay the guided start")}
+          <button class="orRow off" data-or="bug" title="Coming soon">${orIcon("bug")}<span class="grow">Report a bug</span><span class="orSoon">Coming soon</span></button>
+          <div class="orNote" id="orNote">${SETTINGS_NOTE}</div>
+          <div class="orBtns">
+            ${fromMenu ? "" : `<button class="orBtn orBlue" data-or="menu"><span>${orIcon("menu")}Main menu</span></button>`}
+            <button class="orBtn orRed" data-or="reset"><span>${orIcon("reset")}Reset game</span></button>
+          </div>
+        </div>`);
+      $("modalBox").classList.add("ornate");
+    }
+    $("modalBox").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-or]"); if (!b) return;
+      const what = b.dataset.or;
+      if (what === "bug") return;   // 🐞 not active yet
+      if (what === "menu" || what === "tutorial") hideModal();
+      $("settingsMenu").querySelector(`[data-setting="${what}"]`).click();
+      if (what === "tutorial" && settingsFromMenu) closeMenu();
+      const t = $("orTips"); if (t) t.classList.toggle("on", !!state.tips.on);
+    });
 
     $("settingsMenu").addEventListener("click", (e) => {
       const btn = e.target.closest("[data-setting]");
@@ -10385,37 +10489,13 @@
     new ResizeObserver(fitBrand).observe($("tabs"));
     addEventListener("resize", fitBrand); fitBrand();
 
-    function menuSettingsHtml() {
-      return `<h2>⚙️ Settings</h2>
-        <div class="menuSettings">
-          <button class="btn" data-ms="tips">${$("tipsToggle").textContent}</button>
-          <button class="btn" data-ms="tipsReset">↺ Show all tips again</button>
-          <button class="btn" data-ms="tutorial">▶️ Replay the guided start</button>
-          <button class="btn" data-ms="save">💾 Save game</button>
-          <button class="btn" data-ms="download">⬇️ Download progress file</button>
-          <button class="btn" data-ms="load">⬆️ Load progress file</button>
-          <button class="btn danger" data-ms="reset">🗑️ Reset game</button>
-        </div>
-        <p class="muted" id="msNote">The game saves itself every 30 seconds and after every action.</p>
-        <button class="btn ghost" data-modal="close">Close</button>`;
-    }
-    // The menu's Settings use the same actions as the ⚙️ menu in the game
-    $("modalBox").addEventListener("click", (e) => {
-      const b = e.target.closest("[data-ms]"); if (!b) return;
-      const what = b.dataset.ms;
-      $("settingsMenu").querySelector(`[data-setting="${what}"]`).click();
-      if (what === "tutorial") { hideModal(); closeMenu(); return; }
-      if (what === "reset") return;                   // the reset question replaces this pop-up
-      const t = b.closest("#modalBox").querySelector('[data-ms="tips"]'); if (t) t.textContent = $("tipsToggle").textContent;
-      const n = $("msNote"); if (n) n.textContent = $("settingsNote").textContent;
-    });
-
     // 📝 Patch notes: newest first. The first entry is shown open in About.
     const PATCH_NOTES = [
       { date: "13 November 2026", title: "Empire of Coins", items: [
         "The game has a new name: <b>Empire of Coins</b>, with a new logo, browser tab icon, loading screen and this main menu.",
         "New first business: the <b>🌭 Hot Dog Stand</b> (100, 2 workers, no accountant or HR, up to 3). The guided start now begins with it.",
         "Hotels: at most <b>5 Concierges</b> per hotel. More Concierges stacked their bonus far too high.",
+        "New look for ⚙️ Settings: a royal gold panel, a tips switch and a 🐞 Report a bug button (coming soon).",
         "New rewards: three <b>Master coins</b> for reaching level 99: 🦊 Gambler, 🦉 Investor and 🦅 Logistics.",
         "New reward: <b>🦛 The Strongman Collection</b> (background and coin) for finishing ⚡ Wired for life and 🦾 Iron finger.",
         "New special business: the <b>🧑‍💼 Recruitment Agency</b> (10 scoin, needs 2 hotels and 2 casinos). Save a staffing plan once, then staff every new hotel and casino in one click for 1 scoin each, or apply the plan to all of them.",
@@ -10465,7 +10545,7 @@
       const b = e.target.closest("[data-menu]"); if (!b) return;
       const what = b.dataset.menu;
       if (what === "play") closeMenu();
-      if (what === "settings") showModal(menuSettingsHtml());
+      if (what === "settings") showSettings(true);
       if (what === "about") showAbout();
       // "donate": does nothing for now
     });
