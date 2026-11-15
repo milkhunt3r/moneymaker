@@ -439,6 +439,18 @@ const MINER_IMG = {};
 ["stand", "dig-down", "dig-side", "climb"].forEach(k => {
   const im = new Image(); im.onload = () => { if (M.run) mineDraw(); }; im.src = `assets/mine/miner-${k}.webp`; MINER_IMG[k] = im;
 });
+/* 🪨 rock textures (assets/mine/tile-*.webp, 128×128, seamless): one texture spans 4×4 tiles and is anchored to the
+   mine itself (not the screen), so neighbouring tiles join into one continuous rock face as the camera moves. */
+const ROCK_IMG = {}, ROCK_PAT = {};
+["dirt", "stone", "granite"].forEach(k => {
+  const im = new Image(); im.onload = () => { if (M.run) mineDraw(); }; im.src = `assets/mine/tile-${k}.webp`; ROCK_IMG[k] = im;
+});
+function rockPattern(ctx, k) {
+  const im = ROCK_IMG[k]; if (!im || !im.complete || !im.naturalWidth) return null;
+  if (!ROCK_PAT[k] || ROCK_PAT[k].ctx !== ctx) ROCK_PAT[k] = { ctx, pat: ctx.createPattern(im, "repeat") };
+  return ROCK_PAT[k].pat;
+}
+const ROCK_TINT = [null, "rgba(38,12,10,0.55)", "rgba(60,40,140,0.45)"];   // 🌋 lava zone: reddish basalt · 💠 crystal caves: violet
 let minerPose = "stand", minerPoseTimer = null;
 function setMinerPose(pose, ms = 260) {
   minerPose = pose; clearTimeout(minerPoseTimer);
@@ -471,6 +483,15 @@ function mineDraw() {
         continue;
       }
       if (t === 5) { glow.push([px, py, "lava", i]); continue; }
+      const pat = t !== 4 && rockPattern(ctx, t === 1 ? "dirt" : t === 3 ? "granite" : "stone");
+      if (pat) {   // textured rock, darker the deeper you go, tinted in the deep layers
+        pat.setTransform(new DOMMatrix([1, 0, 0, 1, -camX, -camY]));
+        ctx.fillStyle = pat; ctx.fillRect(px, py, TS, TS);
+        if (zone === 0 && depth > 0) { ctx.fillStyle = `rgba(10,6,4,${(depth * 0.35).toFixed(3)})`; ctx.fillRect(px, py, TS, TS); }
+        if (ROCK_TINT[zone]) { ctx.fillStyle = ROCK_TINT[zone]; ctx.fillRect(px, py, TS, TS); }
+        if (zone === 2) for (let k = 0; k < 2; k++) {   // crystal sparkles
+          ctx.fillStyle = "rgba(170,220,255,0.6)"; ctx.fillRect(px + 3 + tileRand(i, k) * (TS - 7), py + 3 + tileRand(i, k + 9) * (TS - 7), 2, 2); }
+      } else {
       let base = t === 1 ? [139 - depth * 50, 94 - depth * 40, 56 - depth * 25] : t === 2 || t === 6 ? [118, 112, 108] : t === 3 ? [88, 84, 96] : [40, 38, 46];
       if (zone === 1 && t !== 4) base = t === 1 ? [86, 52, 40] : t === 3 ? [58, 46, 50] : [78, 64, 62];       // 🌋 basalt, reddish
       if (zone === 2 && t !== 4) base = t === 1 ? [62, 54, 92] : t === 3 ? [52, 50, 86] : [76, 72, 110];      // 💠 crystal caves, violet
@@ -481,8 +502,9 @@ function mineDraw() {
         ctx.fillStyle = k % 2 ? "rgba(0,0,0,0.18)" : zone === 2 && k === 0 ? "rgba(170,220,255,0.45)" : "rgba(255,255,255,0.10)";
         ctx.fillRect(px + sx, py + sy, 3, 3);
       }
+      }
       if (t === 4) { ctx.strokeStyle = "rgba(0,0,0,0.5)"; ctx.lineWidth = 2; ctx.strokeRect(px + 3, py + 3, TS - 6, TS - 6); }
-      ctx.strokeStyle = "rgba(0,0,0,0.25)"; ctx.lineWidth = 1; ctx.strokeRect(px + 0.5, py + 0.5, TS - 1, TS - 1);
+      ctx.strokeStyle = pat ? "rgba(0,0,0,0.16)" : "rgba(0,0,0,0.25)"; ctx.lineWidth = 1; ctx.strokeRect(px + 0.5, py + 0.5, TS - 1, TS - 1);
       if (t === 6) glow.push([px, py, "hot", i]);
       if (R.ore[i] === "chest") glow.push([px, py, "chest", i]);
       else if (R.ore[i]) {   // ore nuggets
