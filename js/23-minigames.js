@@ -259,12 +259,11 @@ function rollChest() {
   const sec = T.min + 10 * secureRandomInt((T.max - T.min) / 10 + 1);
   return { tier: T.id, name: T.name, icon: T.icon, sec, amount: Math.round(sec * base) };
 }
-const chestSvg = (open = false) => `<svg class="chestSvg ${open ? "open" : ""}" viewBox="0 0 120 100" aria-hidden="true">
-  <rect x="14" y="44" width="92" height="48" rx="6" fill="#8a4b22" stroke="#3b1d0a" stroke-width="3"/>
-  <rect x="14" y="58" width="92" height="7" fill="#e3b341"/><rect x="52" y="44" width="16" height="48" fill="#e3b341"/>
-  <rect x="55" y="60" width="10" height="12" rx="2" fill="#3b1d0a"/>
-  <g class="chestLid"><path d="M14 46 Q14 14 60 14 Q106 14 106 46 Z" fill="#a85a28" stroke="#3b1d0a" stroke-width="3"/>
-    <rect x="52" y="14" width="16" height="32" fill="#e3b341"/></g></svg>`;
+// 📦 chest art: closed (ornate) in the pop-up, open with coins and gems, or the 💎 jackpot chest; preloaded so the swap is instant
+const CHEST_ART = { closed: "assets/mine/chest-closed.webp", open: "assets/mine/chest-open.webp", jackpot: "assets/mine/chest-jackpot.webp" };
+Object.values(CHEST_ART).forEach(src => { const im = new Image(); im.src = src; });
+const chestArt = (kind = "closed") => `<img class="chestArt ${kind}" src="${CHEST_ART[kind]}" alt="${kind === "closed" ? "Treasure chest" : "Open treasure chest"}">`;
+const CHEST_MINE_IMG = new Image(); CHEST_MINE_IMG.onload = () => { if (M.run) mineDraw(); }; CHEST_MINE_IMG.src = "assets/mine/chest-mine.webp";
 function showMinePending() {
   const P = M.pending; if (!P) return;
   const chests = P.chests || [];
@@ -272,7 +271,7 @@ function showMinePending() {
     const n = P.opened || 0;
     showModal(`<h2>📦 Treasure chest${chests.length > 1 ? ` ${n + 1} of ${chests.length}` : ""}!</h2>
       <p>You carried it all the way up. What's inside?</p>
-      <div class="chestStage" id="chestStage">${chestSvg()}</div>
+      <div class="chestStage" id="chestStage">${chestArt("closed")}</div>
       <div class="moneyRow" style="justify-content:center"><button class="btn big" data-minep="chest">🗝️ Open the chest</button></div>`);
     $("modalBox").classList.add("gold");
     return;
@@ -317,7 +316,7 @@ function openChest(btn) {
     if (!M.pending || $("modal").hidden) return;
     const more = P.opened < P.chests.length;
     $("modalBox").innerHTML = `<h2>${C.tier === "jackpot" ? "💎💎💎 JACKPOT! 💎💎💎" : `${C.icon} ${C.name}!`}</h2>
-      <div class="chestStage ${C.tier}">${chestSvg(true)}<div class="chestPrize">+${fmt(C.amount)}</div></div>
+      <div class="chestStage ${C.tier}">${chestArt(C.tier === "jackpot" ? "jackpot" : "open")}<div class="chestPrize">+${fmt(C.amount)}</div></div>
       <p class="muted">${C.tier === "jackpot" ? "1 in 5,000! Your miners will talk about this for years." : `${Math.floor(C.sec / 60)} min ${C.sec % 60 ? `${C.sec % 60} sec ` : ""}of your income.`}</p>
       <div class="moneyRow" style="justify-content:center"><button class="btn big" data-minep="chestNext">${more ? "📦 Next chest" : P.bag.length ? "⛏️ Continue to your ore" : "✅ Collect"}</button></div>`;
   }, 1100);
@@ -605,7 +604,9 @@ function mineDraw() {
         ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(a) * TS * 0.42, cy + Math.sin(a) * TS * 0.42); }
       ctx.stroke(); ctx.restore();
     } else if (kind === "chest") {
-      if (dist < 4.5) {   // in the lamp light: the chest itself
+      if (dist < 4.5 && CHEST_MINE_IMG.complete && CHEST_MINE_IMG.naturalWidth) {   // in the lamp light: the old chest in the rock
+        ctx.imageSmoothingQuality = "high"; ctx.drawImage(CHEST_MINE_IMG, px + 1, py + 1, TS - 2, TS - 2);
+      } else if (dist < 4.5) {
         ctx.fillStyle = "#8a4b22"; ctx.fillRect(px + 6, py + 12, TS - 12, TS - 17);
         ctx.fillStyle = "#a85a28"; ctx.fillRect(px + 6, py + 7, TS - 12, 7);
         ctx.fillStyle = "#e3b341"; ctx.fillRect(px + 6, py + 14, TS - 12, 3); ctx.fillRect(px + TS / 2 - 2, py + 7, 4, TS - 12);

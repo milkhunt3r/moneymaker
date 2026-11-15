@@ -1254,10 +1254,11 @@ button.btn.small { padding: 4px 8px; font-size: 12px; }
 .mineLift { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px 10px; margin: 0 0 12px; font-size: 14px; }
 /* 📦 treasure chest opening */
 .chestStage { position: relative; display: flex; flex-direction: column; align-items: center; margin: 22px 0 12px; }
-.chestSvg { width: 150px; height: auto; overflow: visible; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.5)); }
-.chestLid { transform-origin: 14px 46px; transition: transform 0.45s cubic-bezier(.3, 1.6, .5, 1); }
-.chestSvg.open .chestLid { transform: rotate(-20deg) translate(-4px, -4px); }
-.chestStage.shake .chestSvg { animation: chestShake 0.18s ease-in-out 6; }
+.chestArt { width: 190px; height: auto; filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.55)); }
+.chestArt.open, .chestArt.jackpot { animation: chestPop 0.45s cubic-bezier(.3, 1.6, .5, 1); }
+.chestStage.big .chestArt { filter: drop-shadow(0 0 18px rgba(255, 211, 77, 0.65)); }
+.chestStage.jackpot .chestArt { width: 220px; filter: drop-shadow(0 0 26px rgba(120, 240, 255, 0.85)); }
+.chestStage.shake .chestArt { animation: chestShake 0.18s ease-in-out 6; }
 @keyframes chestShake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-5deg); } 75% { transform: rotate(5deg); } }
 .chestPrize { margin-top: 8px; font-size: 28px; font-weight: 900; color: #ffd34d; text-shadow: 0 2px 0 #6b4400, 0 0 18px rgba(255, 211, 77, 0.6);
   animation: chestPop 0.5s cubic-bezier(.3, 1.6, .5, 1); }
