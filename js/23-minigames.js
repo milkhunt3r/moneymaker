@@ -442,7 +442,7 @@ const MINER_IMG = {};
 /* 🪨 rock textures (assets/mine/tile-*.webp, 128×128, seamless): one texture spans 4×4 tiles and is anchored to the
    mine itself (not the screen), so neighbouring tiles join into one continuous rock face as the camera moves. */
 const ROCK_IMG = {}, ROCK_PAT = {};
-["dirt", "stone", "granite"].forEach(k => {
+["dirt", "stone", "granite", "basalt", "hardbasalt", "bedrock"].forEach(k => {
   const im = new Image(); im.onload = () => { if (M.run) mineDraw(); }; im.src = `assets/mine/tile-${k}.webp`; ROCK_IMG[k] = im;
 });
 function rockPattern(ctx, k) {
@@ -450,7 +450,14 @@ function rockPattern(ctx, k) {
   if (!ROCK_PAT[k] || ROCK_PAT[k].ctx !== ctx) ROCK_PAT[k] = { ctx, pat: ctx.createPattern(im, "repeat") };
   return ROCK_PAT[k].pat;
 }
-const ROCK_TINT = [null, "rgba(38,12,10,0.55)", "rgba(60,40,140,0.45)"];   // 🌋 lava zone: reddish basalt · 💠 crystal caves: violet
+const ROCK_TINT = [null, "rgba(38,12,10,0.55)", "rgba(60,40,140,0.45)"];   // 🌋 lava zone: dark volcanic soil · 💠 crystal caves: violet
+// which texture a tile uses: bedrock everywhere; in the 🌋 lava zone stone → basalt and granite → hard basalt (no tint)
+function rockTex(t, zone) {
+  if (t === 4) return ["bedrock", false];
+  if (zone === 1 && (t === 2 || t === 6)) return ["basalt", false];
+  if (zone === 1 && t === 3) return ["hardbasalt", false];
+  return [t === 1 ? "dirt" : t === 3 ? "granite" : "stone", true];
+}
 let minerPose = "stand", minerPoseTimer = null;
 function setMinerPose(pose, ms = 260) {
   minerPose = pose; clearTimeout(minerPoseTimer);
@@ -483,12 +490,12 @@ function mineDraw() {
         continue;
       }
       if (t === 5) { glow.push([px, py, "lava", i]); continue; }
-      const pat = t !== 4 && rockPattern(ctx, t === 1 ? "dirt" : t === 3 ? "granite" : "stone");
+      const [texKey, tinted] = rockTex(t, zone), pat = rockPattern(ctx, texKey);
       if (pat) {   // textured rock, darker the deeper you go, tinted in the deep layers
         pat.setTransform(new DOMMatrix([1, 0, 0, 1, -camX, -camY]));
         ctx.fillStyle = pat; ctx.fillRect(px, py, TS, TS);
-        if (zone === 0 && depth > 0) { ctx.fillStyle = `rgba(10,6,4,${(depth * 0.35).toFixed(3)})`; ctx.fillRect(px, py, TS, TS); }
-        if (ROCK_TINT[zone]) { ctx.fillStyle = ROCK_TINT[zone]; ctx.fillRect(px, py, TS, TS); }
+        if (zone === 0 && depth > 0 && t !== 4) { ctx.fillStyle = `rgba(10,6,4,${(depth * 0.35).toFixed(3)})`; ctx.fillRect(px, py, TS, TS); }
+        if (tinted && ROCK_TINT[zone]) { ctx.fillStyle = ROCK_TINT[zone]; ctx.fillRect(px, py, TS, TS); }
         if (zone === 2) for (let k = 0; k < 2; k++) {   // crystal sparkles
           ctx.fillStyle = "rgba(170,220,255,0.6)"; ctx.fillRect(px + 3 + tileRand(i, k) * (TS - 7), py + 3 + tileRand(i, k + 9) * (TS - 7), 2, 2); }
       } else {
@@ -557,7 +564,10 @@ function mineDraw() {
       for (let k = 0; k < 3; k++) ctx.fillRect(px + 3 + tileRand(i, k + 60) * (TS - 9), py + 3 + tileRand(i, k + 70) * (TS - 9), 4, 3);
     } else if (kind === "hot" && dist < 6) {   // red glowing cracks: a lava pocket hides behind
       ctx.save(); ctx.globalAlpha = Math.max(0.25, 1 - dist / 6);
-      ctx.strokeStyle = "#ff5a1f"; ctx.lineWidth = 2; ctx.beginPath();
+      const hg = ctx.createRadialGradient(px + TS / 2, py + TS / 2, 2, px + TS / 2, py + TS / 2, TS * 0.62);   // inner heat glow
+      hg.addColorStop(0, "rgba(255,120,40,0.75)"); hg.addColorStop(1, "rgba(255,60,10,0)");
+      ctx.fillStyle = hg; ctx.fillRect(px, py, TS, TS);
+      ctx.strokeStyle = "#ffb13a"; ctx.lineWidth = 2.5; ctx.beginPath();
       for (let k = 0; k < 4; k++) { const a = tileRand(i, k + 80) * Math.PI * 2, cx = px + TS / 2, cy = py + TS / 2;
         ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(a) * TS * 0.42, cy + Math.sin(a) * TS * 0.42); }
       ctx.stroke(); ctx.restore();

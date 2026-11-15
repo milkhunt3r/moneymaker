@@ -51,6 +51,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "13 November 2026", title: "Empire of Coins", items: [
+    "⛏️ Gold Mine Dig: new 🌋 basalt and hard basalt (hexagonal columns) in the lava zone, new bedrock everywhere, and hidden lava pockets now glow brighter so you can tell them apart.",
     "⛏️ Gold Mine Dig: new hand-painted dirt, stone and granite. The rock joins into one continuous rock face, darker and tinted in the 🌋 lava zone and 💠 crystal caves.",
     "⛏️ Gold Mine Dig: the miner has new art! The mole miner stands, swings his pickaxe sideways, strikes down and climbs, depending on what you do.",
     "⛏️ New Mining achievements: 🔥 Survive the lava (150 m), 🏁 Rock bottom (250 m), 📦 First chest, 💰 Treasure hunter (50 chests), 🛗 Going up (use a lift) and 🛗 Frequent rider (20 lifts).",
