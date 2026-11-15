@@ -521,7 +521,11 @@ function mineDraw() {
         ctx.fillRect(px + sx, py + sy, 3, 3);
       }
       }
-      if (t === 4) { ctx.strokeStyle = "rgba(0,0,0,0.5)"; ctx.lineWidth = 2; ctx.strokeRect(px + 3, py + 3, TS - 6, TS - 6); }
+      if (t === 4) {   // 🪨 bedrock: much darker, with a thick black frame, so it clearly reads as "can't dig"
+        ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(px, py, TS, TS);
+        ctx.strokeStyle = "#000"; ctx.lineWidth = 4; ctx.strokeRect(px + 2, py + 2, TS - 4, TS - 4);
+        ctx.strokeStyle = "rgba(150,150,170,0.22)"; ctx.lineWidth = 1; ctx.strokeRect(px + 4.5, py + 4.5, TS - 9, TS - 9);
+      }
       ctx.strokeStyle = pat ? "rgba(0,0,0,0.16)" : "rgba(0,0,0,0.25)"; ctx.lineWidth = 1; ctx.strokeRect(px + 0.5, py + 0.5, TS - 1, TS - 1);
       if (t === 6) glow.push([px, py, "hot", i]);
       if (R.ore[i] === "chest") glow.push([px, py, "chest", i]);
