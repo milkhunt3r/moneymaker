@@ -76,7 +76,7 @@ const ACHIEVEMENTS = [
   { id: "boost-pill-10", cat: "income", icon: "🧙", name: "Feeling magical", desc: "Use 10 magical pills", goal: 10, get: () => state.stats.boostPill || 0 },
   { id: "boost-pill-100", cat: "income", icon: "🧙", name: "Potion master", desc: "Use 100 magical pills", goal: 100, get: () => state.stats.boostPill || 0 },
   { id: "boost-influence-10", cat: "income", icon: "🎩", name: "Lobbyist", desc: "Use 10 political influences", goal: 10, get: () => state.stats.boostInfluence || 0 },
-  { id: "boost-influence-100", cat: "income", icon: "🎩", name: "Pulling the strings", desc: "Use 100 political influences", goal: 100, get: () => state.stats.boostInfluence || 0 },
+  { id: "boost-influence-100", cat: "income", icon: "🎩", name: "Pulling the strings", desc: "Use 50 political influences", goal: 50, get: () => state.stats.boostInfluence || 0 },
   // Casino
   { id: "bet1s",      cat: "casino", icon: "🎲", name: "Regular",            desc: "Bet 1 scoin in total",                goal: SC,       get: () => state.casinoStats.wagered, money: true },
   { id: "bet100s",    cat: "casino", icon: "🎲", name: "High roller",        desc: "Bet 100 scoin in total",              goal: 100 * SC, get: () => state.casinoStats.wagered, money: true },
