@@ -1259,7 +1259,7 @@ button.btn.small { padding: 4px 8px; font-size: 12px; }
 /* 🛗 mine lift: its own box at the top of the upgrades */
 .mineLiftBox { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 4px 0 14px; padding: 12px 16px; border-radius: 14px;
   background: linear-gradient(135deg, rgba(255, 211, 77, 0.14), rgba(0, 0, 0, 0.25)); border: 1px solid rgba(255, 211, 77, 0.45); }
-.mineLiftIcon { font-size: 40px; line-height: 1; }
+.mineLiftIcon { width: 64px; height: 64px; object-fit: contain; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.5)); }
 .mineLiftText { flex: 1 1 220px; font-size: 15px; }
 .mineLiftText b { font-size: 18px; }
 .mineLiftHave { margin-left: 8px; padding: 2px 10px; border-radius: 999px; background: rgba(0, 0, 0, 0.35); font-weight: 800; color: #ffd34d; }
@@ -1408,3 +1408,5 @@ body.phone #pillTip { left: 50%; } body.phone #energyTip { left: 0; transform: n
 /* ⚠️ red warning badge on a tab (e.g. a broken-down truck in Logistics) */
 .tabWarn { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; margin-left: 6px; vertical-align: 1px;
   border-radius: 50%; background: #e53935; color: #fff; font-size: 12px; font-weight: 900; line-height: 1; box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35); }
+
+.gameIconImg { width: 60px; height: 60px; object-fit: contain; display: block; margin: -3px auto 0; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5)); }

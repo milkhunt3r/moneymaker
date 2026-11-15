@@ -332,7 +332,7 @@ function buyLift() {
 }
 function useLift() {
   const R = M.run; if (!R || R.y === 0 || M.lifts < 1) return;
-  M.lifts--; M.liftsUsed = (M.liftsUsed || 0) + 1; R.x = MINE_START_X; R.y = 0; R.flows = [];
+  M.lifts--; M.liftsUsed = (M.liftsUsed || 0) + 1; R.x = LIFT_X; R.y = 0; R.flows = []; minerPose = "stand";
   R.msg = "🛗 The lift brought you back to the surface!";
   save(); mineDraw(); mineHud();
 }
@@ -465,6 +465,12 @@ function rockTex(t, zone) {
 // 💎 ore art (assets/mine/ore-*.webp, 96×96): a cluster in rock, drawn on top of the tile
 const ORE_IMG = {};
 ORE_KEYS.forEach(k => { const im = new Image(); im.onload = () => { if (M.run) mineDraw(); }; im.src = `assets/mine/ore-${k}.webp`; ORE_IMG[k] = im; });
+// 🌄 surface art: sunset background (its grass top sits at 300 px of 362), the mine entrance and the lift headframe
+const SURF_IMG = {};
+["surface-bg", "entrance", "lift"].forEach(k => { const im = new Image(); im.onload = () => { if (M.run) mineDraw(); }; im.src = `assets/mine/${k}.webp`; SURF_IMG[k] = im; });
+const imgOk = (im) => im && im.complete && im.naturalWidth;
+const SURF_SCALE = 0.8, SURF_GRASS = 300;            // background drawn at 80%; y of its grass top
+const LIFT_X = MINE_START_X + 4;                      // 🛗 the lift shaft, 4 tiles right of the entrance
 let minerPose = "stand", minerPoseTimer = null;
 function setMinerPose(pose, ms = 260) {
   minerPose = pose; clearTimeout(minerPoseTimer);
@@ -483,6 +489,11 @@ function mineDraw() {
   const sky = ctx.createLinearGradient(0, -camY - 3 * TS, 0, -camY + TS);
   sky.addColorStop(0, "#3a2c78"); sky.addColorStop(1, "#f09a5a");
   ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
+  const gy = TS - camY;   // the ground line (top of row 1)
+  if (imgOk(SURF_IMG["surface-bg"]) && gy > 0) {   // 🌄 sunset hills, moving a bit slower than the mine (parallax)
+    const bw = 1086 * SURF_SCALE, bh = 362 * SURF_SCALE;
+    ctx.drawImage(SURF_IMG["surface-bg"], -camX * 0.6, gy - SURF_GRASS * SURF_SCALE - 4, bw, bh);
+  }
   const y0 = Math.max(0, Math.floor(camY / TS)), y1 = Math.min(MINE_H, Math.ceil((camY + H) / TS) + 1);
   const x0 = Math.floor(camX / TS), x1 = Math.min(MINE_W, x0 + VIEW_COLS + 1);
   const glow = [];   // things that shine through the dark: lava, hot rock cracks, chests
@@ -557,9 +568,23 @@ function mineDraw() {
       }
     }
   }
-  // grass line + entrance (and the lift shaft next to it)
-  const gy = TS - camY;
-  if (gy > -8 && gy < H) {
+  // grass + entrance + lift
+  if (gy > -8 && gy < H && imgOk(SURF_IMG["surface-bg"])) {
+    // the grass strip from the background, fixed to the mine, over the top of the first row
+    const bg = SURF_IMG["surface-bg"], sy = 292, sh = 38;
+    ctx.drawImage(bg, 0, sy, 1086, sh, -camX, gy - 12, 1086 * SURF_SCALE, sh * SURF_SCALE);
+    if (imgOk(SURF_IMG.entrance)) {   // ⛏️ mine entrance, with a dark tunnel inside the arch
+      const D = 96, ex = MINE_START_X * TS - camX + TS / 2 - D / 2, ey = gy + 6 - D;
+      ctx.fillStyle = "#120c08"; ctx.beginPath();
+      ctx.moveTo(ex + D * 0.35, ey + D); ctx.lineTo(ex + D * 0.35, ey + D * 0.58);
+      ctx.quadraticCurveTo(ex + D * 0.5, ey + D * 0.44, ex + D * 0.65, ey + D * 0.58); ctx.lineTo(ex + D * 0.65, ey + D); ctx.fill();
+      ctx.drawImage(SURF_IMG.entrance, ex, ey, D, D);
+    }
+    if (imgOk(SURF_IMG.lift)) {   // 🛗 lift headframe
+      const D = 84, lx = LIFT_X * TS - camX + TS / 2 - D / 2;
+      ctx.drawImage(SURF_IMG.lift, lx, gy + 4 - D, D, D);
+    }
+  } else if (gy > -8 && gy < H) {
     const ex = MINE_START_X * TS - camX;
     ctx.fillStyle = "#4caf50"; ctx.fillRect(0, gy - 4, W, 6);
     ctx.fillStyle = "#7b4a1e"; ctx.fillRect(ex - 6, gy - 30, 6, 26); ctx.fillRect(ex + TS, gy - 30, 6, 26);
@@ -688,7 +713,7 @@ function renderMine() {
       <div class="card mineUps">
         <h3>⬆️ Upgrades</h3>
         <div class="mineLiftBox">
-          <div class="mineLiftIcon">🛗</div>
+          <img class="mineLiftIcon" src="assets/mine/lift.webp" alt="Mine lift">
           <div class="mineLiftText"><b>Mine lift</b> <span class="mineLiftHave">${M.lifts} / ${MINE_LIFT_MAX}</span>
             <div class="muted">Single use. Takes you straight back to the surface with everything you carry, chests included.</div></div>
           <button class="btn" data-mine="buylift" ${M.lifts < MINE_LIFT_MAX && state.money >= liftPrice() ? "" : "disabled"}>${M.lifts >= MINE_LIFT_MAX ? "✅ Full" : `🛗 Buy a lift · ${fmt(liftPrice())}`}</button>
@@ -776,7 +801,7 @@ function renderGames() {
         <button class="btn" data-game="art">${art ? "▶ Play" : "View"}</button>
       </div>
       <div class="card gameCard ${mine ? "" : "locked"}">
-        <div class="gameIcon">⛏️</div><h3>Gold Mine Dig</h3>
+        <img class="gameIcon gameIconImg" src="assets/mine/entrance.webp" alt=""><h3>Gold Mine Dig</h3>
         <p class="muted">Dig 250 m deep for coal, copper, silver, gold, diamonds, rubies and treasure chests before your lamp runs out.</p>
         <div class="gameStatus">${mine ? `${"⚡".repeat(e)}${"<span class='off'>⚡</span>".repeat(Math.max(0, energyMax() - e))}${M.run ? " · ⛏️ run in progress" : ""}` : "🔒 Buy your first ⛏️ gold mine (💰 Income → ⭐ Special)"}</div>
         ${mine ? vaultLine("small") : ""}
