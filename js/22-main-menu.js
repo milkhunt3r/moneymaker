@@ -51,6 +51,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "13 November 2026", title: "Empire of Coins", items: [
+    "Achievement <b>🌍 Global network</b> now needs <b>5,000</b> logistics contracts instead of 10,000.",
     "⛏️ New Mining achievement <b>🏅 Master Miner</b>: max out every Gold Mine Dig upgrade.",
     "⛏️ The Gold Rush Collection now also needs <b>🪨 Regular miner</b> and <b>🟡 Golden touch</b> (players who already own it keep it).",
     "🚢 Logistics: the tab shows a <b style=\"color:#ff6b6b\">red ❗ warning</b> while a truck is broken down and not repaired.",
