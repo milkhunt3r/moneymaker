@@ -331,7 +331,7 @@ function buyLift() {
 }
 function useLift() {
   const R = M.run; if (!R || R.y === 0 || M.lifts < 1) return;
-  M.lifts--; R.x = MINE_START_X; R.y = 0; R.flows = [];
+  M.lifts--; M.liftsUsed = (M.liftsUsed || 0) + 1; R.x = MINE_START_X; R.y = 0; R.flows = [];
   R.msg = "🛗 The lift brought you back to the surface!";
   save(); mineDraw(); mineHud();
 }

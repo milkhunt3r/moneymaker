@@ -176,6 +176,12 @@ const ACHIEVEMENTS = [
       { id: "mineUp1",     icon: "⬆️", name: "First upgrade",      desc: "Buy any Gold Mine Dig upgrade",              goal: 1,   get: () => ups().some(k => (Mn().up || {})[k] > 0) ? 1 : 0 },
       { id: "mineHoard",   icon: "🏦", name: "Hoarder",            desc: "Have 100 ore in your vault at once",         goal: 100, get: () => Object.values(Mn().vault || {}).reduce((a, b) => a + b, 0) },
       { id: "mineMaxUp",   icon: "🪔", name: "Fully lit",          desc: "Max out any Gold Mine Dig upgrade",          goal: 1,   get: () => ups().some(k => ((Mn().up || {})[k] || 0) >= MINE_UPS[k].max) ? 1 : 0 },
+      { id: "mineDeep150", icon: "🔥", name: "Survive the lava",   desc: "Reach a depth of 150 m",                     goal: 150, get: depth },
+      { id: "mineDeep250", icon: "🏁", name: "Rock bottom",        desc: "Reach the bottom of the mine: 250 m",        goal: 250, get: depth },
+      { id: "mineChest1",  icon: "📦", name: "First chest",        desc: "Open your first treasure chest",             goal: 1,   get: () => Mn().chests || 0 },
+      { id: "mineChest50", icon: "💰", name: "Treasure hunter",    desc: "Open 50 treasure chests",                    goal: 50,  get: () => Mn().chests || 0 },
+      { id: "mineLift1",   icon: "🛗", name: "Going up",           desc: "Take the mine lift up",                      goal: 1,   get: () => Mn().liftsUsed || 0 },
+      { id: "mineLift20",  icon: "🛗", name: "Frequent rider",     desc: "Take the mine lift up 20 times",             goal: 20,  get: () => Mn().liftsUsed || 0 },
       { id: "mineMaster",  icon: "🏅", name: "Master Miner",       desc: "Max out every Gold Mine Dig upgrade",        goal: 1,   get: () => ups().length && ups().every(k => ((Mn().up || {})[k] || 0) >= MINE_UPS[k].max) ? 1 : 0 },
     ].map(a => ({ ...a, cat: "mine" }));
   })(),
