@@ -461,6 +461,9 @@ function rockTex(t, zone) {
   if (zone === 1 && t === 3) return ["hardbasalt", false];
   return [t === 1 ? "dirt" : t === 3 ? "granite" : "stone", true];
 }
+// 💎 ore art (assets/mine/ore-*.webp, 96×96): a cluster in rock, drawn on top of the tile
+const ORE_IMG = {};
+ORE_KEYS.forEach(k => { const im = new Image(); im.onload = () => { if (M.run) mineDraw(); }; im.src = `assets/mine/ore-${k}.webp`; ORE_IMG[k] = im; });
 let minerPose = "stand", minerPoseTimer = null;
 function setMinerPose(pose, ms = 260) {
   minerPose = pose; clearTimeout(minerPoseTimer);
@@ -529,7 +532,11 @@ function mineDraw() {
       ctx.strokeStyle = pat ? "rgba(0,0,0,0.16)" : "rgba(0,0,0,0.25)"; ctx.lineWidth = 1; ctx.strokeRect(px + 0.5, py + 0.5, TS - 1, TS - 1);
       if (t === 6) glow.push([px, py, "hot", i]);
       if (R.ore[i] === "chest") glow.push([px, py, "chest", i]);
-      else if (R.ore[i]) {   // ore nuggets
+      else if (R.ore[i] && ORE_IMG[R.ore[i]] && ORE_IMG[R.ore[i]].complete && ORE_IMG[R.ore[i]].naturalWidth) {   // ore art
+        const im = ORE_IMG[R.ore[i]], D = TS - 2;
+        ctx.imageSmoothingQuality = "high"; ctx.drawImage(im, px + (TS - D) / 2, py + (TS - D) / 2, D, D);
+      }
+      else if (R.ore[i]) {   // ore nuggets (until the art loads)
         const o = ORES[R.ore[i]];
         for (let k = 0; k < 3; k++) {
           const cx = px + 8 + tileRand(i, k + 20) * (TS - 16), cy = py + 8 + tileRand(i, k + 30) * (TS - 16), r = 4 + tileRand(i, k + 40) * 3;
