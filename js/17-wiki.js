@@ -226,7 +226,7 @@ function wikiShop() {
 }
 
 function wikiArt() {
-  const mineSec = (typeof ORES === "object") ? ORE_KEYS.map(k => `${ORES[k].emoji} ${ORES[k].name} ${ORES[k].sec} sec`).join(" · ") : "";
+  const mineSec = (typeof ORES === "object") ? ORE_KEYS.map(k => `${oreIcon(k)} ${ORES[k].name} ${ORES[k].sec} sec`).join(" · ") : "";
   return `<h2>🎮 Mini-games</h2>
     <p>The 🎮 Mini-games tab holds games you unlock with your buildings and achievements. Play them to earn extra money.</p>
     <h2>⛏️ Gold Mine Dig</h2>
@@ -242,7 +242,7 @@ function wikiArt() {
     ${wt(["Upgrade", "Levels", "Effect per level", "Cost per level (money + ore)"], Object.keys(MINE_UPS).map(k => {
       const U = MINE_UPS[k];
       return [U.icon + " " + U.name, U.max, U.costs.map((_, i) => U.eff(i + 1)).join(" → "),
-        U.costs.map(c => fmt(c[0]) + " + " + Object.keys(c[1]).map(o => c[1][o] + " " + ORES[o].emoji).join(" ")).join(" · ")];
+        U.costs.map(c => fmt(c[0]) + " + " + Object.keys(c[1]).map(o => c[1][o] + " " + oreIcon(o)).join(" ")).join(" · ")];
     }))}
     <p class="muted">Upgrades and the vault are kept on prestige.</p>
     <h2>🖼️ Art Gallery</h2>

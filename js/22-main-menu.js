@@ -51,6 +51,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "13 November 2026", title: "Empire of Coins", items: [
+    "⛏️ Gold Mine Dig: ore now shows its painted picture everywhere (vault, values, upgrade costs, bag, pop-ups, wiki), and the 🛗 mine lift has its own bigger box at the top of the upgrades.",
     "📦 New treasure chest art: an old dusty chest in the rock, an ornate chest to open, a chest full of coins and gems for prizes, and a glowing diamond chest for the 💎 jackpot.",
     "⛏️ Gold Mine Dig: new hand-painted ore: ⚫ coal, 🟠 copper, ⚪ silver, 🟡 gold, 💎 diamond and 🔴 ruby clusters.",
     "⛏️ Gold Mine Dig: 🪨 bedrock is now much darker with a thick black frame, so it is easy to see which rock can't be dug.",
