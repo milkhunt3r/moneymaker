@@ -442,7 +442,7 @@ const MINER_IMG = {};
 /* 🪨 rock textures (assets/mine/tile-*.webp, 128×128, seamless): one texture spans 4×4 tiles and is anchored to the
    mine itself (not the screen), so neighbouring tiles join into one continuous rock face as the camera moves. */
 const ROCK_IMG = {}, ROCK_PAT = {};
-["dirt", "stone", "granite", "basalt", "hardbasalt", "bedrock"].forEach(k => {
+["dirt", "stone", "granite", "basalt", "hardbasalt", "bedrock", "crystal", "hardcrystal", "hotrock", "lava", "tunnel"].forEach(k => {
   const im = new Image(); im.onload = () => { if (M.run) mineDraw(); }; im.src = `assets/mine/tile-${k}.webp`; ROCK_IMG[k] = im;
 });
 function rockPattern(ctx, k) {
@@ -454,6 +454,9 @@ const ROCK_TINT = [null, "rgba(38,12,10,0.55)", "rgba(60,40,140,0.45)"];   // �
 // which texture a tile uses: bedrock everywhere; in the 🌋 lava zone stone → basalt and granite → hard basalt (no tint)
 function rockTex(t, zone) {
   if (t === 4) return ["bedrock", false];
+  if (t === 6) return ["hotrock", false];                                   // 🌋 hidden lava pocket (any depth)
+  if (zone === 2 && t === 2) return ["crystal", false];                     // 💠 crystal caves
+  if (zone === 2 && t === 3) return ["hardcrystal", false];
   if (zone === 1 && (t === 2 || t === 6)) return ["basalt", false];
   if (zone === 1 && t === 3) return ["hardbasalt", false];
   return [t === 1 ? "dirt" : t === 3 ? "granite" : "stone", true];
@@ -484,9 +487,17 @@ function mineDraw() {
       const i = mIdx(tx, ty), t = R.tile[i], px = tx * TS - camX, py = ty * TS - camY;
       if (ty === 0) continue;
       const depth = Math.min(1, ty / 64), zone = ty >= ROW_CRYSTAL ? 2 : ty >= ROW_LAVA ? 1 : 0;
-      if (t === 0) {   // dug tunnel / cave
-        ctx.fillStyle = zone === 2 ? "rgb(20,16,34)" : zone === 1 ? "rgb(30,14,12)" : `rgb(${46 - depth * 20},${30 - depth * 12},${22 - depth * 8})`;
-        ctx.fillRect(px, py, TS, TS);
+      if (t === 0) {   // dug tunnel / cave: dark earth, shaded per layer so it reads as the back wall
+        const tp = rockPattern(ctx, "tunnel");
+        if (tp) {
+          tp.setTransform(new DOMMatrix([1, 0, 0, 1, -camX, -camY]));
+          ctx.fillStyle = tp; ctx.fillRect(px, py, TS, TS);
+          ctx.fillStyle = zone === 2 ? "rgba(28,14,60,0.5)" : zone === 1 ? "rgba(36,6,4,0.45)" : `rgba(0,0,0,${(0.15 + depth * 0.25).toFixed(3)})`;
+          ctx.fillRect(px, py, TS, TS);
+        } else {
+          ctx.fillStyle = zone === 2 ? "rgb(20,16,34)" : zone === 1 ? "rgb(30,14,12)" : `rgb(${46 - depth * 20},${30 - depth * 12},${22 - depth * 8})`;
+          ctx.fillRect(px, py, TS, TS);
+        }
         continue;
       }
       if (t === 5) { glow.push([px, py, "lava", i]); continue; }
@@ -496,7 +507,7 @@ function mineDraw() {
         ctx.fillStyle = pat; ctx.fillRect(px, py, TS, TS);
         if (zone === 0 && depth > 0 && t !== 4) { ctx.fillStyle = `rgba(10,6,4,${(depth * 0.35).toFixed(3)})`; ctx.fillRect(px, py, TS, TS); }
         if (tinted && ROCK_TINT[zone]) { ctx.fillStyle = ROCK_TINT[zone]; ctx.fillRect(px, py, TS, TS); }
-        if (zone === 2) for (let k = 0; k < 2; k++) {   // crystal sparkles
+        if (zone === 2 && tinted) for (let k = 0; k < 2; k++) {   // crystal sparkles on the plain rock
           ctx.fillStyle = "rgba(170,220,255,0.6)"; ctx.fillRect(px + 3 + tileRand(i, k) * (TS - 7), py + 3 + tileRand(i, k + 9) * (TS - 7), 2, 2); }
       } else {
       let base = t === 1 ? [139 - depth * 50, 94 - depth * 40, 56 - depth * 25] : t === 2 || t === 6 ? [118, 112, 108] : t === 3 ? [88, 84, 96] : [40, 38, 46];
@@ -556,7 +567,18 @@ function mineDraw() {
   const pulse = 0.5 + 0.5 * Math.sin(performance.now() / 300);
   for (const [px, py, kind, i] of glow) {
     const dist = Math.hypot(px + TS / 2 - mx, py + TS / 2 - my) / TS;
-    if (kind === "lava") {
+    const glowPat = kind === "lava" ? rockPattern(ctx, "lava") : kind === "hot" ? rockPattern(ctx, "hotrock") : null;
+    if (glowPat) glowPat.setTransform(new DOMMatrix([1, 0, 0, 1, -camX, -camY]));
+    if (kind === "lava" && glowPat) {   // painted lava, always bright
+      ctx.fillStyle = glowPat; ctx.fillRect(px, py, TS, TS);
+    } else if (kind === "hot" && glowPat && dist < 6) {   // the hot rock shows through the dark, fading with distance
+      ctx.save(); ctx.globalAlpha = Math.max(0.3, 1 - dist / 6);
+      ctx.fillStyle = glowPat; ctx.fillRect(px, py, TS, TS);
+      const hg = ctx.createRadialGradient(px + TS / 2, py + TS / 2, 2, px + TS / 2, py + TS / 2, TS * 0.62);
+      hg.addColorStop(0, "rgba(255,120,40,0.35)"); hg.addColorStop(1, "rgba(255,60,10,0)");
+      ctx.fillStyle = hg; ctx.fillRect(px, py, TS, TS);
+      ctx.restore();
+    } else if (kind === "lava") {
       const lg = ctx.createLinearGradient(px, py, px, py + TS);
       lg.addColorStop(0, "#ffb02e"); lg.addColorStop(1, "#d6300f");
       ctx.fillStyle = lg; ctx.fillRect(px, py, TS, TS);
