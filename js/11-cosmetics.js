@@ -18,7 +18,7 @@ const COLLECTIONS = [
     text: "Unlock 🛰️ Eye in the sky, 🚀 Space race, 🌕 Lift-off! and 💥 Houston, we have a problem" } },
   { id: "global", name: "🌍 The Global Network Collection", reward: { cat: "logistics", text: "Unlock every 🚢 Logistics achievement" } },
   { id: "jackpot", name: "🎰 The Jackpot Collection", reward: { cat: "casino", text: "Unlock every 🎰 Casino achievement" } },
-  { id: "goldrush", name: "⛏️ The Gold Rush Collection", reward: { ids: ["mine1", "mine4"], text: "Unlock ⛏️ Gold digger and ⛏️ Mining magnate" } },
+  { id: "goldrush", name: "⛏️ The Gold Rush Collection", reward: { ids: ["mine1", "mine4", "mineRun50", "mineGold"], text: "Unlock ⛏️ Gold digger, ⛏️ Mining magnate, 🪨 Regular miner and 🟡 Golden touch" } },
   { id: "gambler99", name: "🦊 Master Gambler Coin", reward: { ids: ["glevel99"], text: "Unlock 💎 Casino legend (Gambler level 99)" } },
   { id: "investor99", name: "🦉 Master Investor Coin", reward: { ids: ["ilevel99"], text: "Unlock 🏛️ Market maker (Investor level 99)" } },
   { id: "logistics99", name: "🦅 Master Logistics Coin", reward: { ids: ["llevel99"], text: "Unlock 🏆 Logistics legend (Logistics level 99)" } },

@@ -51,6 +51,8 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "13 November 2026", title: "Empire of Coins", items: [
+    "⛏️ New Mining achievement <b>🏅 Master Miner</b>: max out every Gold Mine Dig upgrade.",
+    "⛏️ The Gold Rush Collection now also needs <b>🪨 Regular miner</b> and <b>🟡 Golden touch</b> (players who already own it keep it).",
     "🚢 Logistics: the tab shows a <b style=\"color:#ff6b6b\">red ❗ warning</b> while a truck is broken down and not repaired.",
     "Achievement <b>Art market mogul</b> now needs <b>250</b> paintings sold instead of 1,000.",
     "Smoother clicking: the coin's shadow is drawn once instead of being re-blurred on every frame, so fast clicking no longer slows down other browser tabs.",

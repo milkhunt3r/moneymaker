@@ -176,6 +176,7 @@ const ACHIEVEMENTS = [
       { id: "mineUp1",     icon: "⬆️", name: "First upgrade",      desc: "Buy any Gold Mine Dig upgrade",              goal: 1,   get: () => ups().some(k => (Mn().up || {})[k] > 0) ? 1 : 0 },
       { id: "mineHoard",   icon: "🏦", name: "Hoarder",            desc: "Have 100 ore in your vault at once",         goal: 100, get: () => Object.values(Mn().vault || {}).reduce((a, b) => a + b, 0) },
       { id: "mineMaxUp",   icon: "🪔", name: "Fully lit",          desc: "Max out any Gold Mine Dig upgrade",          goal: 1,   get: () => ups().some(k => ((Mn().up || {})[k] || 0) >= MINE_UPS[k].max) ? 1 : 0 },
+      { id: "mineMaster",  icon: "🏅", name: "Master Miner",       desc: "Max out every Gold Mine Dig upgrade",        goal: 1,   get: () => ups().length && ups().every(k => ((Mn().up || {})[k] || 0) >= MINE_UPS[k].max) ? 1 : 0 },
     ].map(a => ({ ...a, cat: "mine" }));
   })(),
   { id: "satellite", cat: "logistics", icon: "🛰️", name: "Eye in the sky", desc: "Launch a satellite", goal: 1, get: () => state.science && state.science.satellite ? 1 : 0 },
