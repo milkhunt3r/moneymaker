@@ -51,6 +51,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "13 November 2026", title: "Empire of Coins", items: [
+    "⛏️ Gold Mine Dig: the miner has new art! The mole miner stands, swings his pickaxe sideways, strikes down and climbs, depending on what you do.",
     "⛏️ New Mining achievements: 🔥 Survive the lava (150 m), 🏁 Rock bottom (250 m), 📦 First chest, 💰 Treasure hunter (50 chests), 🛗 Going up (use a lift) and 🛗 Frequent rider (20 lifts).",
     "⛏️ <b>Gold Mine Dig: the deep mine!</b> The mine is now <b>250 m</b> deep and 25 tiles wide (the view follows you sideways), in three layers: the old mine, the 🌋 <b>lava zone</b> (100–170 m, hard basalt) and the 💠 <b>crystal caves</b> (170–250 m, even harder rock).",
     "🌋 Lava: pools block the way, and rocks with glowing red cracks hide <b>lava pockets</b> that flow down and sideways when you break them (never up). Getting caught saves only 30% of your ore. 🔥 Below 150 m the heat burns your lamp 25% faster.",

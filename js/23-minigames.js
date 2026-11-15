@@ -366,13 +366,15 @@ function mineStep(dx, dy) {
   if (dx) R.face = dx;
   const nx = R.x + dx, ny = R.y + dy;
   if (nx < 0 || nx >= MINE_W || ny < 0 || ny >= MINE_H) return;
-  if (ny === 0 && dy === 0 && R.y === 0) { R.x = nx; R.msg = ""; return mineDraw(); }   // walking on the surface is free
+  if (ny === 0 && dy === 0 && R.y === 0) { R.x = nx; R.msg = ""; minerPose = "stand"; return mineDraw(); }   // walking on the surface is free
   const i = mIdx(nx, ny), t = R.tile[i];
   if (t === 4) { R.msg = "🪨 Bedrock: too hard to dig. Find another way."; return mineDraw(); }
   if (t === 5) { R.msg = "🌋 Lava! Far too hot to cross. Find another way."; return mineDraw(); }
   if (t === 0) {
     R.x = nx; R.y = ny; R.lamp -= ny === 0 ? 0 : walkCost(ny);
+    if (dy < 0 && ny > 0) setMinerPose("climb", 400); else minerPose = "stand";
   } else {
+    setMinerPose(dy > 0 ? "dig-down" : "dig-side");
     const o = R.ore[i];
     if (o === "chest" && bagUsed(R) + CHEST_SLOTS > mineBagMax()) { R.msg = `🎒 No room for the chest: it needs ${CHEST_SLOTS} free bag slots.`; return mineDraw(); }
     if (o && o !== "chest" && bagUsed(R) >= mineBagMax()) { R.msg = "🎒 Your bag is full! Head back up."; return mineDraw(); }
@@ -431,6 +433,17 @@ function lavaFlow() {
 }
 
 // ----- drawing -----
+/* 🦫 miner art (assets/mine/*.webp, 256×256, all facing right, same scale): the pose follows what you just did.
+   Digging poses show for a moment after a hit, climbing while you move up, standing otherwise. */
+const MINER_IMG = {};
+["stand", "dig-down", "dig-side", "climb"].forEach(k => {
+  const im = new Image(); im.onload = () => { if (M.run) mineDraw(); }; im.src = `assets/mine/miner-${k}.webp`; MINER_IMG[k] = im;
+});
+let minerPose = "stand", minerPoseTimer = null;
+function setMinerPose(pose, ms = 260) {
+  minerPose = pose; clearTimeout(minerPoseTimer);
+  minerPoseTimer = setTimeout(() => { minerPose = "stand"; if (M.run) mineDraw(); }, ms);
+}
 const TS = 32, VIEW_ROWS = 14;
 const tileRand = (i, k) => { let h = (i * 374761393 + k * 668265263) | 0; h = (h ^ (h >>> 13)) * 1274126177; return ((h ^ (h >>> 16)) >>> 0) / 4294967295; };
 function mineDraw() {
@@ -537,7 +550,15 @@ function mineDraw() {
       }
     }
   }
-  // miner (placeholder): a mole with a hard hat and lamp
+  // 🦫 the miner: art if it has loaded (feet on the bottom of the tile, a bit taller than one tile), else the simple drawing
+  const img = MINER_IMG[R.y === 0 && minerPose === "climb" ? "stand" : minerPose];
+  if (img && img.complete && img.naturalWidth) {
+    const D = TS * 1.6;
+    ctx.save(); ctx.translate(mx, my + TS / 2 + 1); ctx.scale(R.face, 1);
+    ctx.imageSmoothingQuality = "high"; ctx.drawImage(img, -D / 2, -D, D, D);
+    ctx.restore();
+    return;
+  }
   ctx.save(); ctx.translate(mx, my); ctx.scale(R.face, 1);
   ctx.fillStyle = "#6b4a3a"; ctx.beginPath(); ctx.ellipse(0, 4, 11, 10, 0, 0, Math.PI * 2); ctx.fill();
   ctx.fillStyle = "#ff9fb0"; ctx.beginPath(); ctx.arc(10, 5, 3.5, 0, Math.PI * 2); ctx.fill();
