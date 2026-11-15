@@ -1305,6 +1305,14 @@ button.btn.small { padding: 4px 8px; font-size: 12px; }
 .mineUpCost .short { color: #ff8a8a; }
 .mineUp .btn { align-self: flex-start; margin-top: 2px; }
 .vaultSell { display: flex; flex-direction: column; gap: 8px; margin: 10px 0 14px; text-align: left; }
+.vsRow { padding: 8px 12px; border-radius: 12px; background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 211, 77, 0.2); }
+.vsHead { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; font-size: 14px; }
+.vsHead .oreIcon { width: 26px; height: 26px; vertical-align: 0; }
+.vsNeed { font-size: 12px; font-weight: 700; color: #ffb347; background: rgba(255, 179, 71, 0.12); border-radius: 999px; padding: 1px 8px; }
+.vsCtrl { display: flex; align-items: center; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+.vsCtrl input[type=range] { flex: 1 1 140px; accent-color: #ffd34d; }
+.vsCtrl .btn.small { min-width: 34px; padding: 4px 10px; }
+.vsCount { min-width: 120px; text-align: right; font-size: 14px; color: #ffd34d; }
 
 /* ⭐ Legacy badge (top-left of the coin area) */
 #legacyBadge { position: absolute; left: 24px; top: 16px; z-index: 4; display: flex; align-items: center; gap: 6px; cursor: pointer;
@@ -1410,3 +1418,5 @@ body.phone #pillTip { left: 50%; } body.phone #energyTip { left: 0; transform: n
   border-radius: 50%; background: #e53935; color: #fff; font-size: 12px; font-weight: 900; line-height: 1; box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35); }
 
 .gameIconImg { width: 60px; height: 60px; object-fit: contain; display: block; margin: -3px auto 0; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5)); }
+/* tall pop-ups (e.g. 🏦 sell vault ore) scroll instead of running off the screen; the ornate settings panel keeps its own layout */
+#modalBox:not(.ornate) { max-height: calc(100vh - 40px); overflow-y: auto; box-sizing: border-box; }

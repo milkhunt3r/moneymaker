@@ -338,23 +338,64 @@ function useLift() {
 }
 
 // 💰 sell ore from the vault (normal value, no gold rush bonus)
+// 💰 sell ore from the vault: pick how many of each ore (slider, − / +, Max), see the total, then sell
+const upgradeNeed = (k) => Object.keys(MINE_UPS).reduce((a, u) => { const c = upCost(u); return a + (c && c[1][k] ? c[1][k] : 0); }, 0);
 function showVaultSell() {
   const have = ORE_KEYS.filter(k => (M.vault[k] || 0) > 0);
-  const total = have.reduce((a, k) => a + M.vault[k] * oreValue(k), 0);
+  if (!have.length) { showModal(`<h2>🏦 Sell ore from your vault</h2><p>Your vault is empty.</p><button class="btn ghost" data-modal="close">Close</button>`); return; }
   showModal(`<h2>🏦 Sell ore from your vault</h2>
-    ${have.length ? `<div class="vaultSell">${have.map(k => `<div class="row"><span>${oreIcon(k)} ${ORES[k].name} ×${M.vault[k]} <span class="muted">(${fmt(oreValue(k))} each)</span></span>
-        <button class="btn small" data-vsell="${k}">Sell for ${fmt(M.vault[k] * oreValue(k))}</button></div>`).join("")}</div>
-      <button class="btn big" data-vsell="all">💰 Sell everything for ${fmt(total)}</button>` : `<p>Your vault is empty.</p>`}
+    <p class="muted">Choose how much of each ore to sell. Ore you keep pays for ⬆️ upgrades.</p>
+    <div class="vaultSell">${have.map(k => { const need = upgradeNeed(k);
+      return `<div class="vsRow" data-ore="${k}">
+        <div class="vsHead">${oreIcon(k)} <b>${ORES[k].name}</b> <span class="muted">${M.vault[k]} in vault · ${fmt(oreValue(k))} each</span>
+          ${need ? `<span class="vsNeed" title="Your next upgrade levels need this much ${ORES[k].name}">⬆️ next upgrades need ${need}</span>` : ""}</div>
+        <div class="vsCtrl">
+          <button class="btn small ghost" data-vs="minus" aria-label="Less">−</button>
+          <input type="range" min="0" max="${M.vault[k]}" value="0" step="1" data-vsrange="${k}">
+          <button class="btn small ghost" data-vs="plus" aria-label="More">+</button>
+          <button class="btn small ghost" data-vs="max">Max</button>
+          <span class="vsCount"><b data-vscount="${k}">0</b> = <span data-vsval="${k}">0</span></span>
+        </div></div>`; }).join("")}</div>
+    <div class="moneyRow" style="justify-content:center">
+      <button class="btn ghost small" data-vs="allmax">Select everything</button>
+      <button class="btn ghost small" data-vs="clear">Clear</button></div>
+    <button class="btn big" data-vsell="go" disabled>💰 Sell for 0</button>
     <button class="btn ghost" data-modal="close">Close</button>`);
 }
+function vaultSellUpdate() {
+  let total = 0, n = 0;
+  document.querySelectorAll("#modalBox [data-vsrange]").forEach(r => {
+    const k = r.dataset.vsrange, q = +r.value, v = q * oreValue(k); total += v; n += q;
+    const c = document.querySelector(`#modalBox [data-vscount="${k}"]`), vv = document.querySelector(`#modalBox [data-vsval="${k}"]`);
+    if (c) c.textContent = q; if (vv) vv.textContent = fmt(v);
+  });
+  const go = document.querySelector("#modalBox [data-vsell=go]");
+  if (go) { go.disabled = !n; go.textContent = n ? `💰 Sell ${n} ore for ${fmt(total)}` : "💰 Sell for 0"; }
+}
+$("modalBox").addEventListener("input", (e) => { if (e.target.closest("[data-vsrange]")) vaultSellUpdate(); });
 $("modalBox").addEventListener("click", (e) => {
-  const b = e.target.closest("[data-vsell]"); if (!b) return;
-  const keys = b.dataset.vsell === "all" ? ORE_KEYS : [b.dataset.vsell];
-  let value = 0;
-  keys.forEach(k => { value += (M.vault[k] || 0) * oreValue(k); M.vault[k] = 0; });
+  const c = e.target.closest("[data-vs]");
+  if (c) {
+    const all = [...document.querySelectorAll("#modalBox [data-vsrange]")];
+    if (c.dataset.vs === "allmax") all.forEach(r => r.value = r.max);
+    else if (c.dataset.vs === "clear") all.forEach(r => r.value = 0);
+    else {
+      const r = c.closest(".vsRow").querySelector("[data-vsrange]");
+      if (c.dataset.vs === "minus") r.value = Math.max(0, +r.value - 1);
+      if (c.dataset.vs === "plus") r.value = Math.min(+r.max, +r.value + 1);
+      if (c.dataset.vs === "max") r.value = r.max;
+    }
+    return vaultSellUpdate();
+  }
+  const b = e.target.closest("[data-vsell]"); if (!b || b.disabled) return;
+  let value = 0, n = 0;
+  document.querySelectorAll("#modalBox [data-vsrange]").forEach(r => {
+    const k = r.dataset.vsrange, q = Math.min(+r.value, M.vault[k] || 0);   // never more than you have
+    if (q > 0) { value += q * oreValue(k); n += q; M.vault[k] -= q; }
+  });
   if (!value) return;
-  state.money += value; M.earned += value; clickedThisSecond += value;
-  showNotice(`💰 Sold vault ore for ${fmt(value)}!`);
+  state.money += value; M.earned += value; clickedThisSecond += value;   // counts as income (taxes)
+  showNotice(`💰 Sold ${n} vault ore for ${fmt(value)}!`);
   save(); updateCounter(); renderMine();
   if (ORE_KEYS.some(k => M.vault[k] > 0)) showVaultSell(); else hideModal();
 });
