@@ -238,6 +238,9 @@ const SAVE_KEY = "coinClickerSave", PREFS_KEY = "coinClickerPrefs", IMG_DB = "co
 // 🎨 painted icons (assets/icons/ico-*.webp), used in place of some emoji: ico("lock"), ico("prestige", "big")
 const ico = (n, cls = "") => `<img class="ico ${cls}" src="assets/icons/ico-${n}.webp" alt="">`;
 const bizIco = (id) => ico("biz-" + id, "biz");   // 🏢 business / special building pictures
+// 🧮 accountant / HR manager picture (assets/icons/ico-st-<key>.webp), or the emoji for anything without one
+const STAFF_PICS = ["numbers", "criminal", "embezzler", "gambler", "motivator", "friendship", "talent", "schedule"];
+const staffIco = (key, o, cls = "staffI") => STAFF_PICS.includes(key) ? ico("st-" + key, cls) : (o ? o.emoji + " " : "");
 const PREF_KEYS = ["view", "gamePage", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage",
                    "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage"];
 function splitState(st) {   // -> { progress, prefs }

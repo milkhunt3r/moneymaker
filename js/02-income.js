@@ -236,7 +236,7 @@ function render() {
       for (const key in ACCOUNTANTS) {
         const a = ACCOUNTANTS[key];
         html += `<button class="choice" data-action="accountant" data-company="${ci}" data-pick="${key}">
-                   <b>${a.emoji} ${a.name}</b><small>${a.desc}</small></button>`;
+                   <b>${staffIco(key, a, "staffI pick")}${a.name}</b><small>${a.desc}</small></button>`;
       }
       html += `</div></div>`;
       return html;
@@ -244,12 +244,12 @@ function render() {
 
     // Step 2: choose HR
     if (!t.noStaff && !c.hr) {
-      html += `<div class="staff">${ACCOUNTANTS[c.accountant].emoji} Accountant: <b>${ACCOUNTANTS[c.accountant].name}</b></div>`;
+      html += `<div class="staff">${staffIco(c.accountant, ACCOUNTANTS[c.accountant])}Accountant: <b>${ACCOUNTANTS[c.accountant].name}</b></div>`;
       html += `<h4>Hire your HR manager</h4><div class="choices">`;
       for (const key in HR_OPTIONS) {
         const h = HR_OPTIONS[key];
         html += `<button class="choice" data-action="hr" data-company="${ci}" data-pick="${key}">
-                   <b>${h.emoji} ${h.name}</b><small>${h.desc}</small></button>`;
+                   <b>${staffIco(key, h, "staffI pick")}${h.name}</b><small>${h.desc}</small></button>`;
       }
       html += `</div></div>`;
       return html;
@@ -257,13 +257,13 @@ function render() {
 
     // Minimized: just a one-line summary
     if (c.collapsed) {
-      html += `<div class="muted">${t.noStaff ? "" : `${ACCOUNTANTS[c.accountant].emoji} ${HR_OPTIONS[c.hr].emoji} · `}${c.workers.length} / ${maxWorkers(c)} workers</div></div>`;
+      html += `<div class="muted">${t.noStaff ? "" : `${staffIco(c.accountant, ACCOUNTANTS[c.accountant])}${staffIco(c.hr, HR_OPTIONS[c.hr])}· `}${c.workers.length} / ${maxWorkers(c)} workers</div></div>`;
       return html;
     }
 
     // Step 3: the running company
-    if (!t.noStaff) html += `<div class="staff">${ACCOUNTANTS[c.accountant].emoji} Accountant: <b>${ACCOUNTANTS[c.accountant].name}</b></div>
-             <div class="staff">${HR_OPTIONS[c.hr].emoji} HR: <b>${HR_OPTIONS[c.hr].name}</b></div>`;
+    if (!t.noStaff) html += `<div class="staff">${staffIco(c.accountant, ACCOUNTANTS[c.accountant])}Accountant: <b>${ACCOUNTANTS[c.accountant].name}</b></div>
+             <div class="staff">${staffIco(c.hr, HR_OPTIONS[c.hr])}HR: <b>${HR_OPTIONS[c.hr].name}</b></div>`;
     html += `<h4>Workers (${c.workers.length} / ${maxWorkers(c)})</h4>`;
 
     if (c.workers.length === 0) html += `<div class="muted">No workers yet. Hire someone to start earning!</div>`;

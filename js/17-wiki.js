@@ -76,9 +76,9 @@ function wikiIncome() {
     <h3>👤 Worker traits</h3>
     ${wt(["Trait", "Effect", "Businesses", "Chance"], traitRows)}
     <h3>🧮 Accountants (one per business)</h3>
-    ${wt(["Accountant", "Effect"], Object.values(ACCOUNTANTS).map(a => [`${a.emoji} ${a.name}`, a.desc]))}
+    ${wt(["Accountant", "Effect"], Object.entries(ACCOUNTANTS).map(([k, a]) => [`${staffIco(k, a)}${a.name}`, a.desc]))}
     <h3>🤝 HR managers (one per business)</h3>
-    ${wt(["HR", "Effect"], Object.values(HR_OPTIONS).map(a => [`${a.emoji} ${a.name}`, a.desc]))}
+    ${wt(["HR", "Effect"], Object.entries(HR_OPTIONS).map(([k, a]) => [`${staffIco(k, a)}${a.name}`, a.desc]))}
     <h3>⚡ Boosters</h3>
     ${wt(["Booster", "Price", "Effect", "Cooldown"], [
       ["⚡ Energy drink", fmt(ENERGY_PRICE), `Clicks ×${ENERGY_MULTIPLIER} for ${ENERGY_SECONDS} s`, `${ENERGY_COOLDOWN / 60} min`],

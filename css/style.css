@@ -1498,3 +1498,7 @@ body.phone .tabIco { width: 22px; height: 22px; margin-right: 4px; }
 #casinoGame .gameCard h3 .casIco > .ico.biz { width: 56px; height: 56px; }
 #casinoGame .gameCard h3 .casTier .ico { width: 22px; height: 22px; margin-left: -8px; }
 #casinoGame .gameCard h3 .casTier { right: -10px; bottom: -2px; }
+
+/* 🧮 staff pictures: accountants and HR managers */
+.ico.staffI { width: 1.7em; height: 1.7em; vertical-align: -0.55em; margin-right: 0.3em; }
+.choice .ico.staffI.pick { display: block; width: 52px; height: 52px; margin: 0 auto 4px; }
