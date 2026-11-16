@@ -205,9 +205,9 @@ function render() {
   const page = ["biz", "special", "science"].includes(state.incomePage) ? state.incomePage : "biz";
   const sciOpen = typeof scienceOpen === "function" && scienceOpen();
   const tabs = `<nav class="incomeTabs">
-    <button class="incomeTab ${page === "biz" ? "active" : ""}" data-ipage="biz">🏢 Businesses</button>
-    <button class="incomeTab ${page === "special" ? "active" : ""}" data-ipage="special">⭐ Special</button>
-    <button class="incomeTab ${page === "science" ? "active" : ""}" data-ipage="science">${sciOpen ? "" : "🔒 "}🔬 Science</button></nav>`;
+    <button class="incomeTab ${page === "biz" ? "active" : ""}" data-ipage="biz">${ico("business")}Businesses</button>
+    <button class="incomeTab ${page === "special" ? "active" : ""}" data-ipage="special">${ico("special")}Special</button>
+    <button class="incomeTab ${page === "science" ? "active" : ""}" data-ipage="science">${sciOpen ? "" : ico("lock")}${ico("science")}Science</button></nav>`;
   let html = `<div ${page === "biz" ? "" : "hidden"} id="incBiz"><h2>🏢 Businesses</h2>`;
 
   // One owned company as a card
@@ -673,7 +673,7 @@ function showModal(html) {
 function hideModal() { $("modal").hidden = true; $("modalBox").classList.remove("gold", "wide", "about", "ornate"); }
 
 function showPaymentPopup(d) {
-  showModal(`<h2>🧾 Tax payment due</h2>
+  showModal(`<h2>${ico("tax", "h")}Tax payment due</h2>
              <p>Time is up for your tax bill of <b>${fmt(d.amount)}</b>.</p>
              <p class="muted">The game is paused until you pay.</p>
              <button class="btn big" data-modal="pay">Pay ${fmt(d.amount)}</button>`);
@@ -728,14 +728,14 @@ function updateDebt() {
   const banners = document.querySelectorAll(".debtBanner");
   if (state.taxDebts.length === 0) { btn.hidden = true; banners.forEach(b => b.hidden = true); return; }
   const soonest = Math.min(...state.taxDebts.map(d => d.timeLeft));
-  const text = `🧾 TAX DEBT: ${fmt(totalDebt())} · ${clock(soonest)} left · click to pay`;
-  banners.forEach(b => { b.hidden = false; b.textContent = text; });
+  const text = `${ico("tax")}TAX DEBT: ${fmt(totalDebt())} · ${clock(soonest)} left · click to pay`;
+  banners.forEach(b => { b.hidden = false; if (b.innerHTML !== text) b.innerHTML = text; });
 
   // soonest deadline first
   const bills = [...state.taxDebts].sort((a, b) => a.timeLeft - b.timeLeft);
   btn.hidden = false;
   btn.classList.toggle("urgent", bills[0].timeLeft <= 60);
-  btn.innerHTML = `🧾 TAX DEBT: ${fmt(totalDebt())}
+  btn.innerHTML = `${ico("tax")}TAX DEBT: ${fmt(totalDebt())}
     <small>Click to pay</small>
     ${bills.map(d => `<small>${fmt(d.amount)}${d.extended ? " (+50%, last chance!)" : ""} · ${clock(d.timeLeft)} left</small>`).join("")}`;
 }

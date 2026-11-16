@@ -308,12 +308,12 @@ function updateLegacyBadge() {
   b.hidden = !(L.count > 0);
   if (b.hidden) return;
   const icons = legacyBonuses().filter(x => x.on).map(x => x.icon).join("");
-  b.innerHTML = `⭐ Prestige ${L.count}/${PRESTIGE_MAX} <span class="lgIcons">${icons}</span>`;
+  b.innerHTML = `${ico("prestige")}Prestige ${L.count}/${PRESTIGE_MAX} <span class="lgIcons">${icons}</span>`;
 }
 function showLegacy() {
   const L = state.legacy, done = L.count >= PRESTIGE_MAX;
   const NAMES = { tycoon: "💼 Tycoon's Legacy", empire: "🚢 Global Empire", vip: "🎟️ VIP Coins" };
-  showModal(`<h2>⭐ Your Legacy</h2>
+  showModal(`<h2>${ico("prestige", "h")}Your Legacy</h2>
     <div class="legacySteps">${PRESTIGE_STEPS.map((v, i) => `<span class="${i < L.count ? "done" : ""}">${fmt(v)}</span>`).join("")}</div>
     <p>${done ? "🏆 All 4 prestiges done: you finished the game! You can keep playing." :
       `Prestige <b>${L.count} of ${PRESTIGE_MAX}</b> · next at <b>${fmt(prestigeAt())}</b> (you have ${fmt(state.money)})`}</p>

@@ -716,7 +716,7 @@ function showArtPage(p) {
 function updateArtTab() {   // the 🎮 Mini-games tab shows 🔒 until at least one mini-game is open
   const tab = document.querySelector('.tab[data-view="games"]');
   const any = state.art.unlocked || (typeof mineUnlocked === "function" && mineUnlocked());
-  const html = (any ? "" : "🔒 ") + '<img class="tabIco" src="assets/icons/tab-games.webp" alt="">Mini-games';
+  const html = (any ? "" : ico("lock", "lockS")) + '<img class="tabIco" src="assets/icons/tab-games.webp" alt="">Mini-games';
   if (tab && tab.innerHTML !== html) tab.innerHTML = html;
 }
 function renderArt() {

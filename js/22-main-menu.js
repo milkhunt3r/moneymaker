@@ -51,6 +51,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "13 November 2026", title: "Empire of Coins", items: [
+    "🎨 More painted icons: Businesses / Special / Science buttons, the settings gear, the padlock on locked tabs, the Prestige crown, tax debts and the \"While you were away\" pop-up.",
     "🎨 New painted icons on the main tabs (Income, Casino, Investing, Logistics, Mini-games, Achievements, Shop, Wiki).",
     "⛏️ Gold Mine Dig: cleaner surface edge (the grass sits on the ground instead of covering the first row) and no more stray bedrock blocks right under the grass.",
     "📖 Wiki: the 🌌 secret Science buildings (2nd University, Astronomy Research Center, Orbital Space Station) are now listed once your first prestige has unlocked them.",

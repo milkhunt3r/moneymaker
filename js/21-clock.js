@@ -100,7 +100,7 @@ function applyOffline(seconds) {
   updateCounter();
   if (seconds < CATCHUP_MAX || (!total && !arriving && !chips && !nobelAway)) { if (nobelAway) showNobel(); return; }
   showModal(`<img class="awayLogo" src="assets/logo/logo-banner.webp" alt="Empire of Coins">
-    <h2>🌙 While you were away</h2>
+    <h2>${ico("offline", "h")}While you were away</h2>
     <p>You were gone for <b>${awayText(seconds)}</b>${seconds > OFFLINE_CAP ? ` (up to ${OFFLINE_CAP / 3600} hours count)` : ""}.
       Your empire kept working at ${OFFLINE_RATE * 100}% speed:</p>
     ${rows.length ? `<table class="wikiTable">${rows.map(([k, v]) => `<tr><td>${k}</td><td style="text-align:right"><b class="income">+${fmt(v)}</b></td></tr>`).join("")}
