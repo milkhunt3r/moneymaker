@@ -277,7 +277,16 @@ function wikiArt() {
       The collection starts with ${ART_SLOTS_START} slots; each +${ART_SLOTS_STEP} slots costs ${fmt(ART_SLOT_PRICE)}, then ${fmt(ART_SLOT_PRICE + ART_SLOT_PRICE_STEP)}, ${fmt(ART_SLOT_PRICE + 2 * ART_SLOT_PRICE_STEP)}… up to a maximum of ${ART_SLOTS_MAX} slots. A prestige keeps the gallery unlocked, your bought slots and all your paintings; only the 🏛️ Art Gallery business is reset (buy it again to earn from the paintings).</p>
     <h3>🏛️ Art Gallery business</h3>
     <p>With ${GALLERY_NEED} paintings in your collection you can buy the 🏛️ Art Gallery special business (💰 Income tab) for ${fmt(GALLERY_PRICE)}.
-      It earns ${fmt(GALLERY_PER_PAINTING)} / sec for every painting in your collection, up to ${fmt(GALLERY_MAX)} / sec. Selling paintings lowers it.</p>`;
+      It earns ${fmt(GALLERY_PER_PAINTING)} / sec for every painting in your collection, up to ${fmt(GALLERY_MAX)} / sec. Selling paintings lowers it.</p>
+    ${typeof secrets2Open === "function" && secrets2Open() && typeof GENE_TOTAL === "number" ? `<h2>🌌🌌 🧬 Gene Splicer</h2>
+    <p>Opens when you buy the 🧬 Genetics Laboratory (🔬 Science) and stays open for good, even after a prestige.
+      You start with 5 DNA samples: 🧑 Human, 🐟 Fish, 🦎 Lizard, 🕷️ Spider and 🌱 Plant. Put two samples in the splicer (the same one twice works too):
+      if they make a species, it goes into your ❄️ freezer and becomes a new sample to splice with. There are ${GENE_TOTAL} species to find.</p>
+    ${wt(["Rarity", "First discovery pays"], ["c", "u", "r", "e", "l"].map(k => [GENE_RARITY[k].name, `${GENE_RARITY[k].min} min of income`]))}
+    <p>Splicing a species you already know pays nothing, but gives you one more DNA sample of it. The reward uses the same income base as the Gold Mine Dig.</p>
+    <p>🧪 <b>DNA:</b> you can hold up to ${GENE_DNA_MAX} samples of each species. Every 10 minutes every species you know gets +1 (also while you are away).
+      A splice uses 1 of each sample (2 if both are the same). Two samples that make nothing cost nothing and are marked ❌, so you never try them twice.</p>
+    <p>💡 <b>Hints:</b> spend ${GENE_HINT_SCI} scientists from your Universities to reveal one recipe you can make right now. The 📖 Codex shows every species you've found and how you made it.</p>` : ""}`;
 }
 const WIKI_RENDER = { art: wikiArt, general: wikiGeneral, income: wikiIncome, casino: wikiCasino, investing: wikiInvesting, logistics: wikiLogistics, achievements: wikiAchievements, shop: wikiShop };
 function renderWiki() {

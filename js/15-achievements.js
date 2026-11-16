@@ -10,6 +10,8 @@ const ACH_CATEGORIES = [
   { id: "art", name: "🖼️ Art Gallery" }, { id: "mine", name: "⛏️ Mining" },
   // 🌌 secret: invisible (also not counted) until the 1st prestige
   { id: "secret", name: "🌌 Secrets", hidden: () => !((state.legacy && state.legacy.count) >= 1) },
+  // 🧬 Gene Splicer: invisible (also not counted) until the 2nd prestige
+  { id: "genetics", name: "🧬 Genetics", hidden: () => !((state.legacy && state.legacy.count) >= 2) },
 ];
 const achCatsShown = () => ACH_CATEGORIES.filter(c => !(c.hidden && c.hidden()));
 // an achievement with a tier stays hidden until that many prestiges (🌌🌌 second-tier secrets: 2)
@@ -193,6 +195,19 @@ const ACHIEVEMENTS = [
       { id: "mineLift20",  icon: "🛗", name: "Frequent rider",     desc: "Take the mine lift up 20 times",             goal: 20,  get: () => Mn().liftsUsed || 0 },
       { id: "mineMaster",  icon: "🏅", name: "Master Miner",       desc: "Max out every Gold Mine Dig upgrade",        goal: 1,   get: () => ups().length && ups().every(k => ((Mn().up || {})[k] || 0) >= MINE_UPS[k].max) ? 1 : 0 },
     ].map(a => ({ ...a, cat: "mine" }));
+  })(),
+  // 🧬 Gene Splicer (🎮 Mini-games, secret: the whole section is hidden until the 2nd prestige). state.genetics comes from js/24-genetics.js.
+  ...(() => {
+    const GS = () => (typeof geneFound === "function" ? geneFound() : 0), GK = (n) => (state.genetics && (state.genetics.known || []).includes(n) ? 1 : 0);
+    return [
+      { id: "gene1",       icon: "🧬", name: "It's alive!",        desc: "Discover your first new species",  goal: 1,   get: GS },
+      { id: "gene10",      icon: "🧫", name: "Lab assistant",      desc: "Discover 10 species",              goal: 10,  get: GS },
+      { id: "gene50",      icon: "🔬", name: "Geneticist",         desc: "Discover 50 species",              goal: 50,  get: GS },
+      { id: "gene100",     icon: "🧬", name: "Master of life",     desc: "Discover 100 species",             goal: 100, get: GS },
+      { id: "geneKraken",  icon: "🦑", name: "Release the Kraken", desc: "Discover the Kraken",              goal: 1,   get: () => GK("Kraken") },
+      { id: "geneElder",   icon: "🐲", name: "Dragon whisperer",   desc: "Discover the Elder dragon",        goal: 1,   get: () => GK("Elder dragon") },
+      { id: "geneUnicorn", icon: "🦄", name: "One of a kind",      desc: "Discover the Unicorn",             goal: 1,   get: () => GK("Unicorn") },
+    ].map(a => ({ ...a, cat: "genetics" }));
   })(),
   { id: "satellite", cat: "logistics", icon: "🛰️", name: "Eye in the sky", desc: "Launch a satellite", goal: 1, get: () => state.science && state.science.satellite ? 1 : 0 },
   { id: "logi100s",   cat: "logistics", icon: "💎", name: "Shipping tycoon",  desc: "Earn 100 scoin from logistics",      goal: 100 * SC, get: () => logi.earned, money: true },

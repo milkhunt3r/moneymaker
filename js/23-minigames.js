@@ -833,7 +833,9 @@ function renderGames() {
   updateArtTab();
   const page = state.gamePage;
   $("gamesHub").hidden = !!page; $("mineView").hidden = page !== "mine";
+  const gv = $("geneView"); if (gv) gv.hidden = page !== "gene";
   if (page === "mine") return renderMine();
+  if (page === "gene" && typeof renderGene === "function") return renderGene();
   const art = state.art.unlocked, mine = mineUnlocked(), e = mineEnergy();
   $("gamesHub").innerHTML = `<h2 class="gamesTitle">🎮 Mini-games</h2>
     <p class="muted">Unlock mini-games with your buildings and achievements, then play them to earn extra money.</p>
@@ -851,6 +853,12 @@ function renderGames() {
         ${mine ? vaultLine("small") : ""}
         <button class="btn" data-game="mine" ${mine ? "" : "disabled"}>${M.run ? "▶ Continue" : "▶ Play"}</button>
       </div>
+      ${typeof G !== "undefined" && (G.unlocked || secrets2Open()) ? `<div class="card gameCard secretCard ${G.unlocked ? "" : "locked"}">
+        <div class="gameIcon">🧬</div><h3>Gene Splicer <span class="secretTag">🌌🌌</span></h3>
+        <p class="muted">Splice DNA samples into new species: from frogs and dolphins to dinosaurs, dragons and the kraken.</p>
+        <div class="gameStatus">${G.unlocked ? `🧬 ${geneFound()} / ${GENE_TOTAL} species` : "🔒 Buy the 🧬 Genetics Laboratory (💰 Income → 🔬 Science)"}</div>
+        <button class="btn" data-game="gene" ${G.unlocked ? "" : "disabled"}>▶ Play</button>
+      </div>` : ""}
       <div class="card gameCard soon"><div class="gameIcon">❔</div><h3>More coming soon</h3>
         <p class="muted">New mini-games will unlock with other buildings.</p></div>
     </div>`;
