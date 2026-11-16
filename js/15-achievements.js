@@ -227,8 +227,14 @@ const ACH_PICS = new Set(["cash1s", "cash10s", "cash100s", "cash1g", "cash5g", "
   "prop1", "prop10", "re1s", "re10s", "reSold100", "reCrash", "etf1s", "etf10s", "gold10s", "petf10s", "petf100s", "trade1",
   "trade10", "trade100", "gold1s", "petfFull", "ilevel5", "ilevel25", "ilevel50", "ilevel99",
   "llevel5", "llevel25", "llevel50", "llevel99", "truck15", "tanker1", "tanker10", "plane1", "plane5", "con100", "con1k", "con10k", "logi1s", "logi100s",
-  "mineRun1", "mineRun50", "mineRun250", "mineDeep50", "mineDeep80", "mineDeep100", "mineFullBag", "mineClose", "mineRescue", "mineUp1", "mineHoard", "mineDeep150", "mineDeep250", "mineMaster", "mineChest50", "mineMaxUp"]);
-const achIcon = (a, cls = "") => ACH_PICS.has(a.id) ? `<img class="achPic ${cls}" src="assets/ach/${a.id}.webp" alt="">` : a.icon;
+  "mineRun1", "mineRun50", "mineRun250", "mineDeep50", "mineDeep80", "mineDeep100", "mineFullBag", "mineClose", "mineRescue", "mineUp1", "mineHoard", "mineDeep150", "mineDeep250", "mineMaster", "mineChest50", "mineMaxUp",
+  "arteasy50", "arteasy75", "arteasy90", "artmedium50", "artmedium75", "artmedium90", "arthard50", "arthard75", "arthard90",
+  "artcol10", "artcol50", "artcol100", "artslots", "artsold1", "artsold50", "artsold100", "artsold1000"]);
+const achIcon = (a, cls = "") => {
+  if (!ACH_PICS.has(a.id)) return a.icon;
+  const diff = (a.id.match(/^art(easy|medium|hard)\d/) || [])[1];   // 🖼️ Art Gallery brushes: a dot shows Easy / Medium / Hard
+  return `<img class="achPic ${cls}" src="assets/ach/${a.id}.webp" alt="">${diff && !cls ? `<span class="achDiff ${diff}"></span>` : ""}`;
+};
 const achDone = () => achShown().filter(a => state.achievements[a.id]).length;
 function achValue(a) { try { return Math.max(0, a.get() || 0); } catch (err) { return 0; } }
 

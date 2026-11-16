@@ -1508,3 +1508,7 @@ body.phone .tabIco { width: 22px; height: 22px; margin-right: 4px; }
 .ach .ico.pic .achPic { width: 52px; height: 52px; object-fit: contain; }
 .ach.done .ico.pic { filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5)); }
 .achPic.inl { width: 1.6em; height: 1.6em; vertical-align: -0.45em; }
+
+.ach .ico.pic { position: relative; }
+.achDiff { position: absolute; right: -2px; bottom: -2px; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #1b1c2a; }
+.achDiff.easy { background: #43c463; } .achDiff.medium { background: #f2c531; } .achDiff.hard { background: #e5484d; }
