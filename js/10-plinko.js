@@ -178,7 +178,7 @@ function plinkoMsg(text) { plinko.message = text; renderPlinkoControls(); }
 function renderPlinko() {
   $("casinoGame").innerHTML = `
     <div class="card">
-      <div class="row"><div><h2 style="margin:0">${plinkoCfg().emoji} ${plinkoCfg().title}</h2>
+      <div class="row"><div><h2 style="margin:0">${casIco(currentGame)}${plinkoCfg().title}</h2>
         <div class="muted">Bet ${coins(plinkoCfg().min)} – ${coins(plinkoCfg().max)} per ball · drop up to ${PLINKO_MAX_BALLS} balls at once · 12 rows · 0.3× to 250×</div></div>
         <button class="btn ghost small" data-back="1" id="plinkoBack">← All games</button></div>
       <canvas id="plinkoCanvas" width="${PW}" height="${PH}"></canvas>

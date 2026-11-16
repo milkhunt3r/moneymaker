@@ -51,6 +51,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "13 November 2026", title: "Empire of Coins", items: [
+    "🎰 Casino lobby: every game has a painted picture, with 💎 badges for the High roller and Super high roller tables.",
     "🎨 Science buildings, the satellite and your scientists have painted pictures too.",
     "🎨 Every business and special building now has its own painted picture (Hot Dog Stand to Trading Port).",
     "🎨 More painted icons: Businesses / Special / Science buttons, the settings gear, the padlock on locked tabs, the Prestige crown, tax debts and the \"While you were away\" pop-up.",

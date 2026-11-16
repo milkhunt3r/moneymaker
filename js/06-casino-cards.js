@@ -360,7 +360,7 @@ function renderBlackjack() {
 
   $("casinoGame").innerHTML = `
     <div class="card">
-      <div class="row"><div><h2 style="margin:0">${t.emoji} ${t.title}</h2>
+      <div class="row"><div><h2 style="margin:0">${casIco(currentGame)}${t.title}</h2>
         <div class="muted">Limits per hand: ${fmt(t.min)} – ${fmt(t.max)} · Blackjack pays 3:2 · Dealer stands on 17</div></div>
         <button class="btn ghost small" data-back="1" ${betting ? "" : "disabled"}>← All games</button></div>
 
@@ -664,7 +664,7 @@ function renderVideoPoker() {
 
   $("casinoGame").innerHTML = `
     <div class="card">
-      <div class="row"><div><h2 style="margin:0">${t.emoji} ${t.title}</h2>
+      <div class="row"><div><h2 style="margin:0">${casIco(currentGame)}${t.title}</h2>
         <div class="muted">Jacks or Better with 1 joker (53 cards) · Bets ${fmt(t.min)} – ${fmt(t.max)}</div></div>
         <button class="btn ghost small" data-back="1" ${betting && !t.busy ? "" : "disabled"}>← All games</button></div>
 
@@ -1023,7 +1023,7 @@ function renderUth() {
   const dealerName = betting && showCards && t.dealerHand ? t.dealerHand : "";
   $("casinoGame").innerHTML = `
     <div class="card">
-      <div class="row"><div><h2 style="margin:0">${t.emoji} ${t.title}</h2>
+      <div class="row"><div><h2 style="margin:0">${casIco(currentGame)}${t.title}</h2>
         <div class="muted">Ante ${fmt(t.min)} – ${fmt(t.max)} per seat · Blind = Ante · Trips optional (up to ${fmt(t.max)}) · Play 1 or 2 seats</div></div>
         <button class="btn ghost small" data-back="1" ${betting && !t.busy ? "" : "disabled"}>← All games</button></div>
 

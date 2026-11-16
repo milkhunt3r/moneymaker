@@ -149,7 +149,7 @@ function renderClimb(mixing = false) {
 
   $("casinoGame").innerHTML = `
     <div class="card">
-      <div class="row"><div><h2 style="margin:0">🎈 Sky Climb</h2>
+      <div class="row"><div><h2 style="margin:0">${casIco("climb")}Sky Climb</h2>
         <div class="muted">Bet ${fmt(CLIMB_MIN)} – ${fmt(CLIMB_MAX)} · 19 green, 8 red, 1 gold ball · balls are not put back</div></div>
         <button class="btn ghost small" data-back="1" ${climb.active ? "disabled" : ""}>← All games</button></div>
       <div class="climbWrap">

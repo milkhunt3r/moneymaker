@@ -1488,3 +1488,13 @@ body.phone .tabIco { width: 22px; height: 22px; margin-right: 4px; }
 .ico.lockS { width: 1.1em; height: 1.1em; margin-right: 0.15em; vertical-align: -0.2em; }
 .ico.setIco { width: 26px; height: 26px; margin: 0; vertical-align: middle; }
 .ico.biz { width: 1.7em; height: 1.7em; vertical-align: -0.5em; margin-right: 0.35em; }
+
+/* casino game pictures: the 💎 high-roller badges sit on the bottom-right corner */
+.casIco { position: relative; display: inline-block; vertical-align: -0.5em; margin-right: 0.35em; }
+.casIco > .ico { margin: 0; vertical-align: 0; }
+.casTier { position: absolute; right: -0.45em; bottom: -0.2em; display: flex; }
+.casTier .ico { width: 0.95em; height: 0.95em; margin: 0 0 0 -0.35em; vertical-align: 0; }
+#casinoGame .gameCard h3 .casIco { display: block; width: fit-content; margin: 0 auto 6px; }
+#casinoGame .gameCard h3 .casIco > .ico.biz { width: 56px; height: 56px; }
+#casinoGame .gameCard h3 .casTier .ico { width: 22px; height: 22px; margin-left: -8px; }
+#casinoGame .gameCard h3 .casTier { right: -10px; bottom: -2px; }

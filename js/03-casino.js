@@ -91,11 +91,19 @@ const CASINO_GAMES = [
   { id: "plinko", name: "Plinko", emoji: "🔻", desc: "Drop up to 20 balls down a peg pyramid into multipliers from 0.3× to 250×. Bets 5,000 – 5 scoin per ball." },
   { id: "climb",  name: "Sky Climb", emoji: "🎈", desc: "Draw balls to climb a 20-step ladder up to 50,000×. Cash out before a red ball pops your balloon! Bets 10,000 – 500,000." },
 ];
+// 🎨 a game's painted picture, with one 💎 high-roller badge for High rollers and two for Super high rollers
+function casIco(id, cls = "biz") {
+  id = id || "";
+  const base = id.startsWith("roulette") ? "roulette" : id.startsWith("bj") ? "blackjack" : id.startsWith("vp") ? "poker"
+    : id.startsWith("uth") ? "holdem" : id.startsWith("plinko") ? "plinko" : id === "climb" ? "climb" : "chips";
+  const tier = /Super$/.test(id) ? 2 : /High$/.test(id) ? 1 : 0;
+  return `<span class="casIco ${cls}">${ico("cas-" + base, cls)}${tier ? `<span class="casTier">${ico("cas-highroller").repeat(tier)}</span>` : ""}</span>`;
+}
 // Game groups in the casino lobby (games show in this order inside each group)
 const CASINO_GROUPS = [
-  { name: "🎡 Roulette games", games: ["rouletteLow", "rouletteHigh", "rouletteSuper"] },
-  { name: "🃏 Card games",     games: ["bjLow", "bjHigh", "bjSuper", "vpLow", "vpHigh", "vpSuper", "uthLow", "uthHigh", "uthSuper"] },
-  { name: "🔻 Ball games",     games: ["plinko", "plinkoSuper", "climb"] },
+  { name: "Roulette games", ico: "roulette", games: ["rouletteLow", "rouletteHigh", "rouletteSuper"] },
+  { name: "Card games", ico: "blackjack",     games: ["bjLow", "bjHigh", "bjSuper", "vpLow", "vpHigh", "vpSuper", "uthLow", "uthHigh", "uthSuper"] },
+  { name: "Ball games", ico: "plinko",     games: ["plinko", "plinkoSuper", "climb"] },
 ];
 let currentGame = null;   // null = game list
 
@@ -271,11 +279,11 @@ function renderCasino() {
   setTimeout(updateVipBar, 0);
   if (!currentGame) {
     const gameCard = (g) => `<button class="card gameCard" data-game="${g.id}">
-         <h3>${g.emoji} ${g.name}</h3><div class="muted">${g.desc}</div>
+         <h3>${casIco(g.id)}${g.name}</h3><div class="muted">${g.desc}</div>
          <div class="muted" style="color:#b388ff; margin-top:4px">✨ XP ×${xpMult(g.id)}${hotNow().active && g.id.startsWith(hotNow().game.id) ? ` <span class="hotTag">🔥 HOT</span>` : ""}</div></button>`;
     box.innerHTML = `<h2>Choose a game</h2>` + CASINO_GROUPS.map(group => `
       <div class="card gameGroup">
-        <h2 style="margin:0 0 10px">${group.name}</h2>
+        <h2 style="margin:0 0 10px">${group.ico ? ico("cas-" + group.ico, "biz") : ""}${group.name}</h2>
         <div class="gameGrid">${group.games.map(id => gameCard(CASINO_GAMES.find(g => g.id === id))).join("")}</div>
       </div>`).join("") +
       `<div class="muted">More games coming soon...</div>`;
@@ -470,7 +478,7 @@ function renderRoulette() {
   const hasLast = Object.keys(roulette.lastBets).length > 0;
   $("casinoGame").innerHTML = `
     <div class="card">
-      <div class="row"><div><h2 style="margin:0">${roulette.emoji} ${roulette.title}</h2>
+      <div class="row"><div><h2 style="margin:0">${casIco(currentGame)}${roulette.title}</h2>
         <div class="muted">Limits per spot: ${fmt(roulette.min)} – ${fmt(roulette.max)}</div></div>
         <button class="btn ghost small" data-back="1">← All games</button></div>
 
