@@ -854,7 +854,7 @@ function renderGames() {
         <button class="btn" data-game="mine" ${mine ? "" : "disabled"}>${M.run ? "▶ Continue" : "▶ Play"}</button>
       </div>
       ${typeof G !== "undefined" && (G.unlocked || secrets2Open()) ? `<div class="card gameCard secretCard ${G.unlocked ? "" : "locked"}">
-        <div class="gameIcon">🧬</div><h3>Gene Splicer <span class="secretTag">🌌🌌</span></h3>
+        <img class="gameIcon gameIconImg" src="assets/icons/ico-sci-gene.webp" alt=""><h3>Gene Splicer <span class="secretTag">🌌🌌</span></h3>
         <p class="muted">Splice DNA samples into new species: from frogs and dolphins to dinosaurs, dragons and the kraken.</p>
         <div class="gameStatus">${G.unlocked ? `🧬 ${geneFound()} / ${GENE_TOTAL} species` : "🔒 Buy the 🧬 Genetics Laboratory (💰 Income → 🔬 Science)"}</div>
         <button class="btn" data-game="gene" ${G.unlocked ? "" : "disabled"}>▶ Play</button>

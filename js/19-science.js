@@ -217,7 +217,7 @@ function scienceTick() {
 // ----- Science page (Income → 🔬 Science) -----
 // 💰 / 👩‍🔬 what a building needs, with ✅ / ❌ (updated every second by the science tick)
 const sciNeed = (price, n) => `<div class="sciNeed" data-money="${price}" data-sci="${n}">
-  <span data-k="m">💰 ${fmt(price)}</span><span data-k="s">👩‍🔬 <b>${sciPool()}</b> / ${n} scientists</span></div>`;
+  <span data-k="m">💰 ${fmt(price)}</span><span data-k="s">${ico("sci-scientist")}<b>${sciPool()}</b> / ${n} scientists</span></div>`;
 // buy button: enabled only when you have both the money AND the scientists (both Universities count together)
 const sciBtn = (what, price, n, open = true) => `<button class="btn" data-sci="${what}" data-scibtn="${price},${n}" ${open ? "" : "data-locked"}
   ${open && state.money >= price && sciPool() >= n ? "" : "disabled"}>Buy</button>`;
@@ -239,38 +239,38 @@ function renderScience() {
   const S = sci(), L = sciLevels();
   if (!scienceOpen()) {
     const row = (k, label) => `<div class="row"><span>${label}</span><b class="${L[k] >= SCI_REQ[k] ? "income" : ""}">${Math.min(L[k], SCI_REQ[k])} / ${SCI_REQ[k]} ${L[k] >= SCI_REQ[k] ? "✅" : ""}</b></div>`;
-    return `<div class="card" style="text-align:center"><h3>🔒 🔬 Science</h3>
+    return `<div class="card" style="text-align:center"><h3>${ico("lock", "lockS")}${ico("science", "biz")}Science</h3>
       <p class="muted">Build a University, make Nobel Prize-winning breakthroughs and launch space missions.</p></div>
       <div class="card"><h4 style="margin-top:0">Unlocks when you reach:</h4>
         ${row("logistics", "🚚 Logistics level")}${row("investor", "📈 Investor level")}${row("gambler", "🎲 Gambler level")}</div>`;
   }
   let html = "";
   // 🎓 University
-  const uniRows = (k, u, label) => `<div class="row"><span>${label}👩‍🔬 Scientists: <b id="sci-uni${k}-count">${u.scientists}</b> / ${UNI_MAX}</span><span class="muted" id="sci-uni${k}-next"></span></div>
+  const uniRows = (k, u, label) => `<div class="row"><span>${label}${ico("sci-scientist")}Scientists: <b id="sci-uni${k}-count">${u.scientists}</b> / ${UNI_MAX}</span><span class="muted" id="sci-uni${k}-next"></span></div>
       <div class="xpBar"><div class="xpFill" id="sci-uni${k}-bar" style="width:${u.scientists / UNI_MAX * 100}%"></div></div>`;
   if (S.uni) {
-    html += `<div class="card specialCard"><div class="row"><h3>🎓 University${S.uni3 ? " ×3" : S.uni2 ? " ×2" : ""}</h3><span class="income ${uniIncome() < 0 ? "neg" : ""}" id="sci-uni-income">${uniIncome() >= 0 ? "+" : ""}${fmt(uniIncome())} / sec</span></div>
+    html += `<div class="card specialCard"><div class="row"><h3>${ico("sci-uni", "biz")}University${S.uni3 ? " ×3" : S.uni2 ? " ×2" : ""}</h3><span class="income ${uniIncome() < 0 ? "neg" : ""}" id="sci-uni-income">${uniIncome() >= 0 ? "+" : ""}${fmt(uniIncome())} / sec</span></div>
       ${uniRows("", S.uni, S.uni2 ? "1st · " : "")}${S.uni2 ? uniRows("2", S.uni2, "2nd · ") : ""}${S.uni3 ? uniRows("3", S.uni3, "3rd · ") : ""}
       ${S.uni2 ? `<div class="muted">${S.uni3 ? "All three" : "Both"} Universities share one pool: <b id="sci-pool">${sciPool()}</b> scientists</div>` : ""}
       <div class="muted">1 new scientist every 2 minutes · −${UNI_COST_PER_EMPTY} / sec for each empty place · +${fmt(UNI_FULL_INCOME)} / sec when full</div></div>`;
-    if (secretsOpen() && !S.uni2) html += `<div class="card specialCard secretCard"><div class="row"><div><h3>🎓 2nd University <span class="secretTag">🌌 new</span></h3>
+    if (secretsOpen() && !S.uni2) html += `<div class="card specialCard secretCard"><div class="row"><div><h3>${ico("sci-uni", "biz")}2nd University <span class="secretTag">🌌 new</span></h3>
         <div class="muted">A second University: trains its own scientists (1 every 2 minutes, up to ${UNI_MAX}) for the same shared pool. −${UNI_COST_PER_EMPTY} / sec per empty place, +${fmt(UNI_FULL_INCOME)} / sec when full.</div></div>
       <button class="btn" data-sci="uni2" data-cost="${UNI_PRICE}">Buy ${fmt(UNI_PRICE)}</button></div></div>`;
-    if (secrets2Open() && S.uni2 && !S.uni3) html += `<div class="card specialCard secretCard"><div class="row"><div><h3>🎓 3rd University <span class="secretTag">🌌🌌 new</span></h3>
+    if (secrets2Open() && S.uni2 && !S.uni3) html += `<div class="card specialCard secretCard"><div class="row"><div><h3>${ico("sci-uni", "biz")}3rd University <span class="secretTag">🌌🌌 new</span></h3>
         <div class="muted">A third University for the same shared pool: up to ${UNI_MAX * 3} scientists in total. −${UNI_COST_PER_EMPTY} / sec per empty place, +${fmt(UNI_FULL_INCOME)} / sec when full.</div></div>
       <button class="btn" data-sci="uni3" data-cost="${UNI_PRICE}">Buy ${fmt(UNI_PRICE)}</button></div></div>`;
   } else {
-    html += `<div class="card specialCard"><div class="row"><div><h3>🎓 University</h3>
+    html += `<div class="card specialCard"><div class="row"><div><h3>${ico("sci-uni", "biz")}University</h3>
         <div class="muted">Trains 1 scientist every 2 minutes, up to ${UNI_MAX}. Until it's full it costs ${UNI_COST_PER_EMPTY} / sec per empty place (−${fmt(UNI_COST_PER_EMPTY * UNI_MAX)} / sec at the start); with ${UNI_MAX} scientists it earns +${fmt(UNI_FULL_INCOME)} / sec.</div></div>
       <button class="btn" data-sci="uni" data-cost="${UNI_PRICE}">Buy ${fmt(UNI_PRICE)}</button></div></div>`;
   }
   // 🧪 Research lab
   if (S.lab) {
-    html += `<div class="card specialCard"><div class="row"><h3>🧪 Research lab</h3>
+    html += `<div class="card specialCard"><div class="row"><h3>${ico("sci-lab", "biz")}Research lab</h3>
         <span class="vialCount" title="Scientific breakthroughs (Nobel Prizes)">⚗️ × ${S.lab.prizes || 0}</span></div>
       <div class="muted">Every second: a 1 in ${labOdds().toLocaleString("en-US")} chance of a scientific breakthrough worth ${fmt(LAB_REWARD)}${S.station ? " (🛸 space station)" : ""} · <span id="sci-lab-next"></span></div></div>`;
   } else {
-    html += `<div class="card specialCard"><div class="row"><div><h3>🧪 Research lab</h3>
+    html += `<div class="card specialCard"><div class="row"><div><h3>${ico("sci-lab", "biz")}Research lab</h3>
         <div class="muted">Every second a 1 in ${labOdds().toLocaleString("en-US")} chance of a scientific breakthrough: a Nobel Prize and ${fmt(LAB_REWARD)}. Guaranteed at least every ${labOdds() / 3600 === 1 ? "hour" : labOdds() / 3600 + " hours"}.</div>
         ${sciNeed(LAB_PRICE, LAB_SCI)}</div>
       ${sciBtn("lab", LAB_PRICE, LAB_SCI)}</div></div>`;
@@ -278,14 +278,14 @@ function renderScience() {
   // 🚀 Space Mission Center
   if (S.space) {
     const log = (S.space.log || []).map(m => `<div class="row"><span>🚀 ${m.name}</span><b class="${m.reward ? "income" : ""}">${m.reward ? "+" + fmt(m.reward) : "❌ failed"}</b></div>`).join("");
-    html += `<div class="card specialCard"><div class="row"><h3>🚀 Space Mission Center</h3><span class="muted">next launch in <b id="sci-space-next">${clock(S.space.timer)}</b></span></div>
+    html += `<div class="card specialCard"><div class="row"><h3>${ico("sci-space", "biz")}Space Mission Center</h3><span class="muted">next launch in <b id="sci-space-next">${clock(S.space.timer)}</b></span></div>
       <div class="muted">Every ${spaceMin()} minutes: ${fmt(SPACE_MIN * 1e6 * spaceBonus())} – ${fmt(SPACE_MAX * 1e6 * spaceBonus())}${sci().gene ? " (🧬 +30%)" : ""}, or nothing if the mission fails (${Math.round(spaceFail() * 100)}% chance)</div>
       ${S.satellite || S.astro || S.station ? `<div class="muted">Boosted by: ${[S.satellite && "🛰️ satellite (−5% fail)", S.astro && "🔭 Astronomy center (−5 min)", S.station && "🛸 space station (−5% fail, −5 min)"].filter(Boolean).join(" · ")}</div>` : ""}
       ${log ? `<h4>Last missions</h4>${log}` : ""}
       ${S.satellite ? "" : `<div class="muted">🛰️ A satellite is now available in 🚢 Logistics.</div>`}</div>`;
   } else {
     const unlocked = S.lab && (S.lab.prizes || 0) >= SPACE_NEED;
-    html += `<div class="card specialCard" ${unlocked ? "" : `style="opacity:0.6"`}><div class="row"><div><h3>${unlocked ? "" : "🔒 "}🚀 Space Mission Center</h3>
+    html += `<div class="card specialCard" ${unlocked ? "" : `style="opacity:0.6"`}><div class="row"><div><h3>${unlocked ? "" : '<img class="ico lockS" src="assets/icons/ico-lock.webp" alt="">'}${ico("sci-space", "biz")}Space Mission Center</h3>
         <div class="muted">Launches a space mission every ${spaceMin()} minutes: ${fmt(SPACE_MIN * 1e6)} – ${fmt(SPACE_MAX * 1e6)}, with a ${Math.round(SPACE_FAIL * 100)}% chance the mission fails. Unlocks a 🛰️ satellite in Logistics.</div>
         ${unlocked ? "" : `<div class="muted">Needs ${SPACE_NEED} breakthroughs in your Research lab${S.lab ? ` (you have ${S.lab.prizes || 0})` : ""}</div>`}
         ${sciNeed(SPACE_PRICE, SPACE_SCI)}</div>
@@ -293,10 +293,10 @@ function renderScience() {
   }
   // 🔭 Astronomy Research Center (secret: only after the 1st prestige)
   if (S.astro) {
-    html += `<div class="card specialCard secretCard"><div class="row"><h3>🔭 Astronomy Research Center</h3><span class="secretTag">🌌</span></div>
+    html += `<div class="card specialCard secretCard"><div class="row"><h3>${ico("sci-astro", "biz")}Astronomy Research Center</h3><span class="secretTag">🌌</span></div>
       <div class="muted">Your astronomers plan the launch windows: space missions launch <b>${ASTRO_TIME_CUT / 60} minutes sooner</b> (now every ${spaceMin()} minutes).${S.space ? "" : " (Build the 🚀 Space Mission Center to use it.)"}</div></div>`;
   } else if (secretsOpen()) {
-    html += `<div class="card specialCard secretCard"><div class="row"><div><h3>🔭 Astronomy Research Center <span class="secretTag">🌌 new</span></h3>
+    html += `<div class="card specialCard secretCard"><div class="row"><div><h3>${ico("sci-astro", "biz")}Astronomy Research Center <span class="secretTag">🌌 new</span></h3>
         <div class="muted">Space missions launch ${ASTRO_TIME_CUT / 60} minutes sooner (every ${spaceEvery() / 60 - ASTRO_TIME_CUT / 60} instead of ${spaceMin()} minutes).</div>
         ${sciNeed(ASTRO_PRICE, ASTRO_SCI)}</div>
       ${sciBtn("astro", ASTRO_PRICE, ASTRO_SCI)}</div></div>`;
@@ -304,10 +304,10 @@ function renderScience() {
   // 🛸 Orbital Space Station (secret: only after the 1st prestige)
   const stationPerks = `space missions fail ${STATION_FAIL_CUT * 100}% less often and launch ${STATION_TIME_CUT / 60} minutes sooner; the 🧪 Research lab's odds become 1 in ${STATION_LAB_ODDS.toLocaleString("en-US")} (a breakthrough guaranteed within 1 hour)`;
   if (S.station) {
-    html += `<div class="card specialCard secretCard"><div class="row"><h3>🛸 Orbital Space Station</h3><span class="secretTag">🌌</span></div>
+    html += `<div class="card specialCard secretCard"><div class="row"><h3>${ico("sci-station", "biz")}Orbital Space Station</h3><span class="secretTag">🌌</span></div>
       <div class="muted">In orbit: ${stationPerks}.</div></div>`;
   } else if (secretsOpen()) {
-    html += `<div class="card specialCard secretCard"><div class="row"><div><h3>🛸 Orbital Space Station <span class="secretTag">🌌 new</span></h3>
+    html += `<div class="card specialCard secretCard"><div class="row"><div><h3>${ico("sci-station", "biz")}Orbital Space Station <span class="secretTag">🌌 new</span></h3>
         <div class="muted">${stationPerks[0].toUpperCase() + stationPerks.slice(1)}.</div>
         ${sciNeed(STATION_PRICE, STATION_SCI)}${S.uni2 ? "" : `<div class="muted">Needs both Universities full (2 × ${UNI_MAX})</div>`}</div>
       ${sciBtn("station", STATION_PRICE, STATION_SCI)}</div></div>`;
@@ -315,11 +315,11 @@ function renderScience() {
   // 🌕 Moon Base (secret tier 2: after the 2nd prestige, needs the 🛸 station)
   if (S.moon) {
     const log = (S.moon.log || []).map(m => `<div class="row"><span>🌕 ${m.name}</span><b class="${m.reward ? "income" : ""}">${m.reward ? "+" + fmt(m.reward) : "❌ failed"}</b></div>`).join("");
-    html += `<div class="card specialCard secretCard"><div class="row"><h3>🌕 Moon Base</h3><span class="muted">next deep space launch in <b id="sci-moon-next">${clock(S.moon.timer)}</b></span></div>
+    html += `<div class="card specialCard secretCard"><div class="row"><h3>${ico("sci-moon", "biz")}Moon Base</h3><span class="muted">next deep space launch in <b id="sci-moon-next">${clock(S.moon.timer)}</b></span></div>
       <div class="muted">Every ${DEEP_EVERY / 60} minutes a deep space mission: ${fmt(DEEP_MIN * 1e6 * spaceBonus())} – ${fmt(DEEP_MAX * 1e6 * spaceBonus())}${S.gene ? " (🧬 +30%)" : ""}, or nothing if it fails (${Math.round(DEEP_FAIL * 100)}% chance) · successful: <b>${S.moon.ok || 0}</b></div>
       ${log ? `<h4>Last deep space missions</h4>${log}` : ""}</div>`;
   } else if (secrets2Open()) {
-    html += `<div class="card specialCard secretCard" ${S.station ? "" : `style="opacity:0.6"`}><div class="row"><div><h3>${S.station ? "" : "🔒 "}🌕 Moon Base <span class="secretTag">🌌🌌 new</span></h3>
+    html += `<div class="card specialCard secretCard" ${S.station ? "" : `style="opacity:0.6"`}><div class="row"><div><h3>${S.station ? "" : '<img class="ico lockS" src="assets/icons/ico-lock.webp" alt="">'}${ico("sci-moon", "biz")}Moon Base <span class="secretTag">🌌🌌 new</span></h3>
         <div class="muted">Launches a deep space mission every ${DEEP_EVERY / 60} minutes: ${fmt(DEEP_MIN * 1e6)} – ${fmt(DEEP_MAX * 1e6)}, with a ${Math.round(DEEP_FAIL * 100)}% chance the mission fails.</div>
         ${S.station ? "" : `<div class="muted">Needs the 🛸 Orbital Space Station</div>`}
         ${sciNeed(MOON_PRICE, MOON_SCI)}${S.uni3 ? "" : `<div class="muted">Needs ${MOON_SCI} scientists: all three Universities full (3 × ${UNI_MAX})</div>`}</div>
@@ -327,10 +327,10 @@ function renderScience() {
   }
   // 🧬 Genetics Laboratory (secret tier 2: after the Moon Base)
   if (S.gene) {
-    html += `<div class="card specialCard secretCard"><div class="row"><h3>🧬 Genetics Laboratory</h3><span class="secretTag">🌌🌌</span></div>
+    html += `<div class="card specialCard secretCard"><div class="row"><h3>${ico("sci-gene", "biz")}Genetics Laboratory</h3><span class="secretTag">🌌🌌</span></div>
       <div class="muted">Your geneticists keep the crews fit for longer flights: <b>+${GENE_BONUS * 100}%</b> on every 🚀 space mission and 🌕 deep space mission reward.</div></div>`;
   } else if (secrets2Open() && S.moon) {
-    html += `<div class="card specialCard secretCard"><div class="row"><div><h3>🧬 Genetics Laboratory <span class="secretTag">🌌🌌 new</span></h3>
+    html += `<div class="card specialCard secretCard"><div class="row"><div><h3>${ico("sci-gene", "biz")}Genetics Laboratory <span class="secretTag">🌌🌌 new</span></h3>
         <div class="muted">+${GENE_BONUS * 100}% on every 🚀 space mission and 🌕 deep space mission reward.</div>
         ${sciNeed(GENE_PRICE, GENE_SCI)}</div>
       ${sciBtn("gene", GENE_PRICE, GENE_SCI)}</div></div>`;
@@ -388,8 +388,8 @@ function renderSatellite() {
     <li>✈️ Cargo plane contracts pay +5%</li><li>🛢️ Tanker contracts take 10% less time</li>
     <li>🔧 Broken trucks repair themselves for free after 5 seconds</li></ul>`;
   box.innerHTML = S.satellite
-    ? `<div class="row"><h3>🛰️ Satellite <span class="muted">in orbit</span></h3><span class="income">active</span></div>${perks}`
-    : `<div class="row"><div><h3>🛰️ Satellite</h3><div class="muted">Max 1 · works on its own, no agent needed · permanent bonuses:</div>${perks}</div>
+    ? `<div class="row"><h3>${ico("sci-sat", "biz")}Satellite <span class="muted">in orbit</span></h3><span class="income">active</span></div>${perks}`
+    : `<div class="row"><div><h3>${ico("sci-sat", "biz")}Satellite</h3><div class="muted">Max 1 · works on its own, no agent needed · permanent bonuses:</div>${perks}</div>
         <button class="btn" data-satellite="buy" data-cost="${SAT_PRICE}" ${state.money >= SAT_PRICE ? "" : "disabled"}>Launch ${fmt(SAT_PRICE)}</button></div>`;
 }
 $("satelliteCard").addEventListener("click", (e) => {

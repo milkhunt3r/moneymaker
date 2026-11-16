@@ -259,7 +259,7 @@ function renderGene() {
   box.innerHTML = `
     <div class="geneTop">
       <button class="btn ghost small" data-games-back>← Mini-games</button>
-      <h2>🧬 Gene Splicer</h2>
+      <h2>${ico("sci-gene", "h")}Gene Splicer</h2>
       <div class="geneProg"><b>${found}</b> / ${GENE_TOTAL} species
         <div class="xpBar"><div class="xpFill" style="width:${found / GENE_TOTAL * 100}%"></div></div></div>
     </div>
@@ -275,7 +275,7 @@ function renderGene() {
       <span>🧪 Next DNA for every sample in <b id="geneRegen">${clockMs(Math.max(0, (G.regenAt || Date.now()) - Date.now()))}</b></span>
       <button class="btn small" data-gene="hint" ${sciHave >= GENE_HINT_SCI && hintOpts ? "" : "disabled"}
         title="${!sci().uni ? "Needs a University with scientists" : hintOpts ? "" : "No new recipe is possible with what you have"}">💡 Hint · 👩‍🔬 ${GENE_HINT_SCI} scientists</button>
-      <span class="muted">You have ${sciHave} scientists</span>
+      <span class="muted">You have ${ico("sci-scientist")}${sciHave} scientists</span>
     </div>
     ${hintsOpen.length ? `<div class="geneHints">${hintsOpen.map(p => { const [a, b] = p.split("|");
       return `<span>💡 Try ${GENE_SPECIES[a].emoji} ${a} + ${GENE_SPECIES[b].emoji} ${b}</span>`; }).join("")}</div>` : ""}
