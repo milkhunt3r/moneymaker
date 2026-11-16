@@ -51,6 +51,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "13 November 2026", title: "Empire of Coins", items: [
+    "🔥 Hot Tables now run 10 minutes hot, 10 minutes cooldown. The bonus grows with your Gambler level: +10, <b>+20</b> from level 50, <b>+40</b> from level 75.",
     "🧮 Accountants and HR managers have painted portraits when you hire them and on your business cards.",
     "🎰 Casino lobby: every game has a painted picture, with 💎 badges for the High roller and Super high roller tables.",
     "🎨 Science buildings, the satellite and your scientists have painted pictures too.",

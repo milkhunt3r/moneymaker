@@ -272,7 +272,7 @@ function showLevelTable(kind) {
   }
   const next = cur < MAX_LEVEL ? `${fmtNum(curve[cur + 1] - xp)} XP to level ${cur + 1}` : "Max level reached!";
   showModal(`<h2>${gam ? "🎲 Gambler" : lg ? "🚚 Logistics" : "📈 Investor"} levels</h2>
-    <p class="muted">${lg ? "XP when a contract is delivered: contract minutes × 1 (trucks), × 3 (tankers), × 6 (cargo planes)" : gam ? "XP = bcoin bet × the table's XP multiplier (from ×1 at Classic Roulette to ×10 at Super high roller Hold'em; see 📖 Wiki → Casino) · 🔥 Hot Tables add +10"
+    <p class="muted">${lg ? "XP when a contract is delivered: contract minutes × 1 (trucks), × 3 (tankers), × 6 (cargo planes)" : gam ? "XP = bcoin bet × the table's XP multiplier (from ×1 at Classic Roulette to ×10 at Super high roller Hold'em; see 📖 Wiki → Casino) · 🔥 Hot Tables add +10 (+20 from level 50, +40 from level 75)"
                            : "Every minute with money invested gives 4 XP, 8 XP from 1 scoin invested, 16 XP from 100 scoin"} ·
       You: level ${cur}, ${fmtNum(xp)} XP · ${next}</p>
     <div class="levelTableWrap"><table class="levelTable">
