@@ -218,6 +218,10 @@ for (const [k, v] of Object.entries({ clicks: 0, minesBought: state.special.mine
   if (typeof state.stats[k] !== "number") state.stats[k] = v;
 if (!state.achievements) state.achievements = {};
 
+// 🏅 painted achievement badges (assets/ach/<id>.webp); achievements without one keep their emoji
+const ACH_PICS = new Set(["cash1s", "cash10s", "cash100s", "cash1g", "cash5g", "cash10g", "cash20g", "prestige1", "prestige2", "prestige4",
+  "tax10", "tax100", "tax1000", "cosmetic1", "emperor", "fullSet"]);
+const achIcon = (a, cls = "") => ACH_PICS.has(a.id) ? `<img class="achPic ${cls}" src="assets/ach/${a.id}.webp" alt="">` : a.icon;
 const achDone = () => achShown().filter(a => state.achievements[a.id]).length;
 function achValue(a) { try { return Math.max(0, a.get() || 0); } catch (err) { return 0; } }
 
@@ -230,7 +234,7 @@ function checkAchievements() {
   }
   // an old save can unlock many at once: just mark them, without a pop-up for each
   if (achFirstCheck && fresh.length > 3) showAlert(`🏆 ${fresh.length} achievements unlocked!`, "Your progress so far has already earned them. See 🏆 Achievements.", "good");
-  else fresh.forEach(a => showAlert(`🏆 Achievement unlocked!`, `${a.icon} <b style="display:inline">${a.name}</b>: ${a.desc}`, "good"));
+  else fresh.forEach(a => showAlert(`🏆 Achievement unlocked!`, `${achIcon(a, "inl")} <b style="display:inline">${a.name}</b>: ${a.desc}`, "good"));
   achFirstCheck = false;
   if (fresh.length) save();
   const tabText = `${achDone()}/${achShown().length}`;
@@ -322,7 +326,7 @@ function renderAchievements() {
         const v = Math.min(a.goal, achValue(a));
         const show = (x) => a.money ? fmt(x) : x.toLocaleString();
         return `<div class="ach ${got ? "done" : ""}">
-          <div class="ico">${a.icon}</div>
+          <div class="ico ${ACH_PICS.has(a.id) ? "pic" : ""}">${achIcon(a)}</div>
           <div style="flex:1; min-width:0">
             <div class="nm">${a.name}</div>
             <div class="muted">${a.desc}</div>

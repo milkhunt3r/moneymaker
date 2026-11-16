@@ -51,6 +51,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "13 November 2026", title: "Empire of Coins", items: [
+    "🏅 Achievements are getting painted medal badges, starting with the ⭐ General section (grey until you earn them).",
     "🔒 Casino fix: refreshing the page no longer cancels a game. Blackjack, Video Poker and Hold'em hands come back exactly as they were (same cards, same deck), a roulette spin finishes with its result, Plinko balls land where they were heading, and a Sky Climb continues where you left it.",
     "🔥 Hot Tables now run 10 minutes hot, 10 minutes cooldown. The bonus grows with your Gambler level: +10, <b>+20</b> from level 50, <b>+40</b> from level 75.",
     "🧮 Accountants and HR managers have painted portraits when you hire them and on your business cards.",
