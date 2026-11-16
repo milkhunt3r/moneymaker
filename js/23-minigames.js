@@ -149,9 +149,9 @@ function newMineMap() {
       const stone = Math.min(0.78, Math.max(0, (d - 3) / 28));
       const granite = Math.min(y >= ROW_LAVA ? 0.5 : 0.4, Math.max(0, (d - 24) / 55));
       const bedrock = d > 10 ? Math.min(0.09, (d - 10) / 380) : 0;
-      const caves = y >= ROW_CRYSTAL ? 0.07 : 0.035;
+      const caves = d <= 3 ? 0 : y >= ROW_CRYSTAL ? 0.07 : 0.035;   // no caves in the top rows (and no stray bedrock there either)
       const pocket = y >= ROW_CRYSTAL ? 0.015 : y >= ROW_LAVA ? 0.02 : 0;   // 🌋 hidden lava pockets
-      if (d > 3 && r < caves) t = 0;                          // small caves
+      if (r < caves) t = 0;                                   // small caves
       else if (r < caves + bedrock) t = 4;
       else if (r < caves + bedrock + pocket) t = 6;
       else { const r2 = mineRand(); t = r2 < stone * granite ? 3 : r2 < stone ? 2 : 1; }
@@ -612,8 +612,11 @@ function mineDraw() {
   // grass + entrance + lift
   if (gy > -8 && gy < H && imgOk(SURF_IMG["surface-bg"])) {
     // the grass strip from the background, fixed to the mine, over the top of the first row
-    const bg = SURF_IMG["surface-bg"], sy = 292, sh = 38;
-    ctx.drawImage(bg, 0, sy, 1086, sh, -camX, gy - 12, 1086 * SURF_SCALE, sh * SURF_SCALE);
+    const bg = SURF_IMG["surface-bg"], sy = 292, sh = 38, dh = sh * SURF_SCALE;
+    const sg = ctx.createLinearGradient(0, gy, 0, gy + 12);   // soft shadow where the grass meets the soil
+    sg.addColorStop(0, "rgba(20,10,4,0.55)"); sg.addColorStop(1, "rgba(20,10,4,0)");
+    ctx.fillStyle = sg; ctx.fillRect(0, gy, W, 12);
+    ctx.drawImage(bg, 0, sy, 1086, sh, -camX, gy + 3 - dh, 1086 * SURF_SCALE, dh);   // grass sits ON the ground, ending at the ground line
     if (imgOk(SURF_IMG.entrance)) {   // ⛏️ mine entrance, with a dark tunnel inside the arch
       const D = 96, ex = MINE_START_X * TS - camX + TS / 2 - D / 2, ey = gy + 6 - D;
       ctx.fillStyle = "#120c08"; ctx.beginPath();
@@ -638,7 +641,7 @@ function mineDraw() {
     const rad = TS * (2.3 + 2.2 * Math.min(1, R.lamp / MINE_LAMP));
     const g = ctx.createRadialGradient(mx, my, rad * 0.35, mx, my, rad);
     g.addColorStop(0, "rgba(5,4,10,0)"); g.addColorStop(1, "rgba(5,4,10,0.94)");
-    ctx.save(); ctx.beginPath(); ctx.rect(0, Math.max(0, gy), W, H); ctx.clip();
+    ctx.save(); ctx.beginPath(); ctx.rect(0, Math.max(0, gy + 3), W, H); ctx.clip();
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); ctx.restore();
   }
   // 🌋 lava, hot rock and chests glow through the dark, so you always see the danger (and the treasure) coming
