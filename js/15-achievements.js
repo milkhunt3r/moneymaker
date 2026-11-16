@@ -221,7 +221,8 @@ if (!state.achievements) state.achievements = {};
 // 🏅 painted achievement badges (assets/ach/<id>.webp); achievements without one keep their emoji
 const ACH_PICS = new Set(["cash1s", "cash10s", "cash100s", "cash1g", "cash5g", "cash10g", "cash20g", "prestige1", "prestige2", "prestige4",
   "tax10", "tax100", "tax1000", "cosmetic1", "emperor", "fullSet",
-  "click100", "click1k", "click10k", "click100k", "inc5k", "inc10k", "nobel1", "nobel5", "nobel10", "sciSpace", "spaceOk", "spaceFail"]);
+  "click100", "click1k", "click10k", "click100k", "inc5k", "inc10k", "nobel1", "nobel5", "nobel10", "sciSpace", "spaceOk", "spaceFail",
+  "glevel5", "bet1s", "glevel25", "bet100s", "glevel50", "glevel99", "bj500", "casinoUp", "vp500", "uth500", "plinko250", "rouNumber"]);
 const achIcon = (a, cls = "") => ACH_PICS.has(a.id) ? `<img class="achPic ${cls}" src="assets/ach/${a.id}.webp" alt="">` : a.icon;
 const achDone = () => achShown().filter(a => state.achievements[a.id]).length;
 function achValue(a) { try { return Math.max(0, a.get() || 0); } catch (err) { return 0; } }
