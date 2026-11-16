@@ -219,7 +219,7 @@ function render() {
     const title = t.maxOwned > 1 ? `${t.name} #${number}` : t.name;
     html += `<div class="card">
       <div class="row">
-        <h3>${t.emoji} ${title}</h3>
+        <h3>${bizIco(t.id)}${title}</h3>
         <span class="row">
           <span class="income" id="c-income-${ci}">+0 / sec</span>
           ${staffReady(c)
@@ -313,7 +313,7 @@ function render() {
       const workers = mine.reduce((a, x) => a + x.c.workers.length, 0);
       html += `<div class="card groupHead">
         <div class="row">
-          <h3>${t.emoji} ${t.name} <span class="muted">× ${owned}</span></h3>
+          <h3>${bizIco(t.id)}${t.name} <span class="muted">× ${owned}</span></h3>
           <span class="row">
             <span class="income" id="g-income-${t.id}">+0 / sec</span>
             <button class="btn ghost small" data-action="toggleGroup" data-type="${t.id}">${collapsed ? "▸ Show all" : "▾ Minimize all"}</button>
@@ -327,7 +327,7 @@ function render() {
     if (owned >= t.maxOwned) return;
     if (owned >= allowedToOwn(t)) {
       html += `<div class="card" style="opacity:0.6">
-        <div class="row"><div><h3>🔒 ${t.emoji} ${t.name}</h3>
+        <div class="row"><div><h3>${ico("lock", "lockS")}${bizIco(t.id)}${t.name}</h3>
           <div class="muted">Up to ${t.maxEmployees} employees · workers earn ${t.minIncome}–${t.maxIncome} / sec</div>
           <div class="muted">${t.unlockText(owned)}</div>
           <div class="muted">Owned: ${owned} / ${t.maxOwned}</div></div>
@@ -336,7 +336,7 @@ function render() {
     }
     html += `<div class="card">
       <div class="row">
-        <div><h3>${t.emoji} ${t.name}</h3>
+        <div><h3>${bizIco(t.id)}${t.name}</h3>
           <div class="muted">${t.noStaff ? `${t.maxEmployees} workers · no accountant or HR` : `Up to ${t.maxEmployees} employees (incl. accountant &amp; HR)`} · workers earn ${t.minIncome}–${t.maxIncome} / sec</div>
           ${t.perk ? `<div class="muted">⭐ ${t.perk}</div>` : ""}
           <div class="muted">Owned: ${owned} / ${t.maxOwned}</div></div>

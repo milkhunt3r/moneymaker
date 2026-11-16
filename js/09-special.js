@@ -143,7 +143,7 @@ function renderMines() {
   let html = "";
   mines.forEach((m, i) => {
     html += `<div class="card specialCard">
-      <div class="row"><h3>⛏️ Gold Mine ${mines.length > 1 ? "#" + (i + 1) : ""} <span class="rushBadge" hidden></span></h3><span class="income" id="mine-income-${m.id}">+${MINE_INCOME} / sec</span></div>
+      <div class="row"><h3>${bizIco("mine")}Gold Mine ${mines.length > 1 ? "#" + (i + 1) : ""} <span class="rushBadge" hidden></span></h3><span class="income" id="mine-income-${m.id}">+${MINE_INCOME} / sec</span></div>
       <div class="mineBar"><div class="mineFill" id="mine-fill-${m.id}" style="width:${100 * m.mined / m.capacity}%"></div></div>
       <div class="muted" id="mine-text-${m.id}">${mineText(m)}</div>
     </div>`;
@@ -153,10 +153,10 @@ function renderMines() {
                   <div class="muted">🔥 Gold rush: a 1 in ${RUSH_ODDS} chance every second per mine you own (2 mines: 1 in ${RUSH_ODDS / 2}) to double gold mine income for ${RUSH_SECONDS} seconds</div>
                   <div class="muted">Owned: ${mines.length} / ${MINE_MAX}</div>`;
     if (profit >= MINE_UNLOCK) {
-      html += `<div class="card specialCard"><div class="row"><div><h3>⛏️ Gold Mine</h3>${desc}</div>
+      html += `<div class="card specialCard"><div class="row"><div><h3>${bizIco("mine")}Gold Mine</h3>${desc}</div>
         <button class="btn" data-action="buySpecial" data-special="mine" data-cost="${MINE_PRICE}">Buy ${fmt(MINE_PRICE)}</button></div></div>`;
     } else {
-      html += `<div class="card specialCard" style="opacity:0.6"><div class="row"><div><h3>🔒 ⛏️ Gold Mine</h3>${desc}
+      html += `<div class="card specialCard" style="opacity:0.6"><div class="row"><div><h3>${ico("lock", "lockS")}${bizIco("mine")}Gold Mine</h3>${desc}
         <div class="muted">Unlocks at 500,000 all-time gold profit (now ${profit >= 0 ? "" : "−"}${fmt(Math.abs(profit))}, see 📈 Investing)</div></div>
         <span class="muted">${fmt(MINE_PRICE)}</span></div></div>`;
     }
@@ -250,7 +250,7 @@ function renderLawFirm() {
   const law = state.special.law;
   if (!law) {
     return `<div class="card specialCard"><div class="row">
-      <div><h3>⚖️ Law Firm</h3>
+      <div><h3>${bizIco("law")}Law Firm</h3>
         <div class="muted">No workers, HR or accountant: hire up to ${LAW_MAX} attorneys instead (slots cost 50k, then 100k, 150k…)</div>
         <div class="muted">8 kinds of lawyers: casino cashback, tax refunds, extra worker slots, steady income and more</div>
         <div class="muted">Owned: 0 / 1</div></div>
@@ -259,7 +259,7 @@ function renderLawFirm() {
   }
   const income = law.attorneys.reduce((s, a) => s + ((a.type === "divorce" || a.type === "civil") ? a.value : 0), 0);
   let html = `<div class="card specialCard">
-    <div class="row"><h3>⚖️ Law Firm</h3><span class="income" id="law-income">+${income.toFixed(1)} / sec</span></div>
+    <div class="row"><h3>${bizIco("law")}Law Firm</h3><span class="income" id="law-income">+${income.toFixed(1)} / sec</span></div>
     <div class="row"><h4>Attorneys (${law.attorneys.length} / ${LAW_MAX})</h4>
       <button class="btn ghost small" data-action="toggleLaw">${state.special.lawCollapsed ? "▸ Show" : "▾ Minimize"}</button></div>`;
   if (state.special.lawCollapsed) {
@@ -328,26 +328,26 @@ function renderParks() {
   // all parks under one header that can be minimized (like business groups)
   const collapsed = parks.length > 0 && !!(state.groupCollapsed || {}).parks;
   if (parks.length) html += `<div class="card groupHead"><div class="row">
-      <h3>🎢 Amusement Parks <span class="muted">× ${parks.length}</span></h3>
+      <h3>${bizIco("park")}Amusement Parks <span class="muted">× ${parks.length}</span></h3>
       <span class="row"><span class="income" id="parks-total">+0.0 / sec</span>
         <button class="btn ghost small" data-action="toggleGroup" data-type="parks">${collapsed ? "▸ Show all" : "▾ Minimize all"}</button></span></div>
       ${collapsed ? `<div class="muted">${parks.length} park${parks.length === 1 ? "" : "s"} · ${parks.length} / ${hotels.length} hotel slots used</div>` : ""}</div>`;
   if (!collapsed) parks.forEach((p, k) => {
     html += `<div class="card specialCard"><div class="row">
-      <div><h3>🎢 Amusement Park #${k + 1}</h3>
+      <div><h3>${bizIco("park")}Amusement Park #${k + 1}</h3>
         <div class="muted">Paired with 🏨 Hotel #${k + 1} · earns 50% of its income</div></div>
       <span class="income" id="park-income-${p.id}">+0.0 / sec</span></div></div>`;
   });
   if (parks.length < hotels.length) {
     html += `<div class="card specialCard"><div class="row">
-      <div><h3>🎢 Amusement Park #${parks.length + 1}</h3>
+      <div><h3>${bizIco("park")}Amusement Park #${parks.length + 1}</h3>
         <div class="muted">Pairs with 🏨 Hotel #${parks.length + 1} and earns 50% of its income · no workers, HR manager or accountant</div>
         <div class="muted">Owned: ${parks.length} / ${hotels.length} (one slot per hotel)</div></div>
       <button class="btn" data-action="buySpecial" data-special="park" data-cost="${PARK_PRICE}">Buy ${fmt(PARK_PRICE)}</button>
     </div></div>`;
   } else if (hotels.length === 0) {
     html += `<div class="card specialCard" style="opacity:0.6"><div class="row">
-      <div><h3>🔒 🎢 Amusement Park</h3>
+      <div><h3>${ico("lock", "lockS")}${bizIco("park")}Amusement Park</h3>
         <div class="muted">Each park pairs with one of your hotels and earns 50% of its income</div>
         <div class="muted">Unlocks when you buy a hotel: one park slot for every hotel</div></div>
       <span class="muted">${fmt(PARK_PRICE)}</span></div></div>`;
@@ -390,13 +390,13 @@ function renderCenter() {
   const c = state.special.center, lvl = centerLevel();
   if (!c) {
     const desc = `<div class="muted">Upgrades every 🤖 Logistics agent: choose 1 of 3 when you buy it, add the other two later for ${fmt(CENTER_UPGRADE_PRICE)} each · no workers, HR manager or accountant · max 1</div>`;
-    if (lvl >= CENTER_LEVEL) return `<div class="card specialCard"><div class="row"><div><h3>🏬 Logistics Center</h3>${desc}</div>
+    if (lvl >= CENTER_LEVEL) return `<div class="card specialCard"><div class="row"><div><h3>${bizIco("center")}Logistics Center</h3>${desc}</div>
         <button class="btn" data-action="buySpecial" data-special="center" data-cost="${CENTER_PRICE}">Buy ${fmt(CENTER_PRICE)}</button></div></div>`;
-    return `<div class="card specialCard" style="opacity:0.6"><div class="row"><div><h3>🔒 🏬 Logistics Center</h3>${desc}
+    return `<div class="card specialCard" style="opacity:0.6"><div class="row"><div><h3>${ico("lock", "lockS")}${bizIco("center")}Logistics Center</h3>${desc}
         <div class="muted">Unlocks at 🚚 Logistics level ${CENTER_LEVEL} (you are level ${lvl})</div></div>
       <span class="muted">${fmt(CENTER_PRICE)}</span></div></div>`;
   }
-  let html = `<div class="card specialCard"><div class="row"><h3>🏬 Logistics Center</h3>
+  let html = `<div class="card specialCard"><div class="row"><h3>${bizIco("center")}Logistics Center</h3>
     <span class="muted">${c.upgrades.length} / 3 upgrades</span></div>`;
   if (c.choosing) {
     html += `<h4>Choose the first upgrade</h4><div class="choices">` + Object.entries(CENTER_UPGRADES).map(([k, u]) =>
@@ -449,7 +449,7 @@ function renderRecruit() {
   const desc = `<div class="muted">Fills every empty 🎰 casino and 🏨 hotel with your staffing plan: accountant, HR and a chosen trait for every worker · ${fmt(RECRUIT_FILL)} per business filled · pay per second stays random · 👥 Hire staff only fills businesses with no staff · 🔄 Apply to all brings every hotel and casino in line with the plan · max 1</div>`;
   if (state.special.recruit) {
     const n = recruitTargets().length;
-    return `<div class="card specialCard"><div class="row"><h3>🧑‍💼 Recruitment Agency</h3></div>${desc}
+    return `<div class="card specialCard"><div class="row"><h3>${bizIco("recruit")}Recruitment Agency</h3></div>${desc}
       <div class="muted" style="margin-top:6px">${n ? `<b>${n}</b> empty business${n === 1 ? "" : "es"} ready to staff · cost ${fmt(n * RECRUIT_FILL)}` : "No empty hotels or casinos right now."}</div>
       <div class="row" style="justify-content:flex-start; gap:8px; margin-top:8px">
         <button class="btn ghost" data-action="recruitPlan">📝 Staffing plan</button>
@@ -458,10 +458,10 @@ function renderRecruit() {
       </div></div>`;
   }
   if (recruitUnlocked()) {
-    return `<div class="card specialCard"><div class="row"><div><h3>🧑‍💼 Recruitment Agency</h3>${desc}</div>
+    return `<div class="card specialCard"><div class="row"><div><h3>${bizIco("recruit")}Recruitment Agency</h3>${desc}</div>
       <button class="btn" data-action="buySpecial" data-special="recruit" data-cost="${RECRUIT_PRICE}">Buy ${fmt(RECRUIT_PRICE)}</button></div></div>`;
   }
-  return `<div class="card specialCard" style="opacity:0.6"><div class="row"><div><h3>🔒 🧑‍💼 Recruitment Agency</h3>${desc}
+  return `<div class="card specialCard" style="opacity:0.6"><div class="row"><div><h3>${ico("lock", "lockS")}${bizIco("recruit")}Recruitment Agency</h3>${desc}
       <div class="muted">Unlocks when you own ${RECRUIT_NEED.hotel} hotels (${ownedOf("hotel")}/${RECRUIT_NEED.hotel}) and ${RECRUIT_NEED.casino} casinos (${ownedOf("casino")}/${RECRUIT_NEED.casino})</div></div>
     <span class="muted">${fmt(RECRUIT_PRICE)}</span></div></div>`;
 }
@@ -474,7 +474,7 @@ function showRecruitPlan(msg = "") {
     const T = BUSINESS_TYPES.find(t => t.id === id), p = plan[id], n = recruitSlots(id);
     const traitOpts = (sel) => `<option value="random" ${sel === "random" ? "selected" : ""}>🎲 Random</option>` +
       recruitTraits(id).map(k => `<option value="${k}" ${k === sel ? "selected" : ""}>${TRAITS[k].emoji} ${TRAITS[k].name}</option>`).join("");
-    return `<div class="recruitCol"><h3>${T.emoji} ${T.name}</h3>
+    return `<div class="recruitCol"><h3>${bizIco(T.id)}${T.name}</h3>
       <label>🧮 Accountant<select data-rp="${id}" data-field="accountant">${opt(ACCOUNTANTS, p.accountant)}</select></label>
       <label>💞 HR<select data-rp="${id}" data-field="hr">${opt(HR_OPTIONS, p.hr)}</select></label>
       ${p.traits.slice(0, n).map((tr, i) => `<label>👷 Worker ${i + 1}<select data-rp="${id}" data-field="trait" data-i="${i}">${traitOpts(tr)}</select></label>`).join("")}
@@ -587,15 +587,15 @@ function renderGalleryBiz() {
   const desc = `<div class="muted">Shows your paintings to visitors: ${fmt(GALLERY_PER_PAINTING)} / sec for each painting in your 🖼️ Collection, up to ${fmt(GALLERY_MAX)} / sec (${GALLERY_MAX / GALLERY_PER_PAINTING} paintings) · no workers, HR manager or accountant · max 1</div>`;
   if (state.special.gallery) {
     return `<div class="card specialCard"><div class="row">
-      <div><h3>🏛️ Art Gallery</h3><div class="muted">${fmt(GALLERY_PER_PAINTING)} / sec for each of your ${n} painting${n === 1 ? "" : "s"}${GALLERY_PER_PAINTING * n >= GALLERY_MAX ? " · maximum reached" : ` · max ${fmt(GALLERY_MAX)} / sec`}</div></div>
+      <div><h3>${bizIco("gallery")}Art Gallery</h3><div class="muted">${fmt(GALLERY_PER_PAINTING)} / sec for each of your ${n} painting${n === 1 ? "" : "s"}${GALLERY_PER_PAINTING * n >= GALLERY_MAX ? " · maximum reached" : ` · max ${fmt(GALLERY_MAX)} / sec`}</div></div>
       <span class="income" id="gallery-income">+${fmt(galleryIncome())} / sec</span></div></div>`;
   }
   if (n >= GALLERY_NEED) {
-    return `<div class="card specialCard"><div class="row"><div><h3>🏛️ Art Gallery</h3>${desc}
+    return `<div class="card specialCard"><div class="row"><div><h3>${bizIco("gallery")}Art Gallery</h3>${desc}
         <div class="muted">With your ${n} paintings: +${fmt(galleryIncome())} / sec</div></div>
       <button class="btn" data-action="buySpecial" data-special="gallery" data-cost="${GALLERY_PRICE}">Buy ${fmt(GALLERY_PRICE)}</button></div></div>`;
   }
-  return `<div class="card specialCard" style="opacity:0.6"><div class="row"><div><h3>🔒 🏛️ Art Gallery</h3>${desc}
+  return `<div class="card specialCard" style="opacity:0.6"><div class="row"><div><h3>${ico("lock", "lockS")}${bizIco("gallery")}Art Gallery</h3>${desc}
       <div class="muted">Unlocks with ${GALLERY_NEED} paintings in your 🖼️ Art Gallery collection (you have ${n})</div></div>
     <span class="muted">${fmt(GALLERY_PRICE)}</span></div></div>`;
 }
@@ -615,17 +615,17 @@ function renderPort() {
   const n = tankersOwned();
   if (state.special.port) {
     return `<div class="card specialCard"><div class="row">
-      <div><h3>⚓ Trading Port</h3>
+      <div><h3>${bizIco("port")}Trading Port</h3>
         <div class="muted">${fmt(PORT_PER_TANKER)} / sec for each of your ${n} oil tanker${n === 1 ? "" : "s"} · tanker contracts pay <b>+2.5%</b></div></div>
       <span class="income" id="port-income">+${fmt(PORT_PER_TANKER * n)} / sec</span></div></div>`;
   }
   const desc = `<div class="muted">Earns ${fmt(PORT_PER_TANKER)} / sec per oil tanker you own and +2.5% profit on every tanker contract · no workers, HR manager or accountant · max 1</div>`;
   if (n >= 1) {
-    return `<div class="card specialCard"><div class="row"><div><h3>⚓ Trading Port</h3>${desc}
+    return `<div class="card specialCard"><div class="row"><div><h3>${bizIco("port")}Trading Port</h3>${desc}
         <div class="muted">With your ${n} tanker${n === 1 ? "" : "s"}: +${fmt(PORT_PER_TANKER * n)} / sec</div></div>
       <button class="btn" data-action="buySpecial" data-special="port" data-cost="${PORT_PRICE}">Buy ${fmt(PORT_PRICE)}</button></div></div>`;
   }
-  return `<div class="card specialCard" style="opacity:0.6"><div class="row"><div><h3>🔒 ⚓ Trading Port</h3>${desc}
+  return `<div class="card specialCard" style="opacity:0.6"><div class="row"><div><h3>${ico("lock", "lockS")}${bizIco("port")}Trading Port</h3>${desc}
       <div class="muted">Unlocks when you own an oil tanker (see 🚢 Logistics)</div></div>
     <span class="muted">${fmt(PORT_PRICE)}</span></div></div>`;
 }
@@ -635,7 +635,7 @@ function renderWarehouses() {
   let html = "";
   if (owned > 0) {
     html += `<div class="card specialCard"><div class="row">
-      <div><h3>📦 Warehouses × ${owned}</h3>
+      <div><h3>${bizIco("warehouse")}Warehouses × ${owned}</h3>
         <div class="muted">Truck contracts pay <b>+${(WAREHOUSE_BONUS * 100 * owned).toFixed(0)}%</b> (+2% per warehouse)</div></div>
       <span class="muted">${owned} / ${WAREHOUSE_UNLOCKS.length}</span></div></div>`;
   }
@@ -644,10 +644,10 @@ function renderWarehouses() {
     const desc = `<div class="muted">+2% profit on every truck contract · no workers, HR manager or accountant</div>
                   <div class="muted">Owned: ${owned} / ${WAREHOUSE_UNLOCKS.length}</div>`;
     if (owned < slots) {
-      html += `<div class="card specialCard"><div class="row"><div><h3>📦 Warehouse #${owned + 1}</h3>${desc}</div>
+      html += `<div class="card specialCard"><div class="row"><div><h3>${bizIco("warehouse")}Warehouse #${owned + 1}</h3>${desc}</div>
         <button class="btn" data-action="buySpecial" data-special="warehouse" data-cost="${WAREHOUSE_PRICE}">Buy ${fmt(WAREHOUSE_PRICE)}</button></div></div>`;
     } else {
-      html += `<div class="card specialCard" style="opacity:0.6"><div class="row"><div><h3>🔒 📦 Warehouse #${owned + 1}</h3>${desc}
+      html += `<div class="card specialCard" style="opacity:0.6"><div class="row"><div><h3>${ico("lock", "lockS")}${bizIco("warehouse")}Warehouse #${owned + 1}</h3>${desc}
         <div class="muted">Unlocks when you own ${next} semi-trucks (you have ${trucksOwned()}, see 🚢 Logistics)</div></div>
         <span class="muted">${fmt(WAREHOUSE_PRICE)}</span></div></div>`;
     }
@@ -681,7 +681,7 @@ function renderAgency() {
     const next = agencyNeedFor(ag.agents.length + 1);
     const full = ag.agents.length >= AGENCY_MAX_AGENTS;
     html += `<div class="card specialCard">
-      <div class="row"><h3>🏢 Real Estate Agency</h3><span class="income" id="agency-income">+${income.toFixed(1)} / sec</span></div>
+      <div class="row"><h3>${bizIco("realestate")}Real Estate Agency</h3><span class="income" id="agency-income">+${income.toFixed(1)} / sec</span></div>
       <div class="muted">+2% bonus every time you sell a property · new agents at 100k, 300k, 600k, 1M… real estate profit (each step 100k bigger) · each agent earns 0, 5, 10 or 15 at random every second (7.5 / sec on average)</div>
       <div class="muted" style="margin-top:4px">${full ? "Your agency is full (max " + AGENCY_MAX_AGENTS + " agents)." :
         `Next agent at ${fmt(next)} real estate profit (now ${profit >= 0 ? "" : "−"}${fmt(Math.abs(profit))})`}</div>
@@ -695,7 +695,7 @@ function renderAgency() {
     </div>`;
   } else if (profit >= AGENCY_UNLOCK) {
     html += `<div class="card specialCard"><div class="row">
-      <div><h3>🏢 Real Estate Agency</h3>
+      <div><h3>${bizIco("realestate")}Real Estate Agency</h3>
         <div class="muted">+2% when you sell real estate · each agent earns 0, 5, 10 or 15 at random every second</div>
         <div class="muted">Agents join at 100k, 300k, 600k, 1M… real estate profit (you'd start with ${agentsForProfit(profit)})</div>
         <div class="muted">Owned: 0 / 1</div></div>
@@ -703,7 +703,7 @@ function renderAgency() {
     </div></div>`;
   } else {
     html += `<div class="card specialCard" style="opacity:0.6"><div class="row">
-      <div><h3>🔒 🏢 Real Estate Agency</h3>
+      <div><h3>${ico("lock", "lockS")}${bizIco("realestate")}Real Estate Agency</h3>
         <div class="muted">+2% when you sell real estate · each agent earns 0, 5, 10 or 15 at random every second</div>
         <div class="muted">Unlocks at 100,000 all-time real estate profit (now ${profit >= 0 ? "" : "−"}${fmt(Math.abs(profit))}, see 📈 Investing)</div>
         <div class="muted">Owned: 0 / 1</div></div>
