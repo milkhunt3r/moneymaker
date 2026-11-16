@@ -24,6 +24,10 @@ const COLLECTIONS = [
   { id: "logistics99", name: "🦅 Master Logistics Coin", reward: { ids: ["llevel99"], text: "Unlock 🏆 Logistics legend (Logistics level 99)" } },
   { id: "strongman", name: "🦛 The Strongman Collection", reward: { ids: ["boost-energy-100", "click100k"], text: "Unlock ⚡ Wired for life and 🦾 Iron finger" } },
 ];
+// 🛡️ painted collection emblems (assets/col/<id>.webp): the title shows the emblem instead of the leading emoji
+const COL_EMBLEMS = new Set(["wow", "ahead", "royal", "rain", "emperor", "artist", "bull", "shark"]);
+const colTitle = (col) => COL_EMBLEMS.has(col.id)
+  ? `<img class="colEmblem" src="assets/col/${col.id}.webp" alt="">${col.name.replace(/^\S+\s/, "")}` : col.name;
 const COSMETICS = [
   { id: "wowBg",   collection: "wow", slot: "background", name: "Wow So Rich Background", price: 5000000, desc: "A very rich Shiba Inu tycoon counts his cash in a glittering office, behind the whole game.",
     preview: `<div class="preview" style="background-image:url('assets/wow-background-thumb.jpg')"></div>` },
@@ -154,7 +158,7 @@ function renderCosmetics() {
   const card = cosmeticCard;
   $("cosmetics").innerHTML = COLLECTIONS.filter(col => !col.reward).map(col => `
     <div class="card">
-      <h2 style="margin:0">${col.name}</h2>
+      <h2 style="margin:0">${colTitle(col)}</h2>
       <div class="cosmetics">${COSMETICS.filter(c => c.collection === col.id).map(card).join("")}</div>
     </div>`).join("");
 }

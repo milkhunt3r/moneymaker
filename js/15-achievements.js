@@ -293,7 +293,7 @@ function renderRewards() {
     COLLECTIONS.filter(c => c.reward).map(col => {
       const p = rewardProgress(col), items = COSMETICS.filter(c => c.collection === col.id), got = items.every(c => state.cosmetics.owned[c.id]);
       return `<div class="card rewardCard ${got ? "got" : ""}">
-        <div class="row"><h2 style="margin:0">${got ? "" : "🔒 "}${col.name}</h2><span class="muted">${got ? "✅ Unlocked" : `${p.done} / ${p.total}`}</span></div>
+        <div class="row"><h2 style="margin:0">${got ? "" : ico("lock", "lockS")}${colTitle(col)}</h2><span class="muted">${got ? "✅ Unlocked" : `${p.done} / ${p.total}`}</span></div>
         <div class="muted">${col.reward.text}</div>
         ${col.reward.ids && !got ? `<div class="rewardNeeds">${ACHIEVEMENTS.filter(x => col.reward.ids.includes(x.id)).map(x =>
           `<span class="${state.achievements[x.id] ? "ok" : ""}">${state.achievements[x.id] ? "✅" : "⬜"} ${x.icon} ${x.name}</span>`).join("")}</div>` : ""}
