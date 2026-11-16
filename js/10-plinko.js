@@ -15,10 +15,16 @@ const isPlinko = () => !!PLINKO_TABLES[currentGame];
 const plinkoCfg = () => PLINKO_TABLES[currentGame] || PLINKO_TABLES.plinko;
 const plinko = { bet: 5000, count: 1, balls: [], history: [], lastWin: null, message: "", hits: {}, raf: null, roundBet: 0, roundWin: 0 };
 
-// Balls still in the air when the page closed: give their bets back
-if (state.plinkoInPlay > 0) state.casinoChips += state.plinkoInPlay;
-if (state.plinkoVipInPlay > 0) { state.vip.coins += state.plinkoVipInPlay; state.plinkoVipInPlay = 0; }
-state.plinkoInPlay = 0;
+/* 🔒 Balls still in the air are saved with their path: after a reload they land where they were going
+   (no refund, so refreshing can't undo a ball heading for a low multiplier). Very old saves without paths get the bets back. */
+if (!state.plinkoAir) state.plinkoAir = [];
+let plinkoAway = null;
+if (state.plinkoAir.length) { plinkoAway = state.plinkoAir.slice(); state.plinkoAir = []; }
+else {
+  if (state.plinkoInPlay > 0) state.casinoChips += state.plinkoInPlay;
+  if (state.plinkoVipInPlay > 0) { state.vip.coins += state.plinkoVipInPlay; state.plinkoVipInPlay = 0; }
+  state.plinkoInPlay = 0;
+}
 
 // Board geometry (canvas pixels)
 const PW = 680, PH = 552, P_TOP = 50, P_GAP_Y = 38, P_GAP_X = 46, PEG_R = 4, BALL_R = 8;
@@ -61,7 +67,9 @@ function plinkoDrop() {
   for (let i = 0; i < n; i++) {
     const path = [];
     for (let r = 0; r < PLINKO_ROWS; r++) path.push(secureRandomInt(2));   // 0 = left, 1 = right
-    plinko.balls.push({ path, bet, vip: vipBall, start: now + i * 140, slot: path.reduce((a, b) => a + b, 0), done: false });
+    const ball = { id: state.nextId++, path, bet, vip: vipBall, start: now + i * 140, slot: path.reduce((a, b) => a + b, 0), done: false };
+    plinko.balls.push(ball);
+    state.plinkoAir.push({ id: ball.id, bet, vip: vipBall, slot: ball.slot });   // 🔒 saved until it lands
   }
   updateCounter(); save();
   renderPlinkoControls();
@@ -94,6 +102,7 @@ function ballPos(ball, t) {
 }
 
 function plinkoLand(ball) {
+  state.plinkoAir = (state.plinkoAir || []).filter(b => b.id !== ball.id);
   const mult = PLINKO_MULTS[ball.slot];
   const win = ball.bet * mult;
   if (mult === 250) state.stats.plinko250 = true;
@@ -224,4 +233,14 @@ $("casinoGame").addEventListener("input", (e) => {
   $("plinkoCountText").textContent = plinko.count;
   const btn = document.querySelector("[data-plinko=drop]");
   if (btn) btn.textContent = `🔻 Drop ${plinko.count > 1 ? plinko.count + " balls" : "ball"} (${fmt(plinko.bet * plinko.count)})`;
+});
+
+// ▶ balls that were in the air when the page closed land now
+document.addEventListener("DOMContentLoaded", () => {
+  if (!plinkoAway) return;
+  const before = plinko.roundWin; plinko.roundWin = 0;
+  plinkoAway.forEach(b => plinkoLand(b));
+  const won = plinko.roundWin; plinko.roundWin = before;
+  showNotice(`🔻 ${plinkoAway.length} Plinko ball${plinkoAway.length > 1 ? "s" : ""} still in the air landed: +${fmt(won)}.`);
+  plinkoAway = null; save();
 });

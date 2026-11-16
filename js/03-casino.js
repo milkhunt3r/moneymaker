@@ -668,9 +668,13 @@ function spinRoulette() {
   const result = secureRandomInt(37);                // 0 to 36, all equally likely
   table.spinning = true;
   table.lastBets = { ...table.bets };
+  state.rouletteSpin = { id: table.id, result };   // 🔒 a reload mid-spin settles this same result
+  save();
   renderRoulette();                    // draws the wheel at its current angle
-
-  animateSpin(table, result, () => {
+  animateSpin(table, result, () => rouletteSettle(table, result));
+}
+function rouletteSettle(table, result, away = false) {
+    state.rouletteSpin = null;
     const bet = totalBets(table);
     const back = roulettePayout(table.bets, result);
 
@@ -703,6 +707,12 @@ function spinRoulette() {
       if (levelsGained > 0) $("resultText").textContent += ` 🎉 Level up! Now level ${levelInfo(state.casinoXp).level}.`;
       $("resultText").className = back > 0 ? "income" : "flash";
     }
+    if (away) showNotice(`🎡 Your roulette spin finished: ${result}. ${back > 0 ? `You won ${fmt(back)}!` : `You lost ${fmt(bet)}.`}`);
     save();
-  });
 }
+// 🔒 a spin that was still turning when the page closed is settled with its own result (no free re-spin)
+document.addEventListener("DOMContentLoaded", () => {
+  const sp = state.rouletteSpin;
+  if (sp && ROULETTE_TABLES[sp.id] && Object.keys(ROULETTE_TABLES[sp.id].bets || {}).length) rouletteSettle(ROULETTE_TABLES[sp.id], sp.result, true);
+  else state.rouletteSpin = null;
+});

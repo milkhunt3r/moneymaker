@@ -12,9 +12,17 @@ const CLIMB_CHIPS = [10000, 25000, 50000, 100000, 250000, 500000];
 const climb = { bet: 0, chip: 10000, active: false, busy: false, stake: 0, step: 0, shield: false,
                 balls: [], drawn: [], tookHalf: false, banked: 0, message: "", crashed: false, lastBet: 0 };
 
-// A round that was running when the page closed: give the stake back
-if (state.climbInPlay > 0) { state.casinoChips += state.climbInPlay; }
-state.climbInPlay = 0;
+/* 🔒 A climb in progress is saved: after a reload you continue at the same step with the same balls left
+   (the next ball is only drawn when you press Draw, so refreshing gains nothing). Very old saves get the stake back. */
+if (state.climbRound && state.climbRound.active && state.climbInPlay > 0) {
+  Object.assign(climb, state.climbRound, { busy: false });
+  climb.drawn.forEach(d => d.fresh = false);
+  setTimeout(() => showNotice("🎈 Your Sky Climb is still in the air: continue it in the 🎰 Casino."), 0);
+} else {
+  if (state.climbInPlay > 0) state.casinoChips += state.climbInPlay;
+  state.climbInPlay = 0;
+}
+state.climbRound = climb;   // saved with the game
 
 function climbMachine() {
   return [...Array(19).fill("g"), ...Array(8).fill("r"), "d"];

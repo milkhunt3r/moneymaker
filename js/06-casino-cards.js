@@ -20,13 +20,28 @@ const BJ_TABLES = {
 };
 let bj = null;   // the blackjack table you are looking at
 
-// Bets waiting on the seats are saved. Money that was in a round when the page closed is given back.
+/* 🔒 A hand in play is SAVED (cards, shoe, decisions): a reload puts you back at the same table with the same cards,
+   so refreshing can't undo a bad hand. (Only a very old save with no hand stored gets its bet back.) */
+const CARD_ROUND_KEYS = ["phase", "hands", "dealer", "active", "shoe", "deck", "cards", "held", "board", "street", "insurance", "insAsked",
+  "drawQueue", "freeUsed", "lastBets", "message", "result", "jackpotWon", "dealerHand"];
+let cardResume = null;   // { kind, id }: the table whose hand was restored, resumed once every script has loaded
+function restoreRound(kind, tables, saved, id) {
+  const r = saved.round;
+  if (!(saved.inPlay > 0)) { freeReturn(id, "inPlay"); return false; }
+  if (!r || !r.phase || r.phase === "betting") { refundTo(id, Math.max(0, saved.inPlay - freeReturn(id, "inPlay"))); return false; }
+  const t = tables[id];
+  CARD_ROUND_KEYS.forEach(k => { if (k in r) t[k] = r[k]; });
+  t.busy = false;
+  const unfresh = (list) => (list || []).forEach(c => { if (c) c.fresh = false; });
+  unfresh(t.dealer); unfresh(t.cards); unfresh(t.board); (t.hands || []).forEach(h => unfresh(h.cards));
+  cardResume = { kind, id };
+  return true;
+}
 if (!state.bj) state.bj = {};
 for (const id in BJ_TABLES) {
   const saved = state.bj[id] || {};
-  if (saved.inPlay > 0) refundTo(id, Math.max(0, saved.inPlay - freeReturn(id, "inPlay")));
-  else freeReturn(id, "inPlay");
-  state.bj[id] = { bets: saved.bets || [0, 0, 0], inPlay: 0 };
+  const kept = restoreRound("bj", BJ_TABLES, saved, id);
+  state.bj[id] = { bets: saved.bets || [0, 0, 0], inPlay: kept ? saved.inPlay : 0, round: kept ? BJ_TABLES[id] : null };
 }
 const seatBets = (t) => state.bj[t.id].bets;
 
@@ -78,26 +93,29 @@ async function bjDeal() {
   if (bets.some(b => b >= 500000000)) state.stats.bj500 = true;
   countPlay("blackjack", t.hands.length);   // one game per seat with a bet (splits don't add games)
   state.bj[t.id].bets = [0, 0, 0];
-  t.dealer = [];
+  t.dealer = []; t.insurance = 0; t.insAsked = false;
+  state.bj[t.id].round = t;   // 🔒 the hand is saved with the game
   save();
-
+  await bjFinishDeal(t);
+}
+// Deals the cards still missing (all of them for a new hand, the rest after a reload), then insurance and the blackjack peek
+async function bjFinishDeal(t) {
+  t.busy = true; t.phase = "dealing";
   // two rounds of cards: each hand, then the dealer (2nd dealer card face down)
   for (let round = 0; round < 2; round++) {
-    for (const h of t.hands) { h.cards.push(draw(t)); renderBlackjack(); await sleep(bjDelay()); }
-    const c = draw(t); if (round === 1) c.hidden = true;
-    t.dealer.push(c); renderBlackjack(); await sleep(bjDelay());
+    for (const h of t.hands) if (h.cards.length <= round) { h.cards.push(draw(t)); renderBlackjack(); await sleep(bjDelay()); }
+    if (t.dealer.length <= round) { const c = draw(t); if (round === 1) c.hidden = true; t.dealer.push(c); renderBlackjack(); await sleep(bjDelay()); }
   }
 
   // Dealer shows an Ace: offer insurance before checking for blackjack
   const up = t.dealer[0];
-  t.insurance = 0;
-  if (up.r === "A") {
+  if (up.r === "A" && !t.insAsked) {
     t.phase = "insurance";
     t.busy = false;
     renderBlackjack();
     const take = await new Promise(resolve => { t.insuranceResolve = resolve; });
     t.insuranceResolve = null;
-    t.busy = true;
+    t.busy = true; t.insAsked = true;
     if (take) {
       const cost = insuranceCost(t);
       payFrom(t.id, cost);
@@ -246,7 +264,7 @@ async function bjSettle(t) {
   const cashback = lost * cashbackRate();     // level cashback on lost hands
   state.casinoChips += back + cashback;
   casinoRecord(wagered, back + cashback);
-  state.bj[t.id].inPlay = 0;
+  state.bj[t.id].inPlay = 0; state.bj[t.id].round = null;
   freeDone(t.id);
   const levelsGained = addXp(wagered);         // XP = bet × game multiplier (doubles and splits count)
 
@@ -261,6 +279,19 @@ async function bjSettle(t) {
   renderBlackjack();
 }
 
+// ▶ after a reload: carry on exactly where the hand stopped
+function bjResume(t) {
+  if (t.phase === "dealing" || t.phase === "insurance") return bjFinishDeal(t);
+  if (t.phase === "dealer") return bjDealerPlays(t);
+  // playing: a split that was still being dealt gets its missing card
+  for (const h of t.hands) if (h.fromSplit && h.cards.length < 2) {
+    h.cards.push(draw(t));
+    if (h.cards[0].r === "A") { h.splitAces = true; h.done = true; }
+    if (handValue(h.cards).total === 21) h.done = true;
+  }
+  t.phase = "playing"; t.busy = false;
+  bjNextHand(t);
+}
 function bjMsg(text) { if (bj) { bj.message = text; renderBlackjack(); } }
 
 // ----- Drawing the table -----
@@ -529,13 +560,12 @@ const VP_TABLES = {
 };
 let vp = null;   // the video poker table you are looking at
 
-// The bet you set is remembered. A bet that was in a hand when the page closed is given back.
+// The bet you set is remembered. A hand in play is saved and restored on a reload (see restoreRound).
 if (!state.vp) state.vp = {};
 for (const id in VP_TABLES) {
   const saved = state.vp[id] || {};
-  if (saved.inPlay > 0) refundTo(id, Math.max(0, saved.inPlay - freeReturn(id, "inPlay")));
-  else freeReturn(id, "inPlay");
-  state.vp[id] = { bet: saved.bet || 0, lastBet: saved.lastBet || 0, inPlay: 0 };
+  const kept = restoreRound("vp", VP_TABLES, saved, id);
+  state.vp[id] = { bet: saved.bet || 0, lastBet: saved.lastBet || 0, inPlay: kept ? saved.inPlay : 0, round: kept ? VP_TABLES[id] : null };
 }
 const vpBet = (t) => state.vp[t.id].bet;
 const vpJackpotShare = (t, bet) => t.jackpot * bet / t.max;   // what a 100% jackpot pays for this bet
@@ -565,20 +595,34 @@ async function vpDeal() {
   t.held = [false, false, false, false, false];
   t.result = null; t.message = ""; t.jackpotWon = false;
   t.phase = "holding"; t.busy = true;
+  state.vp[t.id].round = t;   // 🔒 the hand is saved with the game
   updateCounter(); save();
-  for (let i = 0; i < 5; i++) { const c = t.deck.pop(); c.fresh = true; t.cards.push(c); renderVideoPoker(); await sleep(vpDelay()); }
+  await vpFinishDeal(t);
+}
+async function vpFinishDeal(t) {   // deals the cards still missing (all 5, or the rest after a reload)
+  t.phase = "holding"; t.busy = true;
+  while (t.cards.length < 5) { const c = t.deck.pop(); c.fresh = true; t.cards.push(c); renderVideoPoker(); await sleep(vpDelay()); }
   t.busy = false;
   renderVideoPoker();
 }
 
 async function vpDraw() {
-  const t = vp, bet = state.vp[t.id].inPlay;
+  const t = vp;
   t.busy = true; t.phase = "drawing";
-  for (let i = 0; i < 5; i++) {
-    if (t.held[i]) continue;
-    const c = t.deck.pop(); c.fresh = true; t.cards[i] = c;
+  // the new cards are taken from the deck all at once and saved, so a reload can't change them
+  t.drawQueue = {};
+  for (let i = 0; i < 5; i++) if (!t.held[i]) { const c = t.deck.pop(); c.fresh = true; t.drawQueue[i] = c; }
+  save();
+  for (const i of Object.keys(t.drawQueue)) {
+    t.cards[i] = t.drawQueue[i]; delete t.drawQueue[i];
     renderVideoPoker(); await sleep(vpDelay());
   }
+  vpSettle(t);
+}
+function vpSettle(t) {
+  Object.keys(t.drawQueue || {}).forEach(i => { t.cards[i] = t.drawQueue[i]; });   // after a reload: cards not shown yet
+  t.drawQueue = null;
+  const bet = state.vp[t.id].inPlay;
   const cat = vpScore(t.cards), hand = VP_HANDS[cat];
   const back = bet * hand.pays;
   const jackpot = hand.jackpot ? Math.floor(vpJackpotShare(t, bet) * hand.jackpot) : 0;
@@ -586,7 +630,7 @@ async function vpDraw() {
   const cashback = lost * cashbackRate();
   state.casinoChips += back + jackpot + cashback;
   casinoRecord(bet, back + jackpot + cashback);
-  state.vp[t.id].inPlay = 0;
+  state.vp[t.id].inPlay = 0; state.vp[t.id].round = null;
   freeDone(t.id);
   state.vp[t.id].bet = Math.max(0, state.vp[t.id].bet - (t.freeUsed || 0));   // the free chips were used: they leave the bet
   t.freeUsed = 0;
@@ -615,6 +659,10 @@ function countPlay(game, n = 1) {
   state.stats.played[game] = (state.stats.played[game] || 0) + n;
 }
 
+function vpResume(t) {
+  if (t.phase === "drawing") return vpSettle(t);
+  return vpFinishDeal(t);
+}
 function vpMsg(text) { if (vp) { vp.message = text; renderVideoPoker(); } }
 
 function vpCardHtml(c, delay) {
@@ -803,13 +851,12 @@ const UTH_TABLES = {
 };
 let uth = null;
 
-// Bets on the spots are saved. Money that was in a round when the page closed is given back.
+// Bets on the spots are saved. A hand in play is saved and restored on a reload (see restoreRound).
 if (!state.uth) state.uth = {};
 for (const id in UTH_TABLES) {
   const saved = state.uth[id] || {};
-  if (saved.inPlay > 0) refundTo(id, Math.max(0, saved.inPlay - freeReturn(id, "inPlay")));
-  else freeReturn(id, "inPlay");
-  state.uth[id] = { seats: saved.seats || [{ ante: 0, trips: 0 }, { ante: 0, trips: 0 }], inPlay: 0 };
+  const kept = restoreRound("uth", UTH_TABLES, saved, id);
+  state.uth[id] = { seats: saved.seats || [{ ante: 0, trips: 0 }, { ante: 0, trips: 0 }], inPlay: kept ? saved.inPlay : 0, round: kept ? UTH_TABLES[id] : null };
 }
 const uthSeats = (t) => state.uth[t.id].seats;
 const uthDelay = () => (window.UTH_FAST ? 0 : 320);
@@ -844,10 +891,15 @@ async function uthDeal() {
   });
   state.uth[t.id].seats = [{ ante: 0, trips: 0 }, { ante: 0, trips: 0 }];
   t.deck = uthNewDeck(); t.dealer = []; t.board = [];
+  state.uth[t.id].round = t;   // 🔒 the hand is saved with the game
   save();
+  await uthFinishDeal(t);
+}
+async function uthFinishDeal(t) {   // deals the cards still missing (all of them, or the rest after a reload)
+  t.busy = true; t.phase = "dealing";
   for (let round = 0; round < 2; round++) {
-    for (const h of t.hands) { h.cards.push(uthDraw(t)); renderUth(); await sleep(uthDelay()); }
-    const d = uthDraw(t); d.hidden = true; t.dealer.push(d); renderUth(); await sleep(uthDelay());
+    for (const h of t.hands) if (h.cards.length <= round) { h.cards.push(uthDraw(t)); renderUth(); await sleep(uthDelay()); }
+    if (t.dealer.length <= round) { const d = uthDraw(t); d.hidden = true; t.dealer.push(d); renderUth(); await sleep(uthDelay()); }
   }
   t.street = "pre";
   t.busy = false; t.phase = "playing";
@@ -940,7 +992,7 @@ async function uthShowdown() {
   }
   state.casinoChips += back + cashback;
   casinoRecord(wagered, back + cashback);
-  state.uth[t.id].inPlay = 0;
+  state.uth[t.id].inPlay = 0; state.uth[t.id].round = null;
   freeDone(t.id);
   const levelsGained = addXp(wagered);   // XP = bet × game multiplier (raises and Trips count)
   const net = back - wagered;
@@ -953,6 +1005,14 @@ async function uthShowdown() {
   renderUth();
 }
 
+// ▶ after a reload: finish a board that was being dealt, then carry on with the next decision (or the showdown)
+function uthResume(t) {
+  if (t.phase === "dealing") return uthFinishDeal(t);
+  if (t.street === "pre" && t.board.length > 0) { while (t.board.length < 3) t.board.push(uthDraw(t)); t.street = "flop"; }
+  if (t.street === "flop" && t.board.length > 3) { while (t.board.length < 5) t.board.push(uthDraw(t)); t.street = "river"; }
+  t.phase = "playing"; t.busy = false;
+  uthNext();
+}
 function uthMsg(text) { if (uth) { uth.message = text; renderUth(); } }
 // Take the finished round off the table (when you clear or start placing new bets)
 function uthClearTable(t) { t.hands = []; t.dealer = []; t.board = []; t.dealerHand = ""; }
@@ -1129,4 +1189,16 @@ $("casinoGame").addEventListener("click", (e) => {
     t.message = ""; updateCounter(); renderUth(); save();
   }
   if (t.phase === "playing" && (a.startsWith("raise") || a === "check" || a === "fold")) uthAction(a);
+});
+
+// ▶ a hand that was saved in the middle of play: reopen its table and carry on (runs after every script has loaded)
+document.addEventListener("DOMContentLoaded", () => {
+  if (!cardResume) return;
+  const { kind, id } = cardResume; cardResume = null;
+  currentGame = id;
+  const names = { bj: "Blackjack", vp: "Video Poker", uth: "Ultimate Texas Hold'em" };
+  if (kind === "bj") { bj = BJ_TABLES[id]; bjResume(bj); }
+  if (kind === "vp") { vp = VP_TABLES[id]; vpResume(vp); }
+  if (kind === "uth") { uth = UTH_TABLES[id]; uthResume(uth); }
+  showNotice(`🃏 Your ${names[kind]} hand is still in play: it's waiting for you in the 🎰 Casino.`);
 });
