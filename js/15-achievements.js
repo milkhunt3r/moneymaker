@@ -230,7 +230,9 @@ const ACH_PICS = new Set(["cash1s", "cash10s", "cash100s", "cash1g", "cash5g", "
   "mineRun1", "mineRun50", "mineRun250", "mineDeep50", "mineDeep80", "mineDeep100", "mineFullBag", "mineClose", "mineRescue", "mineUp1", "mineHoard", "mineDeep150", "mineDeep250", "mineMaster", "mineChest50", "mineMaxUp",
   "arteasy50", "arteasy75", "arteasy90", "artmedium50", "artmedium75", "artmedium90", "arthard50", "arthard75", "arthard90",
   "artcol10", "artcol50", "artcol100", "artslots", "artsold1", "artsold50", "artsold100", "artsold1000",
-  "uni2", "uni3", "sci150", "moon", "deep1", "deep10", "gene", "gene1", "gene100", "geneKraken", "geneElder", "geneUnicorn"]);
+  "uni2", "uni3", "sci150", "moon", "deep1", "deep10", "gene", "gene1", "gene100", "geneKraken", "geneElder", "geneUnicorn",
+  // built from existing art in a badge rim (bronze rim = the first step, gold = the bigger one)
+  "astro", "station", "wash3", "repair3", "salon3", "casino2", "hotel2", "warehouse5", "law10", "agents100", "mine1", "mine4", "port", "recruit", "artbiz", "sciUni", "sciLab", "parks2", "boost-energy-10", "boost-energy-100", "boost-pill-10", "boost-pill-100", "boost-influence-10", "boost-influence-100", "mineCoal", "mineSilver", "mineGold", "mineDiamond", "mineChest1", "mineLift1", "mineLift20", "gene10", "gene50", "satellite", "play-roulette-100", "play-roulette-1000", "play-blackjack-100", "play-blackjack-1000", "play-plinko-100", "play-plinko-1000", "play-climb-100", "play-climb-1000", "play-vp-100", "play-vp-1000", "play-uth-100", "play-uth-1000"]);
 const achIcon = (a, cls = "") => {
   if (!ACH_PICS.has(a.id)) return a.icon;
   const diff = (a.id.match(/^art(easy|medium|hard)\d/) || [])[1];   // 🖼️ Art Gallery brushes: a dot shows Easy / Medium / Hard
