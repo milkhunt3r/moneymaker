@@ -27,7 +27,13 @@ const scienceOpen = () => { const L = sciLevels(); return L.logistics >= SCI_REQ
    Both Universities share one pool of scientists; buildings take scientists from the fullest one first. */
 const secretsOpen = () => (state.legacy && state.legacy.count) >= 1;
 const ASTRO_PRICE = 5e8, ASTRO_SCI = 20, ASTRO_TIME_CUT = 300;
-const unis = () => [sci().uni, sci().uni2].filter(Boolean);
+const unis = () => [sci().uni, sci().uni2, sci().uni3].filter(Boolean);
+/* 🌌🌌 Second-tier secrets (no info anywhere until the 2nd prestige): a 3rd University, the 🌕 Moon Base (after the 🛸 station)
+   with its own deep space missions, and the 🧬 Genetics Laboratory (after the Moon Base): +30% on every space mission. */
+const secrets2Open = () => (state.legacy && state.legacy.count) >= 2;
+const MOON_PRICE = 1e11, MOON_SCI = 150, DEEP_EVERY = 1200, DEEP_FAIL = 0.20, DEEP_MIN = 50000, DEEP_MAX = 70000;   // scoin
+const GENE_PRICE = 5e10, GENE_SCI = 75, GENE_BONUS = 0.30;
+const spaceBonus = () => (sci().gene ? 1 + GENE_BONUS : 1);   // 🧬 +30% on 🚀 and 🌕 mission rewards
 const sciPool = () => unis().reduce((a, u) => a + u.scientists, 0);
 function spendScientists(n) {
   while (n > 0) {
@@ -130,10 +136,23 @@ function launchMission() {
   const s = sci().space, n = (s.count = (s.count || 0) + 1);
   const name = `${MISSION_NAMES[secureRandomInt(MISSION_NAMES.length)]}-${n}`;
   const failed = secureRandomInt(1000) < Math.round(spaceFail() * 1000);
-  const reward = failed ? 0 : (SPACE_MIN + secureRandomInt(SPACE_MAX - SPACE_MIN + 1)) * 1e6;
+  const reward = failed ? 0 : Math.round((SPACE_MIN + secureRandomInt(SPACE_MAX - SPACE_MIN + 1)) * 1e6 * spaceBonus());
   s.log = [{ name, reward, at: Date.now() }, ...(s.log || [])].slice(0, 5);
   if (reward) state.stats.spaceOk = (state.stats.spaceOk || 0) + 1; else state.stats.spaceFail = (state.stats.spaceFail || 0) + 1;
   s.earned = (s.earned || 0) + reward;
+  return { name, reward };
+}
+
+// 🌕 a deep space mission from the Moon Base: 20% fail, else 50,000 – 70,000 scoin (+30% with the 🧬 Genetics Laboratory)
+const DEEP_NAMES = ["Selene", "Tranquility", "Copernicus", "Tycho", "Endeavour", "Eagle", "Luna", "Apollo", "Gagarin", "Shackleton"];
+function launchDeep() {
+  const m = sci().moon, n = (m.count = (m.count || 0) + 1);
+  const name = `${DEEP_NAMES[secureRandomInt(DEEP_NAMES.length)]}-${n}`;
+  const failed = secureRandomInt(1000) < Math.round(DEEP_FAIL * 1000);
+  const reward = failed ? 0 : Math.round((DEEP_MIN + secureRandomInt(DEEP_MAX - DEEP_MIN + 1)) * 1e6 * spaceBonus());
+  m.log = [{ name, reward, at: Date.now() }, ...(m.log || [])].slice(0, 5);
+  if (reward) { m.ok = (m.ok || 0) + 1; state.stats.deepOk = (state.stats.deepOk || 0) + 1; } else state.stats.deepFail = (state.stats.deepFail || 0) + 1;
+  m.earned = (m.earned || 0) + reward;
   return { name, reward };
 }
 
@@ -142,7 +161,7 @@ function scienceTick() {
   const S = sci();
   for (const u of unis()) if (u.scientists < UNI_MAX && --u.timer <= 0) {
     u.scientists++; u.timer = UNI_EVERY;
-    if (u.scientists === UNI_MAX) showNotice(`🎓 Your ${u === S.uni2 ? "2nd " : ""}University is full: ${UNI_MAX} scientists! It now earns +${fmt(UNI_FULL_INCOME)} / sec.`);
+    if (u.scientists === UNI_MAX) showNotice(`🎓 Your ${u === S.uni2 ? "2nd " : u === S.uni3 ? "3rd " : ""}University is full: ${UNI_MAX} scientists! It now earns +${fmt(UNI_FULL_INCOME)} / sec.`);
     if (u.scientists === UNI_MAX && state.view === "income") render();
   }
   if (S.lab && !S.lab.pending) {
@@ -155,6 +174,14 @@ function scienceTick() {
     state.money += m.reward;
     if (m.reward) showNotice(`🚀 Mission ${m.name} succeeded: +${fmt(m.reward)}!`);
     else showAlert(`🚀 Mission ${m.name} failed`, `The rocket didn't make it. No reward this time; the next launch is in ${spaceMin()} minutes.`);
+    if (state.view === "income") render();
+  }
+  if (S.moon && --S.moon.timer <= 0) {
+    S.moon.timer = DEEP_EVERY;
+    const m = launchDeep();
+    state.money += m.reward;
+    if (m.reward) showNotice(`🌕 Deep space mission ${m.name} succeeded: +${fmt(m.reward)}!`);
+    else showAlert(`🌕 Deep space mission ${m.name} failed`, `The ship was lost in deep space. No reward this time; the next launch is in ${DEEP_EVERY / 60} minutes.`);
     if (state.view === "income") render();
   }
   // 🛰️ satellite: broken trucks repair themselves for free after 5 seconds
@@ -174,7 +201,7 @@ function scienceTick() {
     const ui = $("sci-uni-income"); if (ui) ui.classList.toggle("neg", uniIncome() < 0);
     set("sci-pool", sciPool());
     updateSciNeeds();
-    [["", S.uni], ["2", S.uni2]].forEach(([k, u]) => {
+    [["", S.uni], ["2", S.uni2], ["3", S.uni3]].forEach(([k, u]) => {
       if (!u) return;
       set(`sci-uni${k}-count`, u.scientists);
       set(`sci-uni${k}-next`, u.scientists >= UNI_MAX ? "full" : "next in " + clock(u.timer));
@@ -183,6 +210,7 @@ function scienceTick() {
   }
   if (S.lab) set("sci-lab-next", "guaranteed within " + clock(Math.max(0, labOdds() - (S.lab.since || 0))));
   if (S.space) set("sci-space-next", clock(S.space.timer));
+  if (S.moon) set("sci-moon-next", clock(S.moon.timer));
   return uniIncome();
 }
 
@@ -221,13 +249,16 @@ function renderScience() {
   const uniRows = (k, u, label) => `<div class="row"><span>${label}👩‍🔬 Scientists: <b id="sci-uni${k}-count">${u.scientists}</b> / ${UNI_MAX}</span><span class="muted" id="sci-uni${k}-next"></span></div>
       <div class="xpBar"><div class="xpFill" id="sci-uni${k}-bar" style="width:${u.scientists / UNI_MAX * 100}%"></div></div>`;
   if (S.uni) {
-    html += `<div class="card specialCard"><div class="row"><h3>🎓 University${S.uni2 ? " ×2" : ""}</h3><span class="income ${uniIncome() < 0 ? "neg" : ""}" id="sci-uni-income">${uniIncome() >= 0 ? "+" : ""}${fmt(uniIncome())} / sec</span></div>
-      ${uniRows("", S.uni, S.uni2 ? "1st · " : "")}${S.uni2 ? uniRows("2", S.uni2, "2nd · ") : ""}
-      ${S.uni2 ? `<div class="muted">Both Universities share one pool: <b id="sci-pool">${sciPool()}</b> scientists</div>` : ""}
+    html += `<div class="card specialCard"><div class="row"><h3>🎓 University${S.uni3 ? " ×3" : S.uni2 ? " ×2" : ""}</h3><span class="income ${uniIncome() < 0 ? "neg" : ""}" id="sci-uni-income">${uniIncome() >= 0 ? "+" : ""}${fmt(uniIncome())} / sec</span></div>
+      ${uniRows("", S.uni, S.uni2 ? "1st · " : "")}${S.uni2 ? uniRows("2", S.uni2, "2nd · ") : ""}${S.uni3 ? uniRows("3", S.uni3, "3rd · ") : ""}
+      ${S.uni2 ? `<div class="muted">${S.uni3 ? "All three" : "Both"} Universities share one pool: <b id="sci-pool">${sciPool()}</b> scientists</div>` : ""}
       <div class="muted">1 new scientist every 2 minutes · −${UNI_COST_PER_EMPTY} / sec for each empty place · +${fmt(UNI_FULL_INCOME)} / sec when full</div></div>`;
     if (secretsOpen() && !S.uni2) html += `<div class="card specialCard secretCard"><div class="row"><div><h3>🎓 2nd University <span class="secretTag">🌌 new</span></h3>
         <div class="muted">A second University: trains its own scientists (1 every 2 minutes, up to ${UNI_MAX}) for the same shared pool. −${UNI_COST_PER_EMPTY} / sec per empty place, +${fmt(UNI_FULL_INCOME)} / sec when full.</div></div>
       <button class="btn" data-sci="uni2" data-cost="${UNI_PRICE}">Buy ${fmt(UNI_PRICE)}</button></div></div>`;
+    if (secrets2Open() && S.uni2 && !S.uni3) html += `<div class="card specialCard secretCard"><div class="row"><div><h3>🎓 3rd University <span class="secretTag">🌌🌌 new</span></h3>
+        <div class="muted">A third University for the same shared pool: up to ${UNI_MAX * 3} scientists in total. −${UNI_COST_PER_EMPTY} / sec per empty place, +${fmt(UNI_FULL_INCOME)} / sec when full.</div></div>
+      <button class="btn" data-sci="uni3" data-cost="${UNI_PRICE}">Buy ${fmt(UNI_PRICE)}</button></div></div>`;
   } else {
     html += `<div class="card specialCard"><div class="row"><div><h3>🎓 University</h3>
         <div class="muted">Trains 1 scientist every 2 minutes, up to ${UNI_MAX}. Until it's full it costs ${UNI_COST_PER_EMPTY} / sec per empty place (−${fmt(UNI_COST_PER_EMPTY * UNI_MAX)} / sec at the start); with ${UNI_MAX} scientists it earns +${fmt(UNI_FULL_INCOME)} / sec.</div></div>
@@ -248,7 +279,7 @@ function renderScience() {
   if (S.space) {
     const log = (S.space.log || []).map(m => `<div class="row"><span>🚀 ${m.name}</span><b class="${m.reward ? "income" : ""}">${m.reward ? "+" + fmt(m.reward) : "❌ failed"}</b></div>`).join("");
     html += `<div class="card specialCard"><div class="row"><h3>🚀 Space Mission Center</h3><span class="muted">next launch in <b id="sci-space-next">${clock(S.space.timer)}</b></span></div>
-      <div class="muted">Every ${spaceMin()} minutes: ${fmt(SPACE_MIN * 1e6)} – ${fmt(SPACE_MAX * 1e6)}, or nothing if the mission fails (${Math.round(spaceFail() * 100)}% chance)</div>
+      <div class="muted">Every ${spaceMin()} minutes: ${fmt(SPACE_MIN * 1e6 * spaceBonus())} – ${fmt(SPACE_MAX * 1e6 * spaceBonus())}${sci().gene ? " (🧬 +30%)" : ""}, or nothing if the mission fails (${Math.round(spaceFail() * 100)}% chance)</div>
       ${S.satellite || S.astro || S.station ? `<div class="muted">Boosted by: ${[S.satellite && "🛰️ satellite (−5% fail)", S.astro && "🔭 Astronomy center (−5 min)", S.station && "🛸 space station (−5% fail, −5 min)"].filter(Boolean).join(" · ")}</div>` : ""}
       ${log ? `<h4>Last missions</h4>${log}` : ""}
       ${S.satellite ? "" : `<div class="muted">🛰️ A satellite is now available in 🚢 Logistics.</div>`}</div>`;
@@ -281,6 +312,29 @@ function renderScience() {
         ${sciNeed(STATION_PRICE, STATION_SCI)}${S.uni2 ? "" : `<div class="muted">Needs both Universities full (2 × ${UNI_MAX})</div>`}</div>
       ${sciBtn("station", STATION_PRICE, STATION_SCI)}</div></div>`;
   }
+  // 🌕 Moon Base (secret tier 2: after the 2nd prestige, needs the 🛸 station)
+  if (S.moon) {
+    const log = (S.moon.log || []).map(m => `<div class="row"><span>🌕 ${m.name}</span><b class="${m.reward ? "income" : ""}">${m.reward ? "+" + fmt(m.reward) : "❌ failed"}</b></div>`).join("");
+    html += `<div class="card specialCard secretCard"><div class="row"><h3>🌕 Moon Base</h3><span class="muted">next deep space launch in <b id="sci-moon-next">${clock(S.moon.timer)}</b></span></div>
+      <div class="muted">Every ${DEEP_EVERY / 60} minutes a deep space mission: ${fmt(DEEP_MIN * 1e6 * spaceBonus())} – ${fmt(DEEP_MAX * 1e6 * spaceBonus())}${S.gene ? " (🧬 +30%)" : ""}, or nothing if it fails (${Math.round(DEEP_FAIL * 100)}% chance) · successful: <b>${S.moon.ok || 0}</b></div>
+      ${log ? `<h4>Last deep space missions</h4>${log}` : ""}</div>`;
+  } else if (secrets2Open()) {
+    html += `<div class="card specialCard secretCard" ${S.station ? "" : `style="opacity:0.6"`}><div class="row"><div><h3>${S.station ? "" : "🔒 "}🌕 Moon Base <span class="secretTag">🌌🌌 new</span></h3>
+        <div class="muted">Launches a deep space mission every ${DEEP_EVERY / 60} minutes: ${fmt(DEEP_MIN * 1e6)} – ${fmt(DEEP_MAX * 1e6)}, with a ${Math.round(DEEP_FAIL * 100)}% chance the mission fails.</div>
+        ${S.station ? "" : `<div class="muted">Needs the 🛸 Orbital Space Station</div>`}
+        ${sciNeed(MOON_PRICE, MOON_SCI)}${S.uni3 ? "" : `<div class="muted">Needs ${MOON_SCI} scientists: all three Universities full (3 × ${UNI_MAX})</div>`}</div>
+      ${sciBtn("moon", MOON_PRICE, MOON_SCI, !!S.station)}</div></div>`;
+  }
+  // 🧬 Genetics Laboratory (secret tier 2: after the Moon Base)
+  if (S.gene) {
+    html += `<div class="card specialCard secretCard"><div class="row"><h3>🧬 Genetics Laboratory</h3><span class="secretTag">🌌🌌</span></div>
+      <div class="muted">Your geneticists keep the crews fit for longer flights: <b>+${GENE_BONUS * 100}%</b> on every 🚀 space mission and 🌕 deep space mission reward.</div></div>`;
+  } else if (secrets2Open() && S.moon) {
+    html += `<div class="card specialCard secretCard"><div class="row"><div><h3>🧬 Genetics Laboratory <span class="secretTag">🌌🌌 new</span></h3>
+        <div class="muted">+${GENE_BONUS * 100}% on every 🚀 space mission and 🌕 deep space mission reward.</div>
+        ${sciNeed(GENE_PRICE, GENE_SCI)}</div>
+      ${sciBtn("gene", GENE_PRICE, GENE_SCI)}</div></div>`;
+  }
   return html;
 }
 // Income page tabs: Businesses / Special / Science
@@ -308,6 +362,15 @@ $("shop").addEventListener("click", (e) => {
     if (S.space) S.space.timer = Math.min(S.space.timer, spaceEvery());
     if (S.lab && !S.lab.pending) S.lab.since = Math.floor((S.lab.since || 0) * STATION_LAB_ODDS / LAB_ODDS);   // same progress toward the guarantee, now on a 1-hour clock
     showNotice(`🛸 Orbital Space Station in orbit! Missions every ${spaceMin()} minutes with a ${Math.round(spaceFail() * 100)}% fail chance, and lab breakthroughs twice as likely.`);
+  }
+  else if (what === "uni3" && secrets2Open() && S.uni2 && !S.uni3 && buy(UNI_PRICE)) { S.uni3 = { scientists: 0, timer: UNI_EVERY }; showNotice("🎓 3rd University built! Up to 150 scientists in your shared pool."); }
+  else if (what === "moon" && secrets2Open() && S.station && !S.moon && sciPool() >= MOON_SCI && buy(MOON_PRICE)) {
+    spendScientists(MOON_SCI); S.moon = { timer: DEEP_EVERY, log: [], count: 0, ok: 0, earned: 0 };
+    showNotice(`🌕 Moon Base established! The first deep space mission launches in ${DEEP_EVERY / 60} minutes.`);
+  }
+  else if (what === "gene" && secrets2Open() && S.moon && !S.gene && sciPool() >= GENE_SCI && buy(GENE_PRICE)) {
+    spendScientists(GENE_SCI); S.gene = { bought: true };
+    showNotice(`🧬 Genetics Laboratory opened! Space and deep space missions now pay +${GENE_BONUS * 100}%.`);
   }
   else if (what === "lab" && !S.lab && sciPool() >= LAB_SCI && buy(LAB_PRICE)) { spendScientists(LAB_SCI); S.lab = { since: 0, prizes: 0, pending: null }; showNotice("🧪 Research lab opened! Breakthroughs can happen any second now."); }
   else if (what === "space" && !S.space && S.lab && (S.lab.prizes || 0) >= SPACE_NEED && sciPool() >= SPACE_SCI && buy(SPACE_PRICE)) { spendScientists(SPACE_SCI); S.space = { timer: spaceEvery(), log: [], count: 0, earned: 0 }; showNotice(`🚀 Space Mission Center built! The first launch is in ${spaceMin()} minutes. A 🛰️ satellite is now available in Logistics.`); }

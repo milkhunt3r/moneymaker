@@ -12,7 +12,9 @@ const ACH_CATEGORIES = [
   { id: "secret", name: "🌌 Secrets", hidden: () => !((state.legacy && state.legacy.count) >= 1) },
 ];
 const achCatsShown = () => ACH_CATEGORIES.filter(c => !(c.hidden && c.hidden()));
-const achShown = () => { const ids = achCatsShown().map(c => c.id); return ACHIEVEMENTS.filter(a => ids.includes(a.cat)); };
+// an achievement with a tier stays hidden until that many prestiges (🌌🌌 second-tier secrets: 2)
+const achShown = () => { const ids = achCatsShown().map(c => c.id), pc = (state.legacy && state.legacy.count) || 0;
+  return ACHIEVEMENTS.filter(a => ids.includes(a.cat) && !(a.tier && pc < a.tier)); };
 const flag = (k) => () => (state.stats[k] ? 1 : 0);
 // all-time profit of an investment: money taken out + what it is worth now - money put in
 const investProfit = (key) => { const st = inv.stats && inv.stats[key]; return st ? st.out + investCurrent(key) - st.in : 0; };
@@ -41,6 +43,13 @@ const ACHIEVEMENTS = [
   { id: "uni2",     cat: "secret", icon: "🎓", name: "Double degree", desc: "Own two Universities", goal: 2, get: () => state.science ? (state.science.uni ? 1 : 0) + (state.science.uni2 ? 1 : 0) : 0 },
   { id: "astro",    cat: "secret", icon: "🔭", name: "Stargazer", desc: "Build an Astronomy Research Center", goal: 1, get: () => state.science && state.science.astro ? 1 : 0 },
   { id: "station",  cat: "secret", icon: "🛸", name: "Home among the stars", desc: "Put an Orbital Space Station in orbit", goal: 1, get: () => state.science && state.science.station ? 1 : 0 },
+  // 🌌🌌 second-tier secrets: invisible (and not counted) until the 2nd prestige
+  { id: "uni3",     cat: "secret", tier: 2, icon: "🎓", name: "Triple degree", desc: "Own three Universities", goal: 3, get: () => state.science ? ["uni", "uni2", "uni3"].filter(k => state.science[k]).length : 0 },
+  { id: "sci150",   cat: "secret", tier: 2, icon: "👩‍🔬", name: "Brain trust", desc: "Have 150 scientists in your Universities", goal: 150, get: () => state.science && state.science.uni ? sciPool() : 0 },
+  { id: "moon",     cat: "secret", tier: 2, icon: "🌕", name: "One small step", desc: "Build the Moon Base", goal: 1, get: () => state.science && state.science.moon ? 1 : 0 },
+  { id: "deep1",    cat: "secret", tier: 2, icon: "🚀", name: "Into the deep", desc: "Complete your first successful deep space mission", goal: 1, get: () => state.stats.deepOk || 0 },
+  { id: "deep10",   cat: "secret", tier: 2, icon: "🌌", name: "Deep space veteran", desc: "Complete 10 successful deep space missions", goal: 10, get: () => state.stats.deepOk || 0 },
+  { id: "gene",     cat: "secret", tier: 2, icon: "🧬", name: "Rewriting the code", desc: "Open the Genetics Laboratory", goal: 1, get: () => state.science && state.science.gene ? 1 : 0 },
   { id: "fullSet",    cat: "general", icon: "🎨", name: "Dressed to impress", desc: "Wear the coin and background from the same collection", goal: 1, get: () => matchingSet() ? 1 : 0 },
   // Income
   { id: "click100",   cat: "income", icon: "👆", name: "Warming up",         desc: "Click the coin 100 times",            goal: 100,    get: () => state.stats.clicks },

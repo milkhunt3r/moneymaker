@@ -149,19 +149,23 @@ $("mainMenu").addEventListener("click", (e) => {
 const SECRETS = [
   { id: "uni2", html: () => `<b>🎓 2nd University</b><div class="muted">A second University for ${fmt(UNI_PRICE)}. It trains its own scientists for the same shared pool.</div>` },
   { id: "astro", html: () => `<b>🔭 Astronomy Research Center</b><div class="muted">${fmt(ASTRO_PRICE)} + 👩‍🔬 ${ASTRO_SCI} scientists: space missions launch ${ASTRO_TIME_CUT / 60} minutes sooner.</div>` },
+  { id: "uni3", tier: 2, html: () => `<b>🎓 3rd University</b><div class="muted">A third University for ${fmt(UNI_PRICE)}: up to ${UNI_MAX * 3} scientists in your shared pool.</div>` },
+  { id: "moon", tier: 2, html: () => `<b>🌕 Moon Base</b><div class="muted">${fmt(MOON_PRICE)} + 👩‍🔬 ${MOON_SCI} scientists, after the 🛸 Orbital Space Station: a deep space mission every ${DEEP_EVERY / 60} minutes worth ${fmt(DEEP_MIN * 1e6)} – ${fmt(DEEP_MAX * 1e6)} (${Math.round(DEEP_FAIL * 100)}% chance to fail).</div>` },
+  { id: "gene", tier: 2, html: () => `<b>🧬 Genetics Laboratory</b><div class="muted">${fmt(GENE_PRICE)} + 👩‍🔬 ${GENE_SCI} scientists, after the Moon Base: +${GENE_BONUS * 100}% on every space and deep space mission.</div>` },
   { id: "station", html: () => `<b>🛸 Orbital Space Station</b><div class="muted">${fmt(STATION_PRICE)} + 👩‍🔬 ${STATION_SCI} scientists: missions fail ${STATION_FAIL_CUT * 100}% less often and launch ${STATION_TIME_CUT / 60} minutes sooner; lab breakthroughs become 1 in ${STATION_LAB_ODDS.toLocaleString("en-US")} (guaranteed within 1 hour).</div>` },
 ];
 const secretsUnseen = () => {
   const seen = state.legacy.secretsSeen || (state.legacy.secretsShown ? ["uni2", "astro"] : []);
-  return SECRETS.filter(x => !seen.includes(x.id));
+  const pc = (state.legacy && state.legacy.count) || 0;
+  return SECRETS.filter(x => !seen.includes(x.id) && pc >= (x.tier || 1));
 };
 function showSecrets() {
   const list = secretsUnseen();
-  state.legacy.secretsSeen = SECRETS.map(x => x.id); save();
+  state.legacy.secretsSeen = [...new Set([...(state.legacy.secretsSeen || (state.legacy.secretsShown ? ["uni2", "astro"] : [])), ...list.map(x => x.id)])]; save();
   showModal(`<h2>🌌 New unlocks!</h2>
     <p>Your prestige opened doors that were hidden until now:</p>
     ${list.map(x => `<div class="card secretCard" style="text-align:left">${x.html()}</div>`).join("")}
-    <p class="muted">Find them in 💰 Income → 🔬 Science. A new 🌌 Secrets section has appeared in 🏆 Achievements.</p>
+    <p class="muted">Find them in 💰 Income → 🔬 Science. ${list.some(x => x.tier === 2) ? "New hidden achievements have appeared in 🏆 Achievements → 🌌 Secrets." : "A new 🌌 Secrets section has appeared in 🏆 Achievements."}</p>
     <button class="btn big" data-modal="close">✨ Great!</button>`);
   $("modalBox").classList.add("gold");
 }
