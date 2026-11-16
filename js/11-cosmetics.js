@@ -25,7 +25,8 @@ const COLLECTIONS = [
   { id: "strongman", name: "🦛 The Strongman Collection", reward: { ids: ["boost-energy-100", "click100k"], text: "Unlock ⚡ Wired for life and 🦾 Iron finger" } },
 ];
 // 🛡️ painted collection emblems (assets/col/<id>.webp): the title shows the emblem instead of the leading emoji
-const COL_EMBLEMS = new Set(["wow", "ahead", "royal", "rain", "emperor", "artist", "bull", "shark"]);
+const COL_EMBLEMS = new Set(["wow", "ahead", "royal", "rain", "emperor", "artist", "bull", "shark",
+  "space", "global", "jackpot", "goldrush", "gambler99", "investor99", "logistics99", "strongman"]);
 const colTitle = (col) => COL_EMBLEMS.has(col.id)
   ? `<img class="colEmblem" src="assets/col/${col.id}.webp" alt="">${col.name.replace(/^\S+\s/, "")}` : col.name;
 const COSMETICS = [
