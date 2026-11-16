@@ -1476,3 +1476,8 @@ body.phone .geneTabs input { margin-left: 0; flex: 1 1 100%; }
 #geneView .geneTabs .subTab { font-size: 14px; padding: 6px 14px; }
 body.phone #geneView .achCats { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
 body.phone #geneView .achCat { flex: 0 0 auto; }
+
+/* painted tab icons (assets/icons/tab-*.webp) */
+.tabIco { width: 26px; height: 26px; object-fit: contain; vertical-align: middle; margin: -4px 6px -4px 0; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.45)); }
+@media (max-width: 1500px) { .tabIco { width: 21px; height: 21px; margin-right: 4px; } }
+body.phone .tabIco { width: 22px; height: 22px; margin-right: 4px; }

@@ -51,6 +51,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "13 November 2026", title: "Empire of Coins", items: [
+    "🎨 New painted icons on the main tabs (Income, Casino, Investing, Logistics, Mini-games, Achievements, Shop, Wiki).",
     "⛏️ Gold Mine Dig: cleaner surface edge (the grass sits on the ground instead of covering the first row) and no more stray bedrock blocks right under the grass.",
     "📖 Wiki: the 🌌 secret Science buildings (2nd University, Astronomy Research Center, Orbital Space Station) are now listed once your first prestige has unlocked them.",
     "🧮 Accountant <b>Good with numbers</b> now gives <b>+15%</b> company profit instead of +5%.",
