@@ -42,7 +42,7 @@ function wikiGeneral() {
       After every prestige there are <b>no tax inspections for the first 10 minutes</b>, whichever bonus you pick.
       <b>Always kept:</b> achievements, Gambler, Investor and Logistics levels, cosmetics, statistics, free bet chips, the 🖼️ Art Gallery unlock, its collection slots and your paintings.</p>
     ${wt(["Bonus", "Effect", "Max"], [
-      ["💼 Tycoon's Legacy", "+25% income from businesses, special businesses and clicks, for each pick. That reset also keeps your Science buildings (University, Research lab, Space Mission Center), but not the satellite", "Unlimited"],
+      ["💼 Tycoon's Legacy", `+25% income from businesses, special businesses and clicks, for each pick. That reset also keeps your Science buildings (University, Research lab, Space Mission Center${secretsOpen() ? ", 2nd University, Astronomy Research Center, Orbital Space Station" : ""}), but not the satellite`, "Unlimited"],
       ["🚢 Global Empire", "1st: keep trucks, tankers, planes, warehouses, Trading Port and Logistics Center on every reset (the satellite resets with Science). 2nd: all contracts take half the time (same pay)", "2"],
       ["🎟️ VIP Coins", "A free 500 scoin bet chip every 20 min (2nd pick: every 10 min) for the Super high roller tables", "2"]])}
     <h3>💾 Saving</h3>
@@ -101,12 +101,19 @@ function wikiIncome() {
     <p class="muted">When all ${LAW_MAX} slots are filled, you can fire any attorney and choose a replacement from 3 offers for ${fmt(LAW_REPLACE_PRICE)}.</p>
     <h3>🔬 Science</h3>
     <p>The 💰 Income tab has three pages: 🏢 Businesses, ⭐ Special and 🔬 Science. Science unlocks at Logistics level ${SCI_REQ.logistics}, Investor level ${SCI_REQ.investor} and Gambler level ${SCI_REQ.gambler}.</p>
-    <p>👩‍🔬 <b>Scientists are a resource:</b> the Research lab costs ${LAB_SCI} scientists and the Space Mission Center ${SPACE_SCI}. They leave your University, which then trains new ones (1 every 2 minutes) and costs money again until it's back to ${UNI_MAX}.</p>
+    <p>👩‍🔬 <b>Scientists are a resource:</b> the Research lab costs ${LAB_SCI} scientists and the Space Mission Center ${SPACE_SCI}${secretsOpen() ? `, the 🔭 Astronomy Research Center ${ASTRO_SCI} and the 🛸 Orbital Space Station ${STATION_SCI}` : ""}. They leave your University, which then trains new ones (1 every 2 minutes) and costs money again until it's back to ${UNI_MAX}.</p>
     ${wt(["Building", "Price", "Needs", "What it does"], [
       ["🎓 University", fmt(UNI_PRICE), "Science unlocked", `1 scientist every 2 min, up to ${UNI_MAX}. Costs ${UNI_COST_PER_EMPTY} / sec per empty place (−${fmt(UNI_COST_PER_EMPTY * UNI_MAX)} / sec at first); full: +${fmt(UNI_FULL_INCOME)} / sec`],
       ["🧪 Research lab", `${fmt(LAB_PRICE)} + 👩‍🔬 ${LAB_SCI} scientists`, "University", `Every second a 1 in ${LAB_ODDS.toLocaleString("en-US")} chance of a breakthrough (guaranteed after 2 hours): a Nobel Prize and ${fmt(LAB_REWARD)}. The game pauses until you accept it. Offline: at most 1`],
       ["🚀 Space Mission Center", `${fmt(SPACE_PRICE)} + 👩‍🔬 ${SPACE_SCI} scientists`, `${SPACE_NEED} breakthroughs`, `A mission every 20 minutes: ${fmt(SPACE_MIN * 1e6)} – ${fmt(SPACE_MAX * 1e6)}, ${Math.round(SPACE_FAIL * 100)}% chance to fail (${Math.round((SPACE_FAIL - SAT_FAIL_CUT) * 100)}% with the satellite)`],
-      ["🛰️ Satellite (🚢 Logistics)", fmt(SAT_PRICE), "Space Mission Center", "Missions fail 15% instead of 20% · cargo planes +5% pay · tankers 10% faster · broken trucks repaired for free after 5 sec"]])}
+      ["🛰️ Satellite (🚢 Logistics)", fmt(SAT_PRICE), "Space Mission Center", "Missions fail 15% instead of 20% · cargo planes +5% pay · tankers 10% faster · broken trucks repaired for free after 5 sec"],
+      // 🌌 secret buildings: only listed once the 1st prestige has revealed them
+      ...(secretsOpen() ? [
+        ["🌌 🎓 2nd University", fmt(UNI_PRICE), "University · 1st prestige", `Trains its own scientists (1 every 2 min, up to ${UNI_MAX}) into the same shared pool, with the same running cost and full-house income`],
+        ["🌌 🔭 Astronomy Research Center", `${fmt(ASTRO_PRICE)} + 👩‍🔬 ${ASTRO_SCI} scientists`, "1st prestige", `Space missions launch ${ASTRO_TIME_CUT / 60} minutes sooner`],
+        ["🌌 🛸 Orbital Space Station", `${fmt(STATION_PRICE)} + 👩‍🔬 ${STATION_SCI} scientists`, "1st prestige · both Universities full", `Missions fail ${STATION_FAIL_CUT * 100}% less often and launch ${STATION_TIME_CUT / 60} minutes sooner · Research lab breakthroughs 1 in ${STATION_LAB_ODDS.toLocaleString("en-US")} (guaranteed within 1 hour)`],
+      ] : [])])}
+    ${secretsOpen() ? `<p class="muted">🌌 With both 🔭 and 🛸 a space mission launches every ${(SPACE_EVERY - ASTRO_TIME_CUT - STATION_TIME_CUT) / 60} minutes and fails ${Math.round((SPACE_FAIL - SAT_FAIL_CUT - STATION_FAIL_CUT) * 100)}% of the time with the satellite.</p>` : ""}
     <p class="muted">Nobel Prizes can be won in 10 fields: Physics, Chemistry, Medicine and Physiology, Biology, Genetics, Molecular Biology, Neuroscience, Astronomy and Astrophysics, Materials Science and Environmental Science. A prestige resets Science.</p>`;
 }
 
