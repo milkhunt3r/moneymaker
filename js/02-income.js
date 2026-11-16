@@ -159,7 +159,7 @@ function runCompany(company) {
 
   // ----- Accountant -----
   const acc = company.accountant;
-  if (acc === "numbers") total *= 1.05;
+  if (acc === "numbers") total *= 1.15;
 
   if (acc === "criminal" && Math.random() < CRIMINAL_CHANCE) {
     total *= 2;

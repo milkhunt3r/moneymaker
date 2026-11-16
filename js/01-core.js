@@ -159,7 +159,7 @@ const BUSINESS_TYPES = [
 ];
 
 const ACCOUNTANTS = {
-  numbers:  { name: "Good with numbers", emoji: "🧮", desc: "Company profit +5%" },
+  numbers:  { name: "Good with numbers", emoji: "🧮", desc: "Company profit +15%" },
   criminal: { name: "Criminal",          emoji: "🕵️", desc: "1 in 20 chance each second to double company income" },
   embezzler:{ name: "Embezzler",         emoji: "🦹", desc: "Company income +30%, but a 1 in 100 chance each second he steals 10% of the last minute's earnings" },
   gambler:  { name: "Gambler",           emoji: "🎰", desc: "Every 10 seconds he bets that second's income: 50/50 to double it or lose it" },

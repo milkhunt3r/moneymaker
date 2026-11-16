@@ -51,6 +51,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "13 November 2026", title: "Empire of Coins", items: [
+    "🧮 Accountant <b>Good with numbers</b> now gives <b>+15%</b> company profit instead of +5%.",
     "🏦 Selling vault ore: choose exactly how much of each ore to sell (slider, − / +, Max), see the total before you sell, and see how much each ore your next upgrades still need.",
     "🌄 Gold Mine Dig: new surface with sunset hills, a wooden ⛏️ mine entrance and a 🛗 lift headframe (the lift now brings you up right into it).",
     "⛏️ Gold Mine Dig: ore now shows its painted picture everywhere (vault, values, upgrade costs, bag, pop-ups, wiki), and the 🛗 mine lift has its own bigger box at the top of the upgrades.",
