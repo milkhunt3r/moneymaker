@@ -229,7 +229,8 @@ const ACH_PICS = new Set(["cash1s", "cash10s", "cash100s", "cash1g", "cash5g", "
   "llevel5", "llevel25", "llevel50", "llevel99", "truck15", "tanker1", "tanker10", "plane1", "plane5", "con100", "con1k", "con10k", "logi1s", "logi100s",
   "mineRun1", "mineRun50", "mineRun250", "mineDeep50", "mineDeep80", "mineDeep100", "mineFullBag", "mineClose", "mineRescue", "mineUp1", "mineHoard", "mineDeep150", "mineDeep250", "mineMaster", "mineChest50", "mineMaxUp",
   "arteasy50", "arteasy75", "arteasy90", "artmedium50", "artmedium75", "artmedium90", "arthard50", "arthard75", "arthard90",
-  "artcol10", "artcol50", "artcol100", "artslots", "artsold1", "artsold50", "artsold100", "artsold1000"]);
+  "artcol10", "artcol50", "artcol100", "artslots", "artsold1", "artsold50", "artsold100", "artsold1000",
+  "uni2", "uni3", "sci150", "moon", "deep1", "deep10", "gene", "gene1", "gene100", "geneKraken", "geneElder", "geneUnicorn"]);
 const achIcon = (a, cls = "") => {
   if (!ACH_PICS.has(a.id)) return a.icon;
   const diff = (a.id.match(/^art(easy|medium|hard)\d/) || [])[1];   // 🖼️ Art Gallery brushes: a dot shows Easy / Medium / Hard
