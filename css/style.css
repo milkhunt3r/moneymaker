@@ -1536,3 +1536,24 @@ body.phone .colEmblem { width: 44px; height: 44px; margin-right: 8px; }
 .genePerkTitle { text-align: center; font-size: 17px; font-weight: 800; color: #ffd34d; margin: 14px 0 8px; }
 .genePerkTitle .muted { display: block; font-size: 12px; font-weight: 500; margin-top: 2px; }
 .genePerks { justify-content: center; }
+
+/* 🎴 Baccarat */
+.bacHands { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
+.bacHand { text-align: center; padding: 8px 14px; border-radius: 14px; border: 2px solid transparent; min-width: 200px; }
+.bacHand.won { border-color: #ffd34d; box-shadow: 0 0 18px rgba(255, 211, 77, 0.35); }
+.bacPts { font-size: 30px; font-weight: 900; color: #fff; min-height: 38px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6); }
+.bacSpots { display: flex; justify-content: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.bacSpot { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; width: 120px; height: 86px;
+  border-radius: 16px; border: 2px dashed rgba(255, 255, 255, 0.35); background: rgba(0, 0, 0, 0.18); color: #fff; font-size: 13px; }
+.bacSpot.side { width: 96px; height: 70px; font-size: 12px; }
+.bacSpot.click { cursor: pointer; } .bacSpot.click:hover { border-color: #ffd34d; }
+.bacSpot.has { border-style: solid; }
+.bacSpot.player { border-color: rgba(90, 160, 255, 0.8); } .bacSpot.banker { border-color: rgba(255, 90, 90, 0.8); } .bacSpot.tie { border-color: rgba(80, 210, 120, 0.8); }
+.bacSpot.win { box-shadow: 0 0 16px rgba(80, 230, 120, 0.7); } .bacSpot.lose { opacity: 0.55; } .bacSpot.push { box-shadow: 0 0 12px rgba(255, 211, 77, 0.5); }
+.bacSpot span { font-size: 11px; color: #cfd6ea; }
+.bacRoad { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; margin: 8px 0; font-size: 13px; }
+.bead { display: inline-flex; width: 20px; height: 20px; border-radius: 50%; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; font-style: normal; color: #fff; }
+.bead.P { background: #3d7bff; } .bead.B { background: #e5484d; } .bead.T { background: #2fb25c; }
+.gameCard.locked { opacity: 0.6; cursor: not-allowed; }
+body.phone .bacHands { gap: 10px; } body.phone .bacHand { min-width: 0; }
+body.phone .bacSpot { width: 92px; height: 74px; } body.phone .bacSpot.side { width: 80px; height: 62px; }

@@ -137,6 +137,7 @@ function wikiCasino() {
     ${wt(["Game", "Classic", "High rollers", "Super high rollers"], [
       ["🎡 Roulette", "×" + XP_TABLE_MULT.rouletteLow, "×" + XP_TABLE_MULT.rouletteHigh, "×" + XP_TABLE_MULT.rouletteSuper],
       ["🃏 Blackjack", "×" + XP_TABLE_MULT.bjLow, "×" + XP_TABLE_MULT.bjHigh, "×" + XP_TABLE_MULT.bjSuper],
+      ["🎴 Baccarat", "×" + XP_TABLE_MULT.bacLow, "×" + XP_TABLE_MULT.bacHigh, "×" + XP_TABLE_MULT.bacSuper],
       ["🎴 Video Poker", "×" + XP_TABLE_MULT.vpLow, "×" + XP_TABLE_MULT.vpHigh, "×" + XP_TABLE_MULT.vpSuper],
       ["🤠 Ultimate Texas Hold'em", "×" + XP_TABLE_MULT.uthLow, "×" + XP_TABLE_MULT.uthHigh, "×" + XP_TABLE_MULT.uthSuper],
       ["🔻 Plinko", "×" + XP_TABLE_MULT.plinko, "–", "×" + XP_TABLE_MULT.plinkoSuper],
@@ -166,6 +167,13 @@ function wikiCasino() {
     <p>${tables(VP_TABLES)}. 53 cards with one wild joker. Get 5 cards, hold the ones you like, draw new ones for the rest. Pays from a pair of Jacks or better.
       <b>Jackpot</b> = 50× the table's max bet; your share is your bet ÷ the max bet. About 98% return with perfect play.</p>
     ${wt(["Hand", "Pays", "Jackpot"], vpRows)}
+
+    <h3>🎴 Baccarat</h3>
+    <p>🔒 Unlocks at <b>Gambler level ${BAC_LEVEL}</b>. ${tables(BAC_TABLES)} per betting spot. 8-deck shoe.</p>
+    <ul><li>Two hands are dealt, <b>Player</b> and <b>Banker</b>. The one closest to 9 wins. A = 1, 2–9 count as shown, 10/J/Q/K = 0, and only the last digit counts (7 + 8 = 5).</li>
+      <li>Nobody makes choices: a third card is drawn by the standard casino rules. An 8 or 9 in the first two cards is a <b>natural</b> and ends the hand.</li>
+      <li>Bet on any spots you like: at least one bet on Player, Banker or Tie.</li></ul>
+    ${wt(["Bet", "Pays"], [["Player", "1:1"], ["Banker", "0.95:1 (5% commission)"], ["Tie", "8:1 (Player and Banker bets are returned)"], ["Player Pair / Banker Pair", "11:1 (first two cards of that hand are the same rank)"]])}
 
     <h3>🤠 Ultimate Texas Hold'em</h3>
     <p>${tables(UTH_TABLES)} Ante per seat. Play 1 or 2 seats. Ante + equal Blind, optional Trips.</p>

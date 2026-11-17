@@ -10,7 +10,7 @@ if (!state.legacy) state.legacy = { count: 0, tycoon: 0, empire: 0, vip: 0, hist
 if (!state.vip) state.vip = { coins: 0, timer: 0 };
 if (!state.vipMode) state.vipMode = {};
 if (typeof state.plinkoVipInPlay !== "number") state.plinkoVipInPlay = 0;
-const SUPER_TABLES = ["rouletteSuper", "bjSuper", "plinkoSuper", "vpSuper", "uthSuper"];
+const SUPER_TABLES = ["rouletteSuper", "bjSuper", "bacSuper", "plinkoSuper", "vpSuper", "uthSuper"];
 const vipOn = (id) => false;   // VIP coins are now 500 scoin free bet chips (see FREE BET CHIPS)
 
 /* ----- 🎁 Free bet chips: chips you own, kept apart from casino chips. Placed on a table they are a normal bet;
@@ -81,6 +81,9 @@ const CASINO_GAMES = [
   { id: "bjHigh", name: "Blackjack: High rollers",  emoji: "♠️", desc: "Play 1 to 3 hands against the dealer. Bets from 50,000 to 5 scoin per hand." },
   { id: "rouletteSuper", name: "Roulette: Super high rollers", emoji: "💎💎", desc: "European roulette, bets from 10 to 500 scoin per spot." },
   { id: "bjSuper", name: "Blackjack: Super high rollers", emoji: "💎♠️", desc: "Play 1 to 3 hands against the dealer. Bets from 10 to 500 scoin per hand." },
+  { id: "bacLow",   name: "Baccarat: Classic table", emoji: "🎴", desc: "Bet on Player, Banker or a Tie: the hand closest to 9 wins. Bets from 500 to 50,000 per spot." },
+  { id: "bacHigh",  name: "Baccarat: High rollers",  emoji: "🎴", desc: "Bet on Player, Banker or a Tie: the hand closest to 9 wins. Bets from 50,000 to 5 scoin per spot." },
+  { id: "bacSuper", name: "Baccarat: Super high rollers", emoji: "🎴", desc: "Bet on Player, Banker or a Tie: the hand closest to 9 wins. Bets from 10 to 500 scoin per spot." },
   { id: "vpLow",   name: "Video Poker: Classic table", emoji: "🎴", desc: "Jacks or Better with a joker (53 cards). Bets from 500 to 50,000. Jackpot 2.5 scoin." },
   { id: "vpHigh",  name: "Video Poker: High rollers",  emoji: "🎴💎", desc: "Jacks or Better with a joker (53 cards). Bets from 50,000 to 5 scoin. Jackpot 250 scoin." },
   { id: "vpSuper", name: "Video Poker: Super high rollers", emoji: "🎴💎💎", desc: "Jacks or Better with a joker (53 cards). Bets from 10 to 500 scoin. Jackpot 25 gcoin." },
@@ -94,7 +97,7 @@ const CASINO_GAMES = [
 // 🎨 a game's painted picture, with one 💎 high-roller badge for High rollers and two for Super high rollers
 function casIco(id, cls = "biz") {
   id = id || "";
-  const base = id.startsWith("roulette") ? "roulette" : id.startsWith("bj") ? "blackjack" : id.startsWith("vp") ? "poker"
+  const base = id.startsWith("roulette") ? "roulette" : id.startsWith("bj") ? "blackjack" : id.startsWith("bac") ? "baccarat" : id.startsWith("vp") ? "poker"
     : id.startsWith("uth") ? "holdem" : id.startsWith("plinko") ? "plinko" : id === "climb" ? "climb" : "chips";
   const tier = /Super$/.test(id) ? 2 : /High$/.test(id) ? 1 : 0;
   return `<span class="casIco ${cls}">${ico("cas-" + base, cls)}${tier ? `<span class="casTier">${ico("cas-highroller").repeat(tier)}</span>` : ""}</span>`;
@@ -102,7 +105,7 @@ function casIco(id, cls = "biz") {
 // Game groups in the casino lobby (games show in this order inside each group)
 const CASINO_GROUPS = [
   { name: "Roulette games", ico: "roulette", games: ["rouletteLow", "rouletteHigh", "rouletteSuper"] },
-  { name: "Card games", ico: "blackjack",     games: ["bjLow", "bjHigh", "bjSuper", "vpLow", "vpHigh", "vpSuper", "uthLow", "uthHigh", "uthSuper"] },
+  { name: "Card games", ico: "blackjack",     games: ["bjLow", "bjHigh", "bjSuper", "bacLow", "bacHigh", "bacSuper", "vpLow", "vpHigh", "vpSuper", "uthLow", "uthHigh", "uthSuper"] },
   { name: "Ball games", ico: "plinko",     games: ["plinko", "plinkoSuper", "climb"] },
 ];
 let currentGame = null;   // null = game list
@@ -160,7 +163,7 @@ if ((state.xpVersion || 1) < 3) {
 }
 
 // XP multiplier for each casino game (by how long a round takes), ×2 more at Super high roller tables
-const XP_GAME_MULT = { roulette: 2, bj: 4, vp: 1, uth: 5, plinko: 1, climb: 2 };
+const XP_GAME_MULT = { roulette: 2, bj: 4, bac: 4, vp: 1, uth: 5, plinko: 1, climb: 2 };
 /* ----- 🔥 HOT TABLES: every 20 minutes, one game type gets a bonus on the XP multiplier of all its tables for 10 minutes (+10, +20 from Gambler level 50, +40 from 75),
    then 10 minutes with no bonus. The schedule follows the real clock (the same for everyone, and it keeps
    running while the game is closed); the hot game is picked at random and is never the same twice in a row. ----- */
@@ -168,7 +171,7 @@ const XP_GAME_MULT = { roulette: 2, bj: 4, vp: 1, uth: 5, plinko: 1, climb: 2 };
 const HOT_LEN = 10 * 60 * 1000;
 const hotBonus = () => { const lv = levelInfo(state.casinoXp).level; return lv >= 75 ? 40 : lv >= 50 ? 20 : 10; };
 const HOT_GAMES = [
-  { id: "roulette", name: "🎡 Roulette" }, { id: "bj", name: "🃏 Blackjack" }, { id: "vp", name: "🎴 Video Poker" },
+  { id: "roulette", name: "🎡 Roulette" }, { id: "bj", name: "🃏 Blackjack" }, { id: "bac", name: "🎴 Baccarat" }, { id: "vp", name: "🎴 Video Poker" },
   { id: "uth", name: "🤠 Ultimate Texas Hold'em" }, { id: "plinko", name: "🔻 Plinko" }, { id: "climb", name: "🎈 Sky Climb" }];
 function hotPick(cycle) {   // same answer for the same 30-minute cycle, on every device
   let h = Math.imul((cycle ^ 0x5bd1e995) >>> 0, 2654435761) >>> 0; h ^= h >>> 13; h = Math.imul(h, 1274126177) >>> 0; h ^= h >>> 16;
@@ -188,6 +191,7 @@ function hotNow(t = Date.now()) {
 const XP_TABLE_MULT = {
   rouletteLow: 1, rouletteHigh: 2.5, rouletteSuper: 4,
   bjLow: 2, bjHigh: 4, bjSuper: 8,
+  bacLow: 2, bacHigh: 4, bacSuper: 8,
   vpLow: 1, vpHigh: 1.5, vpSuper: 2,
   uthLow: 5, uthHigh: 5, uthSuper: 10,
   plinko: 1, plinkoSuper: 2, climb: 2,
@@ -280,7 +284,12 @@ function renderCasino() {
   const box = $("casinoGame");
   setTimeout(updateVipBar, 0);
   if (!currentGame) {
-    const gameCard = (g) => `<button class="card gameCard" data-game="${g.id}">
+    // 🔒 Baccarat opens at Gambler level 20
+    const gameCard = (g) => g.id.startsWith("bac") && typeof bacUnlocked === "function" && !bacUnlocked()
+      ? `<button class="card gameCard locked" disabled>
+         <h3>${casIco(g.id)}${g.name}</h3><div class="muted">${g.desc}</div>
+         <div class="muted" style="margin-top:4px">${ico("lock", "lockS")}Unlocks at Gambler level ${BAC_LEVEL} (you are level ${levelInfo(state.casinoXp).level})</div></button>`
+      : `<button class="card gameCard" data-game="${g.id}">
          <h3>${casIco(g.id)}${g.name}</h3><div class="muted">${g.desc}</div>
          <div class="muted" style="color:#b388ff; margin-top:4px">✨ XP ×${xpMult(g.id)}${hotNow().active && g.id.startsWith(hotNow().game.id) ? ` <span class="hotTag">🔥 HOT</span>` : ""}</div></button>`;
     box.innerHTML = `<h2>Choose a game</h2>` + CASINO_GROUPS.map(group => `
@@ -295,6 +304,7 @@ function renderCasino() {
   if (BJ_TABLES[currentGame]) { bj = BJ_TABLES[currentGame]; renderBlackjack(); }
   if (VP_TABLES[currentGame]) { vp = VP_TABLES[currentGame]; renderVideoPoker(); }
   if (UTH_TABLES[currentGame]) { uth = UTH_TABLES[currentGame]; renderUth(); }
+  if (typeof BAC_TABLES !== "undefined" && BAC_TABLES[currentGame]) { bac = BAC_TABLES[currentGame]; renderBaccarat(); }
   if (currentGame === "climb") renderClimb();
   if (PLINKO_TABLES[currentGame]) {
     const cfg = PLINKO_TABLES[currentGame];
@@ -307,7 +317,7 @@ $("casinoGame").addEventListener("click", (e) => {
   const card = e.target.closest("[data-game]");
   if (card) { currentGame = card.dataset.game; renderCasino(); }
   const back = e.target.closest("[data-back]");
-  if (back && !roulette.spinning && !(bj && bj.phase !== "betting") && !(currentGame === "climb" && climb.active) && !(PLINKO_TABLES[currentGame] && plinko.balls.length) && !(VP_TABLES[currentGame] && vp.phase !== "betting") && !(UTH_TABLES[currentGame] && uth.phase !== "betting")) { currentGame = null; renderCasino(); }
+  if (back && !roulette.spinning && !(bj && bj.phase !== "betting") && !(currentGame === "climb" && climb.active) && !(PLINKO_TABLES[currentGame] && plinko.balls.length) && !(VP_TABLES[currentGame] && vp.phase !== "betting") && !(UTH_TABLES[currentGame] && uth.phase !== "betting") && !(typeof BAC_TABLES !== "undefined" && BAC_TABLES[currentGame] && bac.phase !== "betting")) { currentGame = null; renderCasino(); }
 });
 
 /* =====================================================================
