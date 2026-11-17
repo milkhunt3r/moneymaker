@@ -250,7 +250,9 @@ function geneRegen() {
 const geneReward = (sp) => Math.round(GENE_RARITY[sp.rar].min * 60 * mineBase());
 // 🖼️ painted species icons (assets/gene/<name>.webp); species without one yet keep their emoji
 const GENE_PICS = new Set(["Human", "Fish", "Lizard", "Spider", "Plant", "Tree", "Seaweed", "Venus flytrap", "Flower", "Cactus", "Mushroom",
-  "Zombie fungus", "Scorpion", "Centipede", "Worm", "Ant"]);
+  "Zombie fungus", "Scorpion", "Centipede", "Worm", "Ant",
+  "Bee", "Caterpillar", "Butterfly", "Beetle", "Fly", "Mosquito", "Grasshopper", "Dragonfly", "Ladybug", "Praying mantis", "Wasp", "Tarantula",
+  "Frog", "Iguana", "Snake", "Crocodile"]);
 function gEm(n, cls = "") {
   const s = GENE_SPECIES[n]; if (!s) return "";
   return GENE_PICS.has(n) ? `<img class="geneImg ${cls}" src="assets/gene/${n.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.webp" alt="${s.emoji}">` : s.emoji;
