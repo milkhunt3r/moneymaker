@@ -248,8 +248,15 @@ function geneRegen() {
   return true;
 }
 const geneReward = (sp) => Math.round(GENE_RARITY[sp.rar].min * 60 * mineBase());
+// 🖼️ painted species icons (assets/gene/<name>.webp); species without one yet keep their emoji
+const GENE_PICS = new Set(["Human", "Fish", "Lizard", "Spider", "Plant", "Tree", "Seaweed", "Venus flytrap", "Flower", "Cactus", "Mushroom",
+  "Zombie fungus", "Scorpion", "Centipede", "Worm", "Ant"]);
+function gEm(n, cls = "") {
+  const s = GENE_SPECIES[n]; if (!s) return "";
+  return GENE_PICS.has(n) ? `<img class="geneImg ${cls}" src="assets/gene/${n.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.webp" alt="${s.emoji}">` : s.emoji;
+}
 const geneCard = (n, extra = "") => { const s = GENE_SPECIES[n];
-  return `<span class="geneEmoji">${s.emoji}</span><span class="geneName">${s.name}</span>${extra}`; };
+  return `<span class="geneEmoji">${gEm(n)}</span><span class="geneName">${s.name}</span>${extra}`; };
 const genePips = (n) => `<span class="genePips" title="DNA samples">${Array.from({ length: GENE_DNA_MAX }, (_, i) => `<i class="${i < (G.dna[n] || 0) ? "on" : ""}"></i>`).join("")}</span>`;
 // a hint: a recipe you can make right now (both samples known) that you haven't found yet
 function geneHintOptions() {
@@ -275,12 +282,12 @@ function renderGene() {
     const L = geneLast, s = L.result && GENE_SPECIES[L.result];
     result = L.mutant
       ? `<div class="geneResult mutant ${L.isNew ? "new" : ""}">
-          <div class="geneResEmoji">${L.mutant.emoji}</div>
+          <div class="geneResEmoji">${gEm(L.mutant.a, "half")}${gEm(L.mutant.b, "half")}</div>
           <div><div class="geneResName">🧪 Mutation: <b>${L.mutant.name}</b> <span class="geneRar r-m">Mutant</span></div>
-            <div class="muted">Not a real species: ${GENE_SPECIES[L.mutant.a].emoji} ${L.mutant.a} and ${GENE_SPECIES[L.mutant.b].emoji} ${L.mutant.b} don't make one. It goes in your 🧪 Mutant jar and can't be spliced again.</div>
+            <div class="muted">Not a real species: ${gEm(L.mutant.a, "sm")} ${L.mutant.a} and ${gEm(L.mutant.b, "sm")} ${L.mutant.b} don't make one. It goes in your 🧪 Mutant jar and can't be spliced again.</div>
             <div>${L.reward ? `💰 +${fmt(L.reward)}` : ""}</div></div></div>`
       : `<div class="geneResult r-${s.rar} ${L.isNew ? "new" : ""}">
-          <div class="geneResEmoji">${s.emoji}</div>
+          <div class="geneResEmoji">${gEm(s.name)}</div>
           <div><div class="geneResName">${L.isNew ? "🎉 New species: " : ""}<b>${s.name}</b> <span class="geneRar r-${s.rar}">${GENE_RARITY[s.rar].name}</span></div>
             <div class="muted">${s.why}</div>
             <div>${L.isNew ? (L.reward ? `💰 +${fmt(L.reward)} · 🧬 +1 ${s.name} DNA` : `🧬 +1 ${s.name} DNA`) : `Already in your freezer: no reward, 🧬 +1 ${s.name} DNA${L.capped ? " (already full)" : ""}`}</div></div></div>`;
@@ -296,7 +303,7 @@ function renderGene() {
       const tag = u.now ? `<span class="geneUnf" title="${u.now} new species can still be made with ${n} and samples you already have${u.later ? ` (+${u.later} more need samples you haven't found yet)` : ""}">${u.now} unfound</span>`
         : u.later ? `<span class="geneUnf later" title="${u.later} new species need ${n} and a sample you haven't found yet">🔒 ${u.later} later</span>` : `<span class="geneUnf done" title="Every species with ${n} is found">✓ done</span>`;
       return `<button class="geneCard r-${s.rar} ${geneSlots.includes(n) ? "sel" : ""}" data-gs="${n}" data-name="${n.toLowerCase()}" ${(G.dna[n] || 0) ? "" : "data-empty"}>${geneCard(n, genePips(n))}${tag}</button>`; }
-    return k ? `<div class="geneCard r-${s.rar} codex" data-name="${n.toLowerCase()}" title="${s.why}">${geneCard(n, s.a ? `<span class="geneHow">${GENE_SPECIES[s.a].emoji} + ${GENE_SPECIES[s.b].emoji}</span>` : "")}</div>`
+    return k ? `<div class="geneCard r-${s.rar} codex" data-name="${n.toLowerCase()}" title="${s.why}">${geneCard(n, s.a ? `<span class="geneHow">${gEm(s.a, "sm")} + ${gEm(s.b, "sm")}</span>` : "")}</div>`
       : `<div class="geneCard unknown" data-name=""><span class="geneEmoji">❔</span><span class="geneName">???</span><span class="geneHow">${GENE_RARITY[s.rar].name}</span></div>`; }).join("");
   box.innerHTML = `
     <div class="geneTop">
@@ -323,7 +330,7 @@ function renderGene() {
     <div class="genePerks" title="Every species you discover in these categories gives +1% for good">${GENE_PERKS.map(([c, e, what]) =>
       `<span>${e} <b>+${geneCatCount(c)}%</b> ${what}</span>`).join("")}</div>
     ${hintsOpen.length ? `<div class="geneHints">${hintsOpen.map(p => { const [a, b] = p.split("|");
-      return `<span>💡 Try ${GENE_SPECIES[a].emoji} ${a} + ${GENE_SPECIES[b].emoji} ${b}</span>`; }).join("")}</div>` : ""}
+      return `<span>💡 Try ${gEm(a, "sm")} ${a} + ${gEm(b, "sm")} ${b}</span>`; }).join("")}</div>` : ""}
     <div class="card">
       <div class="geneTabs"><button class="subTab ${geneTab === "freezer" ? "active" : ""}" data-gtab="freezer">❄️ Freezer (${G.known.length})</button>
         <button class="subTab ${geneTab === "codex" ? "active" : ""}" data-gtab="codex">📖 Codex</button>
@@ -333,7 +340,7 @@ function renderGene() {
         `<button class="achCat ${geneCat === c ? "active" : ""}" data-gcat="${c}">${l}${catCount(c)}</button>`).join("")}</div>
       ${geneTab === "mutants" ? `<p class="muted">Mutants come from pairs that don't make a real species. They can't be spliced again and don't count as species. You've made ${mutantCount()} of ${GENE_MUTANTS_ALL.toLocaleString("en-US")} possible.</p>
         <div class="geneGrid">${Object.keys(G.mutants).reverse().map(k => { const m = mutantOf(k);
-          return `<div class="geneCard r-m codex" data-name="${m.name.toLowerCase()}" title="${m.a} + ${m.b}"><span class="geneEmoji">${m.emoji}</span><span class="geneName">${m.name}</span><span class="geneHow">${GENE_SPECIES[m.a].emoji} + ${GENE_SPECIES[m.b].emoji}</span></div>`; }).join("") || `<p class="muted">No mutants yet.</p>`}</div>`
+          return `<div class="geneCard r-m codex" data-name="${m.name.toLowerCase()}" title="${m.a} + ${m.b}"><span class="geneEmoji">${gEm(m.a, "half")}${gEm(m.b, "half")}</span><span class="geneName">${m.name}</span><span class="geneHow">${gEm(m.a, "sm")} + ${gEm(m.b, "sm")}</span></div>`; }).join("") || `<p class="muted">No mutants yet.</p>`}</div>`
       : `<div class="geneGrid">${cards || `<p class="muted">Nothing here yet.</p>`}</div>`}
     </div>`;
 }

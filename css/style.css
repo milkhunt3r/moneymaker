@@ -1564,3 +1564,9 @@ body.mutantBg {   /* bright, busy picture: stronger overlay */
 }
 #coin.mutantCoin { background: url("../assets/mutant-coin.webp") center / contain no-repeat; box-shadow: none; filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.55)); }
 #coin.mutantCoin::after { content: none; }
+
+/* 🧬 painted species icons */
+.geneImg { width: 1.5em; height: 1.5em; object-fit: contain; vertical-align: middle; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35)); }
+.geneImg.half { width: 1.1em; height: 1.1em; }
+.geneImg.sm { width: 1.35em; height: 1.35em; margin: -3px 0; filter: none; }
+.geneEmoji .geneImg { display: inline-block; }
