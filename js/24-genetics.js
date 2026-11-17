@@ -258,7 +258,9 @@ const GENE_PICS = new Set(["Human", "Fish", "Lizard", "Spider", "Plant", "Tree",
   "Flamingo", "Peacock", "Shark", "Crab", "Coral", "Dolphin", "Whale", "Orca", "Narwhal", "Manta ray", "Shrimp", "Lobster", "Octopus", "Squid",
   "Clownfish", "Jellyfish", "Starfish", "Seahorse", "Eel", "Coelacanth",
   "Ape", "Mouse", "Rat", "Bat", "Squirrel", "Rabbit", "Cat", "Tiger", "Lion", "Wolf", "Dog", "Fox",
-  "Bear", "Panda", "Deer", "Horse", "Cow", "Goat", "Pig", "Zebra", "Camel", "Elephant", "Rhino", "Hippo", "Gorilla", "Monkey", "Sloth", "Mole"]);
+  "Bear", "Panda", "Deer", "Horse", "Cow", "Goat", "Pig", "Zebra", "Camel", "Elephant", "Rhino", "Hippo", "Gorilla", "Monkey", "Sloth", "Mole",
+  "Hedgehog", "Armadillo", "Walrus", "Seal", "Platypus", "Dinosaur", "Archaeopteryx", "T-Rex", "Brachiosaurus", "Triceratops", "Ankylosaurus",
+  "Pterodactyl", "Megalodon", "Trilobite", "Ammonite", "Ichthyosaur"]);
 function gEm(n, cls = "") {
   const s = GENE_SPECIES[n]; if (!s) return "";
   return GENE_PICS.has(n) ? `<img class="geneImg ${cls}" src="assets/gene/${n.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.webp" alt="${s.emoji}">` : s.emoji;
