@@ -365,10 +365,11 @@ const warehouseCount = () => (state.special && state.special.warehouses ? state.
 const trucksOwned = () => (state.logistics && state.logistics.trucks ? state.logistics.trucks.length : 0);
 const warehouseSlots = () => WAREHOUSE_UNLOCKS.filter(n => trucksOwned() >= n).length;
 
-// Contract bonus: trucks +2% per warehouse, tankers +2.5% with the trading port
-const contractBonus = (key) => key === "truck" ? WAREHOUSE_BONUS * warehouseCount()
-  : key === "tanker" ? (state.special.port ? PORT_BONUS : 0)
-  : key === "plane" && state.science && state.science.satellite ? SAT_PLANE_BONUS : 0;   // planes: only the 🛰️ satellite
+// Contract bonus: trucks +2% per warehouse, tankers +2.5% with the trading port, planes +5% with the 🛰️ satellite,
+// plus 🧬 +1% per discovered species: 🐾 mammals → trucks, 🐟 aquatic → tankers, 🐦 birds → planes
+const contractBonus = (key) => key === "truck" ? WAREHOUSE_BONUS * warehouseCount() + geneBonus("mam")
+  : key === "tanker" ? (state.special.port ? PORT_BONUS : 0) + geneBonus("aqua")
+  : key === "plane" ? (state.science && state.science.satellite ? SAT_PLANE_BONUS : 0) + geneBonus("bird") : 0;
 // What a contract actually pays
 function contractPayout(key, profit) {
   return Math.round(profit * (1 + contractBonus(key)));
@@ -414,7 +415,8 @@ function renderCenter() {
    Earns 250 / sec for every painting in your collection, up to 10k / sec (40 paintings). No workers, HR or accountant. ----- */
 const GALLERY_PRICE = 50000000, GALLERY_NEED = 20, GALLERY_PER_PAINTING = 250, GALLERY_MAX = 10000;
 const paintingsOwned = () => (state.art && state.art.items ? state.art.items.length : 0);
-const galleryIncome = () => Math.min(GALLERY_MAX, GALLERY_PER_PAINTING * paintingsOwned());
+// 🦕 +1% per discovered extinct species (on top of the cap)
+const galleryIncome = () => Math.min(GALLERY_MAX, GALLERY_PER_PAINTING * paintingsOwned()) * (1 + geneBonus("ext"));
 function galleryTick() {
   if (!state.special.gallery) return 0;
   const income = galleryIncome(), el = $("gallery-income");

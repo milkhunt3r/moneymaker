@@ -208,6 +208,10 @@ function mutantName(a, b) {
 }
 const mutantOf = (key) => { const [a, b] = key.split("|"); return { a, b, name: mutantName(a, b), emoji: GENE_SPECIES[a].emoji + GENE_SPECIES[b].emoji }; };
 const mutantCount = () => Object.keys(G.mutants).length;
+// 🧬 species bonuses (used all over the game through geneBonus() in js/01-core.js)
+const geneCatCount = (cat) => G.known.filter(n => GENE_SPECIES[n] && GENE_SPECIES[n].cat === cat).length;
+const GENE_PERKS = [["aqua", "🐟", "tanker contracts"], ["bird", "🐦", "cargo plane contracts"], ["mam", "🐾", "truck contracts"],
+  ["myth", "🐉", "space mission rewards"], ["ext", "🦕", "Art Gallery income"], ["bug", "🕷️", "ore sold in the Gold Mine Dig"]];
 // 🔎 unfound partners: real recipes with this sample whose result you haven't found yet (mutants never count)
 function geneUnfound(n) {
   let now = 0, later = 0;
@@ -315,6 +319,8 @@ function renderGene() {
         title="${!sci().uni ? "Needs a University with scientists" : hintOpts ? "" : "No new recipe is possible with what you have"}">💡 Hint · 👩‍🔬 ${GENE_HINT_SCI} scientists</button>
       <span class="muted">You have ${ico("sci-scientist")}${sciHave} scientists</span>
     </div>
+    <div class="genePerks" title="Every species you discover in these categories gives +1% for good">${GENE_PERKS.map(([c, e, what]) =>
+      `<span>${e} <b>+${geneCatCount(c)}%</b> ${what}</span>`).join("")}</div>
     ${hintsOpen.length ? `<div class="geneHints">${hintsOpen.map(p => { const [a, b] = p.split("|");
       return `<span>💡 Try ${GENE_SPECIES[a].emoji} ${a} + ${GENE_SPECIES[b].emoji} ${b}</span>`; }).join("")}</div>` : ""}
     <div class="card">

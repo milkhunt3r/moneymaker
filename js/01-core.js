@@ -241,6 +241,8 @@ const bizIco = (id) => ico("biz-" + id, "biz");   // 🏢 business / special bui
 // 🧮 accountant / HR manager picture (assets/icons/ico-st-<key>.webp), or the emoji for anything without one
 const STAFF_PICS = ["numbers", "criminal", "embezzler", "gambler", "motivator", "friendship", "talent", "schedule"];
 const staffIco = (key, o, cls = "staffI") => STAFF_PICS.includes(key) ? ico("st-" + key, cls) : (o ? o.emoji + " " : "");
+// 🧬 Gene Splicer species bonuses: +1% per discovered species of a category (geneCatCount lives in js/24-genetics.js)
+const geneBonus = (cat) => (typeof geneCatCount === "function" ? geneCatCount(cat) * 0.01 : 0);
 const PREF_KEYS = ["view", "gamePage", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage",
                    "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage"];
 function splitState(st) {   // -> { progress, prefs }
