@@ -1557,3 +1557,10 @@ body.phone .colEmblem { width: 44px; height: 44px; margin-right: 8px; }
 .gameCard.locked { opacity: 0.6; cursor: not-allowed; }
 body.phone .bacHands { gap: 10px; } body.phone .bacHand { min-width: 0; }
 body.phone .bacSpot { width: 92px; height: 74px; } body.phone .bacSpot.side { width: 80px; height: 62px; }
+
+/* 🧬 Mad Lab Collection (secret, after the 2nd prestige) */
+body.mutantBg {   /* bright, busy picture: stronger overlay */
+  background: linear-gradient(rgba(12, 12, 22, 0.7), rgba(12, 12, 22, 0.84)), url("../assets/mutant-background.jpg") center / cover fixed;
+}
+#coin.mutantCoin { background: url("../assets/mutant-coin.webp") center / contain no-repeat; box-shadow: none; filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.55)); }
+#coin.mutantCoin::after { content: none; }

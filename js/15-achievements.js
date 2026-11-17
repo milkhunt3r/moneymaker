@@ -295,7 +295,7 @@ function grantRewards() {   // checked with the achievements; a reward, once ear
 function renderRewards() {
   $("rewardList").innerHTML = `<div class="card"><h2 style="margin:0 0 4px">🎁 Rewards</h2>
       <div class="muted">Finish every achievement of a category to unlock its collection. Rewards can't be bought in the Shop.</div></div>` +
-    COLLECTIONS.filter(c => c.reward).map(col => {
+    COLLECTIONS.filter(c => c.reward && !(c.hidden && c.hidden())).map(col => {
       const p = rewardProgress(col), items = COSMETICS.filter(c => c.collection === col.id), got = items.every(c => state.cosmetics.owned[c.id]);
       return `<div class="card rewardCard ${got ? "got" : ""}">
         <div class="row"><h2 style="margin:0">${got ? "" : ico("lock", "lockS")}${colTitle(col)}</h2><span class="muted">${got ? "✅ Unlocked" : `${p.done} / ${p.total}`}</span></div>

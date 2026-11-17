@@ -22,11 +22,15 @@ const COLLECTIONS = [
   { id: "gambler99", name: "🦊 Master Gambler Coin", reward: { ids: ["glevel99"], text: "Unlock 💎 Casino legend (Gambler level 99)" } },
   { id: "investor99", name: "🦉 Master Investor Coin", reward: { ids: ["ilevel99"], text: "Unlock 🏛️ Market maker (Investor level 99)" } },
   { id: "logistics99", name: "🦅 Master Logistics Coin", reward: { ids: ["llevel99"], text: "Unlock 🏆 Logistics legend (Logistics level 99)" } },
+  // 🧬 secret like the Gene Splicer: hidden until the 2nd prestige
+  { id: "mutant", name: "🧬 The Mad Lab Collection", hidden: () => !((state.legacy && state.legacy.count) >= 2),
+    reward: { ids: ["gene1", "gene10", "gene50", "geneKraken", "geneElder", "geneUnicorn"],
+      text: "Unlock every 🧬 Genetics achievement except 🧬 Master of life" } },
   { id: "strongman", name: "🦛 The Strongman Collection", reward: { ids: ["boost-energy-100", "click100k"], text: "Unlock ⚡ Wired for life and 🦾 Iron finger" } },
 ];
 // 🛡️ painted collection emblems (assets/col/<id>.webp): the title shows the emblem instead of the leading emoji
 const COL_EMBLEMS = new Set(["wow", "ahead", "royal", "rain", "emperor", "artist", "bull", "shark",
-  "space", "global", "jackpot", "goldrush", "gambler99", "investor99", "logistics99", "strongman"]);
+  "space", "global", "jackpot", "goldrush", "gambler99", "investor99", "logistics99", "strongman", "mutant"]);
 const colTitle = (col) => COL_EMBLEMS.has(col.id)
   ? `<img class="colEmblem" src="assets/col/${col.id}.webp" alt="">${col.name.replace(/^\S+\s/, "")}` : col.name;
 const COSMETICS = [
@@ -84,6 +88,10 @@ const COSMETICS = [
     preview: `<div class="preview" style="background-image:url('assets/jackpot-background-thumb.jpg')"></div>` },
   { id: "jackpotCoin", collection: "jackpot", slot: "coin", name: "Jackpot Coin", price: 0, desc: "Replaces the coin you click with the winking fox's golden casino medallion.",
     preview: `<div class="preview"><img src="assets/jackpot-coin.webp" alt="Jackpot coin"></div>` },
+  { id: "mutantBg", collection: "mutant", slot: "background", name: "Mad Lab Background", price: 0, desc: "Two raccoon scientists watch in shock as a spilled flask brings a cute winged mutant to life, behind the whole game.",
+    preview: `<div class="preview" style="background-image:url('assets/mutant-background-thumb.jpg')"></div>` },
+  { id: "mutantCoin", collection: "mutant", slot: "coin", name: "Mad Lab Coin", price: 0, desc: "Replaces the coin you click with the raccoon scientist's golden medallion.",
+    preview: `<div class="preview"><img src="assets/mutant-coin.webp" alt="Mad Lab coin"></div>` },
   { id: "goldrushBg", collection: "goldrush", slot: "background", name: "Gold Rush Background", price: 0, desc: "A happy mole miner strikes gold by lantern light deep in an old mine, behind the whole game.",
     preview: `<div class="preview" style="background-image:url('assets/goldrush-background-thumb.jpg')"></div>` },
   { id: "goldrushCoin", collection: "goldrush", slot: "coin", name: "Gold Rush Coin", price: 0, desc: "Replaces the coin you click with the mole miner's golden medallion.",
@@ -127,6 +135,8 @@ function applyCosmetics() {
   document.body.classList.toggle("jackpotBg", !!state.cosmetics.on.jackpotBg);
   document.body.classList.toggle("goldrushBg", !!state.cosmetics.on.goldrushBg);
   $("coin").classList.toggle("goldrushCoin", !!state.cosmetics.on.goldrushCoin);
+  document.body.classList.toggle("mutantBg", !!state.cosmetics.on.mutantBg);
+  $("coin").classList.toggle("mutantCoin", !!state.cosmetics.on.mutantCoin);
   document.body.classList.toggle("strongmanBg", !!state.cosmetics.on.strongmanBg);
   ["gambler99", "investor99", "logistics99"].forEach(n => $("coin").classList.toggle(n + "Coin", !!state.cosmetics.on[n + "Coin"]));
   $("coin").classList.toggle("strongmanCoin", !!state.cosmetics.on.strongmanCoin);

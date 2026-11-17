@@ -235,7 +235,7 @@ function wikiAchievements() {
     <p>${achShown().length} achievements in ${achCatsShown().length} categories. They are checked every second, kept forever (also through prestige) and shown with progress bars in the 🏆 tab.</p>
     <h3>🎁 Rewards</h3>
     <p>Finishing every achievement of a category unlocks a cosmetic collection that can't be bought in the Shop. Turn it on in 🏆 Achievements → 🎁 Rewards.</p>
-    ${wt(["Reward", "How to unlock"], COLLECTIONS.filter(c => c.reward).map(c => [c.name, c.reward.text]))}
+    ${wt(["Reward", "How to unlock"], COLLECTIONS.filter(c => c.reward && !(c.hidden && c.hidden())).map(c => [c.name, c.reward.text]))}
     ${achCatsShown().map(c => `<h3>${c.name}</h3>` + wt(["", "Achievement", "Goal", ""],
       ACHIEVEMENTS.filter(a => a.cat === c.id).map(a => [a.icon, `<b>${a.name}</b>`, a.desc, state.achievements[a.id] ? "✅" : ""]))).join("")}`;
 }
@@ -243,7 +243,7 @@ function wikiAchievements() {
 function wikiShop() {
   return `<h2>🛍️ Shop</h2>
     <p>Cosmetics only: they change how the game looks, not how it plays. Each item belongs to a collection and a slot (background, coin or 🃏 cards, which changes the deck in every card game). You can wear one item per slot and switch any time in the Shop.</p>
-    ${wt(["Item", "Collection", "Slot", "Price", ""], COSMETICS.map(c => [`<b>${c.name}</b><br><span class="muted">${c.desc}</span>`,
+    ${wt(["Item", "Collection", "Slot", "Price", ""], COSMETICS.filter(c => { const col = COLLECTIONS.find(x => x.id === c.collection); return !(col && col.hidden && col.hidden()); }).map(c => [`<b>${c.name}</b><br><span class="muted">${c.desc}</span>`,
       (COLLECTIONS.find(x => x.id === c.collection) || {}).name || "", c.slot, c.price ? fmt(c.price) : "🎁 Reward", state.cosmetics.owned[c.id] ? "✅ owned" : ""]))}
     <p class="muted">Wearing the coin and background from the same collection unlocks the 🎨 "Dressed to impress" achievement.</p>`;
 }
