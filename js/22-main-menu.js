@@ -51,6 +51,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "13 November 2026", title: "Empire of Coins", items: [
+    "🏠 Real estate: each property shows a building that grows with its value: house (up to 500,000), apartment building (up to 5 scoin), castle (up to 50 scoin) and skyscraper (50 scoin and more).",
     "⭐ Prestige: <b>🎟️ VIP Coins</b> now gives a free 500 scoin chip every <b>10 minutes</b> and makes <b>every other free chip come twice as fast</b>. VIP Coins and 💼 Tycoon's Legacy can each be picked <b>once</b> (Global Empire twice), so over 4 prestiges you collect every bonus, in the order you choose.",
     "🛡️ Collections now have painted emblems in the 🛍️ Shop and on the 🎁 Rewards page.",
     "🏅 Every achievement now has a painted medal badge (grey until you earn them). Two-step achievements get a bronze badge first and a gold one for the bigger goal; the Art Gallery brushes show a 🟢 / 🟡 / 🔴 difficulty dot.",

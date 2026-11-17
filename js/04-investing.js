@@ -24,7 +24,7 @@ const etfFee = () => Math.max(0, ETF_BASE_FEE - ETF_FEE_PER_LEVEL * (investLevel
 // Shows a message in the card it belongs to (re / etf / gold / petf), or in the general line above
 function investMessage(text, good, area) {
   const el = (area && $("msg-" + area)) || $("investMsg");
-  el.textContent = text;
+  if (text.startsWith("<img")) el.innerHTML = text; else el.textContent = text;   // a painted icon in front of the message
   el.className = (area ? "cardMsg " : "") + (good ? "income" : "flash");
 }
 
@@ -92,7 +92,7 @@ $("reBuy").addEventListener("click", () => {
   inv.properties.push({ id: state.nextId++, value: amount, lock: RE_LOCK, rentIn: RE_RENT_EVERY });
   investRecord("re", amount, 0);
   $("reAmount").value = "";
-  investMessage("🏠 Bought a property for " + fmt(amount) + ".", true, "re");
+  investMessage(`<img class="ico" src="${reIco(amount)}" alt="">Bought a property for ${fmt(amount)}.`, true, "re");
   renderProperties(); updateCounter(); updateInvestLive(); save();
 });
 
@@ -143,6 +143,9 @@ function reSummary() {
          `next rent ${clock(nextRent)} (+${fmt(total * RE_RENT_RATE)}) · ${unlocked} / ${ps.length} can be sold`;
 }
 
+// 🏠 a property's picture grows with its value: house → apartment building (500k) → castle (5 scoin) → skyscraper (50 scoin)
+const reTier = (v) => (v >= 50e6 ? "tower" : v >= 5e6 ? "castle" : v >= 5e5 ? "flats" : "house");
+const reIco = (v) => `assets/icons/ico-re-${reTier(v)}.webp`;
 function renderProperties() {
   if (inv.properties.length === 0) { $("reList").innerHTML = `<div class="muted">You don't own any property yet.</div>`; return; }
   const collapsed = !!inv.reCollapsed;
@@ -153,7 +156,7 @@ function renderProperties() {
   if (collapsed) { $("reList").innerHTML = head; return; }
   $("reList").innerHTML = head + inv.properties.map((p, i) => `
     <div class="property">
-      <span class="grow">🏠 Property ${i + 1} · value <b id="re-value-${p.id}">${fmt(p.value)}</b></span>
+      <span class="grow"><img class="ico reIco" id="re-ico-${p.id}" src="${reIco(p.value)}" alt="">Property ${i + 1} · value <b id="re-value-${p.id}">${fmt(p.value)}</b></span>
       <span class="muted">rent in <span id="re-rent-${p.id}">${clock(p.rentIn)}</span></span>
       <button class="btn small" data-sell="${p.id}" id="re-sell-${p.id}" ${p.lock > 0 ? "disabled" : ""}>
         ${p.lock > 0 ? "🔒 " + clock(p.lock) : "Sell"}</button>
@@ -417,7 +420,7 @@ function investTick() {
       p.rentIn = RE_RENT_EVERY;
     }
   });
-  if (rent > 0) { state.money += rent; investRecord("re", 0, rent); investMessage("🏠 Rent paid: +" + fmt(rent), true, "re"); }
+  if (rent > 0) { state.money += rent; investRecord("re", 0, rent); investMessage(ico("re-rent") + "Rent paid: +" + fmt(rent), true, "re"); }
 
   // ETF market move (the market always moves; your money follows it if invested)
   inv.etfTimer--;
@@ -555,6 +558,7 @@ function updateInvestLive() {
   inv.properties.forEach(p => {
     const v = $("re-value-" + p.id), r = $("re-rent-" + p.id), b = $("re-sell-" + p.id);
     if (v) v.textContent = fmt(p.value);
+    const im = $("re-ico-" + p.id); if (im && !im.src.endsWith(reIco(p.value))) im.src = reIco(p.value);   // the building upgrades as the value grows
     if (r) r.textContent = clock(p.rentIn);
     if (b) { b.disabled = p.lock > 0; b.textContent = p.lock > 0 ? "🔒 " + clock(p.lock) : "Sell"; }
   });
