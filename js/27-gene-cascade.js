@@ -55,20 +55,30 @@ async function gcSpin(buy = false) {
   updateCounter(); save();
   gcBusy = true; gcSkip = false;
   const id = t.id;
+  if (!gcView) gcView = { grid: st.idle, hits: new Array(SL_CELLS).fill(0), drop: new Set(), label: "", shown: 0, bet };   // the idle grid falls out first
   let shown = 0;   // running win shown on screen (× bet)
   const play = async (spin, hitsBefore, label) => {
-    let hits = hitsBefore.slice();
+    let hits = hitsBefore.slice(), popped = null;
     for (const step of spin.steps) {
       if (currentGame !== id) return false;
-      gcView = { grid: step.grid, hits, drop: new Set(step.drop), wins: null, label, shown, bet };
-      renderGeneCascade(); await gcWait(step === spin.steps[0] ? 380 : 300);
-      if (!step.wins.length) break;
+      const first = step === spin.steps[0];
+      // 🎞️ a new spin: the old specimens fall out first, then the new ones fall in row by row (bottom row first)
+      if (first && gcView && gcView.grid && !gcSkip) {
+        gcView = { ...gcView, out: true, wins: null, lines: null, popping: false, drop: new Set(), fall: null, banner: null };
+        renderGeneCascade(); await gcWait(330);
+      }
+      gcView = { grid: step.grid, hits, drop: new Set(step.drop), wins: null, label, shown, bet,
+        fall: first ? new Array(SL_CELLS).fill(SL_N) : gcFalls(popped) };
+      renderGeneCascade(); await gcWait(first ? 1000 : 850);
+      gcView.fall = null;   // landed: don't replay the fall on the next redraw
+      if (!step.wins.length) { if (label) await gcWait(420); break; }   // free spins: let the grid be seen before the next one
       gcView.wins = new Set(step.wins.flatMap(w => w.cells)); gcView.drop = new Set();
       gcView.lines = step.wins.map(w => ({ sym: w.sym, size: w.size, base: w.base, mult: w.mult, pay: w.pay }));
       shown += step.pay; gcView.shown = Math.min(SL_CAP, shown);
       renderGeneCascade(); await gcWait(650);
       gcView.popping = true; hits = step.hits.slice(); gcView.hits = hits;
-      renderGeneCascade(); await gcWait(260);
+      renderGeneCascade(); await gcWait(300);
+      popped = gcView.wins;
       gcView.popping = false;
     }
     return hits;
@@ -78,7 +88,7 @@ async function gcSpin(buy = false) {
   if (ok !== false && round.bonus.length) {
     const first = round.base ? round.base.free : SL_FREE[round.scat];
     if (!round.base) gcView = { grid: (gcView && gcView.grid) || st.idle, hits: new Array(SL_CELLS).fill(0), drop: new Set(), label: "", shown: 0, bet };
-    gcView = { ...gcView, banner: round.base ? `🧪 ${round.base.scat} DNA vials! ${first} FREE SPINS` : `🛒 Bonus bought: ${round.scat} DNA vials! ${first} FREE SPINS`, wins: null, lines: null };
+    gcView = { ...gcView, fall: null, banner: round.base ? `🧪 ${round.base.scat} DNA vials! ${first} FREE SPINS` : `🛒 Bonus bought: ${round.scat} DNA vials! ${first} FREE SPINS`, wins: null, lines: null };
     renderGeneCascade(); await gcWait(1600);
     let hits = new Array(SL_CELLS).fill(0), given = first;
     for (let i = 0; i < round.bonus.length && ok !== false; i++) {
@@ -86,9 +96,9 @@ async function gcSpin(buy = false) {
       ok = await play(s, hits, `Free spin ${i + 1} of ${given}`);
       if (ok === false) break;
       hits = ok;
-      if (s.free) { given += s.free; gcView = { ...gcView, banner: `🧪 +${s.free} FREE SPINS`, wins: null, lines: null }; renderGeneCascade(); await gcWait(1200); gcView.banner = null; }
+      if (s.free) { given += s.free; gcView = { ...gcView, fall: null, banner: `🧪 +${s.free} FREE SPINS`, wins: null, lines: null }; renderGeneCascade(); await gcWait(1200); gcView.banner = null; }
     }
-    if (round.capped && ok !== false) { gcView = { ...gcView, banner: `🏆 MAX WIN ${SL_CAP.toLocaleString()}×!` }; renderGeneCascade(); await gcWait(1600); }
+    if (round.capped && ok !== false) { gcView = { ...gcView, fall: null, banner: `🏆 MAX WIN ${SL_CAP.toLocaleString()}×!` }; renderGeneCascade(); await gcWait(1600); }
   }
   // finished (or the player left: pay at once)
   const away = currentGame !== id;
@@ -96,7 +106,7 @@ async function gcSpin(buy = false) {
   gcBusy = false; gcSkip = false;
   if (!away) {
     const m = round.total;
-    gcView = { ...(gcView || {}), wins: null, lines: null, popping: false, shown: m, done: true, drop: new Set(),
+    gcView = { ...(gcView || {}), wins: null, lines: null, popping: false, shown: m, done: true, drop: new Set(), fall: null, out: false,
       banner: m >= 100 ? `💥 MEGA WIN ${fmt(win)}!` : m >= 20 ? `🎉 BIG WIN ${fmt(win)}!` : null };
     const shownView = gcView;
     if (shownView.banner) setTimeout(() => { if (gcView === shownView && !gcBusy) { gcView.banner = null; if (currentGame === id) renderGeneCascade(); } }, 2500);
@@ -108,6 +118,23 @@ async function gcSpin(buy = false) {
     renderGeneCascade();
   }
 }
+/* how many rows each square's specimen fell after the winners in popped were removed (new ones fall from above the grid) */
+function gcFalls(popped) {
+  const fall = new Array(SL_CELLS).fill(0);
+  if (!popped) return fall;
+  for (let c = 0; c < SL_N; c++) {
+    let below = 0, newRow = SL_N - 1;
+    for (let r = SL_N - 1; r >= 0; r--) {
+      const k = r * SL_N + c;
+      if (popped.has(k)) { below++; continue; }
+      if (below) fall[newRow * SL_N + c] = below;   // this specimen moved down by the winners under it
+      newRow--;
+    }
+    const gone = below;
+    for (let r = newRow; r >= 0; r--) fall[r * SL_N + c] = gone;   // new specimens drop in from above
+  }
+  return fall;
+}
 function gcMsg(text) { const st = state.gc[currentGame]; if (st) { st.msg = text; renderGeneCascade(); } }
 
 function renderGeneCascade() {
@@ -117,9 +144,10 @@ function renderGeneCascade() {
   const hits = v ? v.hits : new Array(SL_CELLS).fill(0);
   const cells = grid.map((s, k) => {
     const h = hits[k], m = slMult(h);
-    const cls = [s === SL_SCAT ? "scat" : "", v && v.drop && v.drop.has(k) ? "drop" : "", v && v.wins && v.wins.has(k) ? (v.popping ? "pop" : "win") : "",
+    const f = v && !v.out && v.fall ? v.fall[k] : 0;
+    const cls = [s === SL_SCAT ? "scat" : "", f ? "fall" : "", v && v.out ? "out" : "", v && v.wins && v.wins.has(k) ? (v.popping ? "pop" : "win") : "",
       h ? "marked" : "", m ? "spot" : ""].join(" ");
-    return `<div class="gcCell ${cls}" style="--col:${k % SL_N}; --row:${(k / SL_N) | 0}">${m ? `<b class="gcMult m${Math.min(7, Math.log2(m))}">×${m}</b>` : ""}<img src="${gcPic(s)}" alt=""></div>`;
+    return `<div class="gcCell ${cls}" style="--col:${k % SL_N}; --row:${(k / SL_N) | 0}; --fall:${f}">${m ? `<b class="gcMult m${Math.min(7, Math.log2(m))}">×${m}</b>` : ""}<img src="${gcPic(s)}" alt=""></div>`;
   }).join("");
   const bet = v ? v.bet : st.bet;
   const shownWin = v ? Math.floor(Math.min(SL_CAP, v.shown) * bet) : (st.last ? st.last.win : 0);
@@ -137,7 +165,7 @@ function renderGeneCascade() {
         <span class="gcWin">Win: <b>${fmt(shownWin)}</b></span>
       </div>
       <div class="gcBoard">
-        <div class="gcGrid ${v && v.label ? "bonus" : ""}">${cells}</div>
+        <div class="gcGrid ${v && v.label ? "bonus" : ""} ${state.gcFast ? "fast" : ""} ${gcSkip ? "skip" : ""}">${cells}</div>
         ${v && v.banner ? `<div class="gcBanner">${v.banner}</div>` : ""}
       </div>
       <div class="gcLines">${lines || "&nbsp;"}</div>

@@ -1653,3 +1653,14 @@ body.phone .gcBuyBtn { width: 150px; height: 40px; padding: 0 16px 0 38px; } bod
 .ico.lgBroke { width: 76px; height: 76px; margin: 0; }
 .ico.lgSlot { width: 52px; height: 52px; margin: 0; }
 .agentToggle .ico { width: 1.25em; height: 1.25em; }
+
+/* 🎞️ Gene Cascade: falling specimens. --fall = rows fallen; the bottom row lands first, then row by row upwards */
+.gcGrid { --spd: 1; overflow: hidden; }
+.gcGrid.fast { --spd: 0.5; }
+.gcGrid.skip .gcCell img { animation: none !important; }
+.gcCell.drop img { animation: none; }
+.gcCell.fall img { animation: gcFall calc(0.42s * var(--spd)) cubic-bezier(0.35, 0, 0.6, 1.25) both;
+  animation-delay: calc(((6 - var(--row)) * 0.075s + var(--col) * 0.02s) * var(--spd)); }
+@keyframes gcFall { from { transform: translateY(calc(var(--fall) * -108%)); } to { transform: none; } }
+.gcCell.out img { animation: gcOut calc(0.3s * var(--spd)) ease-in both; animation-delay: calc(((6 - var(--row)) * 0.02s + var(--col) * 0.008s) * var(--spd)); }
+@keyframes gcOut { to { transform: translateY(160%); opacity: 0; } }
