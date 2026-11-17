@@ -1,15 +1,22 @@
 /* =====================================================================
    🧬 GENE CASCADE: the slot screen (the maths is in js/26-slot-engine.js)
-   Three tables with the Blackjack limits. A whole paid spin, free spins included, is decided at once and its
+   Two tables (High rollers and Super high rollers limits). 🔒 Unlocks after the 1st prestige at Gambler level 40. A whole paid spin, free spins included, is decided at once and its
    win saved before anything is shown: leaving or reloading pays the same win straight away.
    ===================================================================== */
 const GC_TABLES = {
-  gcLow:   { id: "gcLow",   title: "Gene Cascade: Classic",            chips: [500, 1000, 5000, 10000, 25000, 50000] },
   gcHigh:  { id: "gcHigh",  title: "Gene Cascade: High rollers",       chips: [50000, 100000, 250000, 500000, 1000000, 5000000] },
   gcSuper: { id: "gcSuper", title: "Gene Cascade: Super high rollers", chips: [10000000, 25000000, 50000000, 100000000, 250000000, 500000000] },
 };
 for (const id in GC_TABLES) { const t = GC_TABLES[id]; t.min = t.chips[0]; t.max = t.chips[t.chips.length - 1]; }
 if (!state.gc) state.gc = {};
+if (state.gc.gcLow) {   // the Classic table was removed: pay a spin that was still running there
+  if (state.gc.gcLow.pending) state.casinoChips += state.gc.gcLow.pending.win;
+  delete state.gc.gcLow;
+}
+const GC_LEVEL = 40;
+const gcUnlocked = () => ((state.legacy && state.legacy.count) || 0) >= 1 && levelInfo(state.casinoXp).level >= GC_LEVEL;
+const gcLockText = () => { const pc = (state.legacy && state.legacy.count) || 0, lv = levelInfo(state.casinoXp).level;
+  return `Unlocks after your 1st prestige and at Gambler level ${GC_LEVEL} (${pc >= 1 ? "prestige ✓" : "no prestige yet"} · you are level ${lv})`; };
 for (const id in GC_TABLES) state.gc[id] = Object.assign({ bet: GC_TABLES[id].min, pending: null }, state.gc[id] || {});
 let gcView = null;   // what the screen shows: { grid, hits, win cells, banner … } while a spin plays
 let gcBusy = false, gcSkip = false;
@@ -33,7 +40,7 @@ function gcSettle(id, away = false) {
 
 async function gcSpin() {
   const t = GC_TABLES[currentGame], st = state.gc[t.id];
-  if (gcBusy || st.pending) return;
+  if (gcBusy || st.pending || !gcUnlocked()) return;
   const bet = st.bet;
   if (bet < t.min || bet > t.max) return gcMsg(`Bets here are ${fmt(t.min)} – ${fmt(t.max)}.`);
   if (state.casinoChips < bet) return gcMsg("Not enough chips. Add money to the casino first.");

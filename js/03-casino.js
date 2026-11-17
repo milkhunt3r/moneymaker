@@ -93,7 +93,6 @@ const CASINO_GAMES = [
   { id: "plinkoSuper", name: "Plinko: Super high rollers", emoji: "💎🔻", desc: "Same pyramid, 0.3× to 250×, up to 20 balls. Bets from 10 to 500 scoin per ball." },
   { id: "plinko", name: "Plinko", emoji: "🔻", desc: "Drop up to 20 balls down a peg pyramid into multipliers from 0.3× to 250×. Bets 5,000 – 5 scoin per ball." },
   { id: "climb",  name: "Sky Climb", emoji: "🎈", desc: "Draw balls to climb a 20-step ladder up to 50,000×. Cash out before a red ball pops your balloon! Bets 10,000 – 500,000." },
-  { id: "gcLow",   name: "Gene Cascade: Classic", emoji: "🧬", desc: "A 7×7 slot: clusters of 5+ touching specimens pay, then tumble. Lab spots grow ×2 … ×128. Bets 500 – 50,000 per spin." },
   { id: "gcHigh",  name: "Gene Cascade: High rollers", emoji: "🧬", desc: "A 7×7 slot: clusters of 5+ touching specimens pay, then tumble. Lab spots grow ×2 … ×128. Bets 50,000 – 5 scoin per spin." },
   { id: "gcSuper", name: "Gene Cascade: Super high rollers", emoji: "🧬", desc: "A 7×7 slot: clusters of 5+ touching specimens pay, then tumble. Lab spots grow ×2 … ×128. Bets 10 – 500 scoin per spin." },
   { id: "climbHigh", name: "Sky Climb: High rollers", emoji: "🎈", desc: "Draw balls to climb a 20-step ladder up to 50,000×. Cash out before a red ball pops your balloon! Bets 5 – 500 scoin." },
@@ -111,7 +110,7 @@ const CASINO_GROUPS = [
   { name: "Roulette games", ico: "roulette", games: ["rouletteLow", "rouletteHigh", "rouletteSuper"] },
   { name: "Card games", ico: "blackjack",     games: ["bjLow", "bjHigh", "bjSuper", "bacLow", "bacHigh", "bacSuper", "vpLow", "vpHigh", "vpSuper", "uthLow", "uthHigh", "uthSuper"] },
   { name: "Ball games", ico: "plinko",     games: ["plinko", "plinkoSuper", "climb", "climbHigh"] },
-  { name: "Slot games", ico: "slot",       games: ["gcLow", "gcHigh", "gcSuper"] },
+  { name: "Slot games", ico: "slot",       games: ["gcHigh", "gcSuper"] },
 ];
 let currentGame = null;   // null = game list
 
@@ -200,7 +199,7 @@ const XP_TABLE_MULT = {
   vpLow: 1, vpHigh: 1.5, vpSuper: 2,
   uthLow: 5, uthHigh: 5, uthSuper: 10,
   plinko: 1, plinkoSuper: 2, climb: 2, climbHigh: 4,
-  gcLow: 1, gcHigh: 2, gcSuper: 4,
+  gcHigh: 2, gcSuper: 4,
 };
 function xpBase(id) {
   if (XP_TABLE_MULT[id] !== undefined) return XP_TABLE_MULT[id];
@@ -290,11 +289,14 @@ function renderCasino() {
   const box = $("casinoGame");
   setTimeout(() => { if (typeof updateVipBar === "function") updateVipBar(); }, 0);
   if (!currentGame) {
-    // 🔒 Baccarat opens at Gambler level 20
-    const gameCard = (g) => g.id.startsWith("bac") && typeof bacUnlocked === "function" && !bacUnlocked()
+    // 🔒 locked games: Baccarat (Gambler level 20), Gene Cascade (1st prestige + Gambler level 40)
+    const lockText = (id) => id.startsWith("bac") && typeof bacUnlocked === "function" && !bacUnlocked()
+        ? `Unlocks at Gambler level ${BAC_LEVEL} (you are level ${levelInfo(state.casinoXp).level})`
+      : id.startsWith("gc") && typeof gcUnlocked === "function" && !gcUnlocked() ? gcLockText() : "";
+    const gameCard = (g) => lockText(g.id)
       ? `<button class="card gameCard locked" disabled>
          <h3>${casIco(g.id)}${g.name}</h3><div class="muted">${g.desc}</div>
-         <div class="muted" style="margin-top:4px">${ico("lock", "lockS")}Unlocks at Gambler level ${BAC_LEVEL} (you are level ${levelInfo(state.casinoXp).level})</div></button>`
+         <div class="muted" style="margin-top:4px">${ico("lock", "lockS")}${lockText(g.id)}</div></button>`
       : `<button class="card gameCard" data-game="${g.id}">
          <h3>${casIco(g.id)}${g.name}</h3><div class="muted">${g.desc}</div>
          <div class="muted" style="color:#b388ff; margin-top:4px">✨ XP ×${xpMult(g.id)}${hotNow().active && g.id.startsWith(hotNow().game.id) ? ` <span class="hotTag">🔥 HOT</span>` : ""}</div></button>`;
