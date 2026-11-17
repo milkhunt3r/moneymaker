@@ -52,6 +52,7 @@ addEventListener("resize", fitBrand); fitBrand();
 const PATCH_NOTES = [
   { date: "17 November 2026", title: "Empire of Coins", items: [
     "🎴 New card game: <b>Baccarat</b>! Bet on Player, Banker or a Tie, plus Pair side bets. Three tables with the same limits as Blackjack. Unlocks at <b>Gambler level 20</b>.",
+    "🏆 4 new Baccarat achievements: play 50, 100 and 500 hands, and win 3 hands in a row.",
   ] },
   { date: "13 November 2026", title: "Empire of Coins", items: [
     "🏠 Real estate: each property shows a building that grows with its value: house (up to 500,000), apartment building (up to 5 scoin), castle (up to 50 scoin) and skyscraper (50 scoin and more).",

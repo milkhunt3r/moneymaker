@@ -121,6 +121,10 @@ function bacSettle(t, away = false) {
   if (win === "T") state.stats.bacTie = (state.stats.bacTie || 0) + 1;
   t.result = { win, P, B, pPair, bPair };
   const net = back - total;
+  // 🔥 streak of won hands (a hand is won when it pays back more than was bet; a push keeps the streak)
+  if (net > 0) state.stats.bacStreak = (state.stats.bacStreak || 0) + 1;
+  else if (net < 0) state.stats.bacStreak = 0;
+  state.stats.bacBestStreak = Math.max(state.stats.bacBestStreak || 0, state.stats.bacStreak || 0);
   const who = win === "P" ? `Player wins ${P} to ${B}` : win === "B" ? `Banker wins ${B} to ${P}` : `Tie at ${P}`;
   t.message = `${who}${(r.p.length === 2 && P >= 8) || (r.b.length === 2 && B >= 8) ? " (natural)" : ""}. ` +
     (net > 0 ? `You won ${fmt(net)}!` : net < 0 ? `You lost ${fmt(-net)}.` : "You broke even.") +
