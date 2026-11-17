@@ -38,7 +38,7 @@ const ACHIEVEMENTS = [
   { id: "prestige4",  cat: "general", icon: "🏆", name: "Legend",             desc: "Prestige 4 times and finish the game", goal: 4, get: () => state.legacy.count },
   { id: "tax10",      cat: "general", icon: "🧾", name: "Good citizen",       desc: "Pay 10 tax bills",                    goal: 10,   get: () => state.stats.taxPaid || 0 },
   { id: "tax100",     cat: "general", icon: "🧾", name: "Model taxpayer",     desc: "Pay 100 tax bills",                   goal: 100,  get: () => state.stats.taxPaid || 0 },
-  { id: "tax1000",    cat: "general", icon: "🏛️", name: "Pillar of society",  desc: "Pay 500 tax bills",                   goal: 500, get: () => state.stats.taxPaid || 0 },
+  { id: "tax1000",    cat: "general", icon: "🏛️", name: "Pillar of society",  desc: "Pay 250 tax bills",                   goal: 250, get: () => state.stats.taxPaid || 0 },
   { id: "cosmetic1",  cat: "general", icon: "🛍️", name: "Treat yourself",     desc: "Buy your first cosmetic item in the Shop", goal: 1, get: () => COSMETICS.some(c => c.price > 0 && state.cosmetics.owned[c.id]) ? 1 : 0 },
   { id: "emperor",    cat: "general", icon: "🦁", name: "Hail, Emperor!",     desc: "Buy the whole 🦁 Emperor Collection and wear all 3 items at once (background, coin and cards)", goal: 3,
     get: () => ["emperorBg", "emperorCoin", "emperorCards"].filter(id => state.cosmetics.owned[id] && state.cosmetics.on[id]).length },
@@ -175,7 +175,7 @@ const ACHIEVEMENTS = [
   { id: "artsold1", cat: "art", icon: "💰", name: "First sale", desc: "Sell 1 painting", goal: 1, get: () => state.stats.artSold || 0 },
   { id: "artsold50", cat: "art", icon: "💰", name: "Art dealer", desc: "Sell 50 paintings", goal: 50, get: () => state.stats.artSold || 0 },
   { id: "artsold100", cat: "art", icon: "💰", name: "Gallery regular", desc: "Sell 100 paintings", goal: 100, get: () => state.stats.artSold || 0 },
-  { id: "artsold1000", cat: "art", icon: "💰", name: "Art market mogul", desc: "Sell 250 paintings", goal: 250, get: () => state.stats.artSold || 0 },
+  { id: "artsold1000", cat: "art", icon: "💰", name: "Art market mogul", desc: "Sell 200 paintings", goal: 200, get: () => state.stats.artSold || 0 },
   // ⛏️ Mining (🎮 Mini-games → Gold Mine Dig). state.mine is set up by js/23-minigames.js, so every check is guarded.
   ...(() => {
     const Mn = () => state.mine || {}, ore = (k) => () => ((Mn().ores || {})[k] || 0), depth = () => (Mn().best || 0) * 2;
@@ -183,7 +183,7 @@ const ACHIEVEMENTS = [
     return [
       { id: "mineRun1",    icon: "⛏️", name: "First dig",          desc: "Finish your first Gold Mine Dig run",       goal: 1,   get: () => Mn().runs || 0 },
       { id: "mineRun50",   icon: "🪨", name: "Regular miner",      desc: "Finish 50 runs",                             goal: 50,  get: () => Mn().runs || 0 },
-      { id: "mineRun250",  icon: "⛏️", name: "Mine foreman",       desc: "Finish 250 runs",                            goal: 250, get: () => Mn().runs || 0 },
+      { id: "mineRun250",  icon: "⛏️", name: "Mine foreman",       desc: "Finish 200 runs",                            goal: 200, get: () => Mn().runs || 0 },
       { id: "mineDeep50",  icon: "🕳️", name: "Going down",         desc: "Reach a depth of 50 m",                      goal: 50,  get: depth },
       { id: "mineDeep80",  icon: "🔦", name: "Deep shaft",         desc: "Reach a depth of 80 m",                      goal: 80,  get: depth },
       { id: "mineDeep100", icon: "🌋", name: "Into the dark",      desc: "Reach a depth of 100 m",                     goal: 100, get: depth },
