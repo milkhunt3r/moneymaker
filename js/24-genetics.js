@@ -262,7 +262,9 @@ const GENE_PICS = new Set(["Human", "Fish", "Lizard", "Spider", "Plant", "Tree",
   "Hedgehog", "Armadillo", "Walrus", "Seal", "Platypus", "Dinosaur", "Archaeopteryx", "T-Rex", "Brachiosaurus", "Triceratops", "Ankylosaurus",
   "Pterodactyl", "Megalodon", "Trilobite", "Ammonite", "Ichthyosaur",
   "Plesiosaur", "Mammoth", "Sabre-toothed cat", "Dire wolf", "Neanderthal", "Dodo", "Titanoboa", "Meganeura",
-  "Mermaid", "Lizardfolk", "Arachne", "Dryad", "Treefolk", "Mandrake", "Dragon", "Elder dragon"]);
+  "Mermaid", "Lizardfolk", "Arachne", "Dryad", "Treefolk", "Mandrake", "Dragon", "Elder dragon",
+  "Phoenix", "Unicorn", "Pegasus", "Centaur", "Griffin", "Hippogriff", "Harpy", "Sphinx", "Manticore", "Chimera", "Minotaur", "Hydra",
+  "Medusa", "Basilisk", "Kraken", "Leviathan"]);
 function gEm(n, cls = "") {
   const s = GENE_SPECIES[n]; if (!s) return "";
   return GENE_PICS.has(n) ? `<img class="geneImg ${cls}" src="assets/gene/${n.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.webp" alt="${s.emoji}">` : s.emoji;
