@@ -146,7 +146,7 @@ function wikiCasino() {
     <p>Every 20 minutes one game type becomes <b>hot</b>: for 10 minutes <b>all</b> its tables get a bonus on their XP multiplier, then there are 10 minutes with no bonus.
       The bonus grows with your 🎲 Gambler level: <b>+10</b> (levels 1–49), <b>+20</b> from level 50, <b>+40</b> from level 75 (you get +${hotBonus()} now; High roller Blackjack ×4 becomes ×${4 + hotBonus()}). The hot game is chosen at random and is never the same twice in a row. The timer is shown under your Gambler level, together with the next hot game.</p>
     <h3>🎁 Free bet chips</h3>
-    <p>From Gambler level 5 you get free chips on timers (see the frame under the Gambler level). Use them at Roulette, Blackjack, Video Poker and Hold'em (not Plinko or Sky Climb).
+    <p>From Gambler level 5 you get free chips on timers (see the frame under the Gambler level). Use them at Roulette, Blackjack, Baccarat, Video Poker and Hold'em (not Plinko or Sky Climb).
       A free chip is a bet: whatever it wins goes to your casino chips. At Hold'em, a free Ante needs 2 chips (Ante + Blind).</p>
     ${wt(["Gambler level", "Free chip"], FREE_CHIP_TYPES.map(c => [c.level, "Free " + chipLabel(c.value) + " chip"]).concat([[45, "All timers 20 → 15 min"], [85, "All timers 15 → 10 min"]]).sort((x, y) => x[0] - y[0]))}
 
