@@ -1518,3 +1518,13 @@ body.phone .tabIco { width: 22px; height: 22px; margin-right: 4px; }
 body.phone .colEmblem { width: 44px; height: 44px; margin-right: 8px; }
 
 .ico.reIco { width: 2em; height: 2em; vertical-align: -0.6em; margin-right: 0.4em; }
+
+/* 🧪 Gene Splicer: mutants and the unfound-partners tag */
+.r-m { border-color: #7ddf3a; } .geneRar.r-m { background: rgba(125, 223, 58, 0.25); }
+.geneCard.r-m { background: radial-gradient(circle at 50% 30%, rgba(125, 223, 58, 0.18), rgba(0, 0, 0, 0.3)); }
+.geneResult.mutant { border-color: #7ddf3a; box-shadow: 0 0 18px rgba(125, 223, 58, 0.25); }
+.geneResult.mutant .geneResEmoji { font-size: 40px; filter: hue-rotate(60deg) saturate(1.4); }
+.geneCard.r-m .geneEmoji { filter: hue-rotate(60deg) saturate(1.4); font-size: 22px; }
+.geneUnf { margin-top: 3px; font-size: 11px; font-weight: 800; color: #ffd34d; background: rgba(255, 211, 77, 0.14); border-radius: 999px; padding: 1px 7px; }
+.geneUnf.later { color: #a9b0c8; background: rgba(255, 255, 255, 0.07); }
+.geneUnf.done { color: #6fdc8c; background: rgba(111, 220, 140, 0.12); }

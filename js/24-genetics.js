@@ -5,7 +5,7 @@
    - First discovery pays minutes of income by rarity: common 1, uncommon 2, rare 5, extinct 15, mythical 30.
      Splicing a species you already know pays nothing (you just get one more DNA sample of it).
    - DNA: up to 3 samples of each species. Every 10 minutes every species you know gets +1.
-     A splice uses 1 of each (2 if both are the same); a pair that makes nothing costs nothing and is marked ❌.
+     A splice uses 1 of each (2 if both are the same); a pair that is not a recipe makes a 🧪 mutant (see MUTATIONS).
    - 💡 Hint: 10 scientists reveal one recipe you can make right now.
    - A prestige never resets it (like all mini-games).
    ===================================================================== */
@@ -188,6 +188,36 @@ const GENE_TOTAL = GENE_RECIPES.length;   // 150 species to discover
 if (!state.genetics) state.genetics = { unlocked: false };
 const G = state.genetics;
 G.known = G.known || []; G.dna = G.dna || {}; G.tried = G.tried || []; G.hints = G.hints || [];
+/* 🧪 MUTATIONS: a pair that is not a real recipe makes a mutant instead of nothing. Its name and look come from its parents
+   (Spider + Tree = Spidree 🕷️🌳). It costs DNA like any splice, pays 30 sec of income the first time, and goes into the
+   🧪 Mutant jar: mutants can't be spliced again and never count as species, unfound partners or hints. */
+G.mutants = G.mutants || {};   // pair key -> 1
+if (!G.mutVer) { G.tried = []; G.mutVer = 1; }   // pairs that used to "not mix" can now make their mutant
+const GENE_MUTANT_SEC = 30, GENE_MUTANTS_ALL = (() => { const n = GENE_BASE.length + GENE_RECIPES.length; return n * (n + 1) / 2 - GENE_RECIPES.length; })();
+const VOW = /[aeiouy]+/gi;
+function mutantName(a, b) {
+  if (a === b) return "Mega-" + a.toLowerCase();
+  const A = a.split(" ")[0], B = b.split(" ").pop().toLowerCase();
+  const va = [...A.matchAll(VOW)], vb = [...B.matchAll(VOW)];
+  // head: the first part of A up to its 2nd vowel group (or one letter past its only vowel group)
+  const head = va.length >= 2 ? A.slice(0, va[1].index) : va.length ? A.slice(0, Math.min(A.length, va[0].index + va[0][0].length + 1)) : A;
+  // tail: B from the consonant before its last vowel group
+  const lv = vb.length ? vb[vb.length - 1].index : 0, tail = B.slice(Math.max(0, lv - 1));
+  const n = head + (head.slice(-1) === tail[0] ? tail.slice(1) : tail);
+  return n.charAt(0).toUpperCase() + n.slice(1).toLowerCase();
+}
+const mutantOf = (key) => { const [a, b] = key.split("|"); return { a, b, name: mutantName(a, b), emoji: GENE_SPECIES[a].emoji + GENE_SPECIES[b].emoji }; };
+const mutantCount = () => Object.keys(G.mutants).length;
+// 🔎 unfound partners: real recipes with this sample whose result you haven't found yet (mutants never count)
+function geneUnfound(n) {
+  let now = 0, later = 0;
+  for (const [a, b, r] of GENE_RECIPES) {
+    if ((a !== n && b !== n) || geneKnows(r)) continue;
+    const other = a === n ? b : a;
+    if (geneKnows(other)) now++; else later++;
+  }
+  return { now, later };
+}
 const geneFound = () => G.known.filter(n => GENE_SPECIES[n] && GENE_SPECIES[n].rar !== "s").length;
 const geneKnows = (n) => G.known.includes(n);
 let geneSlots = [null, null], geneLast = null, geneTab = "freezer", geneCat = "all";
@@ -229,7 +259,8 @@ function renderGene() {
   const found = geneFound(), [A, B] = geneSlots;
   const need = (n) => (A === B && n === A ? 2 : 1);
   const canSplice = A && B && (G.dna[A] || 0) >= need(A) && (G.dna[B] || 0) >= need(B);
-  const tried = A && B && G.tried.includes(genePair(A, B));
+  const pk = A && B ? genePair(A, B) : null, isRecipe = pk && GENE_BY_PAIR[pk];
+  const tried = pk && !isRecipe && (G.mutants[pk] || G.tried.includes(pk));   // this mutant is already in your jar
   const slot = (i) => { const n = geneSlots[i];
     return `<button class="geneSlot ${n ? "full r-" + GENE_SPECIES[n].rar : ""}" data-gslot="${i}" title="${n ? "Click to take it out" : "Pick a sample below"}">
       ${n ? geneCard(n, genePips(n)) : `<span class="geneEmoji">🧪</span><span class="geneName muted">Sample ${i ? "B" : "A"}</span>`}</button>`; };
@@ -238,8 +269,12 @@ function renderGene() {
   let result = "";
   if (geneLast) {
     const L = geneLast, s = L.result && GENE_SPECIES[L.result];
-    result = L.fail
-      ? `<div class="geneResult fail">⚠️ <b>Unstable sample</b>: ${L.text}. No DNA was used.</div>`
+    result = L.mutant
+      ? `<div class="geneResult mutant ${L.isNew ? "new" : ""}">
+          <div class="geneResEmoji">${L.mutant.emoji}</div>
+          <div><div class="geneResName">🧪 Mutation: <b>${L.mutant.name}</b> <span class="geneRar r-m">Mutant</span></div>
+            <div class="muted">Not a real species: ${GENE_SPECIES[L.mutant.a].emoji} ${L.mutant.a} and ${GENE_SPECIES[L.mutant.b].emoji} ${L.mutant.b} don't make one. It goes in your 🧪 Mutant jar and can't be spliced again.</div>
+            <div>${L.reward ? `💰 +${fmt(L.reward)}` : ""}</div></div></div>`
       : `<div class="geneResult r-${s.rar} ${L.isNew ? "new" : ""}">
           <div class="geneResEmoji">${s.emoji}</div>
           <div><div class="geneResName">${L.isNew ? "🎉 New species: " : ""}<b>${s.name}</b> <span class="geneRar r-${s.rar}">${GENE_RARITY[s.rar].name}</span></div>
@@ -247,13 +282,16 @@ function renderGene() {
             <div>${L.isNew ? (L.reward ? `💰 +${fmt(L.reward)} · 🧬 +1 ${s.name} DNA` : `🧬 +1 ${s.name} DNA`) : `Already in your freezer: no reward, 🧬 +1 ${s.name} DNA${L.capped ? " (already full)" : ""}`}</div></div></div>`;
   }
   // freezer (known samples) or codex (all species, undiscovered as ???)
-  const list = geneTab === "freezer"
+  const list = geneTab === "mutants" ? [] : geneTab === "freezer"
     ? G.known.filter(n => geneCat === "all" || GENE_SPECIES[n].cat === geneCat)
     : [...GENE_BASE.map(b => b[0]), ...GENE_RECIPES.map(r => r[2])].filter(n => geneCat === "all" || GENE_SPECIES[n].cat === geneCat);
   const catCount = (c) => { const all = Object.values(GENE_SPECIES).filter(s => s.rar !== "s" && (c === "all" || s.cat === c));
     return c === "start" ? "" : ` ${all.filter(s => geneKnows(s.name)).length}/${all.length}`; };
   const cards = list.map(n => { const s = GENE_SPECIES[n], k = geneKnows(n);
-    if (geneTab === "freezer") return `<button class="geneCard r-${s.rar} ${geneSlots.includes(n) ? "sel" : ""}" data-gs="${n}" data-name="${n.toLowerCase()}" ${(G.dna[n] || 0) ? "" : "data-empty"}>${geneCard(n, genePips(n))}</button>`;
+    if (geneTab === "freezer") { const u = geneUnfound(n);
+      const tag = u.now ? `<span class="geneUnf" title="${u.now} new species can still be made with ${n} and samples you already have${u.later ? ` (+${u.later} more need samples you haven't found yet)` : ""}">${u.now} unfound</span>`
+        : u.later ? `<span class="geneUnf later" title="${u.later} new species need ${n} and a sample you haven't found yet">🔒 ${u.later} later</span>` : `<span class="geneUnf done" title="Every species with ${n} is found">✓ done</span>`;
+      return `<button class="geneCard r-${s.rar} ${geneSlots.includes(n) ? "sel" : ""}" data-gs="${n}" data-name="${n.toLowerCase()}" ${(G.dna[n] || 0) ? "" : "data-empty"}>${geneCard(n, genePips(n))}${tag}</button>`; }
     return k ? `<div class="geneCard r-${s.rar} codex" data-name="${n.toLowerCase()}" title="${s.why}">${geneCard(n, s.a ? `<span class="geneHow">${GENE_SPECIES[s.a].emoji} + ${GENE_SPECIES[s.b].emoji}</span>` : "")}</div>`
       : `<div class="geneCard unknown" data-name=""><span class="geneEmoji">❔</span><span class="geneName">???</span><span class="geneHow">${GENE_RARITY[s.rar].name}</span></div>`; }).join("");
   box.innerHTML = `
@@ -267,7 +305,7 @@ function renderGene() {
       <div class="geneSplicer">${slot(0)}<div class="genePlus">+</div>${slot(1)}
         <button class="btn big" data-gene="splice" ${canSplice && !tried ? "" : "disabled"}>🧬 Splice</button></div>
       <div class="muted geneNote">${!A || !B ? "Pick two samples from your freezer (the same one twice works too)."
-        : tried ? "❌ You already know these two don't mix." : canSplice ? `Uses 1 DNA of each sample${A === B ? " (2 of this one)" : ""} if something grows. A pair that doesn't mix costs nothing.`
+        : tried ? `🧪 You already made this mutant (${mutantName(...pk.split("|"))}).` : canSplice ? `Uses 1 DNA of each sample${A === B ? " (2 of this one)" : ""}. A pair that isn't a real recipe makes a 🧪 mutant.`
         : "Not enough DNA: each sample refills by 1 every 10 minutes (max 3)."}</div>
       ${result}
     </div>
@@ -282,23 +320,33 @@ function renderGene() {
     <div class="card">
       <div class="geneTabs"><button class="subTab ${geneTab === "freezer" ? "active" : ""}" data-gtab="freezer">❄️ Freezer (${G.known.length})</button>
         <button class="subTab ${geneTab === "codex" ? "active" : ""}" data-gtab="codex">📖 Codex</button>
+        <button class="subTab ${geneTab === "mutants" ? "active" : ""}" data-gtab="mutants">🧪 Mutants (${mutantCount()})</button>
         <input id="geneSearch" type="search" placeholder="🔍 Search" autocomplete="off"></div>
-      <div class="achCats">${GENE_CATS.filter(([c]) => geneTab === "codex" ? c !== "start" || true : true).map(([c, l]) =>
+      <div class="achCats" ${geneTab === "mutants" ? "hidden" : ""}>${GENE_CATS.filter(([c]) => geneTab === "codex" ? c !== "start" || true : true).map(([c, l]) =>
         `<button class="achCat ${geneCat === c ? "active" : ""}" data-gcat="${c}">${l}${catCount(c)}</button>`).join("")}</div>
-      <div class="geneGrid">${cards || `<p class="muted">Nothing here yet.</p>`}</div>
+      ${geneTab === "mutants" ? `<p class="muted">Mutants come from pairs that don't make a real species. They can't be spliced again and don't count as species. You've made ${mutantCount()} of ${GENE_MUTANTS_ALL.toLocaleString("en-US")} possible.</p>
+        <div class="geneGrid">${Object.keys(G.mutants).reverse().map(k => { const m = mutantOf(k);
+          return `<div class="geneCard r-m codex" data-name="${m.name.toLowerCase()}" title="${m.a} + ${m.b}"><span class="geneEmoji">${m.emoji}</span><span class="geneName">${m.name}</span><span class="geneHow">${GENE_SPECIES[m.a].emoji} + ${GENE_SPECIES[m.b].emoji}</span></div>`; }).join("") || `<p class="muted">No mutants yet.</p>`}</div>`
+      : `<div class="geneGrid">${cards || `<p class="muted">Nothing here yet.</p>`}</div>`}
     </div>`;
 }
 
 function geneSplice() {
   const [A, B] = geneSlots; if (!A || !B) return;
   const key = genePair(A, B), r = GENE_BY_PAIR[key];
-  if (!r) {   // ⚠️ no outcome: nothing is spent, the pair is remembered as a dud
-    if (!G.tried.includes(key)) G.tried.push(key);
-    geneLast = { fail: true, text: `${GENE_SPECIES[A].emoji} ${A} and ${GENE_SPECIES[B].emoji} ${B} don't mix` };
-    save(); return renderGene();
-  }
   const need = A === B ? { [A]: 2 } : { [A]: 1, [B]: 1 };
   if (Object.entries(need).some(([k, n]) => (G.dna[k] || 0) < n)) return;
+  if (!r) {   // 🧪 not a real recipe: a mutant (once per pair; costs DNA, pays 30 sec of income)
+    if (G.mutants[key]) return;
+    Object.entries(need).forEach(([k, n]) => { G.dna[k] -= n; });
+    G.mutants[key] = 1;
+    const m = mutantOf(key), reward = Math.round(GENE_MUTANT_SEC * mineBase());
+    state.money += reward; clickedThisSecond += reward; G.earned = (G.earned || 0) + reward;
+    G.splices = (G.splices || 0) + 1;
+    geneLast = { mutant: m, isNew: true, reward };
+    geneSlots = [null, null];
+    save(); updateCounter(); return renderGene();
+  }
   Object.entries(need).forEach(([k, n]) => { G.dna[k] -= n; });
   const s = GENE_SPECIES[r], isNew = !geneKnows(r);
   let reward = 0, capped = false;

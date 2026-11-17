@@ -287,7 +287,11 @@ function wikiArt() {
     ${wt(["Rarity", "First discovery pays"], ["c", "u", "r", "e", "l"].map(k => [GENE_RARITY[k].name, `${GENE_RARITY[k].min} min of income`]))}
     <p>Splicing a species you already know pays nothing, but gives you one more DNA sample of it. The reward uses the same income base as the Gold Mine Dig.</p>
     <p>🧪 <b>DNA:</b> you can hold up to ${GENE_DNA_MAX} samples of each species. Every 10 minutes every species you know gets +1 (also while you are away).
-      A splice uses 1 of each sample (2 if both are the same). Two samples that make nothing cost nothing and are marked ❌, so you never try them twice.</p>
+      A splice uses 1 of each sample (2 if both are the same).</p>
+    <p>🧪 <b>Mutations:</b> two samples that don't make a real species make a <b>mutant</b> instead, named after its parents (🕷️ Spider + 🌳 Tree = Spidree).
+      It pays ${GENE_MUTANT_SEC} sec of income the first time and goes in your 🧪 Mutant jar. Mutants can't be spliced again, and each pair makes its mutant only once.</p>
+    <p>🔎 <b>Unfound partners:</b> each sample in your freezer shows how many new species you can still make with it and the samples you already have ("3 unfound"),
+      or "🔒 later" when the rest need a sample you haven't found yet. Mutants never count, and hints only show real recipes.</p>
     <p>💡 <b>Hints:</b> spend ${GENE_HINT_SCI} scientists from your Universities to reveal one recipe you can make right now. The 📖 Codex shows every species you've found and how you made it.</p>` : ""}`;
 }
 const WIKI_RENDER = { art: wikiArt, general: wikiGeneral, income: wikiIncome, casino: wikiCasino, investing: wikiInvesting, logistics: wikiLogistics, achievements: wikiAchievements, shop: wikiShop };
