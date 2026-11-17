@@ -10,7 +10,7 @@ if (!state.legacy) state.legacy = { count: 0, tycoon: 0, empire: 0, vip: 0, hist
 if (!state.vip) state.vip = { coins: 0, timer: 0 };
 if (!state.vipMode) state.vipMode = {};
 if (typeof state.plinkoVipInPlay !== "number") state.plinkoVipInPlay = 0;
-const SUPER_TABLES = ["rouletteSuper", "bjSuper", "bacSuper", "plinkoSuper", "vpSuper", "uthSuper"];
+const SUPER_TABLES = ["rouletteSuper", "bjSuper", "bacSuper", "gcSuper", "plinkoSuper", "vpSuper", "uthSuper"];
 const vipOn = (id) => false;   // VIP coins are now 500 scoin free bet chips (see FREE BET CHIPS)
 
 /* ----- 🎁 Free bet chips: chips you own, kept apart from casino chips. Placed on a table they are a normal bet;
@@ -93,13 +93,16 @@ const CASINO_GAMES = [
   { id: "plinkoSuper", name: "Plinko: Super high rollers", emoji: "💎🔻", desc: "Same pyramid, 0.3× to 250×, up to 20 balls. Bets from 10 to 500 scoin per ball." },
   { id: "plinko", name: "Plinko", emoji: "🔻", desc: "Drop up to 20 balls down a peg pyramid into multipliers from 0.3× to 250×. Bets 5,000 – 5 scoin per ball." },
   { id: "climb",  name: "Sky Climb", emoji: "🎈", desc: "Draw balls to climb a 20-step ladder up to 50,000×. Cash out before a red ball pops your balloon! Bets 10,000 – 500,000." },
+  { id: "gcLow",   name: "Gene Cascade: Classic", emoji: "🧬", desc: "A 7×7 slot: clusters of 5+ touching specimens pay, then tumble. Lab spots grow ×2 … ×128. Bets 500 – 50,000 per spin." },
+  { id: "gcHigh",  name: "Gene Cascade: High rollers", emoji: "🧬", desc: "A 7×7 slot: clusters of 5+ touching specimens pay, then tumble. Lab spots grow ×2 … ×128. Bets 50,000 – 5 scoin per spin." },
+  { id: "gcSuper", name: "Gene Cascade: Super high rollers", emoji: "🧬", desc: "A 7×7 slot: clusters of 5+ touching specimens pay, then tumble. Lab spots grow ×2 … ×128. Bets 10 – 500 scoin per spin." },
   { id: "climbHigh", name: "Sky Climb: High rollers", emoji: "🎈", desc: "Draw balls to climb a 20-step ladder up to 50,000×. Cash out before a red ball pops your balloon! Bets 5 – 500 scoin." },
 ];
 // 🎨 a game's painted picture, with one 💎 high-roller badge for High rollers and two for Super high rollers
 function casIco(id, cls = "biz") {
   id = id || "";
   const base = id.startsWith("roulette") ? "roulette" : id.startsWith("bj") ? "blackjack" : id.startsWith("bac") ? "baccarat" : id.startsWith("vp") ? "poker"
-    : id.startsWith("uth") ? "holdem" : id.startsWith("plinko") ? "plinko" : id.startsWith("climb") ? "climb" : "chips";
+    : id.startsWith("uth") ? "holdem" : id.startsWith("plinko") ? "plinko" : id.startsWith("climb") ? "climb" : id.startsWith("gc") ? "slot" : "chips";
   const tier = /Super$/.test(id) ? 2 : /High$/.test(id) ? 1 : 0;
   return `<span class="casIco ${cls}">${ico("cas-" + base, cls)}${tier ? `<span class="casTier">${ico("cas-highroller").repeat(tier)}</span>` : ""}</span>`;
 }
@@ -108,6 +111,7 @@ const CASINO_GROUPS = [
   { name: "Roulette games", ico: "roulette", games: ["rouletteLow", "rouletteHigh", "rouletteSuper"] },
   { name: "Card games", ico: "blackjack",     games: ["bjLow", "bjHigh", "bjSuper", "bacLow", "bacHigh", "bacSuper", "vpLow", "vpHigh", "vpSuper", "uthLow", "uthHigh", "uthSuper"] },
   { name: "Ball games", ico: "plinko",     games: ["plinko", "plinkoSuper", "climb", "climbHigh"] },
+  { name: "Slot games", ico: "slot",       games: ["gcLow", "gcHigh", "gcSuper"] },
 ];
 let currentGame = null;   // null = game list
 
@@ -164,7 +168,7 @@ if ((state.xpVersion || 1) < 3) {
 }
 
 // XP multiplier for each casino game (by how long a round takes), ×2 more at Super high roller tables
-const XP_GAME_MULT = { roulette: 2, bj: 4, bac: 4, vp: 1, uth: 5, plinko: 1, climb: 2 };
+const XP_GAME_MULT = { roulette: 2, bj: 4, bac: 4, vp: 1, uth: 5, plinko: 1, climb: 2, gc: 1 };
 /* ----- 🔥 HOT TABLES: every 20 minutes, one game type gets a bonus on the XP multiplier of all its tables for 10 minutes (+10, +20 from Gambler level 50, +40 from 75),
    then 10 minutes with no bonus. The schedule follows the real clock (the same for everyone, and it keeps
    running while the game is closed); the hot game is picked at random and is never the same twice in a row. ----- */
@@ -173,7 +177,7 @@ const HOT_LEN = 10 * 60 * 1000;
 const hotBonus = () => { const lv = levelInfo(state.casinoXp).level; return lv >= 75 ? 40 : lv >= 50 ? 20 : 10; };
 const HOT_GAMES = [
   { id: "roulette", name: "🎡 Roulette" }, { id: "bj", name: "🃏 Blackjack" }, { id: "bac", name: "🎴 Baccarat" }, { id: "vp", name: "🎴 Video Poker" },
-  { id: "uth", name: "🤠 Ultimate Texas Hold'em" }, { id: "plinko", name: "🔻 Plinko" }, { id: "climb", name: "🎈 Sky Climb" }];
+  { id: "uth", name: "🤠 Ultimate Texas Hold'em" }, { id: "plinko", name: "🔻 Plinko" }, { id: "climb", name: "🎈 Sky Climb" }, { id: "gc", name: "🧬 Gene Cascade" }];
 function hotPick(cycle) {   // same answer for the same 30-minute cycle, on every device
   let h = Math.imul((cycle ^ 0x5bd1e995) >>> 0, 2654435761) >>> 0; h ^= h >>> 13; h = Math.imul(h, 1274126177) >>> 0; h ^= h >>> 16;
   return (h >>> 0) % HOT_GAMES.length;
@@ -196,6 +200,7 @@ const XP_TABLE_MULT = {
   vpLow: 1, vpHigh: 1.5, vpSuper: 2,
   uthLow: 5, uthHigh: 5, uthSuper: 10,
   plinko: 1, plinkoSuper: 2, climb: 2, climbHigh: 4,
+  gcLow: 1, gcHigh: 2, gcSuper: 4,
 };
 function xpBase(id) {
   if (XP_TABLE_MULT[id] !== undefined) return XP_TABLE_MULT[id];
@@ -307,6 +312,7 @@ function renderCasino() {
   if (UTH_TABLES[currentGame]) { uth = UTH_TABLES[currentGame]; renderUth(); }
   if (typeof BAC_TABLES !== "undefined" && BAC_TABLES[currentGame]) { bac = BAC_TABLES[currentGame]; renderBaccarat(); }
   if (CLIMBS[currentGame]) { climb = CLIMBS[currentGame]; renderClimb(); }
+  if (typeof GC_TABLES !== "undefined" && GC_TABLES[currentGame]) { if (!gcBusy) gcView = null; renderGeneCascade(); }
   if (PLINKO_TABLES[currentGame]) {
     const cfg = PLINKO_TABLES[currentGame];
     if (!cfg.chips.includes(plinko.bet)) plinko.bet = cfg.chips[0];   // reset the bet when changing tables
@@ -318,7 +324,7 @@ $("casinoGame").addEventListener("click", (e) => {
   const card = e.target.closest("[data-game]");
   if (card) { currentGame = card.dataset.game; renderCasino(); }
   const back = e.target.closest("[data-back]");
-  if (back && !roulette.spinning && !(bj && bj.phase !== "betting") && !(CLIMBS[currentGame] && climb.active) && !(PLINKO_TABLES[currentGame] && plinko.balls.length) && !(VP_TABLES[currentGame] && vp.phase !== "betting") && !(UTH_TABLES[currentGame] && uth.phase !== "betting") && !(typeof BAC_TABLES !== "undefined" && BAC_TABLES[currentGame] && bac.phase !== "betting")) { currentGame = null; renderCasino(); }
+  if (back && !roulette.spinning && !(bj && bj.phase !== "betting") && !(CLIMBS[currentGame] && climb.active) && !(PLINKO_TABLES[currentGame] && plinko.balls.length) && !(VP_TABLES[currentGame] && vp.phase !== "betting") && !(UTH_TABLES[currentGame] && uth.phase !== "betting") && !(typeof BAC_TABLES !== "undefined" && BAC_TABLES[currentGame] && bac.phase !== "betting") && !(typeof GC_TABLES !== "undefined" && GC_TABLES[currentGame] && gcBusy)) { currentGame = null; renderCasino(); }
 });
 
 /* =====================================================================

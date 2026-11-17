@@ -55,6 +55,7 @@ const PATCH_NOTES = [
     "🏆 4 new Baccarat achievements: play 50, 100 and 500 hands, and win 3 hands in a row.",
     "🎈 New <b>Sky Climb: High rollers</b> table with bets from 5 to 500 scoin.",
     "🏆 Sky Climb veteran now needs 500 rounds instead of 1,000.",
+    "🧬 New slot: <b>Gene Cascade</b>! A 7×7 grid of specimens: clusters of 5+ pay and tumble, 🔬 lab spots grow from ×2 up to ×128, and 🧪 DNA vials give up to 30 free spins where the spots stay. Three tables with the Blackjack limits.",
   ] },
   { date: "13 November 2026", title: "Empire of Coins", items: [
     "🏠 Real estate: each property shows a building that grows with its value: house (up to 500,000), apartment building (up to 5 scoin), castle (up to 50 scoin) and skyscraper (50 scoin and more).",

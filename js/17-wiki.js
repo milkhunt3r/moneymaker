@@ -141,12 +141,13 @@ function wikiCasino() {
       ["🎴 Video Poker", "×" + XP_TABLE_MULT.vpLow, "×" + XP_TABLE_MULT.vpHigh, "×" + XP_TABLE_MULT.vpSuper],
       ["🤠 Ultimate Texas Hold'em", "×" + XP_TABLE_MULT.uthLow, "×" + XP_TABLE_MULT.uthHigh, "×" + XP_TABLE_MULT.uthSuper],
       ["🔻 Plinko", "×" + XP_TABLE_MULT.plinko, "–", "×" + XP_TABLE_MULT.plinkoSuper],
-      ["🎈 Sky Climb", "×" + XP_TABLE_MULT.climb, "×" + XP_TABLE_MULT.climbHigh, "–"]])}
+      ["🎈 Sky Climb", "×" + XP_TABLE_MULT.climb, "×" + XP_TABLE_MULT.climbHigh, "–"],
+      ["🧬 Gene Cascade", "×" + XP_TABLE_MULT.gcLow, "×" + XP_TABLE_MULT.gcHigh, "×" + XP_TABLE_MULT.gcSuper]])}
     <h3>🔥 Hot Tables</h3>
     <p>Every 20 minutes one game type becomes <b>hot</b>: for 10 minutes <b>all</b> its tables get a bonus on their XP multiplier, then there are 10 minutes with no bonus.
       The bonus grows with your 🎲 Gambler level: <b>+10</b> (levels 1–49), <b>+20</b> from level 50, <b>+40</b> from level 75 (you get +${hotBonus()} now; High roller Blackjack ×4 becomes ×${4 + hotBonus()}). The hot game is chosen at random and is never the same twice in a row. The timer is shown under your Gambler level, together with the next hot game.</p>
     <h3>🎁 Free bet chips</h3>
-    <p>From Gambler level 5 you get free chips on timers (see the frame under the Gambler level). Use them at Roulette, Blackjack, Baccarat, Video Poker and Hold'em (not Plinko or Sky Climb).
+    <p>From Gambler level 5 you get free chips on timers (see the frame under the Gambler level). Use them at Roulette, Blackjack, Baccarat, Video Poker and Hold'em (not Plinko, Sky Climb or Gene Cascade).
       A free chip is a bet: whatever it wins goes to your casino chips. At Hold'em, a free Ante needs 2 chips (Ante + Blind).</p>
     ${wt(["Gambler level", "Free chip"], FREE_CHIP_TYPES.map(c => [c.level, "Free " + chipLabel(c.value) + " chip"]).concat([[45, "All timers 20 → 15 min"], [85, "All timers 15 → 10 min"]]).sort((x, y) => x[0] - y[0]))}
 
@@ -186,6 +187,14 @@ function wikiCasino() {
     <h3>🔻 Plinko</h3>
     <p>${tables(PLINKO_TABLES)} per ball, up to 20 balls at once. Each ball falls through 12 rows into a slot (about 98% return):</p>
     ${wt(["Slot", ...PLINKO_MULTS.map((m, i) => i + 1)], [["Pays", ...PLINKO_MULTS.map(m => m + "×")]])}
+
+    <h3>🧬 Gene Cascade (slot)</h3>
+    <p>${Object.values(GC_TABLES).map(t => `${t.title.replace("Gene Cascade: ", "")}: ${fmt(t.min)} – ${fmt(t.max)}`).join(" · ")} per spin. A 7×7 grid of specimens.</p>
+    <ul><li><b>Clusters</b> of 5 or more of the same specimen touching up, down, left or right (not diagonal) pay. Winners pop, the rest fall and new ones drop in, which can win again (<b>tumbles</b>).</li>
+      <li>🔬 <b>Lab spots</b>: a square where a winner popped is marked; each later win popping there doubles it: ×2, ×4, ×8 … ×128. Spots inside one cluster are <b>added</b> and multiply that cluster's pay. They reset after each paid spin.</li>
+      <li>🧪 <b>DNA vials</b>: 3 / 4 / 5 / 6 / 7 on the grid at the end of a spin give 10 / 12 / 15 / 20 / 30 <b>free spins</b>. In free spins the lab spots stay for the whole bonus, and vials can add more free spins.</li>
+      <li>About 98% return (simulated over millions of spins): a win on about 41% of spins, free spins about once every 140 spins. Max win ${SL_CAP.toLocaleString()}× the bet. A spin is decided before it is shown, so leaving or reloading pays the same win.</li></ul>
+    ${wt(["Specimen", "5", "6", "8", "10", "12", "15+"], SL_SYMBOLS.map((s, i) => [s.name, ...[5, 6, 8, 10, 12, 15].map(n => +SL_PAY[i][n].toFixed(2) + "×")]))}
 
     <h3>🎈 Sky Climb</h3>
     <p>${Object.values(CLIMB_TABLES).map(t => `${t.title.replace("Sky Climb: ", "").replace("Sky Climb", "Classic")}: ${fmt(t.min)} – ${fmt(t.max)}`).join(" · ")}. A bag has 28 balls: 19 green, 8 red, 1 gold, not put back during a round.
