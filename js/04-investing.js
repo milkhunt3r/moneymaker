@@ -14,6 +14,7 @@ const ETF_EVERY = 10;           // the market moves every 10 seconds
 const ETF_BASE_FEE = 0.10;      // 10% cash-out fee at level 1...
 const ETF_FEE_PER_LEVEL = 0.001;// ...0.1% less for every level above 1
 
+const ivIco = (n, cls = "") => ico("iv-" + n, cls);   // 🎨 painted investing icons (assets/icons/ico-iv-*.webp)
 if (!state.invest) state.invest = { xp: 0, properties: [], etf: 0, etfTimer: ETF_EVERY, etfHistory: [] };
 const inv = state.invest;
 
@@ -174,7 +175,7 @@ $("etfBuy").addEventListener("click", () => {
   inv.etfInvested += amount;
   investRecord("etf", amount, 0);
   $("etfAmount").value = "";
-  investMessage("📊 Invested " + fmt(amount) + " in the ETF.", true, "etf");
+  investMessage(ivIco("etf") + "Invested " + fmt(amount) + " in the ETF.", true, "etf");
   updateCounter(); updateInvestLive(); save();
 });
 
@@ -218,7 +219,7 @@ $("goldBuy").addEventListener("click", () => {
   inv.goldInvested += amount;
   investRecord("gold", amount, 0);
   $("goldAmount").value = "";
-  investMessage("🪙 Bought " + fmt(amount) + " of gold.", true, "gold");
+  investMessage(ivIco("gold") + "Bought " + fmt(amount) + " of gold.", true, "gold");
   updateCounter(); updateInvestLive(); save();
 });
 
@@ -227,7 +228,7 @@ if (typeof inv.goldCooldown !== "number") inv.goldCooldown = 0;
 
 function cashOutGold(amount) {
   if (isPaused()) return;
-  if (inv.goldCooldown > 0) return investMessage("⏳ You can sell gold again in " + clock(inv.goldCooldown) + ".", false, "gold");
+  if (inv.goldCooldown > 0) return investMessage(ivIco("cooldown") + "You can sell gold again in " + clock(inv.goldCooldown) + ".", false, "gold");
   amount = Math.min(amount, inv.gold);
   if (amount <= 0) return investMessage("No gold to cash out.", false, "gold");
   inv.goldCooldown = GOLD_SELL_COOLDOWN;
@@ -237,7 +238,7 @@ function cashOutGold(amount) {
   state.money += amount;
   investRecord("gold", 0, amount);
   $("goldSellAmount").value = "";
-  investMessage("🪙 Sold " + fmt(amount) + " of gold (no fee).", true, "gold");
+  investMessage(ivIco("gold") + "Sold " + fmt(amount) + " of gold (no fee).", true, "gold");
   updateCounter(); updateInvestLive(); save();
 }
 $("goldSell").addEventListener("click", () => cashOutGold(readAmount("goldSellAmount")));
@@ -266,7 +267,7 @@ $("petfBuy").addEventListener("click", () => {
   investRecord("petf", amount, 0);
   inv.petfTimer = ETF_EVERY;
   $("petfAmount").value = "";
-  investMessage("🏦 Invested " + fmt(amount) + " in the Broker ETF.", true, "petf");
+  investMessage(ivIco("petf") + "Invested " + fmt(amount) + " in the Broker ETF.", true, "petf");
   updateCounter(); updateInvestLive(); save();
 });
 
@@ -277,7 +278,7 @@ $("petfSell").addEventListener("click", () => {
   investRecord("petf", 0, amount);
   inv.petf = 0;
   inv.petfInvested = 0;
-  investMessage("🏦 Cashed out " + fmt(amount) + " from the Broker ETF (no fee).", true, "petf");
+  investMessage(ivIco("petf") + "Cashed out " + fmt(amount) + " from the Broker ETF (no fee).", true, "petf");
   updateCounter(); updateInvestLive(); save();
 });
 
@@ -489,7 +490,7 @@ function investRecord(key, moneyIn, moneyOut) {
   inv.stats[key].out += moneyOut;
 }
 function updateInvestAllTime() {
-  const parts = [["re", "🏠 Real estate"], ["etf", "📊 ETF"], ["gold", "🪙 Gold"], ["petf", "🏦 Broker ETF"], ["crypto", "📡 Crypto"]];
+  const parts = [["re", ico("re-key") + "Real estate"], ["etf", ivIco("etf") + "ETF"], ["gold", ivIco("gold") + "Gold"], ["petf", ivIco("petf") + "Broker ETF"], ["crypto", ivIco("crypto") + "Crypto"]];
   let total = 0, html = "";
   for (const [k, label] of parts) {
     const st = inv.stats[k];
@@ -502,7 +503,7 @@ function updateInvestAllTime() {
     html += `<span>${label}: <b class="${cls}">${profit > 0.5 ? "+" : profit < -0.5 ? "−" : ""}${fmt(Math.abs(profit))}</b></span>`;
   }
   const tcls = total > 0.5 ? "up" : total < -0.5 ? "down" : "";
-  $("investAllTime").innerHTML = `<span class="total">📊 All-time profits: <b class="${tcls}">${total > 0.5 ? "+" : total < -0.5 ? "−" : ""}${fmt(Math.abs(total))}</b></span>` + html;
+  $("investAllTime").innerHTML = `<span class="total">${ivIco("profits")}All-time profits: <b class="${tcls}">${total > 0.5 ? "+" : total < -0.5 ? "−" : ""}${fmt(Math.abs(total))}</b></span>` + html;
 }
 
 function updateInvestLive() {
@@ -523,7 +524,7 @@ function updateInvestLive() {
   const cool = inv.goldCooldown > 0;
   $("goldSell").disabled = cool;
   $("goldSellAll").disabled = cool;
-  $("goldCooldown").textContent = cool ? "⏳ Next gold sale in " + clock(inv.goldCooldown) : "";
+  $("goldCooldown").innerHTML = cool ? ivIco("cooldown") + "Next gold sale in " + clock(inv.goldCooldown) : "";
   $("goldValue").textContent = fmt(inv.gold);
   showPL("gold", inv.gold, inv.goldInvested);
   const gl = inv.goldHistory[0];

@@ -366,7 +366,7 @@ function renderCryptoNumbers() {
       }).join("") + `</tbody></table>` : "") +
       (log.length ? `<div class="tradeLog"><span class="muted">Recent trades:</span> ${log.map(x =>
         `<span class="${x.result >= 0 ? "up" : "down"}">${sideTag(x.side, x.lev)} ${priceText(x.entry)} → ${priceText(x.exit)}
-          <b>${x.liq ? "💥 liquidated " : ""}${x.result >= 0 ? "+" : "−"}${fmt(Math.abs(x.result))}</b> <small class="muted">(${ago(x.at - x.opened)})</small></span>`).join("")}</div>` : "");
+          <b>${x.liq ? ivIco("crash") + "liquidated " : ""}${x.result >= 0 ? "+" : "−"}${fmt(Math.abs(x.result))}</b> <small class="muted">(${ago(x.at - x.opened)})</small></span>`).join("")}</div>` : "");
   }
 }
 // every second: numbers; every 5 seconds: one chart point (keeps the last ~20 minutes)
@@ -403,13 +403,14 @@ function showInvestPage(p) {
   $("liveLocked").hidden = !lockedLive;
   if (lockedLive) {
     const L = levelInfo(inv.xp, INVEST_XP).level;
-    $("liveLocked").innerHTML = `<h2>🔒 📡 Live trading</h2>
+    $("liveLocked").innerHTML = `<h2>${ico("lock", "lockS")}${ivIco("live", "h")}Live trading</h2>
       <p>Trade real Bitcoin, Ethereum and Solana prices with Long / Short positions and up to ×50 leverage.</p>
-      <p><b>Unlocks at 📈 Investor level ${LIVE_LEVEL}</b> (you are level ${L}).</p>
+      <p><b>Unlocks at ${ivIco("invest")}Investor level ${LIVE_LEVEL}</b> (you are level ${L}).</p>
       <div class="xpBar" style="max-width:360px;margin:8px auto"><div class="xpFill" style="width:${Math.min(100, L / LIVE_LEVEL * 100)}%"></div></div>`;
   }
   const liveBtn = document.querySelector('[data-isub="live"]');
-  if (liveBtn) liveBtn.textContent = (liveOpen() ? "" : "🔒 ") + "📡 Live trading";
+  const liveHtml = (liveOpen() ? "" : ico("lock", "lockS")) + ivIco("live") + "Live trading";
+  if (liveBtn && liveBtn.dataset.html !== liveHtml) { liveBtn.innerHTML = liveHtml; liveBtn.dataset.html = liveHtml; }
   if (lockedLive) return document.querySelectorAll("[data-isub]").forEach(b => b.classList.toggle("active", b.dataset.isub === "live"));
   document.querySelectorAll("[data-isub]").forEach(b => b.classList.toggle("active", b.dataset.isub === state.investPage));
   if (state.investPage === "live") { renderCryptoNumbers(); drawCryptoCharts(); }

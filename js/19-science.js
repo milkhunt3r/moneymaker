@@ -455,13 +455,13 @@ function refreshUnlocks(first) {
   if (tab && tab.innerHTML !== html) tab.innerHTML = html;
   $("logisticsView").classList.toggle("locked", !open);
   $("logiLocked").hidden = open;
-  if (!open) $("logiLocked").innerHTML = `<h2>🔒 🚢 Logistics</h2>
+  if (!open) $("logiLocked").innerHTML = `<h2>${ico("lock", "lockS")}${lgIco("tanker", "h")}Logistics</h2>
     <p>Run trucks, oil tankers and cargo planes on contracts around the world.</p>
     <p><b>Unlocks when you buy your first 🚘 Car Salon</b> (💰 Income → 🏢 Businesses; it needs 3 car washes and 3 repair shops).</p>`;
   const liveBtn = document.querySelector('[data-isub="live"]');
   if (liveBtn) {
-    const lbl = (liveOpen() ? "" : "🔒 ") + "📡 Live trading";
-    if (liveBtn.textContent !== lbl) { liveBtn.textContent = lbl; if (state.view === "invest" && state.investPage === "live") showInvestPage("live"); }
+    const lbl = (liveOpen() ? "" : ico("lock", "lockS")) + ivIco("live") + "Live trading";
+    if (liveBtn.dataset.html !== lbl) { liveBtn.innerHTML = lbl; liveBtn.dataset.html = lbl; if (state.view === "invest" && state.investPage === "live") showInvestPage("live"); }
   }
 }
 refreshUnlocks(true);
