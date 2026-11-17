@@ -1644,3 +1644,12 @@ body.phone .gcActions { gap: 8px; }
 .gcBtn:disabled { filter: grayscale(0.85) brightness(0.65); }
 body.phone .gcSpinBtn { width: 100px; height: 100px; } body.phone .gcSpinBtn b { font-size: 21px; }
 body.phone .gcBuyBtn { width: 150px; height: 40px; padding: 0 16px 0 38px; } body.phone .gcBuyBtn b { font-size: 11px; } body.phone .gcBuyBtn small { font-size: 9px; }
+
+/* 🎨 painted logistics icons */
+.sea .ship.lgShip { transform: translate(-50%, -50%); font-size: inherit; line-height: 0; }
+.sea.sky .ship.lgShip { transform: translate(-50%, -50%) rotate(-8deg); }
+.ico.lgVeh { width: 34px; height: 34px; margin: 0; vertical-align: middle; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.6)); }
+.ico.lgPort { width: 24px; height: 24px; margin: 0; vertical-align: middle; }
+.ico.lgBroke { width: 76px; height: 76px; margin: 0; }
+.ico.lgSlot { width: 52px; height: 52px; margin: 0; }
+.agentToggle .ico { width: 1.25em; height: 1.25em; }

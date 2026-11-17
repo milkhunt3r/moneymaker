@@ -219,19 +219,19 @@ function wikiInvesting() {
 
 function wikiLogistics() {
   const fleetRow = (k) => { const F = FLEETS[k]; const mins = F.routes.map(r => r.min), maxs = F.routes.map(r => r.max);
-    return [`${F.icon} ${F.label}`, fmt(F.price), F.slots, `${Math.min(...mins)}–${Math.max(...maxs)} min`, F.unlock ? `Own ${F.unlock.tankers} oil tankers` : "Always", `Level ${AGENT_LEVEL[k]}`]; };
+    return [`${fIco(k)}${F.label}`, fmt(F.price), F.slots, `${Math.min(...mins)}–${Math.max(...maxs)} min`, F.unlock ? `Own ${F.unlock.tankers} oil tankers` : "Always", `Level ${AGENT_LEVEL[k]}`]; };
   return `<h2>🚢 Logistics</h2>
     <p class="muted">🔒 Logistics unlocks when you buy your first 🚘 Car Salon.</p>
     <p>Buy vehicles, then pick one of 4 contract offers for each. When the trip ends, the contract is paid to your money and a new set of offers appears.
       Trips keep moving while the game is closed.</p>
-    ${wt(["Fleet", "Price", "Slots", "Trip length", "Unlock", "🤖 Agent unlock"], ["truck", "tanker", "plane"].map(fleetRow))}
-    <h3>🚚 Logistics level</h3>
+    ${wt(["Fleet", "Price", "Slots", "Trip length", "Unlock", `${lgIco("agent")}Agent unlock`], ["truck", "tanker", "plane"].map(fleetRow))}
+    <h3>${lgIco("level", "h")}Logistics level</h3>
     <p>XP for every delivered contract: contract minutes × 1 (truck), × 3 (tanker), × 6 (plane). The level unlocks the <b>Logistics agents</b>:
       turn one on and it picks a random contract 5 seconds after the offers appear, for 2% of that contract's profit.
       The 🏬 Logistics Center (Logistics level ${CENTER_LEVEL}) upgrades all agents: 1% fee, the most profitable contract, and picks after 3 seconds.</p>
-    <h3>🚛 Semi-trucks</h3><p>${infoText("truck")}</p>
-    <h3>🛢️ Oil tankers</h3><p>${infoText("logi")}</p>
-    <h3>✈️ Cargo planes</h3><p>${infoText("plane")}</p>
+    <h3>${lgIco("truck", "h")}Semi-trucks</h3><p>${infoText("truck")}</p>
+    <h3>${lgIco("tanker", "h")}Oil tankers</h3><p>${infoText("logi")}</p>
+    <h3>${lgIco("plane", "h")}Cargo planes</h3><p>${infoText("plane")}</p>
     <h3>🗺️ World map</h3>
     <p>Shows every vehicle moving along its route (trucks on roads, tankers on sea lanes, planes on flight paths), and every contract city as a dot in the fleet's color.
       Hover a vehicle or city for details. A glowing ring means a vehicle is on its way there.</p>

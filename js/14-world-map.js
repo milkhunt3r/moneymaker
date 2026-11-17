@@ -121,13 +121,13 @@ function mapItems() {
         const f = 1 - v.contract.left / v.contract.seconds;
         const [x, y] = pointAt(pts, f);
         items.push({ key, v, x, y, pts, moving: true,
-          tip: `<b>${F.icon} ${v.name}</b><br>${r.from} → ${r.to}<br>${Math.round(f * 100)}% · ${clockLong(v.contract.left)} left<br><span class="income">+${fmt(contractPayout(key, v.contract.profit))} on arrival</span>` });
+          tip: `<b>${fIco(key)}${v.name}</b><br>${r.from} → ${r.to}<br>${Math.round(f * 100)}% · ${clockLong(v.contract.left)} left<br><span class="income">+${fmt(contractPayout(key, v.contract.profit))} on arrival</span>` });
       } else {
         const home = v.city || MAP_HOME[key], c = CITY[home] || CITY[MAP_HOME[key]];
         const hp = proj(c[0], c[1]);
         items.push({ key, v, x: hp[0], y: hp[1], moving: false, home,
-          tip: v.broken ? `<b>${F.icon} ${v.name}</b><br>🔧 Broken down in ${home}<br>Repair: ${fmt(v.broken.cost)}`
-                        : `<b>${F.icon} ${v.name}</b><br>Waiting for a contract in ${home}` });
+          tip: v.broken ? `<b>${fIco(key)}${v.name}</b><br>${lgIco("repair")}Broken down in ${home}<br>Repair: ${fmt(v.broken.cost)}`
+                        : `<b>${fIco(key)}${v.name}</b><br>Waiting for a contract in ${home}` });
       }
     }
   }
@@ -147,7 +147,7 @@ for (const key of ["truck", "tanker", "plane"]) for (const r of FLEETS[key].rout
   if (!CITY[name]) continue;
   const c = MAP_CITIES[name] || (MAP_CITIES[name] = { name, label: end, fleets: [], routes: [] });
   if (!c.fleets.includes(key)) c.fleets.push(key);
-  const txt = `${FLEETS[key].icon} ${cityName(r.from)} → ${cityName(r.to)}`;
+  const txt = `${fIco(key)}${cityName(r.from)} → ${cityName(r.to)}`;
   if (!c.routes.includes(txt)) c.routes.push(txt);
 }
 let mapCitiesNow = [];
@@ -185,11 +185,11 @@ function renderMapVehicles() {
     const ring = i.v.broken ? "#ff5252" : i.moving ? MAP_COLOR[i.key] : "#8a8fa8";
     return `<g class="mapIcon ${i.moving ? "" : "idle"}" data-mi="${n}" transform="translate(${x.toFixed(1)},${i.y.toFixed(1)})">
       <circle r="${r}" fill="#0b1426" stroke="${ring}" stroke-width="2"/>
-      <text y="4" text-anchor="middle" font-size="${i.key === "truck" ? 9 : 10.5}">${i.v.broken ? "🔧" : FLEETS[i.key].icon}</text></g>`;
+      <image href="assets/icons/ico-lg-${i.v.broken ? "repair" : FLEETS[i.key].pic}.webp" x="${-r * 0.8}" y="${-r * 0.8}" width="${r * 1.6}" height="${r * 1.6}"/></g>`;
   }).join("");
-  $("mapCounts").textContent = ["truck", "tanker", "plane"].map(k => {
+  $("mapCounts").innerHTML = ["truck", "tanker", "plane"].map(k => {
     const list = fleetList(k), moving = list.filter(v => v.contract).length;
-    return `${FLEETS[k].icon} ${moving}/${list.length} on the move`;
+    return `${fIco(k)}${moving}/${list.length} on the move`;
   }).join(" · ");
 }
 function showMapTip(e) {
@@ -199,7 +199,7 @@ function showMapTip(e) {
   if (g.dataset.city !== undefined) {
     const c = mapCitiesNow[Number(g.dataset.city)];
     if (!c) return;
-    const coming = mapItemsNow.filter(i => i.moving && cityName(FLEETS[i.key].routes[i.v.contract.route].to) === c.name).map(i => `${FLEETS[i.key].icon} ${i.v.name}`);
+    const coming = mapItemsNow.filter(i => i.moving && cityName(FLEETS[i.key].routes[i.v.contract.route].to) === c.name).map(i => `${fIco(i.key)}${i.v.name}`);
     tip.innerHTML = `<b>📍 ${c.label}</b><br>${c.routes.join("<br>")}` + (coming.length ? `<br><span class="income">Arriving: ${coming.join(", ")}</span>` : "");
   } else {
     const item = mapItemsNow[Number(g.dataset.mi)];

@@ -8,7 +8,7 @@
    ===================================================================== */
 const FLEETS = {
   tanker: {
-    label: "Tanker", icon: "🚢", box: "tankers", countEl: "logiCount", price: 75000000, slots: 10, road: false,
+    label: "Tanker", icon: "🚢", pic: "tanker", box: "tankers", countEl: "logiCount", price: 75000000, slots: 10, road: false,
     names: ["Aurora", "Coral", "Neptune", "Atlas", "Borealis", "Odyssey", "Titan", "Meridian", "Horizon", "Nautilus"],
     emptyText: "Aframax crude oil tanker",
     routes: [
@@ -24,7 +24,7 @@ const FLEETS = {
     ],
   },
   plane: {
-    label: "Plane", icon: "✈️", box: "planes", countEl: "planeCount", price: 250000000, slots: 5, sky: true,
+    label: "Plane", icon: "✈️", pic: "plane", box: "planes", countEl: "planeCount", price: 250000000, slots: 5, sky: true,
     names: ["Falcon", "Condor", "Albatross", "Pelican", "Osprey"],
     emptyText: "Wide-body cargo plane",
     unlock: { tankers: 3 },
@@ -43,7 +43,7 @@ const FLEETS = {
     ],
   },
   truck: {
-    label: "Truck", icon: "🚛", box: "trucks", countEl: "truckCount", price: 150000, slots: 15, road: true,
+    label: "Truck", icon: "🚛", pic: "truck", box: "trucks", countEl: "truckCount", price: 150000, slots: 15, road: true,
     names: Array.from({ length: 15 }, (_, i) => "Truck " + (i + 1)),
     emptyText: "Semi-truck",
     // rate = 22 + 0.5 x average minutes, so longer routes pay a little more per second
@@ -62,6 +62,9 @@ const FLEETS = {
     ],
   },
 };
+// 🎨 painted logistics icons (assets/icons/ico-lg-*.webp); F.icon (emoji) stays for plain-text notices
+const lgIco = (n, cls = "") => ico("lg-" + n, cls);
+const fIco = (key, cls = "") => lgIco(FLEETS[key].pic, cls);
 if (!state.logistics) state.logistics = { tankers: [], earned: 0 };
 const logi = state.logistics;
 if (!logi.trucks) logi.trucks = [];
@@ -123,7 +126,7 @@ function updateLogiLevel() {
   $("logiXpText").textContent = info.max ? "Max level reached!"
     : fmtNum(info.into) + " / " + fmtNum(info.need) + " XP to level " + (info.level + 1);
   const next = Object.keys(AGENT_LEVEL).find(k => info.level < AGENT_LEVEL[k]);
-  $("logiPerkText").textContent = next ? `🤖 ${FLEETS[next].label} agent unlocks at level ${AGENT_LEVEL[next]}` : "🤖 All agents unlocked";
+  $("logiPerkText").innerHTML = (next ? `${lgIco("agent")}${FLEETS[next].label} agent unlocks at level ${AGENT_LEVEL[next]}` : `${lgIco("agent")}All agents unlocked`);
 }
 const agentOn = (key) => !!logi[key + "Agent"] && agentUnlocked(key);
 function agentTick(key) {
@@ -134,7 +137,7 @@ function agentTick(key) {
     v.wait = (v.wait || 0) + 1;
     if (v.wait < agentDelay()) {
       const el = $("agent-" + v.id);
-      if (el) el.textContent = `🤖 Agent picks a contract in ${agentDelay() - v.wait}s`;
+      if (el) el.innerHTML = `${lgIco("agent")}Agent picks a contract in ${agentDelay() - v.wait}s`;
       continue;
     }
     // random contract, or (Smart agents) the one that pays the most per second
@@ -144,7 +147,7 @@ function agentTick(key) {
     const fee = Math.round(contractPayout(key, o.profit) * agentFee());
     if (state.money < fee) {
       const el = $("agent-" + v.id);
-      if (el) el.textContent = `🤖 Agent is waiting: needs ${fmt(fee)} for the fee`;
+      if (el) el.innerHTML = `${lgIco("agent")}Agent is waiting: needs ${fmt(fee)} for the fee`;
       continue;
     }
     state.money -= fee;
@@ -161,7 +164,7 @@ function updateAgentButton() {
     const b = $(key + "Agent");
     const open = agentUnlocked(key);
     b.disabled = !open;
-    b.textContent = open ? "🤖 Logistics agent: " + (agentOn(key) ? "ON" : "OFF") : `🔒 Agent: Logistics level ${AGENT_LEVEL[key]}`;
+    b.innerHTML = open ? `${lgIco("agent")}Logistics agent: ` + (agentOn(key) ? "ON" : "OFF") : `${ico("lock", "lockS")}Agent: Logistics level ${AGENT_LEVEL[key]}`;
     b.classList.toggle("on", agentOn(key));
   }
 }
@@ -242,7 +245,7 @@ function logisticsTick() {
             v.offers[k] = fresh; arrived = true;
           } else {
             const el = $(`exp-${v.id}-${k}`);
-            if (el) el.textContent = `⚡ EXPRESS · ${o.express}s left`;
+            if (el) el.textContent = `EXPRESS · ${o.express}s left`;
           }
         });
       }
@@ -281,47 +284,47 @@ function renderFleet(key) {
       const r = F.routes[v.contract.route], c = v.contract;
       const done = 1 - c.left / c.seconds;
       html += `<div class="tanker sailing">
-        <div class="row"><b>${F.icon} ${v.name}</b><span class="income">+${fmt(contractPayout(key, c.profit))} on arrival</span></div>
+        <div class="row"><b>${fIco(key)}${v.name}</b><span class="income">+${fmt(contractPayout(key, c.profit))} on arrival</span></div>
         <div class="muted">${r.from} → ${r.to}</div>
         <div class="sea ${F.road ? "road" : F.sky ? "sky" : ""}"><div class="wake" id="wake-${v.id}" style="width:${6 + done * 88}%"></div>
-          <span class="port" style="left:6px">${F.road ? "🏭" : F.sky ? "🛫" : "⚓"}</span><span class="port" style="right:6px">🏁</span>
-          <span class="ship" id="ship-${v.id}" style="left:${6 + done * 88}%">${F.icon}</span></div>
+          <span class="port" style="left:6px">${lgIco(F.road ? "depot" : F.sky ? "airport" : "port", "lgPort")}</span><span class="port" style="right:6px">${lgIco("finish", "lgPort")}</span>
+          <span class="ship lgShip" id="ship-${v.id}" style="left:${6 + done * 88}%">${fIco(key, "lgVeh")}</span></div>
         <div class="row muted"><span>Transit ${clockLong(c.seconds)}</span><span id="left-${v.id}">${clockLong(c.left)} left</span></div>
       </div>`;
     } else if (v.broken) {
       html += `<div class="tanker broken">
-        <div class="row"><b>${F.icon} ${v.name}</b><span style="color:#ff8a8a; font-weight:800">BROKEN DOWN</span></div>
-        <div class="brokeIcon">🔧🚛💥</div>
+        <div class="row"><b>${fIco(key)}${v.name}</b><span style="color:#ff8a8a; font-weight:800">BROKEN DOWN</span></div>
+        <div class="brokeIcon">${lgIco("broken", "lgBroke")}</div>
         <div class="muted" style="text-align:center">This truck needs repairs before it can take new contracts.</div>
         <div style="text-align:center; margin-top:10px">
-          <button class="btn" data-repair="${v.id}" ${state.money < v.broken.cost ? "disabled" : ""}>🔧 Repair for ${fmt(v.broken.cost)}</button></div>
+          <button class="btn" data-repair="${v.id}" ${state.money < v.broken.cost ? "disabled" : ""}>${lgIco("repair")}Repair for ${fmt(v.broken.cost)}</button></div>
       </div>`;
     } else {
       html += `<div class="tanker">
-        <div class="row"><b>${F.icon} ${v.name}</b><span class="muted">${F.road ? "at the depot" : F.sky ? "at the airport" : "in port"} · choose a contract</span></div>
+        <div class="row"><b>${fIco(key)}${v.name}</b><span class="muted">${F.road ? "at the depot" : F.sky ? "at the airport" : "in port"} · choose a contract</span></div>
         <div class="offers">${v.offers.map((o, k) => {
           const r = F.routes[o.route];
           return `<button class="offer ${o.express ? "express" : ""}" data-fleet="${key}" data-vehicle="${v.id}" data-offer="${k}">
-            ${o.express ? `<span class="exp" id="exp-${v.id}-${k}">⚡ EXPRESS · ${o.express}s left</span>` : ""}
+            ${o.express ? `<span class="exp">${lgIco("express")}<span id="exp-${v.id}-${k}">EXPRESS · ${o.express}s left</span></span>` : ""}
             <b class="route">${r.from} → ${r.to}</b>
-            💰 Total profit: <b>${fmt(contractPayout(key, o.profit))}</b>${contractBonus(key) ? ` <span class="long">+${+(contractBonus(key) * 100).toFixed(1)}%</span>` : ""}<br>
-            ⏱️ Transit time: <b>${clockLong(o.seconds)}</b><br>
+            ${lgIco("profit")}Total profit: <b>${fmt(contractPayout(key, o.profit))}</b>${contractBonus(key) ? ` <span class="long">+${+(contractBonus(key) * 100).toFixed(1)}%</span>` : ""}<br>
+            ${lgIco("time")}Transit time: <b>${clockLong(o.seconds)}</b><br>
             <span class="muted">≈ ${fmt(o.profit / o.seconds)} / sec</span>${r.long ? ` <span class="long">LONG HAUL</span>` : ""}
           </button>`;
         }).join("")}</div>
-        ${agentOn(key) ? `<div class="agentNote" id="agent-${v.id}">🤖 Agent picks a contract in ${Math.max(0, agentDelay() - (v.wait || 0))}s</div>` : ""}
+        ${agentOn(key) ? `<div class="agentNote" id="agent-${v.id}">${lgIco("agent")}Agent picks a contract in ${Math.max(0, agentDelay() - (v.wait || 0))}s</div>` : ""}
       </div>`;
     }
   });
   if (list.length < F.slots && !fleetUnlocked(key)) {
     html += `<div class="tanker emptySlot" style="opacity:0.7">
-      <div style="font-size:28px">🔒 ${F.icon}</div>
+      <div>${ico("lock", "lockS")}${fIco(key, "lgSlot")}</div>
       <b>Locked</b><div class="muted" style="margin:4px 0 10px">Unlocks when you own ${F.unlock.tankers} oil tankers (you have ${logi.tankers.length})</div>
       <span class="muted">${coins(F.price)} each</span>
     </div>`;
   } else if (list.length < F.slots) {
     html += `<div class="tanker emptySlot">
-      <div style="font-size:28px">${F.icon}</div>
+      <div>${fIco(key, "lgSlot")}</div>
       <b>Empty slot</b><div class="muted" style="margin:4px 0 10px">${F.emptyText}</div>
       <button class="btn" data-buy-fleet="${key}" data-cost="${F.price}" ${state.money < F.price ? "disabled" : ""}>Buy for ${coins(F.price)}</button>
     </div>`;
