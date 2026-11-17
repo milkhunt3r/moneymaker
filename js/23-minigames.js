@@ -841,7 +841,7 @@ function renderGames() {
     <p class="muted">Unlock mini-games with your buildings and achievements, then play them to earn extra money.</p>
     <div class="gamesGrid">
       <div class="card gameCard">
-        <div class="gameIcon">🖼️</div><h3>Art Gallery</h3>
+        <img class="gameIcon gameIconImg" src="assets/icons/ico-artgallery.webp" alt=""><h3>Art Gallery</h3>
         <p class="muted">Copy paintings as closely as you can. Sell them or keep them in your collection.</p>
         <div class="gameStatus">${art ? `🖼️ ${(state.art.items || []).length} paintings in your collection` : `🔒 ${artGalleryReady() ? `Open it for ${fmt(ART_UNLOCK)}` : "Unlocks with the 💵 Millionaire achievement"}`}</div>
         <button class="btn" data-game="art">${art ? "▶ Play" : "View"}</button>

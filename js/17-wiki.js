@@ -260,7 +260,7 @@ function wikiArt() {
         U.costs.map(c => fmt(c[0]) + " + " + Object.keys(c[1]).map(o => c[1][o] + " " + oreIcon(o)).join(" ")).join(" · ")];
     }))}
     <p class="muted">Upgrades and the vault are kept on prestige.</p>
-    <h2>🖼️ Art Gallery</h2>
+    <h2>${ico("artgallery", "biz")}Art Gallery</h2>
     <p>Copy a painting as closely as you can. The closer the match, the more your copy is worth. After you earn the 💵 Millionaire achievement (${fmt(1e6)} on hand), the gallery can be opened for <b>${fmt(ART_UNLOCK)}</b>.</p>
     <h3>Tiers</h3>
     <p>🟡 Medium unlocks after you submit (sell or keep) ${ART_TIER_NEED.medium.count} Easy paintings; 🔴 Hard unlocks after ${ART_TIER_NEED.hard.count} Medium paintings.</p>

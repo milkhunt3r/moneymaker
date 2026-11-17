@@ -724,7 +724,7 @@ function renderArt() {
   updateArtTab();
   $("artLocked").hidden = open; $("artOpen").hidden = !open;
   if (!open) {
-    $("artLocked").innerHTML = `<h2>🔒 🖼️ Art Gallery</h2>
+    $("artLocked").innerHTML = `<h2>${ico("lock", "lockS")}${ico("artgallery", "biz")}Art Gallery</h2>
       <p>Copy paintings as closely as you can: the better the match, the more they're worth. Sell your copies right away or keep them in your collection.</p>
       <p class="muted">🟢 Easy ${fmt(ART_TIERS.easy.value)} · 🟡 Medium ${fmt(ART_TIERS.medium.value)} · 🔴 Hard ${fmt(ART_TIERS.hard.value)} (you earn your match %; at least ${ART_MIN_MATCH}% to sell or keep)</p>
       ${artGalleryReady()
