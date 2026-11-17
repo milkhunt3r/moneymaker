@@ -1664,3 +1664,7 @@ body.phone .gcBuyBtn { width: 150px; height: 40px; padding: 0 16px 0 38px; } bod
 @keyframes gcFall { from { transform: translateY(calc(var(--fall) * -108%)); } to { transform: none; } }
 .gcCell.out img { animation: gcOut calc(0.3s * var(--spd)) ease-in both; animation-delay: calc(((6 - var(--row)) * 0.02s + var(--col) * 0.008s) * var(--spd)); }
 @keyframes gcOut { to { transform: translateY(160%); opacity: 0; } }
+
+/* 🚀 mission lists */
+.spLog .ico { width: 1.6em; height: 1.6em; vertical-align: -0.45em; }
+.spFail { color: #ff8a8a; }

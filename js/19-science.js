@@ -233,6 +233,9 @@ function scienceTick() {
 }
 
 // ----- Science page (Income → 🔬 Science) -----
+// 🎨 one line of a mission list: painted mission icon, then the reward (gold capsule) or "failed" (broken rocket)
+const spLogRow = (kind, m) => `<div class="row spLog"><span>${ico("sp-" + kind)}${m.name}</span>` +
+  (m.reward ? `<b class="income">${ico("sp-reward")}+${fmt(m.reward)}</b>` : `<b class="spFail">${ico("sp-failed")}failed</b>`) + `</div>`;
 // 💰 / 👩‍🔬 what a building needs, with ✅ / ❌ (updated every second by the science tick)
 const sciNeed = (price, n) => `<div class="sciNeed" data-money="${price}" data-sci="${n}">
   <span data-k="m">💰 ${fmt(price)}</span><span data-k="s">${ico("sci-scientist")}<b>${sciPool()}</b> / ${n} scientists</span></div>`;
@@ -260,7 +263,7 @@ function renderScience() {
     return `<div class="card" style="text-align:center"><h3>${ico("lock", "lockS")}${ico("science", "biz")}Science</h3>
       <p class="muted">Build a University, make Nobel Prize-winning breakthroughs and launch space missions.</p></div>
       <div class="card"><h4 style="margin-top:0">Unlocks when you reach:</h4>
-        ${row("logistics", "🚚 Logistics level")}${row("investor", "📈 Investor level")}${row("gambler", "🎲 Gambler level")}</div>`;
+        ${row("logistics", lgIco("level") + "Logistics level")}${row("investor", ivIco("invest") + "Investor level")}${row("gambler", "🎲 Gambler level")}</div>`;
   }
   let html = "";
   // 🎓 University
@@ -295,8 +298,8 @@ function renderScience() {
   }
   // 🚀 Space Mission Center
   if (S.space) {
-    const log = (S.space.log || []).map(m => `<div class="row"><span>🚀 ${m.name}</span><b class="${m.reward ? "income" : ""}">${m.reward ? "+" + fmt(m.reward) : "❌ failed"}</b></div>`).join("");
-    html += `<div class="card specialCard"><div class="row"><h3>${ico("sci-space", "biz")}Space Mission Center</h3><span class="muted">next launch in <b id="sci-space-next">${clock(S.space.timer)}</b></span></div>
+    const log = (S.space.log || []).map(m => spLogRow("mission", m)).join("");
+    html += `<div class="card specialCard"><div class="row"><h3>${ico("sci-space", "biz")}Space Mission Center</h3><span class="muted">${ico("sp-launch")}next launch in <b id="sci-space-next">${clock(S.space.timer)}</b></span></div>
       <div class="muted">Every ${spaceMin()} minutes: ${fmt(SPACE_MIN * 1e6 * spaceBonus())} – ${fmt(SPACE_MAX * 1e6 * spaceBonus())}${sci().gene ? " (🧬 +30%)" : ""}, or nothing if the mission fails (${Math.round(spaceFail() * 100)}% chance)</div>
       ${S.satellite || S.astro || S.station ? `<div class="muted">Boosted by: ${[S.satellite && "🛰️ satellite (−5% fail)", S.astro && "🔭 Astronomy center (−5 min)", S.station && "🛸 space station (−5% fail, −5 min)"].filter(Boolean).join(" · ")}</div>` : ""}
       ${log ? `<h4>Last missions</h4>${log}` : ""}
@@ -332,8 +335,8 @@ function renderScience() {
   }
   // 🌕 Moon Base (secret tier 2: after the 2nd prestige, needs the 🛸 station)
   if (S.moon) {
-    const log = (S.moon.log || []).map(m => `<div class="row"><span>🌕 ${m.name}</span><b class="${m.reward ? "income" : ""}">${m.reward ? "+" + fmt(m.reward) : "❌ failed"}</b></div>`).join("");
-    html += `<div class="card specialCard secretCard"><div class="row"><h3>${ico("sci-moon", "biz")}Moon Base</h3><span class="muted">next deep space launch in <b id="sci-moon-next">${clock(S.moon.timer)}</b></span></div>
+    const log = (S.moon.log || []).map(m => spLogRow("deep", m)).join("");
+    html += `<div class="card specialCard secretCard"><div class="row"><h3>${ico("sci-moon", "biz")}Moon Base</h3><span class="muted">${ico("sp-launch")}next deep space launch in <b id="sci-moon-next">${clock(S.moon.timer)}</b></span></div>
       <div class="muted">Every ${moonEvery() / 60} minutes a deep space mission: ${fmt(DEEP_MIN * 1e6 * spaceBonus())} – ${fmt(DEEP_MAX * 1e6 * spaceBonus())}${S.gene ? " (🧬 +30%)" : ""}, or nothing if it fails (${Math.round(moonFail() * 100)}% chance${S.mars ? ", 🔴 Mars Base: 10 min sooner, 10% less" : ""}) · successful: <b>${S.moon.ok || 0}</b></div>
       ${log ? `<h4>Last deep space missions</h4>${log}` : ""}</div>`;
   } else if (secrets2Open()) {
@@ -355,8 +358,8 @@ function renderScience() {
   }
   // 🔴 Mars Base (secret tier 2: needs the Moon Base and the Genetics Laboratory)
   if (S.mars) {
-    const log = (S.mars.log || []).map(m => `<div class="row"><span>🔴 ${m.name}</span><b class="${m.reward ? "income" : ""}">${m.reward ? "+" + fmt(m.reward) : "❌ failed"}</b></div>`).join("");
-    html += `<div class="card specialCard secretCard"><div class="row"><h3>${marsIco()}Mars Base</h3><span class="muted">next Mars mission in <b id="sci-mars-next">${clock(S.mars.timer)}</b></span></div>
+    const log = (S.mars.log || []).map(m => spLogRow("mars", m)).join("");
+    html += `<div class="card specialCard secretCard"><div class="row"><h3>${marsIco()}Mars Base</h3><span class="muted">${ico("sp-launch")}next Mars mission in <b id="sci-mars-next">${clock(S.mars.timer)}</b></span></div>
       <div class="muted">Every ${MARS_EVERY / 60} minutes a deep space mission: ${fmt(DEEP_MIN * 1e6 * spaceBonus())} – ${fmt(DEEP_MAX * 1e6 * spaceBonus())}${S.gene ? " (🧬 +30%)" : ""}, or nothing if it fails (${Math.round(MARS_FAIL * 100)}% chance) · successful: <b>${S.mars.ok || 0}</b></div>
       <div class="muted">🌕 Moon Base missions launch ${MARS_MOON_CUT / 60} minutes sooner and fail ${MARS_MOON_FAIL_CUT * 100}% less often.</div>
       ${log ? `<h4>Last Mars missions</h4>${log}` : ""}</div>`;
