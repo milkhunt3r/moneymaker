@@ -2,11 +2,11 @@
    ⭐ PRESTIGE: at 1 / 5 / 10 / 20 gcoin in your main money (1st / 2nd / 3rd / 4th prestige) you can reset the game for a Legacy bonus.
    Every prestige gives a 10-minute tax holiday afterwards (no tax inspections), whatever bonus is chosen.
    Always kept: achievements, Gambler & Investor levels, cosmetics, statistics, Legacy, VIP coins.
-   Choices (each can be picked again on later prestiges):
-     tycoon  +25% income (businesses, special businesses, clicks) for every pick; this reset also keeps your Science buildings (not the satellite)
+   Choices: 4 prestiges, 4 picks in all, so every player ends with every bonus, in the order they choose:
+     tycoon  (once)  +25% income (businesses, special businesses, clicks); this reset also keeps your Science buildings (not the satellite)
      empire  (max 2) 1st: keep your trucks, tankers, cargo planes, warehouses, Trading Port and Logistics Center on every reset from now on (not the satellite)
                      2nd: all logistics contracts take half the time (same pay)
-     vip     (max 2) VIP coins: 500 scoin every 20 min for the Super high roller tables; 2nd pick: every 10 min
+     vip     (once)  VIP coins: a 500 scoin chip every 10 min for the Super high roller tables, and every other free chip comes twice as fast
    ===================================================================== */
 const PRESTIGE_STEPS = [1e12, 5e12, 10e12, 20e12];   // money needed for the 1st, 2nd, 3rd and 4th prestige (1 / 5 / 10 / 20 gcoin)
 const PRESTIGE_MAX = PRESTIGE_STEPS.length;            // the 4th prestige finishes the game (you can keep playing)
@@ -18,18 +18,16 @@ if (!state.legacy) state.legacy = { count: 0, tycoon: 0, empire: 0, vip: 0, hist
 function legacyIncomeMult() { return 1 + TYCOON_BONUS * ((state.legacy && state.legacy.tycoon) || 0); }
 
 const PRESTIGE_CHOICES = [
-  { id: "tycoon", icon: "💼", name: "Tycoon's Legacy", text: "+25% income from businesses, special businesses and clicks, forever. This reset also keeps your 🔬 Science buildings (not the satellite).",
-    now: () => `Now: +${state.legacy.tycoon * 25}% → after: +${(state.legacy.tycoon + 1) * 25}%` },
+  { id: "tycoon", icon: "💼", name: "Tycoon's Legacy", max: 1, text: "+25% income from businesses, special businesses and clicks, forever. This reset also keeps your 🔬 Science buildings (not the satellite).",
+    now: () => `Income +${(state.legacy.tycoon + 1) * 25}% for good` },
   { id: "empire", icon: "🚢", name: "Global Empire", max: 2,
     text: () => state.legacy.empire
       ? "Level 2: every logistics contract takes half the time, for the same pay."
       : "Keep all your trucks, oil tankers and cargo planes, plus warehouses, Trading Port and Logistics Center, on this and every future reset (not the 🛰️ satellite).",
     now: () => { const n = (x, w) => `${x} ${w}${x === 1 ? "" : "s"}`; return state.legacy.empire ? "Your fleet is already kept on every reset" : `You'd keep ${n(logi.trucks.length, "truck")}, ${n(logi.tankers.length, "tanker")}, ${n(logi.planes.length, "plane")}`; } },
-  { id: "vip", icon: "🎟️", name: "VIP Coins", max: 2,
-    text: () => state.legacy.vip
-      ? "Level 2: your free 500 scoin VIP chips come every 10 minutes instead of every 20."
-      : "A free 500 scoin bet chip every 20 minutes for the Super high roller tables. What it wins goes to your casino chips.",
-    now: () => state.legacy.vip ? "Now every 20 min → after: every 10 min" : "Saves up to 100 chips" },
+  { id: "vip", icon: "🎟️", name: "VIP Coins", max: 1,
+    text: "A free 500 scoin bet chip every 10 minutes for the Super high roller tables, and all your other free bet chips come twice as fast. What they win goes to your casino chips.",
+    now: () => `Free chips: every ${fmtMin(freeChipBase())} min → every ${fmtMin(freeChipBase() / 2)} min` },
 ];
 
 function showPrestigeOffer() {
@@ -45,7 +43,7 @@ function showPrestigeOffer() {
       const text = typeof c.text === "function" ? c.text() : c.text;
       return maxed
         ? `<button class="prestigeChoice" disabled style="opacity:0.45; cursor:default">
-            <div class="big">${c.icon}</div><b>${c.name}${level}</b>Fully upgraded: you can't pick this again.</button>`
+            <div class="big">${c.icon}</div><b>${c.name}${level}</b>${c.max === 1 ? "✅ Already picked: you have this bonus for good." : "✅ Fully upgraded: you can't pick this again."}</button>`
         : `<button class="prestigeChoice" data-prestige-pick="${c.id}">
             <div class="big">${c.icon}</div><b>${c.name}${level}</b>${text}<small>${c.now()}</small></button>`;
     }).join("")}</div>
@@ -136,8 +134,11 @@ const FREE_CHIP_TYPES = [
 ];
 const FREE_CHIP_MAX = 100;
 const VIP_CHIP = 500000000;
-function freeChipMinutes() { const L = levelInfo(state.casinoXp).level; return L >= 85 ? 10 : L >= 45 ? 15 : 20; }
-function vipMinutes(n = state.legacy.vip) { return n >= 2 ? 10 : 20; }   // VIP Coins: 1st pick every 20 min, 2nd pick every 10 min
+function freeChipBase() { const L = levelInfo(state.casinoXp).level; return L >= 85 ? 10 : L >= 45 ? 15 : 20; }
+// ⭐ VIP Coins prestige bonus: every free chip twice as fast (20 / 15 / 10 min → 10 / 7.5 / 5 min)
+function freeChipMinutes() { return freeChipBase() / (state.legacy.vip > 0 ? 2 : 1); }
+const fmtMin = (m) => (Number.isInteger(m) ? m : m.toFixed(1));
+function vipMinutes() { return 10; }   // VIP Coins: a 500 scoin chip every 10 min
 const freeUnlocked = () => FREE_CHIP_TYPES.filter(c => levelInfo(state.casinoXp).level >= c.level);
 
 // Old VIP coins (a balance) become 500 scoin free chips; any leftover goes to casino chips
@@ -183,14 +184,14 @@ function updateVipBar() {
     const open = L >= c.level, n = state.freeChips[c.value] || 0;
     return { value: c.value, open, n, vip: false,
       time: !open ? `Level ${c.level}` : n >= FREE_CHIP_MAX ? "full" : clock(state.freeTimers[c.value] || gap * 60),
-      tip: open ? `Free ${chipLabel(c.value)} bet chip: a new one every ${gap} min, even while the game is closed (max ${FREE_CHIP_MAX}). Unlocked at Gambler level ${c.level}.`
-                : `🔒 Unlocks at Gambler level ${c.level} (you are level ${L}). Then you get a free ${chipLabel(c.value)} bet chip every ${gap} min.` };
+      tip: open ? `Free ${chipLabel(c.value)} bet chip: a new one every ${fmtMin(gap)} min${state.legacy.vip > 0 ? " (🎟️ VIP: twice as fast)" : ""}, even while the game is closed (max ${FREE_CHIP_MAX}). Unlocked at Gambler level ${c.level}.`
+                : `🔒 Unlocks at Gambler level ${c.level} (you are level ${L}). Then you get a free ${chipLabel(c.value)} bet chip every ${fmtMin(gap)} min.` };
   });
   const vip = state.legacy.vip > 0, nV = state.freeChips[VIP_CHIP] || 0;
   slots.push({ value: VIP_CHIP, open: vip, n: nV, vip: true,
     time: !vip ? "Prestige" : nV >= FREE_CHIP_MAX ? "full" : clock(state.vip.timer || vipMinutes() * 60),
     tip: vip ? `🎫 VIP chip from the ⭐ VIP Coins prestige bonus: a free 500 scoin bet chip every ${vipMinutes()} min (shares the 500 scoin count, max ${FREE_CHIP_MAX}).`
-             : "🔒 Unlocks when you choose ⭐ VIP Coins as a prestige bonus (from 1 gcoin): a free 500 scoin bet chip every 20 min." });
+             : "🔒 Unlocks when you choose ⭐ VIP Coins as a prestige bonus (from 1 gcoin): a free 500 scoin bet chip every 10 min, and all free chips twice as fast." });
   // build the slots once, then only update their numbers (so the hover box doesn't flicker)
   const key = slots.map(x => x.open).join();
   if ($("freeChipsGrid").dataset.key !== key) {
@@ -254,8 +255,8 @@ function showLevelTable(kind) {
     if (gam) {
       const fc = FREE_CHIP_TYPES.find(c => c.level === L);
       if (fc) u.push(`🎁 Free ${chipLabel(fc.value)} chip`);
-      if (L === 45) u.push("🎁 Free chips every 15 min");
-      if (L === 85) u.push("🎁 Free chips every 10 min");
+      if (L === 45) u.push(`🎁 Free chips every ${fmtMin(freeChipMinutes())} min`);
+      if (L === 85) u.push(`🎁 Free chips every ${fmtMin(freeChipMinutes())} min`);
     }
     if (gam && L >= 5 && (L - 5) % 10 === 0) u.push(`🎰 Casino #${(L - 5) / 10 + 1}`);
     if (kind === "investor" && L >= 5 && (L - 5) % 10 === 0) u.push(`🏨 Hotel #${(L - 5) / 10 + 1}`);
