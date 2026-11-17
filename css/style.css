@@ -1570,3 +1570,6 @@ body.mutantBg {   /* bright, busy picture: stronger overlay */
 .geneImg.half { width: 1.1em; height: 1.1em; }
 .geneImg.sm { width: 1.35em; height: 1.35em; margin: -3px 0; filter: none; }
 .geneEmoji .geneImg { display: inline-block; }
+.geneImg.empty { opacity: 0.55; filter: grayscale(0.4); }
+.geneImg.title { width: 1.3em; height: 1.3em; margin: -6px 6px 0 0; }
+.geneCard.unknown .geneImg { opacity: 0.85; }

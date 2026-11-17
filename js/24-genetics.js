@@ -270,6 +270,8 @@ function gEm(n, cls = "") {
   const s = GENE_SPECIES[n]; if (!s) return "";
   return GENE_PICS.has(n) ? `<img class="geneImg ${cls}" src="assets/gene/${n.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.webp" alt="${s.emoji}">` : s.emoji;
 }
+// 🖼️ Splicer extras (assets/gene/gx-*.webp): unknown, dna, mutant, hint, splicer, codex
+const gx = (k, cls = "sm") => `<img class="geneImg ${cls}" src="assets/gene/gx-${k}.webp" alt="">`;
 const geneCard = (n, extra = "") => { const s = GENE_SPECIES[n];
   return `<span class="geneEmoji">${gEm(n)}</span><span class="geneName">${s.name}</span>${extra}`; };
 const genePips = (n) => `<span class="genePips" title="DNA samples">${Array.from({ length: GENE_DNA_MAX }, (_, i) => `<i class="${i < (G.dna[n] || 0) ? "on" : ""}"></i>`).join("")}</span>`;
@@ -289,7 +291,7 @@ function renderGene() {
   const tried = pk && !isRecipe && (G.mutants[pk] || G.tried.includes(pk));   // this mutant is already in your jar
   const slot = (i) => { const n = geneSlots[i];
     return `<button class="geneSlot ${n ? "full r-" + GENE_SPECIES[n].rar : ""}" data-gslot="${i}" title="${n ? "Click to take it out" : "Pick a sample below"}">
-      ${n ? geneCard(n, genePips(n)) : `<span class="geneEmoji">🧪</span><span class="geneName muted">Sample ${i ? "B" : "A"}</span>`}</button>`; };
+      ${n ? geneCard(n, genePips(n)) : `<span class="geneEmoji">${gx("dna", "empty")}</span><span class="geneName muted">Sample ${i ? "B" : "A"}</span>`}</button>`; };
   const hintsOpen = G.hints.filter(p => { const r = GENE_BY_PAIR[p]; return r && !geneKnows(r); });
   const hintOpts = geneHintOptions().length, sciHave = typeof sciPool === "function" && sci().uni ? sciPool() : 0;
   let result = "";
@@ -298,8 +300,8 @@ function renderGene() {
     result = L.mutant
       ? `<div class="geneResult mutant ${L.isNew ? "new" : ""}">
           <div class="geneResEmoji">${gEm(L.mutant.a, "half")}${gEm(L.mutant.b, "half")}</div>
-          <div><div class="geneResName">🧪 Mutation: <b>${L.mutant.name}</b> <span class="geneRar r-m">Mutant</span></div>
-            <div class="muted">Not a real species: ${gEm(L.mutant.a, "sm")} ${L.mutant.a} and ${gEm(L.mutant.b, "sm")} ${L.mutant.b} don't make one. It goes in your 🧪 Mutant jar and can't be spliced again.</div>
+          <div><div class="geneResName">${gx("mutant")} Mutation: <b>${L.mutant.name}</b> <span class="geneRar r-m">Mutant</span></div>
+            <div class="muted">Not a real species: ${gEm(L.mutant.a, "sm")} ${L.mutant.a} and ${gEm(L.mutant.b, "sm")} ${L.mutant.b} don't make one. It goes in your ${gx("mutant")} Mutant jar and can't be spliced again.</div>
             <div>${L.reward ? `💰 +${fmt(L.reward)}` : ""}</div></div></div>`
       : `<div class="geneResult r-${s.rar} ${L.isNew ? "new" : ""}">
           <div class="geneResEmoji">${gEm(s.name)}</div>
@@ -319,11 +321,11 @@ function renderGene() {
         : u.later ? `<span class="geneUnf later" title="${u.later} new species need ${n} and a sample you haven't found yet">🔒 ${u.later} later</span>` : `<span class="geneUnf done" title="Every species with ${n} is found">✓ done</span>`;
       return `<button class="geneCard r-${s.rar} ${geneSlots.includes(n) ? "sel" : ""}" data-gs="${n}" data-name="${n.toLowerCase()}" ${(G.dna[n] || 0) ? "" : "data-empty"}>${geneCard(n, genePips(n))}${tag}</button>`; }
     return k ? `<div class="geneCard r-${s.rar} codex" data-name="${n.toLowerCase()}" title="${s.why}">${geneCard(n, s.a ? `<span class="geneHow">${gEm(s.a, "sm")} + ${gEm(s.b, "sm")}</span>` : "")}</div>`
-      : `<div class="geneCard unknown" data-name=""><span class="geneEmoji">❔</span><span class="geneName">???</span><span class="geneHow">${GENE_RARITY[s.rar].name}</span></div>`; }).join("");
+      : `<div class="geneCard unknown" data-name=""><span class="geneEmoji">${gx("unknown", "")}</span><span class="geneName">???</span><span class="geneHow">${GENE_RARITY[s.rar].name}</span></div>`; }).join("");
   box.innerHTML = `
     <div class="geneTop">
       <button class="btn ghost small" data-games-back>← Mini-games</button>
-      <h2>${ico("sci-gene", "h")}Gene Splicer</h2>
+      <h2>${gx("splicer", "title")}Gene Splicer</h2>
       <div class="geneProg"><b>${found}</b> / ${GENE_TOTAL} species
         <div class="xpBar"><div class="xpFill" style="width:${found / GENE_TOTAL * 100}%"></div></div></div>
     </div>
@@ -336,20 +338,20 @@ function renderGene() {
       ${result}
     </div>
     <div class="geneBar">
-      <span>🧪 Next DNA for every sample in <b id="geneRegen">${clockMs(Math.max(0, (G.regenAt || Date.now()) - Date.now()))}</b></span>
+      <span>${gx("dna")} Next DNA for every sample in <b id="geneRegen">${clockMs(Math.max(0, (G.regenAt || Date.now()) - Date.now()))}</b></span>
       <button class="btn small" data-gene="hint" ${sciHave >= GENE_HINT_SCI && hintOpts ? "" : "disabled"}
-        title="${!sci().uni ? "Needs a University with scientists" : hintOpts ? "" : "No new recipe is possible with what you have"}">💡 Hint · 👩‍🔬 ${GENE_HINT_SCI} scientists</button>
+        title="${!sci().uni ? "Needs a University with scientists" : hintOpts ? "" : "No new recipe is possible with what you have"}">${gx("hint")} Hint · 👩‍🔬 ${GENE_HINT_SCI} scientists</button>
       <span class="muted">You have ${ico("sci-scientist")}${sciHave} scientists</span>
     </div>
     <div class="genePerkTitle">🏆 Species bonuses <span class="muted">+1% for every species you discover in each category, for good</span></div>
     <div class="genePerks" title="Every species you discover in these categories gives +1% for good">${GENE_PERKS.map(([c, e, what]) =>
       `<span>${e} <b>+${geneCatCount(c)}%</b> ${what}</span>`).join("")}</div>
     ${hintsOpen.length ? `<div class="geneHints">${hintsOpen.map(p => { const [a, b] = p.split("|");
-      return `<span>💡 Try ${gEm(a, "sm")} ${a} + ${gEm(b, "sm")} ${b}</span>`; }).join("")}</div>` : ""}
+      return `<span>${gx("hint")} Try ${gEm(a, "sm")} ${a} + ${gEm(b, "sm")} ${b}</span>`; }).join("")}</div>` : ""}
     <div class="card">
       <div class="geneTabs"><button class="subTab ${geneTab === "freezer" ? "active" : ""}" data-gtab="freezer">❄️ Freezer (${G.known.length})</button>
-        <button class="subTab ${geneTab === "codex" ? "active" : ""}" data-gtab="codex">📖 Codex</button>
-        <button class="subTab ${geneTab === "mutants" ? "active" : ""}" data-gtab="mutants">🧪 Mutants (${mutantCount()})</button>
+        <button class="subTab ${geneTab === "codex" ? "active" : ""}" data-gtab="codex">${gx("codex")} Codex</button>
+        <button class="subTab ${geneTab === "mutants" ? "active" : ""}" data-gtab="mutants">${gx("mutant")} Mutants (${mutantCount()})</button>
         <input id="geneSearch" type="search" placeholder="🔍 Search" autocomplete="off"></div>
       <div class="achCats" ${geneTab === "mutants" ? "hidden" : ""}>${GENE_CATS.filter(([c]) => geneTab === "codex" ? c !== "start" || true : true).map(([c, l]) =>
         `<button class="achCat ${geneCat === c ? "active" : ""}" data-gcat="${c}">${l}${catCount(c)}</button>`).join("")}</div>
