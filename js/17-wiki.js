@@ -247,7 +247,7 @@ function wikiAchievements() {
     <p>Finishing every achievement of a category unlocks a cosmetic collection that can't be bought in the Shop. Turn it on in 🏆 Achievements → 🎁 Rewards.</p>
     ${wt(["Reward", "How to unlock"], COLLECTIONS.filter(c => c.reward && !(c.hidden && c.hidden())).map(c => [c.name, c.reward.text]))}
     ${achCatsShown().map(c => `<h3>${c.name}</h3>` + wt(["", "Achievement", "Goal", ""],
-      ACHIEVEMENTS.filter(a => a.cat === c.id).map(a => [a.icon, `<b>${a.name}</b>`, a.desc, state.achievements[a.id] ? "✅" : ""]))).join("")}`;
+      achShown().filter(a => a.cat === c.id).map(a => [a.icon, `<b>${a.name}</b>`, a.desc, state.achievements[a.id] ? "✅" : ""]))).join("")}`;
 }
 
 function wikiShop() {

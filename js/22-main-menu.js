@@ -56,6 +56,7 @@ const PATCH_NOTES = [
     "🎈 New <b>Sky Climb: High rollers</b> table with bets from 5 to 500 scoin.",
     "🏆 Sky Climb veteran now needs 500 rounds instead of 1,000.",
     "🧬 New slot: <b>Gene Cascade</b>! A 7×7 grid of specimens: clusters of 5+ pay and tumble, 🔬 lab spots grow from ×2 up to ×128, and 🧪 DNA vials give up to 30 free spins where the spots stay. High rollers and Super high rollers tables. Unlocks after your <b>1st prestige</b> at <b>Gambler level 40</b>. You can also 🛒 buy the free spins for 50.5× your bet.",
+    "🏆 5 Gene Cascade achievements in 🎰 Casino: play 50, 100 and 500 spins, trigger free spins, and buy free spins.",
   ] },
   { date: "13 November 2026", title: "Empire of Coins", items: [
     "🏠 Real estate: each property shows a building that grows with its value: house (up to 500,000), apartment building (up to 5 scoin), castle (up to 50 scoin) and skyscraper (50 scoin and more).",

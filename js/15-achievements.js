@@ -119,6 +119,11 @@ const ACHIEVEMENTS = [
   ...[50, 100, 500].map(n => ({ id: `bac${n}`, cat: "casino", icon: "🎴", name: n === 50 ? "Punto Banco" : n === 100 ? "Baccarat regular" : "Baccarat high society",
       desc: `Play ${n} Baccarat hands`, goal: n, get: () => (state.stats.played && state.stats.played.bac) || 0 })),
   { id: "bacStreak3", cat: "casino", icon: "🔥", name: "Hot shoe", desc: "Win 3 Baccarat hands in a row", goal: 3, get: () => state.stats.bacBestStreak || 0 },
+  // 🧬 Gene Cascade (slot; shown from the 1st prestige, when it can unlock)
+  ...[50, 100, 500].map(n => ({ id: `gc${n}`, cat: "casino", tier: 1, icon: "🧬", name: n === 50 ? "Lab rat" : n === 100 ? "Cascade regular" : "Chain reaction",
+      desc: `Play ${n} Gene Cascade spins`, goal: n, get: () => (state.stats.played && state.stats.played.gc) || 0 })),
+  { id: "gcFree", cat: "casino", tier: 1, icon: "🧪", name: "It's mutating!", desc: "Land 3+ DNA vials to trigger free spins in Gene Cascade", goal: 1, get: () => state.stats.gcFree || 0 },
+  { id: "gcBuy",  cat: "casino", tier: 1, icon: "🛒", name: "Bought in bulk", desc: "Buy free spins in Gene Cascade", goal: 1, get: () => state.stats.gcBuys || 0 },
   // Investments
   { id: "prop1",      cat: "invest", icon: "🏠", name: "Landlord",           desc: "Buy your first property",             goal: 1,  get: () => Math.max(inv.properties.length, state.invest.stats && state.invest.stats.re && state.invest.stats.re.in > 0 ? 1 : 0) },
   { id: "prop10",     cat: "invest", icon: "🏘️", name: "Property portfolio", desc: "Own 10 properties at once",           goal: 10, get: () => inv.properties.length },
@@ -237,7 +242,7 @@ const ACH_PICS = new Set(["cash1s", "cash10s", "cash100s", "cash1g", "cash5g", "
   "artcol10", "artcol50", "artcol100", "artslots", "artsold1", "artsold50", "artsold100", "artsold1000",
   "uni2", "uni3", "sci150", "moon", "deep1", "deep10", "gene", "gene1", "gene100", "geneKraken", "geneElder", "geneUnicorn", "mars",
   // built from existing art in a badge rim (bronze rim = the first step, gold = the bigger one)
-  "astro", "station", "wash3", "repair3", "salon3", "casino2", "hotel2", "warehouse5", "law10", "agents100", "mine1", "mine4", "port", "recruit", "artbiz", "sciUni", "sciLab", "parks2", "boost-energy-10", "boost-energy-100", "boost-pill-10", "boost-pill-100", "boost-influence-10", "boost-influence-100", "mineCoal", "mineSilver", "mineGold", "mineDiamond", "mineChest1", "mineLift1", "mineLift20", "gene10", "gene50", "satellite", "play-roulette-100", "play-roulette-1000", "play-blackjack-100", "play-blackjack-1000", "play-plinko-100", "play-plinko-1000", "play-climb-100", "play-climb-1000", "play-vp-100", "play-vp-1000", "play-uth-100", "play-uth-1000", "bac50", "bac100", "bac500", "bacStreak3"]);
+  "astro", "station", "wash3", "repair3", "salon3", "casino2", "hotel2", "warehouse5", "law10", "agents100", "mine1", "mine4", "port", "recruit", "artbiz", "sciUni", "sciLab", "parks2", "boost-energy-10", "boost-energy-100", "boost-pill-10", "boost-pill-100", "boost-influence-10", "boost-influence-100", "mineCoal", "mineSilver", "mineGold", "mineDiamond", "mineChest1", "mineLift1", "mineLift20", "gene10", "gene50", "satellite", "play-roulette-100", "play-roulette-1000", "play-blackjack-100", "play-blackjack-1000", "play-plinko-100", "play-plinko-1000", "play-climb-100", "play-climb-1000", "play-vp-100", "play-vp-1000", "play-uth-100", "play-uth-1000", "bac50", "bac100", "bac500", "bacStreak3", "gc50", "gc100", "gc500", "gcFree", "gcBuy"]);
 const achIcon = (a, cls = "") => {
   if (!ACH_PICS.has(a.id)) return a.icon;
   const diff = (a.id.match(/^art(easy|medium|hard)\d/) || [])[1];   // 🖼️ Art Gallery brushes: a dot shows Easy / Medium / Hard
@@ -277,7 +282,8 @@ function updateAchProgress() {
 
 /* ----- 🎁 Rewards: cosmetic collections earned by finishing a whole achievement category ----- */
 function rewardProgress(col) {
-  const list = col.reward.ids ? ACHIEVEMENTS.filter(a => col.reward.ids.includes(a.id)) : ACHIEVEMENTS.filter(a => a.cat === col.reward.cat);
+  const pc = (state.legacy && state.legacy.count) || 0;   // achievements of a later prestige tier don't count yet
+  const list = col.reward.ids ? ACHIEVEMENTS.filter(a => col.reward.ids.includes(a.id)) : ACHIEVEMENTS.filter(a => a.cat === col.reward.cat && !(a.tier && pc < a.tier));
   return { done: list.filter(a => state.achievements[a.id]).length, total: list.length };
 }
 function grantRewards() {   // checked with the achievements; a reward, once earned, stays

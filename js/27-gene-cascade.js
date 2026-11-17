@@ -50,7 +50,8 @@ async function gcSpin(buy = false) {
   const win = Math.floor(round.total * bet);
   st.pending = { bet: cost, stake: bet, buy, win, mult: round.total, free: round.award };   // 🔒 saved before anything is shown
   if (buy) state.stats.gcBuys = (state.stats.gcBuys || 0) + 1;
-  countPlay("gc");
+  if (!buy) countPlay("gc");   // spins played (bought bonuses are counted apart)
+  if (!buy && round.award) state.stats.gcFree = (state.stats.gcFree || 0) + 1;
   updateCounter(); save();
   gcBusy = true; gcSkip = false;
   const id = t.id;
