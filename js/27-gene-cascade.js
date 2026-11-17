@@ -38,16 +38,18 @@ function gcSettle(id, away = false) {
   return { cashback, levels };
 }
 
-async function gcSpin() {
+let gcBuyArm = 0;   // 🛒 the Buy button needs a second tap within 4 seconds
+async function gcSpin(buy = false) {
   const t = GC_TABLES[currentGame], st = state.gc[t.id];
   if (gcBusy || st.pending || !gcUnlocked()) return;
-  const bet = st.bet;
+  const bet = st.bet, cost = buy ? bet * SL_BUY : bet;
   if (bet < t.min || bet > t.max) return gcMsg(`Bets here are ${fmt(t.min)} – ${fmt(t.max)}.`);
-  if (state.casinoChips < bet) return gcMsg("Not enough chips. Add money to the casino first.");
-  state.casinoChips -= bet;
-  const round = slRound(gcRand);
+  if (state.casinoChips < cost) return gcMsg(`Not enough chips${buy ? ` to buy the bonus (${fmt(cost)})` : ""}. Add money to the casino first.`);
+  state.casinoChips -= cost;
+  const round = buy ? slBuyRound(gcRand) : slRound(gcRand);
   const win = Math.floor(round.total * bet);
-  st.pending = { bet, win, mult: round.total, free: round.award };   // 🔒 saved before anything is shown
+  st.pending = { bet: cost, stake: bet, buy, win, mult: round.total, free: round.award };   // 🔒 saved before anything is shown
+  if (buy) state.stats.gcBuys = (state.stats.gcBuys || 0) + 1;
   countPlay("gc");
   updateCounter(); save();
   gcBusy = true; gcSkip = false;
@@ -70,12 +72,14 @@ async function gcSpin() {
     }
     return hits;
   };
-  // base spin
-  let ok = await play(round.base, new Array(SL_CELLS).fill(0), "");
-  if (ok !== false && round.award) {
-    gcView = { ...gcView, banner: `🧪 ${round.base.scat} DNA vials! ${round.base.free} FREE SPINS`, wins: null, lines: null };
+  // base spin (a bought bonus starts straight with the free spins)
+  let ok = round.base ? await play(round.base, new Array(SL_CELLS).fill(0), "") : [];
+  if (ok !== false && round.bonus.length) {
+    const first = round.base ? round.base.free : SL_FREE[round.scat];
+    if (!round.base) gcView = { grid: (gcView && gcView.grid) || st.idle, hits: new Array(SL_CELLS).fill(0), drop: new Set(), label: "", shown: 0, bet };
+    gcView = { ...gcView, banner: round.base ? `🧪 ${round.base.scat} DNA vials! ${first} FREE SPINS` : `🛒 Bonus bought: ${round.scat} DNA vials! ${first} FREE SPINS`, wins: null, lines: null };
     renderGeneCascade(); await gcWait(1600);
-    let hits = new Array(SL_CELLS).fill(0), given = round.base.free;
+    let hits = new Array(SL_CELLS).fill(0), given = first;
     for (let i = 0; i < round.bonus.length && ok !== false; i++) {
       const s = round.bonus[i];
       ok = await play(s, hits, `Free spin ${i + 1} of ${given}`);
@@ -95,10 +99,11 @@ async function gcSpin() {
       banner: m >= 100 ? `💥 MEGA WIN ${fmt(win)}!` : m >= 20 ? `🎉 BIG WIN ${fmt(win)}!` : null };
     const shownView = gcView;
     if (shownView.banner) setTimeout(() => { if (gcView === shownView && !gcBusy) { gcView.banner = null; if (currentGame === id) renderGeneCascade(); } }, 2500);
-    st.msg = win > 0 ? `You won ${fmt(win)} (${+m.toFixed(2)}× your bet)${round.award ? ` with ${round.award} free spins` : ""}.` +
+    st.msg = (buy ? `🛒 Bought bonus (${fmt(cost)}): it paid ${fmt(win)} (${+m.toFixed(2)}× your bet, ${round.award} free spins), ${win >= cost ? `+${fmt(win - cost)}` : `−${fmt(cost - win)}`} overall.` +
+        (r.cashback > 0 ? ` Cashback +${r.cashback.toLocaleString(undefined, { maximumFractionDigits: 1 })}.` : "") + (r.levels > 0 ? ` 🎉 Level up! Now level ${levelInfo(state.casinoXp).level}.` : "") : "") + (buy ? "" : win > 0 ? `You won ${fmt(win)} (${+m.toFixed(2)}× your bet)${round.award ? ` with ${round.award} free spins` : ""}.` +
       (r.cashback > 0 ? ` Cashback +${r.cashback.toLocaleString(undefined, { maximumFractionDigits: 1 })}.` : "") +
       (r.levels > 0 ? ` 🎉 Level up! Now level ${levelInfo(state.casinoXp).level}.` : "")
-      : `No win this time.${r.cashback > 0 ? ` Cashback +${r.cashback.toLocaleString(undefined, { maximumFractionDigits: 1 })}.` : ""}${r.levels > 0 ? ` 🎉 Level up! Now level ${levelInfo(state.casinoXp).level}.` : ""}`;
+      : `No win this time.${r.cashback > 0 ? ` Cashback +${r.cashback.toLocaleString(undefined, { maximumFractionDigits: 1 })}.` : ""}${r.levels > 0 ? ` 🎉 Level up! Now level ${levelInfo(state.casinoXp).level}.` : ""}`);
     renderGeneCascade();
   }
 }
@@ -119,6 +124,7 @@ function renderGeneCascade() {
   const shownWin = v ? Math.floor(Math.min(SL_CAP, v.shown) * bet) : (st.last ? st.last.win : 0);
   const lines = v && v.lines ? v.lines.map(l => `<span><img src="${gcPic(l.sym)}" alt=""> ×${l.size}: ${+l.base.toFixed(2)}×${l.mult ? ` × <b class="gcMultTxt">${l.mult}</b>` : ""} = <b>${fmt(Math.floor(l.pay * bet))}</b></span>`).join("") : "";
   const busy = gcBusy || !!st.pending;
+  const buyCost = st.bet * SL_BUY, armed = gcBuyArm > Date.now();
   const payRows = SL_SYMBOLS.map((s, i) => `<tr><td><img class="gcPayImg" src="${gcPic(i)}" alt="">${s.name}</td>${[5, 6, 8, 10, 12, 15].map(n => `<td>${+SL_PAY[i][n].toFixed(2)}×</td>`).join("")}</tr>`).join("");
   $("casinoGame").innerHTML = `
     <div class="card gcCard">
@@ -134,15 +140,17 @@ function renderGeneCascade() {
         ${v && v.banner ? `<div class="gcBanner">${v.banner}</div>` : ""}
       </div>
       <div class="gcLines">${lines || "&nbsp;"}</div>
-      <div class="chipsRow"><span class="muted">Bet:</span>
+      <div class="gcActions">
+        ${busy ? `<span></span><button class="gcSkipBtn" data-gc="skip">⏩ Skip to the result</button><span></span>`
+          : `<div class="gcSide left"><button class="gcBtn gcBuyBtn ${armed ? "armed" : ""}" data-gc="buy" ${state.casinoChips >= buyCost ? "" : "disabled"}
+               title="Start the free spins at once for ${SL_BUY}× your bet"><b>${armed ? "Tap again to buy" : "Buy free spins"}</b><small>${fmt(buyCost)} · ${SL_BUY}× bet</small></button></div>
+             <button class="gcBtn gcSpinBtn" data-gc="spin" ${state.casinoChips >= st.bet ? "" : "disabled"}><b>SPIN</b><small>${fmt(st.bet)}</small></button>
+             <div class="gcSide right"><label class="gcFast"><input type="checkbox" data-gc="fast" ${state.gcFast ? "checked" : ""}> Fast play</label></div>`}
+      </div>
+      <div class="chipsRow gcChips"><span class="muted">Bet:</span>
         ${t.chips.map(c => `<button class="chip ${c === st.bet ? "selected" : ""}" data-gcbet="${c}" ${busy ? "disabled" : ""}
           style="background:${CHIP_COLORS[c].bg}; color:${CHIP_COLORS[c].text}">${chipLabel(c)}</button>`).join("")}</div>
-      <div class="bjActions">
-        ${busy ? `<button class="btn" data-gc="skip">⏩ Skip to the result</button>`
-               : `<button class="btn big" data-gc="spin" ${state.casinoChips >= st.bet ? "" : "disabled"}>🧬 Spin (${fmt(st.bet)})</button>`}
-        <label class="gcFast"><input type="checkbox" data-gc="fast" ${state.gcFast ? "checked" : ""}> Fast play</label>
-      </div>
-      <div id="casinoMsg" class="${/won/.test(st.msg || "") ? "income" : "flash"}" style="margin-top:8px; text-align:center">${busy ? "" : st.msg || ""}</div>
+      <div id="casinoMsg" class="${/won|\+\d/.test(st.msg || "") ? "income" : "flash"}" style="margin-top:8px; text-align:center">${busy ? "" : st.msg || ""}</div>
       <details class="gcRules"><summary>📋 Paytable and rules</summary>
         <p class="muted">Pays are × your bet for a cluster of that many touching specimens (up, down, left or right; not diagonal). Sizes in between pay in between.</p>
         <table class="wikiTable gcPay"><tr><th>Specimen</th>${[5, 6, 8, 10, 12, "15+"].map(n => `<th>${n}</th>`).join("")}</tr>${payRows}</table>
@@ -151,6 +159,7 @@ function renderGeneCascade() {
           <li>🔬 <b>Lab spots</b>: a square where a winner popped is marked. The next win popping there makes it ×2, then ×4, ×8 … up to ×128. All spots inside one cluster are <b>added</b> and multiply that cluster's pay.</li>
           <li>Spots reset after every paid spin, but in free spins they stay for the whole bonus.</li>
           <li>${gx("dna")} <b>DNA vials</b>: 3 / 4 / 5 / 6 / 7 vials on the grid when the spin ends give 10 / 12 / 15 / 20 / 30 free spins (more can be won during the bonus).</li>
+          <li>🛒 <b>Buy free spins</b> for ${SL_BUY}× your bet: the bonus starts at once (3 vials or more, mostly 10 free spins). A bought bonus also returns about 98%, but it swings a lot: half of them pay less than 15× the bet.</li>
           <li>About 98% return. A spin can win at most ${SL_CAP.toLocaleString()}× your bet.</li>
         </ul></details>
     </div>`;
@@ -163,7 +172,11 @@ $("casinoGame").addEventListener("click", (e) => {
   if (b && !gcBusy && !st.pending) { st.bet = Number(b.dataset.gcbet); st.msg = ""; renderGeneCascade(); save(); return; }
   const a = e.target.closest("[data-gc]");
   if (!a) return;
-  if (a.dataset.gc === "spin" && !a.disabled) { gcView = null; st.msg = ""; gcSpin(); }
+  if (a.dataset.gc === "spin" && !a.disabled) { gcBuyArm = 0; gcView = null; st.msg = ""; gcSpin(); }
+  if (a.dataset.gc === "buy" && !a.disabled) {
+    if (gcBuyArm > Date.now()) { gcBuyArm = 0; gcView = null; st.msg = ""; gcSpin(true); }
+    else { gcBuyArm = Date.now() + 4000; renderGeneCascade(); setTimeout(() => { if (gcBuyArm && gcBuyArm <= Date.now() && GC_TABLES[currentGame] && !gcBusy) renderGeneCascade(); }, 4100); }
+  }
   if (a.dataset.gc === "skip") gcSkip = true;
 });
 $("casinoGame").addEventListener("change", (e) => {

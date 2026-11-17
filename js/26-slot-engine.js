@@ -100,17 +100,30 @@ function slSpin(rand, mode, hits) {
 function slRound(rand) {
   const base = slSpin(rand, "base", new Array(SL_CELLS).fill(0));
   const round = { base, bonus: [], award: base.free, total: base.total, capped: false };
-  if (base.free) {
-    const hits = new Array(SL_CELLS).fill(0);
-    let left = base.free;
-    while (left > 0 && !round.capped) {
-      left--;
-      const s = slSpin(rand, "bonus", hits);
-      if (s.free) { left += s.free; round.award += s.free; }
-      round.bonus.push(s); round.total += s.total;
-      if (round.total >= SL_CAP) { round.total = SL_CAP; round.capped = true; }
-    }
-  }
+  if (base.free) slBonus(rand, base.free, round);
   return round;
 }
-if (typeof module !== "undefined") module.exports = { slBuildPay, slRound, slSpin, SL_TUNE, SL_PAY, SL_SYMBOLS, SL_CAP };
+function slBonus(rand, free, round) {   // play the free spins (lab spots kept), adding to round
+  const hits = new Array(SL_CELLS).fill(0);
+  let left = free;
+  while (left > 0 && !round.capped) {
+    left--;
+    const s = slSpin(rand, "bonus", hits);
+    if (s.free) { left += s.free; round.award += s.free; }
+    round.bonus.push(s); round.total += s.total;
+    if (round.total >= SL_CAP) { round.total = SL_CAP; round.capped = true; }
+  }
+}
+/* 🛒 Bonus buy: pay SL_BUY × the bet to start free spins at once. The number of DNA vials follows how often they
+   trigger by themselves (simulated: 3 vials 89.7%, 4: 9.5%, 5: 0.74%, 6: 0.04%, 7: 0.01%).
+   Price set by simulation so a bought bonus also returns about 98%. */
+const SL_BUY_SCAT = [[3, 0.8966], [4, 0.0955], [5, 0.0074], [6, 0.0004], [7, 0.0001]];
+const SL_BUY = 49;   // a bought bonus pays ≈ 48.2× on average (1.2 million simulated) → ≈ 98% return
+function slBuyRound(rand) {
+  let x = rand() * SL_BUY_SCAT.reduce((a, b) => a + b[1], 0), scat = 3;
+  for (const [k, w] of SL_BUY_SCAT) { if ((x -= w) < 0) { scat = k; break; } }
+  const round = { base: null, bought: true, scat, bonus: [], award: SL_FREE[scat], total: 0, capped: false };
+  slBonus(rand, SL_FREE[scat], round);
+  return round;
+}
+if (typeof module !== "undefined") module.exports = { slBuyRound, SL_BUY, slBuildPay, slRound, slSpin, SL_TUNE, SL_PAY, SL_SYMBOLS, SL_CAP };

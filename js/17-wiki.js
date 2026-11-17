@@ -193,6 +193,7 @@ function wikiCasino() {
     <ul><li><b>Clusters</b> of 5 or more of the same specimen touching up, down, left or right (not diagonal) pay. Winners pop, the rest fall and new ones drop in, which can win again (<b>tumbles</b>).</li>
       <li>🔬 <b>Lab spots</b>: a square where a winner popped is marked; each later win popping there doubles it: ×2, ×4, ×8 … ×128. Spots inside one cluster are <b>added</b> and multiply that cluster's pay. They reset after each paid spin.</li>
       <li>🧪 <b>DNA vials</b>: 3 / 4 / 5 / 6 / 7 on the grid at the end of a spin give 10 / 12 / 15 / 20 / 30 <b>free spins</b>. In free spins the lab spots stay for the whole bonus, and vials can add more free spins.</li>
+      <li>🛒 <b>Buy free spins</b>: pay ${SL_BUY}× the bet to start the bonus at once (mostly 10 free spins, sometimes more). It also returns about 98% but swings a lot: half of bought bonuses pay under 15× the bet.</li>
       <li>About 98% return (simulated over millions of spins): a win on about 41% of spins, free spins about once every 100 spins. Max win ${SL_CAP.toLocaleString()}× the bet. A spin is decided before it is shown, so leaving or reloading pays the same win.</li></ul>
     ${wt(["Specimen", "5", "6", "8", "10", "12", "15+"], SL_SYMBOLS.map((s, i) => [s.name, ...[5, 6, 8, 10, 12, 15].map(n => +SL_PAY[i][n].toFixed(2) + "×")]))}
 
