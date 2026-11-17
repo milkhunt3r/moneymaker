@@ -159,8 +159,8 @@ function renderGeneCascade() {
           <li>🔬 <b>Lab spots</b>: a square where a winner popped is marked. The next win popping there makes it ×2, then ×4, ×8 … up to ×128. All spots inside one cluster are <b>added</b> and multiply that cluster's pay.</li>
           <li>Spots reset after every paid spin, but in free spins they stay for the whole bonus.</li>
           <li>${gx("dna")} <b>DNA vials</b>: 3 / 4 / 5 / 6 / 7 vials on the grid when the spin ends give 10 / 12 / 15 / 20 / 30 free spins (more can be won during the bonus).</li>
-          <li>🛒 <b>Buy free spins</b> for ${SL_BUY}× your bet: the bonus starts at once (3 vials or more, mostly 10 free spins). A bought bonus also returns about 98%, but it swings a lot: half of them pay less than 15× the bet.</li>
-          <li>About 98% return. A spin can win at most ${SL_CAP.toLocaleString()}× your bet.</li>
+          <li>🛒 <b>Buy free spins</b> for ${SL_BUY}× your bet: the bonus starts at once (3 vials or more, mostly 10 free spins). A bought bonus also returns about 99%, but it swings a lot: half of them pay less than 15× the bet.</li>
+          <li>About 99% return. A spin can win at most ${SL_CAP.toLocaleString()}× your bet.</li>
         </ul></details>
     </div>`;
 }

@@ -7,7 +7,7 @@
    Base game: spots reset after each paid spin. Free spins: spots stay for the whole bonus.
    🧪 DNA vials (scatters): 3–7 on the final grid → 10/12/15/20/30 free spins (also during the bonus).
    Biggest win of one spin (bonus included): 5,000× the bet.
-   Tuned by simulation (8 million spins) to about 98% return, with small wins more often and the bonus
+   Tuned by simulation (32 million spins) to about 99% return, with small wins more often and the bonus
    more often than the original game it is inspired by.
    ===================================================================== */
 const SL_N = 7, SL_CELLS = SL_N * SL_N, SL_SCAT = 7, SL_CAP = 5000;
@@ -23,11 +23,11 @@ const SL_SYMBOLS = [
 ];
 const SL_FREE = { 3: 10, 4: 12, 5: 15, 6: 20, 7: 30 };
 // tuning (see the header): how often each specimen drops in (base game / free spins) and a pay scale
-// Simulated over 8 million paid spins: return ≈ 98% (base game ≈ 50%, free spins ≈ 48%), a win on ≈ 41% of spins,
-// free spins about once every 100 spins, an average bonus pays ≈ 48× the bet (median ≈ 15×).
+// Simulated over 32 million paid spins: return ≈ 99.2% (base game ≈ 49.6%, free spins ≈ 49.5%), a win on ≈ 41% of spins,
+// free spins about once every 100 spins, an average bonus pays ≈ 50× the bet (median ≈ 15.5×).
 const SL_TUNE = {
   base:  { w: [6, 8, 10, 12, 15, 17, 19], scat: 0.74 },
-  bonus: { w: [5.16, 6.74, 8.74, 10.74, 14.58, 18.26, 21.94], scat: 0.5 },   // free spins: cheaper specimens land a bit more, so spots grow
+  bonus: { w: [5.137, 6.705, 8.706, 10.706, 14.569, 18.294, 22.02], scat: 0.5 },   // free spins: cheaper specimens land a bit more, so spots grow
   scale: 1.95,
 };
 // full pay table: SL_PAY[symbol][size] for sizes 5..15 (15 = 15 or more)
@@ -116,9 +116,9 @@ function slBonus(rand, free, round) {   // play the free spins (lab spots kept),
 }
 /* 🛒 Bonus buy: pay SL_BUY × the bet to start free spins at once. The number of DNA vials follows how often they
    trigger by themselves (simulated: 3 vials 89.7%, 4: 9.5%, 5: 0.74%, 6: 0.04%, 7: 0.01%).
-   Price set by simulation so a bought bonus also returns about 98%. */
+   Price set by simulation so a bought bonus also returns about 99%. */
 const SL_BUY_SCAT = [[3, 0.8966], [4, 0.0955], [5, 0.0074], [6, 0.0004], [7, 0.0001]];
-const SL_BUY = 49;   // a bought bonus pays ≈ 48.2× on average (1.2 million simulated) → ≈ 98% return
+const SL_BUY = 50.5;   // a bought bonus pays ≈ 49.9× on average (2.4 million simulated) → ≈ 98.9% return
 function slBuyRound(rand) {
   let x = rand() * SL_BUY_SCAT.reduce((a, b) => a + b[1], 0), scat = 3;
   for (const [k, w] of SL_BUY_SCAT) { if ((x -= w) < 0) { scat = k; break; } }
