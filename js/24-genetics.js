@@ -252,7 +252,9 @@ const geneReward = (sp) => Math.round(GENE_RARITY[sp.rar].min * 60 * mineBase())
 const GENE_PICS = new Set(["Human", "Fish", "Lizard", "Spider", "Plant", "Tree", "Seaweed", "Venus flytrap", "Flower", "Cactus", "Mushroom",
   "Zombie fungus", "Scorpion", "Centipede", "Worm", "Ant",
   "Bee", "Caterpillar", "Butterfly", "Beetle", "Fly", "Mosquito", "Grasshopper", "Dragonfly", "Ladybug", "Praying mantis", "Wasp", "Tarantula",
-  "Frog", "Iguana", "Snake", "Crocodile"]);
+  "Frog", "Iguana", "Snake", "Crocodile",
+  "Komodo dragon", "Turtle", "Tortoise", "Chameleon", "Salamander", "Axolotl", "Poison dart frog", "Cobra",
+  "Bird", "Pigeon", "Eagle", "Owl", "Parrot", "Chicken", "Duck", "Penguin"]);
 function gEm(n, cls = "") {
   const s = GENE_SPECIES[n]; if (!s) return "";
   return GENE_PICS.has(n) ? `<img class="geneImg ${cls}" src="assets/gene/${n.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.webp" alt="${s.emoji}">` : s.emoji;
