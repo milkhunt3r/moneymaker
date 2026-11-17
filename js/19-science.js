@@ -33,6 +33,12 @@ const unis = () => [sci().uni, sci().uni2, sci().uni3].filter(Boolean);
 const secrets2Open = () => (state.legacy && state.legacy.count) >= 2;
 const MOON_PRICE = 1e11, MOON_SCI = 150, DEEP_EVERY = 1200, DEEP_FAIL = 0.20, DEEP_MIN = 50000, DEEP_MAX = 70000;   // scoin
 const GENE_PRICE = 5e10, GENE_SCI = 75, GENE_BONUS = 0.30;
+// 🔴 Mars Base (needs the Moon Base and the Genetics Laboratory): its own deep space mission every 10 min, 10% fail, 50,000 – 70,000 scoin;
+//    it also helps the Moon Base: its missions launch 10 minutes sooner and fail 10% less often (every 10 min, 10% fail)
+const MARS_PRICE = 2e11, MARS_SCI = 150, MARS_EVERY = 600, MARS_FAIL = 0.10, MARS_MOON_CUT = 600, MARS_MOON_FAIL_CUT = 0.10;
+const moonEvery = () => DEEP_EVERY - (sci().mars ? MARS_MOON_CUT : 0);
+const moonFail = () => DEEP_FAIL - (sci().mars ? MARS_MOON_FAIL_CUT : 0);
+const marsIco = (cls = "biz") => ico("sci-mars", cls);
 const spaceBonus = () => (sci().gene ? 1 + GENE_BONUS : 1);   // 🧬 +30% on 🚀 and 🌕 mission rewards
 const sciPool = () => unis().reduce((a, u) => a + u.scientists, 0);
 function spendScientists(n) {
@@ -143,12 +149,15 @@ function launchMission() {
   return { name, reward };
 }
 
-// 🌕 a deep space mission from the Moon Base: 20% fail, else 50,000 – 70,000 scoin (+30% with the 🧬 Genetics Laboratory)
+// 🌕 / 🔴 a deep space mission from the Moon Base (20% fail, 10% with the Mars Base) or the Mars Base (10% fail):
+//    50,000 – 70,000 scoin (+30% with the 🧬 Genetics Laboratory). Both count for the deep space achievements.
 const DEEP_NAMES = ["Selene", "Tranquility", "Copernicus", "Tycho", "Endeavour", "Eagle", "Luna", "Apollo", "Gagarin", "Shackleton"];
-function launchDeep() {
-  const m = sci().moon, n = (m.count = (m.count || 0) + 1);
-  const name = `${DEEP_NAMES[secureRandomInt(DEEP_NAMES.length)]}-${n}`;
-  const failed = secureRandomInt(1000) < Math.round(DEEP_FAIL * 1000);
+const MARS_NAMES = ["Ares", "Olympus", "Phobos", "Deimos", "Valles", "Curiosity", "Pathfinder", "Elysium", "Gale", "Jezero"];
+function launchDeep(base = "moon") {
+  const m = sci()[base], n = (m.count = (m.count || 0) + 1);
+  const names = base === "mars" ? MARS_NAMES : DEEP_NAMES;
+  const name = `${names[secureRandomInt(names.length)]}-${n}`;
+  const failed = secureRandomInt(1000) < Math.round((base === "mars" ? MARS_FAIL : moonFail()) * 1000);
   const reward = failed ? 0 : Math.round((DEEP_MIN + secureRandomInt(DEEP_MAX - DEEP_MIN + 1)) * 1e6 * spaceBonus());
   m.log = [{ name, reward, at: Date.now() }, ...(m.log || [])].slice(0, 5);
   if (reward) { m.ok = (m.ok || 0) + 1; state.stats.deepOk = (state.stats.deepOk || 0) + 1; } else state.stats.deepFail = (state.stats.deepFail || 0) + 1;
@@ -177,11 +186,19 @@ function scienceTick() {
     if (state.view === "income") render();
   }
   if (S.moon && --S.moon.timer <= 0) {
-    S.moon.timer = DEEP_EVERY;
-    const m = launchDeep();
+    S.moon.timer = moonEvery();
+    const m = launchDeep("moon");
     state.money += m.reward;
     if (m.reward) showNotice(`🌕 Deep space mission ${m.name} succeeded: +${fmt(m.reward)}!`);
-    else showAlert(`🌕 Deep space mission ${m.name} failed`, `The ship was lost in deep space. No reward this time; the next launch is in ${DEEP_EVERY / 60} minutes.`);
+    else showAlert(`🌕 Deep space mission ${m.name} failed`, `The ship was lost in deep space. No reward this time; the next launch is in ${moonEvery() / 60} minutes.`);
+    if (state.view === "income") render();
+  }
+  if (S.mars && --S.mars.timer <= 0) {
+    S.mars.timer = MARS_EVERY;
+    const m = launchDeep("mars");
+    state.money += m.reward;
+    if (m.reward) showNotice(`🔴 Mars mission ${m.name} succeeded: +${fmt(m.reward)}!`);
+    else showAlert(`🔴 Mars mission ${m.name} failed`, `The ship was lost on the way. No reward this time; the next launch is in ${MARS_EVERY / 60} minutes.`);
     if (state.view === "income") render();
   }
   // 🛰️ satellite: broken trucks repair themselves for free after 5 seconds
@@ -211,6 +228,7 @@ function scienceTick() {
   if (S.lab) set("sci-lab-next", "guaranteed within " + clock(Math.max(0, labOdds() - (S.lab.since || 0))));
   if (S.space) set("sci-space-next", clock(S.space.timer));
   if (S.moon) set("sci-moon-next", clock(S.moon.timer));
+  if (S.mars) set("sci-mars-next", clock(S.mars.timer));
   return uniIncome();
 }
 
@@ -316,7 +334,7 @@ function renderScience() {
   if (S.moon) {
     const log = (S.moon.log || []).map(m => `<div class="row"><span>🌕 ${m.name}</span><b class="${m.reward ? "income" : ""}">${m.reward ? "+" + fmt(m.reward) : "❌ failed"}</b></div>`).join("");
     html += `<div class="card specialCard secretCard"><div class="row"><h3>${ico("sci-moon", "biz")}Moon Base</h3><span class="muted">next deep space launch in <b id="sci-moon-next">${clock(S.moon.timer)}</b></span></div>
-      <div class="muted">Every ${DEEP_EVERY / 60} minutes a deep space mission: ${fmt(DEEP_MIN * 1e6 * spaceBonus())} – ${fmt(DEEP_MAX * 1e6 * spaceBonus())}${S.gene ? " (🧬 +30%)" : ""}, or nothing if it fails (${Math.round(DEEP_FAIL * 100)}% chance) · successful: <b>${S.moon.ok || 0}</b></div>
+      <div class="muted">Every ${moonEvery() / 60} minutes a deep space mission: ${fmt(DEEP_MIN * 1e6 * spaceBonus())} – ${fmt(DEEP_MAX * 1e6 * spaceBonus())}${S.gene ? " (🧬 +30%)" : ""}, or nothing if it fails (${Math.round(moonFail() * 100)}% chance${S.mars ? ", 🔴 Mars Base: 10 min sooner, 10% less" : ""}) · successful: <b>${S.moon.ok || 0}</b></div>
       ${log ? `<h4>Last deep space missions</h4>${log}` : ""}</div>`;
   } else if (secrets2Open()) {
     html += `<div class="card specialCard secretCard" ${S.station ? "" : `style="opacity:0.6"`}><div class="row"><div><h3>${S.station ? "" : '<img class="ico lockS" src="assets/icons/ico-lock.webp" alt="">'}${ico("sci-moon", "biz")}Moon Base <span class="secretTag">🌌🌌 new</span></h3>
@@ -334,6 +352,20 @@ function renderScience() {
         <div class="muted">+${GENE_BONUS * 100}% on every 🚀 space mission and 🌕 deep space mission reward.</div>
         ${sciNeed(GENE_PRICE, GENE_SCI)}</div>
       ${sciBtn("gene", GENE_PRICE, GENE_SCI)}</div></div>`;
+  }
+  // 🔴 Mars Base (secret tier 2: needs the Moon Base and the Genetics Laboratory)
+  if (S.mars) {
+    const log = (S.mars.log || []).map(m => `<div class="row"><span>🔴 ${m.name}</span><b class="${m.reward ? "income" : ""}">${m.reward ? "+" + fmt(m.reward) : "❌ failed"}</b></div>`).join("");
+    html += `<div class="card specialCard secretCard"><div class="row"><h3>${marsIco()}Mars Base</h3><span class="muted">next Mars mission in <b id="sci-mars-next">${clock(S.mars.timer)}</b></span></div>
+      <div class="muted">Every ${MARS_EVERY / 60} minutes a deep space mission: ${fmt(DEEP_MIN * 1e6 * spaceBonus())} – ${fmt(DEEP_MAX * 1e6 * spaceBonus())}${S.gene ? " (🧬 +30%)" : ""}, or nothing if it fails (${Math.round(MARS_FAIL * 100)}% chance) · successful: <b>${S.mars.ok || 0}</b></div>
+      <div class="muted">🌕 Moon Base missions launch ${MARS_MOON_CUT / 60} minutes sooner and fail ${MARS_MOON_FAIL_CUT * 100}% less often.</div>
+      ${log ? `<h4>Last Mars missions</h4>${log}` : ""}</div>`;
+  } else if (secrets2Open() && S.moon && S.gene) {
+    html += `<div class="card specialCard secretCard"><div class="row"><div><h3>${marsIco()}Mars Base <span class="secretTag">🌌🌌 new</span></h3>
+        <div class="muted">Launches its own deep space mission every ${MARS_EVERY / 60} minutes: ${fmt(DEEP_MIN * 1e6)} – ${fmt(DEEP_MAX * 1e6)}, with a ${Math.round(MARS_FAIL * 100)}% chance the mission fails.
+          Also improves the 🌕 Moon Base: its missions launch ${MARS_MOON_CUT / 60} minutes sooner and fail ${MARS_MOON_FAIL_CUT * 100}% less often.</div>
+        ${sciNeed(MARS_PRICE, MARS_SCI)}</div>
+      ${sciBtn("mars", MARS_PRICE, MARS_SCI)}</div></div>`;
   }
   return html;
 }
@@ -371,6 +403,11 @@ $("shop").addEventListener("click", (e) => {
   else if (what === "gene" && secrets2Open() && S.moon && !S.gene && sciPool() >= GENE_SCI && buy(GENE_PRICE)) {
     spendScientists(GENE_SCI); S.gene = { bought: true };
     showNotice(`🧬 Genetics Laboratory opened! Space and deep space missions now pay +${GENE_BONUS * 100}%.`);
+  }
+  else if (what === "mars" && secrets2Open() && S.moon && S.gene && !S.mars && sciPool() >= MARS_SCI && buy(MARS_PRICE)) {
+    spendScientists(MARS_SCI); S.mars = { timer: MARS_EVERY, log: [], count: 0, ok: 0, earned: 0 };
+    S.moon.timer = Math.min(S.moon.timer, moonEvery());   // the Moon Base speeds up right away
+    showNotice(`🔴 Mars Base established! The first Mars mission launches in ${MARS_EVERY / 60} minutes, and Moon Base missions now launch every ${moonEvery() / 60} minutes.`);
   }
   else if (what === "lab" && !S.lab && sciPool() >= LAB_SCI && buy(LAB_PRICE)) { spendScientists(LAB_SCI); S.lab = { since: 0, prizes: 0, pending: null }; showNotice("🧪 Research lab opened! Breakthroughs can happen any second now."); }
   else if (what === "space" && !S.space && S.lab && (S.lab.prizes || 0) >= SPACE_NEED && sciPool() >= SPACE_SCI && buy(SPACE_PRICE)) { spendScientists(SPACE_SCI); S.space = { timer: spaceEvery(), log: [], count: 0, earned: 0 }; showNotice(`🚀 Space Mission Center built! The first launch is in ${spaceMin()} minutes. A 🛰️ satellite is now available in Logistics.`); }

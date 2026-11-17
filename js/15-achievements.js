@@ -51,6 +51,7 @@ const ACHIEVEMENTS = [
   { id: "moon",     cat: "secret", tier: 2, icon: "🌕", name: "One small step", desc: "Build the Moon Base", goal: 1, get: () => state.science && state.science.moon ? 1 : 0 },
   { id: "deep1",    cat: "secret", tier: 2, icon: "🚀", name: "Into the deep", desc: "Complete your first successful deep space mission", goal: 1, get: () => state.stats.deepOk || 0 },
   { id: "deep10",   cat: "secret", tier: 2, icon: "🌌", name: "Deep space veteran", desc: "Complete 10 successful deep space missions", goal: 10, get: () => state.stats.deepOk || 0 },
+  { id: "mars",     cat: "secret", tier: 2, icon: "🔴", name: "Red planet", desc: "Build the Mars Base", goal: 1, get: () => state.science && state.science.mars ? 1 : 0 },
   { id: "gene",     cat: "secret", tier: 2, icon: "🧬", name: "Rewriting the code", desc: "Open the Genetics Laboratory", goal: 1, get: () => state.science && state.science.gene ? 1 : 0 },
   { id: "fullSet",    cat: "general", icon: "🎨", name: "Dressed to impress", desc: "Wear the coin and background from the same collection", goal: 1, get: () => matchingSet() ? 1 : 0 },
   // Income
@@ -230,7 +231,7 @@ const ACH_PICS = new Set(["cash1s", "cash10s", "cash100s", "cash1g", "cash5g", "
   "mineRun1", "mineRun50", "mineRun250", "mineDeep50", "mineDeep80", "mineDeep100", "mineFullBag", "mineClose", "mineRescue", "mineUp1", "mineHoard", "mineDeep150", "mineDeep250", "mineMaster", "mineChest50", "mineMaxUp",
   "arteasy50", "arteasy75", "arteasy90", "artmedium50", "artmedium75", "artmedium90", "arthard50", "arthard75", "arthard90",
   "artcol10", "artcol50", "artcol100", "artslots", "artsold1", "artsold50", "artsold100", "artsold1000",
-  "uni2", "uni3", "sci150", "moon", "deep1", "deep10", "gene", "gene1", "gene100", "geneKraken", "geneElder", "geneUnicorn",
+  "uni2", "uni3", "sci150", "moon", "deep1", "deep10", "gene", "gene1", "gene100", "geneKraken", "geneElder", "geneUnicorn", "mars",
   // built from existing art in a badge rim (bronze rim = the first step, gold = the bigger one)
   "astro", "station", "wash3", "repair3", "salon3", "casino2", "hotel2", "warehouse5", "law10", "agents100", "mine1", "mine4", "port", "recruit", "artbiz", "sciUni", "sciLab", "parks2", "boost-energy-10", "boost-energy-100", "boost-pill-10", "boost-pill-100", "boost-influence-10", "boost-influence-100", "mineCoal", "mineSilver", "mineGold", "mineDiamond", "mineChest1", "mineLift1", "mineLift20", "gene10", "gene50", "satellite", "play-roulette-100", "play-roulette-1000", "play-blackjack-100", "play-blackjack-1000", "play-plinko-100", "play-plinko-1000", "play-climb-100", "play-climb-1000", "play-vp-100", "play-vp-1000", "play-uth-100", "play-uth-1000"]);
 const achIcon = (a, cls = "") => {
