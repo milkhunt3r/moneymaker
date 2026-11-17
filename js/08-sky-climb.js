@@ -7,22 +7,32 @@
    Ladder tuned so perfect play pays back about 97.7%.
    ===================================================================== */
 const CLIMB_LADDER = [0, 1, 1.4, 2, 3, 4.4, 6.6, 8, 9.5, 11.5, 14, 17, 21, 26, 34, 48, 80, 200, 1000, 5000, 50000];
-const CLIMB_MIN = 10000, CLIMB_MAX = 500000;
-const CLIMB_CHIPS = [10000, 25000, 50000, 100000, 250000, 500000];
-const climb = { bet: 0, chip: 10000, active: false, busy: false, stake: 0, step: 0, shield: false,
-                balls: [], drawn: [], tookHalf: false, banked: 0, message: "", crashed: false, lastBet: 0 };
+const CLIMB_MIN = 10000, CLIMB_MAX = 500000;   // Classic table (the wiki lists every table)
+// Tables: same game, different limits
+const CLIMB_TABLES = {
+  climb:     { title: "Sky Climb", min: 10000, max: 500000, chips: [10000, 25000, 50000, 100000, 250000, 500000] },
+  climbHigh: { title: "Sky Climb: High rollers", min: 5000000, max: 500000000, chips: [5000000, 10000000, 50000000, 100000000, 250000000, 500000000] },
+};
+const climbFresh = (id) => ({ bet: 0, chip: CLIMB_TABLES[id].chips[0], active: false, busy: false, stake: 0, step: 0, shield: false,
+                              balls: [], drawn: [], tookHalf: false, banked: 0, message: "", crashed: false, lastBet: 0, inPlay: 0 });
 
 /* 🔒 A climb in progress is saved: after a reload you continue at the same step with the same balls left
    (the next ball is only drawn when you press Draw, so refreshing gains nothing). Very old saves get the stake back. */
-if (state.climbRound && state.climbRound.active && state.climbInPlay > 0) {
-  Object.assign(climb, state.climbRound, { busy: false });
-  climb.drawn.forEach(d => d.fresh = false);
-  setTimeout(() => showNotice("🎈 Your Sky Climb is still in the air: continue it in the 🎰 Casino."), 0);
-} else {
-  if (state.climbInPlay > 0) state.casinoChips += state.climbInPlay;
-  state.climbInPlay = 0;
+if (!state.climbRounds) {   // older saves kept one table in climbRound / climbInPlay
+  state.climbRounds = {};
+  if (state.climbRound) state.climbRounds.climb = { ...state.climbRound, inPlay: state.climbInPlay || 0 };
 }
-state.climbRound = climb;   // saved with the game
+delete state.climbRound; delete state.climbInPlay;
+const CLIMBS = {};
+let climbResumed = false;
+for (const id in CLIMB_TABLES) {
+  const c = Object.assign(climbFresh(id), state.climbRounds[id] || {}, { busy: false }, CLIMB_TABLES[id], { id });
+  if (c.active && c.inPlay > 0) { c.drawn.forEach(d => d.fresh = false); climbResumed = true; }
+  else { if (c.inPlay > 0) state.casinoChips += c.inPlay; c.inPlay = 0; c.active = false; }
+  CLIMBS[id] = state.climbRounds[id] = c;   // saved with the game
+}
+if (climbResumed) setTimeout(() => showNotice("🎈 Your Sky Climb is still in the air: continue it in the 🎰 Casino."), 0);
+let climb = CLIMBS.climb;
 
 function climbMachine() {
   return [...Array(19).fill("g"), ...Array(8).fill("r"), "d"];
@@ -31,14 +41,14 @@ const climbValue = () => climb.stake * CLIMB_LADDER[climb.step];
 
 async function climbStart() {
   if (climb.active || climb.busy) return;
-  if (climb.bet < CLIMB_MIN) return climbMsg("Minimum bet is " + fmt(CLIMB_MIN) + ".");
+  if (climb.bet < climb.min) return climbMsg("Minimum bet is " + fmt(climb.min) + ".");
   if (climb.bet > state.casinoChips) return climbMsg("Not enough chips. Add money to the casino first.");
   state.casinoChips -= climb.bet;
   casinoRecord(climb.bet, 0);
   countPlay("climb");
   Object.assign(climb, { active: true, stake: climb.bet, step: 0, shield: false, balls: climbMachine(),
                          drawn: [], tookHalf: false, banked: 0, message: "", crashed: false, lastBet: climb.bet });
-  state.climbInPlay = climb.stake;
+  climb.inPlay = climb.stake;
   addXp(climb.bet);                 // XP = bet × game multiplier
   updateCounter(); save();
   await climbDraw();
@@ -69,7 +79,7 @@ async function climbDraw() {
       casinoRecord(0, cashback);
       climb.crashed = true;
       climb.active = false;
-      state.climbInPlay = 0;
+      climb.inPlay = 0;
       climb.message = `💥 Red ball! Your balloon popped and you lost ${fmt(lost)}.` +
         (climb.banked ? ` You kept the ${fmt(climb.banked)} you banked.` : "") +
         (cashback > 0 ? ` Cashback +${cashback.toLocaleString(undefined, { maximumFractionDigits: 1 })}.` : "");
@@ -90,7 +100,7 @@ function climbCashOut(top = false) {
   state.casinoChips += win;
   casinoRecord(0, win);
   climb.active = false;
-  state.climbInPlay = 0;
+  climb.inPlay = 0;
   const total = win + climb.banked;
   climb.message = (top ? "🏆 TOP OF THE SKY! " : "💰 Cashed out ") + fmt(win) + ` at ${CLIMB_LADDER[climb.step]}×.` +
     (climb.banked ? ` Total with banked half: ${fmt(total)}.` : "") +
@@ -106,7 +116,7 @@ function climbTakeHalf() {
   climb.banked += half;
   climb.stake /= 2;               // half keeps climbing
   climb.tookHalf = true;
-  state.climbInPlay = climb.stake;
+  climb.inPlay = climb.stake;
   climb.message = `👐 Banked ${fmt(half)}. The other half keeps climbing.`;
   updateCounter(); save(); renderClimb();
 }
@@ -124,7 +134,7 @@ function renderClimb(mixing = false) {
   const ladder = CLIMB_LADDER.slice(1).map((m, i) => {
     const step = i + 1;
     const cls = step === climb.step && (climb.active || !climb.crashed) && climb.step > 0 ? "current" : step < climb.step ? "passed" : "";
-    const amount = (climb.active ? climb.stake : climb.bet || CLIMB_MIN) * m;
+    const amount = (climb.active ? climb.stake : climb.bet || climb.min) * m;
     return `<div class="rung ${cls} ${step === 20 ? "top" : ""}"><span>${step}. ${m.toLocaleString()}×</span><span>${shortNum(Math.floor(amount))}</span></div>`;
   }).join("");
 
@@ -152,13 +162,13 @@ function renderClimb(mixing = false) {
       <button class="decision" data-climb="clear" ${climb.bet ? "" : "disabled"}>✖ Clear<small>bet</small></button>
       <div class="betCircle">${climb.bet ? chipMark(climb.bet) + `<b>${fmt(climb.bet)}</b>` : `<span>Place your bet<br>with the chips below</span>`}</div>
       <button class="decision" data-climb="rebet" ${climb.lastBet ? "" : "disabled"}>↺ Same bet<small>${climb.lastBet ? fmt(climb.lastBet) : "—"}</small></button>
-      <button class="decision main" data-climb="start" ${climb.bet >= CLIMB_MIN ? "" : "disabled"}>🚀 Start</button>`;
+      <button class="decision main" data-climb="start" ${climb.bet >= climb.min ? "" : "disabled"}>🚀 Start</button>`;
   }
 
   $("casinoGame").innerHTML = `
     <div class="card">
-      <div class="row"><div><h2 style="margin:0">${casIco("climb")}Sky Climb</h2>
-        <div class="muted">Bet ${fmt(CLIMB_MIN)} – ${fmt(CLIMB_MAX)} · 19 green, 8 red, 1 gold ball · balls are not put back</div></div>
+      <div class="row"><div><h2 style="margin:0">${casIco(climb.id)}${climb.title}</h2>
+        <div class="muted">Bet ${fmt(climb.min)} – ${fmt(climb.max)} · 19 green, 8 red, 1 gold ball · balls are not put back</div></div>
         <button class="btn ghost small" data-back="1" ${climb.active ? "disabled" : ""}>← All games</button></div>
       <div class="climbWrap">
         <div class="climbSky ${climb.crashed && !climb.active ? "crash" : ""}">
@@ -178,9 +188,9 @@ function renderClimb(mixing = false) {
         <div class="ladder">${ladder}</div>
       </div>
       ${climb.active ? "" : `<div class="chipsRow"><span class="muted">Bet:</span>
-        ${CLIMB_CHIPS.map(v => `<button class="chip ${v === climb.chip ? "selected" : ""}" data-climbchip="${v}"
+        ${climb.chips.map(v => `<button class="chip ${v === climb.chip ? "selected" : ""}" data-climbchip="${v}"
              style="background:${CHIP_COLORS[v].bg}; color:${CHIP_COLORS[v].text}">${chipLabel(v)}</button>`).join("")}
-        <span class="muted">Click chips to add to your bet (max ${fmt(CLIMB_MAX)}).</span></div>`}
+        <span class="muted">Click chips to add to your bet (max ${fmt(climb.max)}).</span></div>`}
       <div id="casinoMsg" class="${/Cashed|TOP|Banked|shield|Gold/.test(climb.message) ? "income" : "flash"}" style="margin-top:10px; text-align:center">${climb.message}</div>
       <div class="muted" style="margin-top:6px; text-align:center">Green climbs a step · Gold climbs and gives a shield that blocks one red · Red pops your balloon · Take half once to bank half and keep climbing with the rest</div>
     </div>`;
@@ -188,12 +198,12 @@ function renderClimb(mixing = false) {
 }
 
 $("casinoGame").addEventListener("click", (e) => {
-  if (currentGame !== "climb" || isPaused()) return;
+  if (!CLIMBS[currentGame] || isPaused()) return;
   const chip = e.target.closest("[data-climbchip]");
   if (chip && !climb.active) {
     const v = Number(chip.dataset.climbchip);
     climb.chip = v;
-    if (climb.bet + v > CLIMB_MAX) return climbMsg("Maximum bet is " + fmt(CLIMB_MAX) + ".");
+    if (climb.bet + v > climb.max) return climbMsg("Maximum bet is " + fmt(climb.max) + ".");
     climb.bet += v; climb.message = ""; renderClimb(); return;
   }
   const btn = e.target.closest("[data-climb]");

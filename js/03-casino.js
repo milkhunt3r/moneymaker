@@ -93,12 +93,13 @@ const CASINO_GAMES = [
   { id: "plinkoSuper", name: "Plinko: Super high rollers", emoji: "💎🔻", desc: "Same pyramid, 0.3× to 250×, up to 20 balls. Bets from 10 to 500 scoin per ball." },
   { id: "plinko", name: "Plinko", emoji: "🔻", desc: "Drop up to 20 balls down a peg pyramid into multipliers from 0.3× to 250×. Bets 5,000 – 5 scoin per ball." },
   { id: "climb",  name: "Sky Climb", emoji: "🎈", desc: "Draw balls to climb a 20-step ladder up to 50,000×. Cash out before a red ball pops your balloon! Bets 10,000 – 500,000." },
+  { id: "climbHigh", name: "Sky Climb: High rollers", emoji: "🎈", desc: "Draw balls to climb a 20-step ladder up to 50,000×. Cash out before a red ball pops your balloon! Bets 5 – 500 scoin." },
 ];
 // 🎨 a game's painted picture, with one 💎 high-roller badge for High rollers and two for Super high rollers
 function casIco(id, cls = "biz") {
   id = id || "";
   const base = id.startsWith("roulette") ? "roulette" : id.startsWith("bj") ? "blackjack" : id.startsWith("bac") ? "baccarat" : id.startsWith("vp") ? "poker"
-    : id.startsWith("uth") ? "holdem" : id.startsWith("plinko") ? "plinko" : id === "climb" ? "climb" : "chips";
+    : id.startsWith("uth") ? "holdem" : id.startsWith("plinko") ? "plinko" : id.startsWith("climb") ? "climb" : "chips";
   const tier = /Super$/.test(id) ? 2 : /High$/.test(id) ? 1 : 0;
   return `<span class="casIco ${cls}">${ico("cas-" + base, cls)}${tier ? `<span class="casTier">${ico("cas-highroller").repeat(tier)}</span>` : ""}</span>`;
 }
@@ -106,7 +107,7 @@ function casIco(id, cls = "biz") {
 const CASINO_GROUPS = [
   { name: "Roulette games", ico: "roulette", games: ["rouletteLow", "rouletteHigh", "rouletteSuper"] },
   { name: "Card games", ico: "blackjack",     games: ["bjLow", "bjHigh", "bjSuper", "bacLow", "bacHigh", "bacSuper", "vpLow", "vpHigh", "vpSuper", "uthLow", "uthHigh", "uthSuper"] },
-  { name: "Ball games", ico: "plinko",     games: ["plinko", "plinkoSuper", "climb"] },
+  { name: "Ball games", ico: "plinko",     games: ["plinko", "plinkoSuper", "climb", "climbHigh"] },
 ];
 let currentGame = null;   // null = game list
 
@@ -194,7 +195,7 @@ const XP_TABLE_MULT = {
   bacLow: 2, bacHigh: 4, bacSuper: 8,
   vpLow: 1, vpHigh: 1.5, vpSuper: 2,
   uthLow: 5, uthHigh: 5, uthSuper: 10,
-  plinko: 1, plinkoSuper: 2, climb: 2,
+  plinko: 1, plinkoSuper: 2, climb: 2, climbHigh: 4,
 };
 function xpBase(id) {
   if (XP_TABLE_MULT[id] !== undefined) return XP_TABLE_MULT[id];
@@ -282,7 +283,7 @@ function renderCasino() {
     setTimeout(() => { const g = $("casinoGame"); if (g) window.scrollTo({ top: g.getBoundingClientRect().top + scrollY - 8, behavior: "smooth" }); }, 50);
   renderCasino.shown = currentGame;
   const box = $("casinoGame");
-  setTimeout(updateVipBar, 0);
+  setTimeout(() => { if (typeof updateVipBar === "function") updateVipBar(); }, 0);
   if (!currentGame) {
     // 🔒 Baccarat opens at Gambler level 20
     const gameCard = (g) => g.id.startsWith("bac") && typeof bacUnlocked === "function" && !bacUnlocked()
@@ -305,7 +306,7 @@ function renderCasino() {
   if (VP_TABLES[currentGame]) { vp = VP_TABLES[currentGame]; renderVideoPoker(); }
   if (UTH_TABLES[currentGame]) { uth = UTH_TABLES[currentGame]; renderUth(); }
   if (typeof BAC_TABLES !== "undefined" && BAC_TABLES[currentGame]) { bac = BAC_TABLES[currentGame]; renderBaccarat(); }
-  if (currentGame === "climb") renderClimb();
+  if (CLIMBS[currentGame]) { climb = CLIMBS[currentGame]; renderClimb(); }
   if (PLINKO_TABLES[currentGame]) {
     const cfg = PLINKO_TABLES[currentGame];
     if (!cfg.chips.includes(plinko.bet)) plinko.bet = cfg.chips[0];   // reset the bet when changing tables
@@ -317,7 +318,7 @@ $("casinoGame").addEventListener("click", (e) => {
   const card = e.target.closest("[data-game]");
   if (card) { currentGame = card.dataset.game; renderCasino(); }
   const back = e.target.closest("[data-back]");
-  if (back && !roulette.spinning && !(bj && bj.phase !== "betting") && !(currentGame === "climb" && climb.active) && !(PLINKO_TABLES[currentGame] && plinko.balls.length) && !(VP_TABLES[currentGame] && vp.phase !== "betting") && !(UTH_TABLES[currentGame] && uth.phase !== "betting") && !(typeof BAC_TABLES !== "undefined" && BAC_TABLES[currentGame] && bac.phase !== "betting")) { currentGame = null; renderCasino(); }
+  if (back && !roulette.spinning && !(bj && bj.phase !== "betting") && !(CLIMBS[currentGame] && climb.active) && !(PLINKO_TABLES[currentGame] && plinko.balls.length) && !(VP_TABLES[currentGame] && vp.phase !== "betting") && !(UTH_TABLES[currentGame] && uth.phase !== "betting") && !(typeof BAC_TABLES !== "undefined" && BAC_TABLES[currentGame] && bac.phase !== "betting")) { currentGame = null; renderCasino(); }
 });
 
 /* =====================================================================

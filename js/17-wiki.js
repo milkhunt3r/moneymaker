@@ -141,7 +141,7 @@ function wikiCasino() {
       ["🎴 Video Poker", "×" + XP_TABLE_MULT.vpLow, "×" + XP_TABLE_MULT.vpHigh, "×" + XP_TABLE_MULT.vpSuper],
       ["🤠 Ultimate Texas Hold'em", "×" + XP_TABLE_MULT.uthLow, "×" + XP_TABLE_MULT.uthHigh, "×" + XP_TABLE_MULT.uthSuper],
       ["🔻 Plinko", "×" + XP_TABLE_MULT.plinko, "–", "×" + XP_TABLE_MULT.plinkoSuper],
-      ["🎈 Sky Climb", "×" + XP_TABLE_MULT.climb, "–", "–"]])}
+      ["🎈 Sky Climb", "×" + XP_TABLE_MULT.climb, "×" + XP_TABLE_MULT.climbHigh, "–"]])}
     <h3>🔥 Hot Tables</h3>
     <p>Every 20 minutes one game type becomes <b>hot</b>: for 10 minutes <b>all</b> its tables get a bonus on their XP multiplier, then there are 10 minutes with no bonus.
       The bonus grows with your 🎲 Gambler level: <b>+10</b> (levels 1–49), <b>+20</b> from level 50, <b>+40</b> from level 75 (you get +${hotBonus()} now; High roller Blackjack ×4 becomes ×${4 + hotBonus()}). The hot game is chosen at random and is never the same twice in a row. The timer is shown under your Gambler level, together with the next hot game.</p>
@@ -188,7 +188,7 @@ function wikiCasino() {
     ${wt(["Slot", ...PLINKO_MULTS.map((m, i) => i + 1)], [["Pays", ...PLINKO_MULTS.map(m => m + "×")]])}
 
     <h3>🎈 Sky Climb</h3>
-    <p>Bets ${fmt(CLIMB_MIN)} – ${fmt(CLIMB_MAX)}. A bag has 28 balls: 19 green, 8 red, 1 gold, not put back during a round.
+    <p>${Object.values(CLIMB_TABLES).map(t => `${t.title.replace("Sky Climb: ", "").replace("Sky Climb", "Classic")}: ${fmt(t.min)} – ${fmt(t.max)}`).join(" · ")}. A bag has 28 balls: 19 green, 8 red, 1 gold, not put back during a round.
       Green climbs one step, gold climbs one step and gives a shield against the next red, red pops your balloon (you lose what is still riding).
       After each step: <b>cash out</b>, <b>take half</b> (once per round), or <b>draw again</b>. About 97.7% return with perfect play.</p>
     ${wt(["Step", ...CLIMB_LADDER.slice(1, 11).map((m, i) => i + 1)], [["Pays", ...CLIMB_LADDER.slice(1, 11).map(m => m + "×")]])}
