@@ -59,6 +59,7 @@ const PATCH_NOTES = [
     "🐍🐉 New reward card decks: <b>Snake in a Top Hat</b> for 🃏 Blackjack veteran (1,000 hands) and <b>Dragon</b> for 🎴 Baccarat high society (500 hands), <b>Rat Hacker</b> for 🎴 Video Poker veteran (1,000 hands), <b>Cat Cowboy</b> for 🤠 Ultimate Texas Hold'em veteran (1,000 hands).",
     "🏆 ♠️ Royal Flush! and 💰 Jackpot! are now one achievement, <b>Royal Flush or Jackpot!</b>: a Royal Flush in Video Poker or Hold'em, or the top of Sky Climb. If you had either one, you keep it.",
     "🌋 Gold Mine Dig lava is dangerous now: flowing lava spreads on its own every 0.7 s, bursting pockets splash you (−20% lamp), standing next to lava burns 5% lamp per step, and lava can rise 1 tile. The 🧯 Heat suit softens all of it.",
+    "🌐 New language: <b>Español</b> (Spain). Switch it in ⚙️ Settings or at the top of the main menu. This first part covers the menus, buttons, Income, taxes and the tab headers; the rest of the game follows in the next updates.",
     "🆘 Final tax warning: if you can't pay a bill after the extension, you can now sell investments with a 20% fee to cover it instead of losing the game.",
     "🧾 Tax debt can be paid from any tab: click the red banner at the top (it stays in view while you scroll).",
     "🏆 Easier achievements: 🏛️ Pillar of society needs 250 tax bills (was 500), 💰 Art market mogul 200 paintings sold (was 250), ⛏️ Mine foreman 200 runs (was 250).",

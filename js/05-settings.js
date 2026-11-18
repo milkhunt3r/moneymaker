@@ -33,6 +33,7 @@ const OR_ICONS = {
   bug: '<path d="M9 4.5 7.6 3.1 9 1.7l2 2a5 5 0 0 1 2 0l2-2 1.4 1.4L15 4.5A5 5 0 0 1 17 8H7a5 5 0 0 1 2-3.5zM6 10h12v4a6 6 0 0 1-12 0zm-4 1h3v2H2zm17 0h3v2h-3zM2 17l3-1 .6 1.9-3 1zm19.4 1.9-3-1 .6-1.9 3 1zM11 12h2v7h-2z"/>',
   menu: '<path d="M12 3 2 11h3v10h5v-6h4v6h5V11h3z"/>',
   bright: '<path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm-1-6h2v3h-2zm0 19h2v3h-2zM1 11h3v2H1zm19 0h3v2h-3zM4.2 5.6l1.4-1.4 2.1 2.1-1.4 1.4zm12.1 12.1 1.4-1.4 2.1 2.1-1.4 1.4zM4.2 18.4l2.1-2.1 1.4 1.4-2.1 2.1zM16.3 6.3l2.1-2.1 1.4 1.4-2.1 2.1z"/>',
+  lang: '<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.9 6h-2.9a15.7 15.7 0 0 0-1.4-3.6A8 8 0 0 1 18.9 8zM12 4a14 14 0 0 1 1.9 4h-3.8A14 14 0 0 1 12 4zM4.3 14a8.2 8.2 0 0 1 0-4h3.4a16.5 16.5 0 0 0 0 4zm.8 2h2.9a15.7 15.7 0 0 0 1.4 3.6A8 8 0 0 1 5.1 16zM8 8H5.1a8 8 0 0 1 4.3-3.6A15.7 15.7 0 0 0 8 8zm4 12a14 14 0 0 1-1.9-4h3.8A14 14 0 0 1 12 20zm2.3-6H9.7a14.7 14.7 0 0 1 0-4h4.6a14.7 14.7 0 0 1 0 4zm.3 5.6a15.7 15.7 0 0 0 1.4-3.6h2.9a8 8 0 0 1-4.3 3.6zm1.7-5.6a16.5 16.5 0 0 0 0-4h3.4a8.2 8.2 0 0 1 0 4z"/>',
   reset: '<path d="M8 2h8l1 2h4v2H3V4h4zM5 8h14l-1.2 13a1 1 0 0 1-1 1H7.2a1 1 0 0 1-1-1zm4 2v9h2v-9zm4 0v9h2v-9z"/>',
 };
 const orIcon = (k) => `<svg viewBox="0 0 24 24">${OR_ICONS[k]}</svg>`;
@@ -62,6 +63,8 @@ function showSettings(fromMenu) {
       <div class="orSec">Display</div>
       <div class="orRow slider">${orIcon("bright")}<span class="grow">Background brightness</span><span class="orVal" id="orBrightVal">${bgBright()}%</span>
         <input type="range" class="orRange" id="orBright" min="20" max="100" step="5" value="${bgBright()}" style="--p:${(bgBright() - 20) / 0.8}%" aria-label="Background brightness"></div>
+      <div class="orRow slider">${orIcon("lang")}<span class="grow">Language</span>
+        <span class="orLang" data-noi18n><button data-lang="en">English</button><button data-lang="es">Español</button></span></div>
       <div class="orSec">Help</div>
       ${row("tips", "Show tips", `<span class="orSwitch ${state.tips.on ? "on" : ""}" id="orTips"></span>`)}
       ${row("tipsReset", "Show all tips again")}

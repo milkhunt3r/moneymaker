@@ -18,7 +18,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
   <meta property="og:image" content="assets/logo/share.jpg">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="stylesheet" href="css/style.css?v=20261118z">
+  <link rel="stylesheet" href="css/style.css?v=20261118zi">
 </head>
 <body>
   <!-- ===== Loading screen (removed when the game has started) ===== -->
@@ -39,6 +39,7 @@
   <div id="mainMenu" hidden>
     <div id="menuStage">
       <img id="menuLogo" src="assets/logo/menu-logo.webp" alt="Empire of Coins" draggable="false">
+      <div id="menuLang" data-noi18n><button data-lang="en">English</button><button data-lang="es">Español</button></div>
       <button class="menuBtn mGreen" data-menu="play" style="left:948px; top:360px; width:323px; height:61px">
         <img src="assets/logo/btn-green.webp" alt="" draggable="false"><span class="menuLabel"><svg viewBox="0 0 24 24"><path d="M6 3.5v17l14-8.5z"/></svg>Play</span></button>
       <button class="menuBtn mBlue" data-menu="settings" style="left:963px; top:435px; width:294px; height:56px">
@@ -116,8 +117,8 @@
       </button>
       <div id="energyTip" role="tooltip">
         <b>⚡ Energy drink</b><br>
-        Each click is worth <b>×5</b> for the next <b>30 seconds</b>.<br>
-        Click the can to buy it for <b>50</b>.
+        <span>Each click is worth <b>×5</b> for the next <b>30 seconds</b>.</span><br>
+        <span>Click the can to buy it for <b>50</b>.</span>
         <div class="muted" style="margin-top:4px">After it wears off: 2-minute cooldown.</div>
       </div>
     </div>
@@ -129,9 +130,9 @@
       </button>
       <div id="pillTip" role="tooltip">
         <b>🧙 Magical pill</b><br>
-        For <b>30 seconds</b>, each click also gives <b>10% of your income per second</b>.<br>
+        <span>For <b>30 seconds</b>, each click also gives <b>10% of your income per second</b>.</span><br>
         <span id="pillPreview" class="muted"></span><br>
-        Click the pill to buy it for <b>2,000</b>.
+        <span>Click the pill to buy it for <b>2,000</b>.</span>
         <div class="muted" style="margin-top:4px">After it wears off: 5-minute cooldown. Works together with the energy drink (×5 on the whole click).</div>
       </div>
     </div>
@@ -143,9 +144,9 @@
       </button>
       <div id="influenceTip" role="tooltip">
         <b>🎩 Political influence</b><br>
-        <b>Doubles the income of all your businesses</b> for <b>2 minutes</b>.<br>
+        <span><b>Doubles the income of all your businesses</b> for <b>2 minutes</b>.</span><br>
         <span id="influencePreview" class="muted"></span><br>
-        Click the hat to buy it for <b>250,000</b>.
+        <span>Click the hat to buy it for <b>250,000</b>.</span>
         <div class="muted" style="margin-top:4px">After it wears off: 30-minute cooldown.</div>
       </div>
     </div>
@@ -567,33 +568,35 @@
   <div id="tipCard" hidden role="status"></div>
   <div id="tutBubble" hidden role="dialog" aria-label="Guided start"></div>
   <!-- Game code, split by section. Files share one global scope and must load in this order. -->
-  <script src="js/00-phone.js?v=20261118z"></script>
-  <script src="js/01-core.js?v=20261118z"></script>
-  <script src="js/02-income.js?v=20261118z"></script>
-  <script src="js/03-casino.js?v=20261118z"></script>
-  <script src="js/04-investing.js?v=20261118z"></script>
-  <script src="js/05-settings.js?v=20261118z"></script>
-  <script src="js/06-casino-cards.js?v=20261118z"></script>
-  <script src="js/07-boosters.js?v=20261118z"></script>
-  <script src="js/08-sky-climb.js?v=20261118z"></script>
-  <script src="js/09-special.js?v=20261118z"></script>
-  <script src="js/10-plinko.js?v=20261118z"></script>
-  <script src="js/11-cosmetics.js?v=20261118z"></script>
-  <script src="js/12-logistics.js?v=20261118z"></script>
-  <script src="js/13-live-trading.js?v=20261118z"></script>
-  <script src="js/14-world-map.js?v=20261118z"></script>
-  <script src="js/15-achievements.js?v=20261118z"></script>
-  <script src="js/16-prestige.js?v=20261118z"></script>
-  <script src="js/17-wiki.js?v=20261118z"></script>
-  <script src="js/18-art.js?v=20261118z"></script>
-  <script src="js/19-science.js?v=20261118z"></script>
-  <script src="js/20-tips.js?v=20261118z"></script>
-  <script src="js/21-clock.js?v=20261118z"></script>
-  <script src="js/22-main-menu.js?v=20261118z"></script>
-  <script src="js/23-minigames.js?v=20261118z"></script>
-  <script src="js/24-genetics.js?v=20261118z"></script>
-  <script src="js/25-baccarat.js?v=20261118z"></script>
-  <script src="js/26-slot-engine.js?v=20261118z"></script>
-  <script src="js/27-gene-cascade.js?v=20261118z"></script>
+  <script src="js/00-i18n.js?v=20261118zi"></script>
+  <script src="js/i18n-es.js?v=20261118zi"></script>
+  <script src="js/00-phone.js?v=20261118zi"></script>
+  <script src="js/01-core.js?v=20261118zi"></script>
+  <script src="js/02-income.js?v=20261118zi"></script>
+  <script src="js/03-casino.js?v=20261118zi"></script>
+  <script src="js/04-investing.js?v=20261118zi"></script>
+  <script src="js/05-settings.js?v=20261118zi"></script>
+  <script src="js/06-casino-cards.js?v=20261118zi"></script>
+  <script src="js/07-boosters.js?v=20261118zi"></script>
+  <script src="js/08-sky-climb.js?v=20261118zi"></script>
+  <script src="js/09-special.js?v=20261118zi"></script>
+  <script src="js/10-plinko.js?v=20261118zi"></script>
+  <script src="js/11-cosmetics.js?v=20261118zi"></script>
+  <script src="js/12-logistics.js?v=20261118zi"></script>
+  <script src="js/13-live-trading.js?v=20261118zi"></script>
+  <script src="js/14-world-map.js?v=20261118zi"></script>
+  <script src="js/15-achievements.js?v=20261118zi"></script>
+  <script src="js/16-prestige.js?v=20261118zi"></script>
+  <script src="js/17-wiki.js?v=20261118zi"></script>
+  <script src="js/18-art.js?v=20261118zi"></script>
+  <script src="js/19-science.js?v=20261118zi"></script>
+  <script src="js/20-tips.js?v=20261118zi"></script>
+  <script src="js/21-clock.js?v=20261118zi"></script>
+  <script src="js/22-main-menu.js?v=20261118zi"></script>
+  <script src="js/23-minigames.js?v=20261118zi"></script>
+  <script src="js/24-genetics.js?v=20261118zi"></script>
+  <script src="js/25-baccarat.js?v=20261118zi"></script>
+  <script src="js/26-slot-engine.js?v=20261118zi"></script>
+  <script src="js/27-gene-cascade.js?v=20261118zi"></script>
 </body>
 </html>

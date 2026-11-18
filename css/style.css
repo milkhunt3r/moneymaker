@@ -1682,3 +1682,15 @@ body.phone .debtBanner { top: 56px; }
 .mineEnergy .ico.mnE { width: 30px; height: 30px; margin: 0; }
 .gameStatus .ico.mnE { width: 1.2em; height: 1.2em; margin: 0; }
 .ico.mnUp { width: 34px; height: 34px; margin: 0; }
+
+/* 🌐 language switch */
+.langRow { display: flex; align-items: center; gap: 6px; padding: 6px 10px; }
+#settingsMenu .langRow button { flex: 1; padding: 6px 8px; text-align: center; border-radius: 8px; }
+#menuLang { position: absolute; right: 28px; top: 22px; display: flex; gap: 4px; padding: 4px; border-radius: 14px; background: rgba(10, 8, 24, 0.7); border: 1px solid rgba(255, 211, 77, 0.5); z-index: 3; }
+#menuLang button { font: 700 22px/1 inherit; font-family: inherit; color: #d9d6ea; background: transparent; border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; }
+#menuLang button:hover { color: #fff; }
+html[lang="en"] [data-lang="en"], html[lang="es"] [data-lang="es"] { background: linear-gradient(180deg, #ffe27a, #f0a81c) !important; color: #2a1800 !important; }
+.orLang { display: flex; gap: 4px; }
+.orLang button { font: 700 13px system-ui, sans-serif; padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(255, 211, 77, 0.5); background: rgba(255, 255, 255, 0.06); color: #fff; cursor: pointer; }
+/* 🌐 longer Spanish labels: keep amounts on one line */
+#shop .income, #shop .card > .row > .muted, #shop .row > span.muted:last-child { white-space: nowrap; }
