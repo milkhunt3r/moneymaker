@@ -1677,3 +1677,8 @@ body.phone .debtBanner { top: 56px; }
 .rewardCard .colEmblem { margin: 0 8px 0 0; flex-shrink: 0; }
 .rewardCard > .muted { margin-top: 6px; }
 .spot.trio { right: -11px; width: 19px; height: 19px; z-index: 4; }   /* 0-2-3 and 0-1-2 on the zero's edge */
+
+/* 🎨 painted mine icons */
+.mineEnergy .ico.mnE { width: 30px; height: 30px; margin: 0; }
+.gameStatus .ico.mnE { width: 1.2em; height: 1.2em; margin: 0; }
+.ico.mnUp { width: 34px; height: 34px; margin: 0; }
