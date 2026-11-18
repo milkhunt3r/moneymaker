@@ -301,7 +301,7 @@ const SUIT_FILE = { "♠": "s", "♥": "h", "♦": "d", "♣": "c" };
 const SUIT_NAME = { "♠": "spades", "♥": "hearts", "♦": "diamonds", "♣": "clubs" };
 const RANK_NAME = { A: "Ace", J: "Jack", Q: "Queen", K: "King" };
 // the deck in use: the equipped 🃏 Cards cosmetic, or the default fox deck
-const DECK_DIRS = { snakeCards: "cards-snake", dragonCards: "cards-dragon", wowCards: "cards-wow", rainCards: "cards-rain", aheadCards: "cards-ahead", royalCards: "cards-royal", emperorCards: "cards-emperor" };
+const DECK_DIRS = { snakeCards: "cards-snake", dragonCards: "cards-dragon", ratCards: "cards-rat", wowCards: "cards-wow", rainCards: "cards-rain", aheadCards: "cards-ahead", royalCards: "cards-royal", emperorCards: "cards-emperor" };
 function deckDir() {
   const on = state.cosmetics && state.cosmetics.on || {};
   const id = Object.keys(DECK_DIRS).find(k => on[k]);
