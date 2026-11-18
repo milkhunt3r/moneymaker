@@ -218,10 +218,10 @@ function renderHot() {
   const h = hotNow(), mm = clock(Math.ceil(h.left / 1000)), pct = (1 - h.left / HOT_LEN) * 100;
   box.className = "card hotCard " + (h.active ? "on" : "off");
   box.innerHTML = h.active
-    ? `<div class="row"><b>🔥 Hot Tables: ${h.game.name} · +${hotBonus()} XP multiplier</b><span class="hotTime">${mm} left</span></div>
+    ? `<div class="row"><b>${ico("ui-hot")}Hot Tables: ${h.game.name} · +${hotBonus()} XP multiplier</b><span class="hotTime">${mm} left</span></div>
        <div class="hotBar"><div style="width:${100 - pct}%"></div></div>
        <div class="muted">All ${h.game.name} tables get +${hotBonus()} on their XP multiplier right now (e.g. ×4 becomes ×${4 + hotBonus()}). Then a 10-minute break; next up: ${h.next.name}.</div>`
-    : `<div class="row"><b>❄️ Hot Tables cooling down</b><span class="hotTime">next in ${mm}</span></div>
+    : `<div class="row"><b>${ico("ui-hot")}Hot Tables cooling down</b><span class="hotTime">next in ${mm}</span></div>
        <div class="hotBar"><div style="width:${pct}%"></div></div>
        <div class="muted">Next hot game: <b>${h.next.name}</b> (+${hotBonus()} XP multiplier for 10 minutes on all its tables).</div>`;
   const key = h.active + h.game.id;

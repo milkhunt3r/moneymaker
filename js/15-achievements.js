@@ -13,6 +13,9 @@ const ACH_CATEGORIES = [
   // 🧬 Gene Splicer: invisible (also not counted) until the 2nd prestige
   { id: "genetics", name: "🧬 Genetics", hidden: () => !((state.legacy && state.legacy.count) >= 2) },
 ];
+// 🎨 painted category icons (assets/icons/ico-ui-*.webp); the name's emoji stays for plain text
+const ACH_CAT_PIC = { general: "general", income: "income", casino: "casino", invest: "invest", logistics: "logistics", art: "art", mine: "mining", secret: "secrets", genetics: "genetics" };
+const catLabel = (c) => ACH_CAT_PIC[c.id] ? ico("ui-" + ACH_CAT_PIC[c.id]) + c.name.replace(/^\S+\s/, "") : c.name;
 const achCatsShown = () => ACH_CATEGORIES.filter(c => !(c.hidden && c.hidden()));
 // an achievement with a tier stays hidden until that many prestiges (🌌🌌 second-tier secrets: 2)
 const achShown = () => { const ids = achCatsShown().map(c => c.id), pc = (state.legacy && state.legacy.count) || 0;
@@ -301,7 +304,7 @@ function grantRewards() {   // checked with the achievements; a reward, once ear
   }
 }
 function renderRewards() {
-  $("rewardList").innerHTML = `<div class="card"><h2 style="margin:0 0 4px">🎁 Rewards</h2>
+  $("rewardList").innerHTML = `<div class="card"><h2 style="margin:0 0 4px">${ico("ui-rewards", "h")}Rewards</h2>
       <div class="muted">Finish every achievement of a category to unlock its collection. Rewards can't be bought in the Shop.</div></div>` +
     COLLECTIONS.filter(c => c.reward && !(c.hidden && c.hidden())).map(col => {
       const p = rewardProgress(col), items = COSMETICS.filter(c => c.collection === col.id), got = items.every(c => state.cosmetics.owned[c.id]);
@@ -341,14 +344,14 @@ function renderAchievements() {
   const sel = achCatsShown().some(c => c.id === state.achCat) ? state.achCat : "all";
   const chip = (id, name, done, total) => `<button class="achCat ${sel === id ? "active" : ""}" data-achcat="${id}">${name} <span>${done}/${total}</span></button>`;
   const doneIn = (id) => ACHIEVEMENTS.filter(a => a.cat === id && state.achievements[a.id]).length;
-  $("achList").innerHTML = `<div class="achCats">${chip("all", "🏆 All", achDone(), achShown().length)}${achCatsShown().map(c =>
-        chip(c.id, c.name, doneIn(c.id), ACHIEVEMENTS.filter(a => a.cat === c.id).length)).join("")}</div>
-    <div class="achFilter"><button class="btn ghost small" id="achHideToggle">${hide ? "👁️ Show completed" : "🙈 Hide completed"}</button>
+  $("achList").innerHTML = `<div class="achCats">${chip("all", ico("ui-trophy") + "All", achDone(), achShown().length)}${achCatsShown().map(c =>
+        chip(c.id, catLabel(c), doneIn(c.id), ACHIEVEMENTS.filter(a => a.cat === c.id).length)).join("")}</div>
+    <div class="achFilter"><button class="btn ghost small" id="achHideToggle">${hide ? "👁️ Show completed" : ico("ui-hide") + "Hide completed"}</button>
       <span class="muted">${hide ? "Completed achievements are hidden." : ""}</span></div>` + achCatsShown().filter(c => sel === "all" || c.id === sel).map(c => {
     const all = ACHIEVEMENTS.filter(a => a.cat === c.id);
     const done = all.filter(a => state.achievements[a.id]).length;
     const list = hide ? all.filter(a => !state.achievements[a.id]) : all;
-    return `<div class="achHead"><h2 style="margin:0">${c.name}</h2><span class="muted">${done} / ${all.length}</span></div>
+    return `<div class="achHead"><h2 style="margin:0">${catLabel(c)}</h2><span class="muted">${done} / ${all.length}</span></div>
       ${list.length ? "" : `<div class="muted" style="margin:4px 0 14px">✅ All done in this category!</div>`}
       <div class="achGrid">${list.map(a => {
         const got = state.achievements[a.id];
