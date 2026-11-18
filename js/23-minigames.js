@@ -26,7 +26,7 @@ M.chests = M.chests || 0; M.jackpots = M.jackpots || 0;
    Layers:   0–100 m  the old mine (dirt, stone, granite)
            100–170 m  🌋 lava zone: dark basalt, lava pools and hidden lava pockets
            170–250 m  💠 crystal caves: more caves, rubies, chests
-   Below 150 m it is hot: the lamp burns 25% faster (🧯 Heat suit Lv 2 removes it).
+   Below 150 m it is hot: the lamp burns 25% faster (🧯 Heat suit Lv 2 removes it). Lava splashes, burns and flows (see LAVA_*).
    Treasure chests (1–2 per map) sit below 130 m. */
 const MINE_W = 25, MINE_H = 127, MINE_START_X = 12, VIEW_COLS = 15;
 const ROW_LAVA = 50, ROW_HEAT = 75, ROW_CHEST = 65, ROW_CRYSTAL = 85;   // 100 m, 150 m, 130 m, 170 m
@@ -34,6 +34,13 @@ const MINE_LIFT_SEC = 60, MINE_LIFT_MAX = 5;          // 🛗 a lift costs 60 se
 const CHEST_SLOTS = 5;                                 // a chest takes 5 bag slots
 const MINE_DEEP_ORE = 0.07;                           // chance of ore in a tile below 100 m (0.15–0.17 just above)
 const LAVA_FLOW = 6;                                   // a lava pocket releases up to 6 tiles of flowing lava
+/* 🌋 lava danger:
+   - flowing lava spreads on its own clock: 1 tile every 0.7 s (the first after 1.2 s), even if you stand still
+   - a bursting pocket splashes you: −20% of the lamp's full oil (Heat suit: −10% / −5%)
+   - scorching heat: every step next to lava (up, down, left, right) burns 5% of the lamp (Heat suit: 4% / 2.5%)
+   - flowing lava can rise 1 tile above the pocket it came from (so digging straight down into one isn't always safe) */
+const LAVA_TICK_MS = 700, LAVA_FIRST_MS = 1200;
+const LAVA_SPLASH = [0.2, 0.1, 0.05], LAVA_HEAT = [0.05, 0.04, 0.025];
 const MINE_ENERGY_MAX = 5, MINE_REGEN_MS = 20 * 60 * 1000;
 const MINE_LAMP = 100, MINE_BAG = 25, MINE_RESCUE_KEEP = 0.5, MINE_MIN_BASE = 500;
 const MINE_COST = { walk: 0.25, dirt: 1, stone: 1.25, granite: 1.5 };
@@ -73,7 +80,8 @@ const MINE_UPS = {
   insurance: { icon: "🆘", name: "Rescue insurance", max: 2, eff: (l) => `rescue keeps ${[50, 65, 80][l]}% of your ore`,
     costs: [[30e6, { copper: 10 }], [300e6, { silver: 8 }]] },
   heat: { icon: "🧯", name: "Heat suit", max: 2,
-    eff: (l) => ["no protection", "survive one lava touch per run", "survive one lava touch · no extra lamp burn below 150 m"][l],
+    eff: (l) => ["no protection", "survive one lava touch per run · half the burst splash · less heat next to lava",
+                 "survive one lava touch · splash −5% · heat −2.5% per step · no extra lamp burn below 150 m"][l],
     costs: [[1e9, { diamond: 4 }], [8e9, { ruby: 6 }]] },
 };
 const upLv = (k) => Math.min(M.up[k] || 0, MINE_UPS[k].max);
@@ -424,8 +432,10 @@ function mineStep(dx, dy) {
     R.hits[i]++;
     if (R.hits[i] >= tileHits(t)) {
       if (t === 6) {   // 🌋 a hidden lava pocket bursts: the lava starts flowing from that tile
-        R.tile[i] = 5; R.flows.push({ cells: [i], left: LAVA_FLOW, wait: 1 });   // you get one free move before it flows
-        R.msg = "🌋 A lava pocket burst open! The lava flows down and sideways: get away, go UP!";
+        R.tile[i] = 5; R.flows.push({ cells: [i], left: LAVA_FLOW, acc: LAVA_TICK_MS - LAVA_FIRST_MS, top: ny - 1 });   // flows on its own clock
+        const splash = Math.round(R.lampMax * LAVA_SPLASH[upLv("heat")] * 10) / 10;
+        R.lamp -= splash;
+        R.msg = `🌋 A lava pocket burst open and splashed you (−${splash} oil)! It flows fast: get away, go UP!`;
       } else {
         R.tile[i] = 0;
         if (o === "chest") { R.chests = (R.chests || 0) + 1; R.msg = `📦 A treasure chest! Carry it to the surface to open it.`; }
@@ -438,23 +448,34 @@ function mineStep(dx, dy) {
     } else R.msg = "";
   }
   R.deepest = Math.max(R.deepest, R.y);
-  if (lavaFlow()) return;   // burned
-  if (R.lamp <= 0) { R.lamp = 0; mineDraw(); return mineFinish(R.y > 0); }
+  // 🔥 scorching heat: each step next to lava burns extra oil
+  const nearLava = [[0, 1], [0, -1], [1, 0], [-1, 0]].some(([ax, ay]) => R.tile[mIdx(R.x + ax, R.y + ay)] === 5 && R.x + ax >= 0 && R.x + ax < MINE_W);
+  if (nearLava && R.y > 0 && !(t === 6 && R.tile[i] === 5 && /splashed/.test(R.msg))) {   // (the burst step only splashes)
+    const burn = Math.round(R.lampMax * LAVA_HEAT[upLv("heat")] * 10) / 10;
+    R.lamp -= burn;
+    if (!/splashed/.test(R.msg)) R.msg = `🔥 Scorching heat next to the lava: −${burn} oil!`;
+  }
+  if (R.lamp <= 0) { R.lamp = 0; mineDraw(); return mineFinish(R.y > 0, nearLava || /splashed/.test(R.msg)); }
   mineDraw(); mineHud();
 }
 // 🌋 flowing lava: every step, each lava flow grows by one tile into an open space (down first, then sideways, never up)
-function lavaFlow() {
+function lavaFlow(ms) {
   const R = M.run;
+  let moved = false;
   for (const F of R.flows || []) {
     if (F.left <= 0) continue;
-    if (F.wait > 0) { F.wait--; continue; }
+    if (F.acc === undefined) { F.acc = LAVA_TICK_MS - LAVA_FIRST_MS; F.top = Math.floor(F.cells[0] / MINE_W) - 1; }   // older saves
+    F.acc += ms;
+    if (F.acc < LAVA_TICK_MS) continue;
+    F.acc -= LAVA_TICK_MS; moved = true;
     let spot = null;
     for (const c of F.cells.slice().reverse()) {   // the newest edge first
       const x = c % MINE_W, y = Math.floor(c / MINE_W);
-      const opts = [[0, 1], ...(mineRand() < 0.5 ? [[-1, 0], [1, 0]] : [[1, 0], [-1, 0]])];
+      const opts = [[0, 1], ...(mineRand() < 0.5 ? [[-1, 0], [1, 0]] : [[1, 0], [-1, 0]]), [0, -1]];   // down, sideways, then up
       for (const [dx, dy] of opts) {
         const nx = x + dx, ny = y + dy;
         if (nx < 0 || nx >= MINE_W || ny < 1 || ny >= MINE_H - 1) continue;
+        if (ny < F.top) continue;   // it can rise only 1 tile above its pocket
         if (R.tile[mIdx(nx, ny)] === 0) { spot = mIdx(nx, ny); break; }
       }
       if (spot !== null) break;
@@ -471,8 +492,19 @@ function lavaFlow() {
       }
     }
   }
+  if (moved) { mineDraw(); mineHud(); }
   return false;
 }
+// ⏱️ the lava clock: runs only while you're looking at the mine (not paused, tab visible)
+let lavaLast = Date.now();
+setInterval(() => {
+  const now = Date.now(), ms = Math.min(500, now - lavaLast); lavaLast = now;
+  const R = M.run;
+  if (!R || !(R.flows || []).some(F => F.left > 0) || isPaused() || document.hidden) return;
+  const cv = document.getElementById("mineCanvas");
+  if (!cv || !cv.offsetParent) return;
+  lavaFlow(ms);
+}, 100);
 
 // ----- drawing -----
 /* 🦫 miner art (assets/mine/*.webp, 256×256, all facing right, same scale): the pose follows what you just did.
@@ -740,7 +772,7 @@ function renderMine() {
         <h2>⛏️ Gold Mine Dig</h2>
         <p>Dig down into your gold mine and grab as much ore as your bag can hold. The deeper you go, the better the ore,
           but every step burns lamp oil. Back at the surface, sell your ore or keep it in your 🏦 vault to pay for upgrades. If the lamp runs out underground, the rescue team saves ${Math.round(rescueKeep() * 100)}% of your ore.</p>
-        <p class="muted">🌋 Below <b>100 m</b>: lava pools block the way and rocks with glowing red cracks hide lava pockets that flow when you break them (lava never flows up). Getting caught saves only ${Math.round(lavaKeep() * 100)}% of your ore.
+        <p class="muted">🌋 Below <b>100 m</b>: lava pools block the way and rocks with glowing red cracks hide lava pockets. Breaking one splashes you (−${LAVA_SPLASH[upLv("heat")] * 100}% lamp) and the lava flows fast, even if you stand still (it can rise 1 tile). Every step next to lava burns ${LAVA_HEAT[upLv("heat")] * 100}% of your lamp. Getting caught saves only ${Math.round(lavaKeep() * 100)}% of your ore.
           🔥 Below <b>150 m</b> the heat burns your lamp 25% faster, and 🔴 rubies appear.
           📦 Below <b>130 m</b> are 1–2 treasure chests (${CHEST_SLOTS} bag slots each): bring them up yourself to open them. The rescue team leaves them behind.</p>
         <div class="mineOreRow">${ORE_KEYS.map(k => `<span>${oreIcon(k)} ${ORES[k].name}: <b>${fmt(oreValue(k))}</b></span>`).join("")}</div>
