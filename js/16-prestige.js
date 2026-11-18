@@ -3,7 +3,7 @@
    Every prestige gives a 10-minute tax holiday afterwards (no tax inspections), whatever bonus is chosen.
    Always kept: achievements, Gambler & Investor levels, cosmetics, statistics, Legacy, VIP coins.
    Choices: 4 prestiges, 4 picks in all, so every player ends with every bonus, in the order they choose:
-     tycoon  (once)  +25% income (businesses, special businesses, clicks); this reset also keeps your Science buildings (not the satellite)
+     tycoon  (once)  +25% income (businesses, special businesses, clicks); keeps your Science buildings (not the satellite) on this and every later reset
      empire  (max 2) 1st: keep your trucks, tankers, cargo planes, warehouses, Trading Port and Logistics Center on every reset from now on (not the satellite)
                      2nd: all logistics contracts take half the time (same pay)
      vip     (once)  VIP coins: a 500 scoin chip every 10 min for the Super high roller tables, and every other free chip comes twice as fast
@@ -18,7 +18,7 @@ if (!state.legacy) state.legacy = { count: 0, tycoon: 0, empire: 0, vip: 0, hist
 function legacyIncomeMult() { return 1 + TYCOON_BONUS * ((state.legacy && state.legacy.tycoon) || 0); }
 
 const PRESTIGE_CHOICES = [
-  { id: "tycoon", icon: "💼", name: "Tycoon's Legacy", max: 1, text: "+25% income from businesses, special businesses and clicks, forever. This reset also keeps your 🔬 Science buildings (not the satellite).",
+  { id: "tycoon", icon: "💼", name: "Tycoon's Legacy", max: 1, text: "+25% income from businesses, special businesses and clicks, forever. From this reset on, every reset keeps your 🔬 Science buildings (not the satellite).",
     now: () => `Income +${(state.legacy.tycoon + 1) * 25}% for good` },
   { id: "empire", icon: "🚢", name: "Global Empire", max: 2,
     text: () => state.legacy.empire
@@ -56,7 +56,7 @@ function showPrestigeConfirm(id) {
   let lost = id === "empire" || state.legacy.empire > 0
     ? "your money, casino chips, businesses, workers, other special businesses and investments"
     : "your money, casino chips, businesses, workers, special businesses, investments and logistics fleet";
-  lost += id === "tycoon" ? " (your 🔬 Science buildings are kept, the 🛰️ satellite is not)" : " and 🔬 Science";
+  lost += id === "tycoon" || state.legacy.tycoon > 0 ? " (your 🔬 Science buildings are kept, the 🛰️ satellite is not)" : " and 🔬 Science";
   showModal(`<h2>${c.icon} ${c.name}</h2>
     <p>Are you sure? This <b>resets</b> ${lost}.</p>
     <p class="muted">Kept: achievements, levels, cosmetics, statistics, Legacy bonuses, free bet chips, Art Gallery unlock, slots and paintings.
@@ -93,8 +93,8 @@ function doPrestige(id) {
     // all-time logistics counters are statistics: always kept
     logistics: { tankers: [], trucks: [], planes: [], earned: logi.earned, contracts: logi.contracts || 0 },
   };
-  // 💼 Tycoon's Legacy: this reset keeps the Science buildings (University, Research lab, Space Mission Center), not the satellite
-  if (id === "tycoon" && state.science) keep.science = { ...state.science, satellite: false };
+  // 💼 Tycoon's Legacy: from the reset it was picked on, every reset keeps the Science buildings (University, Research lab, Space Mission Center…), not the satellite
+  if (L.tycoon > 0 && state.science) keep.science = { ...state.science, satellite: false };
   if (L.empire > 0) {   // Global Empire keeps the fleet on every reset after it was picked
     keep.logistics = state.logistics;
     // 🚢 Global Empire level 2 just picked: offers on screen and deliveries under way get the half time right away

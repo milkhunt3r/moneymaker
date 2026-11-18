@@ -799,6 +799,9 @@ rx(String.raw`\+1 in`, "+1 en");
 rx(String.raw`(Extinct|Mythical) (\d+\/\d+)`, (m, c, n) => `${c === "Extinct" ? "Extintas" : "Míticas"} ${n}`);
 rx(String.raw`(.+?) (\d+\/\d+)`, (m, a, n) => { const x = esq(a); return x == null ? null : `${x} ${n}`; });
 
+H("💼 Fix: <b>Tycoon's Legacy</b> now keeps your 🔬 Science buildings on every later reset too, not only on the reset you pick it (the satellite still resets).",
+  "💼 Corrección: <b>Legado del magnate</b> ahora conserva tus edificios de 🔬 Ciencia también en todos los reinicios posteriores, no solo en el reinicio en que lo eliges (el satélite se sigue reiniciando).");
+
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
 ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {

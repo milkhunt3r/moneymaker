@@ -169,8 +169,8 @@ Object.assign(ES, {
   "Income +25% for good": "Ingresos +25% para siempre", "Free chips: every 20 min → every 10 min": "Fichas gratis: cada 20 min → cada 10 min",
   "Always kept: achievements, levels, cosmetics, statistics and your 🖼️ Art Gallery (unlock, slots and paintings). After every prestige: 🛡️ no tax inspections for the first 10 minutes.":
     "Siempre se conservan: logros, niveles, cosméticos, estadísticas y tu 🖼️ Galería de arte (desbloqueo, huecos y cuadros). Después de cada prestigio: 🛡️ sin inspecciones de Hacienda durante los primeros 10 minutos.",
-  "+25% income from businesses, special businesses and clicks, forever. This reset also keeps your 🔬 Science buildings (not the satellite).":
-    "+25% de ingresos de negocios, negocios especiales y clics, para siempre. Este reinicio también conserva tus edificios de 🔬 Ciencia (no el satélite).",
+  "+25% income from businesses, special businesses and clicks, forever. From this reset on, every reset keeps your 🔬 Science buildings (not the satellite).":
+    "+25% de ingresos de negocios, negocios especiales y clics, para siempre. A partir de este reinicio, todos los reinicios conservan tus edificios de 🔬 Ciencia (no el satélite).",
   "Keep all your trucks, oil tankers and cargo planes, plus warehouses, Trading Port and Logistics Center, on this and every future reset (not the 🛰️ satellite).":
     "Conserva todos tus camiones, petroleros y aviones de carga, además de almacenes, puerto comercial y centro logístico, en este reinicio y en todos los siguientes (no el 🛰️ satélite).",
   "A free 500 scoin bet chip every 10 minutes for the Super high roller tables, and all your other free bet chips come twice as fast. What they win goes to your casino chips.":

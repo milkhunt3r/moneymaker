@@ -52,6 +52,7 @@ addEventListener("resize", fitBrand); fitBrand();
 const PATCH_NOTES = [
   { date: "18 November 2026", title: "Empire of Coins", items: [
     "🌐 More of the game in <b>Español</b>: the rules in Investing, Logistics and Live trading, every casino game (buttons, rules, pay tables and results), the Gold Mine Dig and Art Gallery mini-games, all achievement names and descriptions, and the Shop and reward items.",
+    "💼 Fix: <b>Tycoon's Legacy</b> now keeps your 🔬 Science buildings on every later reset too, not only on the reset you pick it (the satellite still resets).",
   ] },
   { date: "17 November 2026", title: "Empire of Coins", items: [
     "🎴 New card game: <b>Baccarat</b>! Bet on Player, Banker or a Tie, plus Pair side bets. Three tables with the same limits as Blackjack. Unlocks at <b>Gambler level 20</b>.",
