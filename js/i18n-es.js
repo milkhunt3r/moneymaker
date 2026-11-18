@@ -308,7 +308,7 @@ rx(String.raw`(Truck|Tanker|Plane) agent unlocks at level (\d+)`, (m, f, l) => `
 rx(String.raw`Unlocks when you own 3 oil tankers \(you have (\d+)\)`, "Se desbloquea cuando tengas 3 petroleros (tienes $1)");
 rx(String.raw`Price · last (\d+) min`, "Precio · últimos $1 min");
 rx(String.raw`(\d+)-candle moving average`, "Media móvil de $1 velas");
-rx(String.raw`Open (Long|Short) ×(\d+)`, "Abrir $1 ×$2");
+rx(String.raw`Open (Long|Short) ×(\d+)`, (m, s, x) => `Abrir ${s === "Long" ? "largo" : "corto"} ×${x}`);
 rx(String.raw`ETF cash-out fee (${NUM}%) · property sales \+(${NUM}%)`, "Comisión de retirada del ETF $1 · ventas de inmuebles +$2");
 
 // ----- sentences with bold / icons -----
@@ -389,6 +389,3 @@ rx(String.raw`Same pyramid, 0\.3× to 250×, up to 20 balls\. Bets from (${NUM})
 rx(String.raw`Draw balls to climb a 20-step ladder up to 50,000×\. Cash out before a red ball pops your balloon! Bets (${NUM}) – (${NUM})\.`, "Saca bolas para subir una escalera de 20 peldaños hasta 50.000×. ¡Cobra antes de que una bola roja te pinche el globo! Apuestas de $1 a $2.");
 rx(String.raw`A 7×7 slot: clusters of 5\+ touching specimens pay, then tumble\. Lab spots grow ×2 … ×128\. Bets (${NUM}) – (${NUM}) per spin\.`, "Tragaperras de 7×7: los grupos de 5 o más especímenes juntos pagan y caen. Las casillas de laboratorio crecen ×2 … ×128. Apuestas de $1 a $2 por tirada.");
 
-I18N_READY = true;
-i18nApply(document.body);
-document.title = t(document.title);

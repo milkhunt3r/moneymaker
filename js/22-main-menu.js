@@ -50,6 +50,9 @@ addEventListener("resize", fitBrand); fitBrand();
 
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
+  { date: "18 November 2026", title: "Empire of Coins", items: [
+    "🌐 More of the game in <b>Español</b>: the rules in Investing, Logistics and Live trading, every casino game (buttons, rules, pay tables and results), the Gold Mine Dig and Art Gallery mini-games, all achievement names and descriptions, and the Shop and reward items.",
+  ] },
   { date: "17 November 2026", title: "Empire of Coins", items: [
     "🎴 New card game: <b>Baccarat</b>! Bet on Player, Banker or a Tie, plus Pair side bets. Three tables with the same limits as Blackjack. Unlocks at <b>Gambler level 20</b>.",
     "🏆 4 new Baccarat achievements: play 50, 100 and 500 hands, and win 3 hands in a row.",

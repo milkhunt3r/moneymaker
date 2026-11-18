@@ -34,7 +34,7 @@ const squash = (s) => s.replace(/\s+/g, " ").trim();
 
 function trCore(s) {
   if (Object.prototype.hasOwnProperty.call(ES, s)) return ES[s];
-  for (const [rx, to] of ES_RX) { const m = s.match(rx); if (m) return typeof to === "function" ? to(...m) : s.replace(rx, to); }
+  for (const [rx, to] of ES_RX) { const m = s.match(rx); if (!m) continue; const o = typeof to === "function" ? to(...m) : s.replace(rx, to); if (o != null) return o; }
   return null;
 }
 // translate a plain string (keeps emoji and spaces around it); returns null if unknown
@@ -99,13 +99,11 @@ function trBlock(el) {
   const key = squash(blockKey(el));
   if (I18N_DONE.has("HTML: " + key)) return true;
   if (Object.prototype.hasOwnProperty.call(ES_HTML, key)) { applyBlock(el, ES_HTML[key]); return doneBlock(el); }
-  for (const [rx, to] of ES_HTML_RX) { const m = key.match(rx); if (m) { applyBlock(el, typeof to === "function" ? to(...m) : key.replace(rx, to)); return doneBlock(el); } }
+  for (const [rx, to] of ES_HTML_RX) { const m = key.match(rx); if (!m) continue; const o = typeof to === "function" ? to(...m) : key.replace(rx, to); if (o != null) { applyBlock(el, o); return doneBlock(el); } }
   I18N_MISS.set("HTML: " + key, (I18N_MISS.get("HTML: " + key) || 0) + 1);
   return false;
 }
 function doneBlock(el) { I18N_DONE.add("HTML: " + squash(blockKey(el))); return true; }
-function _unused() {
-}
 const ATTRS = ["title", "placeholder", "aria-label"];
 let i18nBusy = false;
 function i18nApply(root) {

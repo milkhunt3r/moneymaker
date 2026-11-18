@@ -164,7 +164,7 @@ const GENE_RECIPES = [
 ];
 const GENE_BASE = [["Human", "🧑"], ["Fish", "🐟"], ["Lizard", "🦎"], ["Spider", "🕷️"], ["Plant", "🌱"]];
 const GENE_CATS = [
-  ["all", "🧬 All"], ["start", "🧪 Start"], ["aqua", "🐟 Aquatic"], ["rept", "🦎 Reptiles & Amphibians"], ["bird", "🐦 Birds"], ["mam", "🐾 Mammals"],
+  ["all", "🧬 All"], ["start", "🧪 Starting"], ["aqua", "🐟 Aquatic"], ["rept", "🦎 Reptiles & Amphibians"], ["bird", "🐦 Birds"], ["mam", "🐾 Mammals"],
   ["bug", "🕷️ Bugs"], ["plant", "🌱 Plants & Fungi"], ["ext", "🦕 Extinct"], ["myth", "🐉 Mythical"],
 ];
 // first discovery pays minutes of your income (same base as the mine: business income per second over the last minute)
@@ -319,8 +319,8 @@ function renderGene() {
     if (geneTab === "freezer") { const u = geneUnfound(n);
       const tag = u.now ? `<span class="geneUnf" title="${u.now} new species can still be made with ${n} and samples you already have${u.later ? ` (+${u.later} more need samples you haven't found yet)` : ""}">${u.now} unfound</span>`
         : u.later ? `<span class="geneUnf later" title="${u.later} new species need ${n} and a sample you haven't found yet">🔒 ${u.later} later</span>` : `<span class="geneUnf done" title="Every species with ${n} is found">✓ done</span>`;
-      return `<button class="geneCard r-${s.rar} ${geneSlots.includes(n) ? "sel" : ""}" data-gs="${n}" data-name="${n.toLowerCase()}" ${(G.dna[n] || 0) ? "" : "data-empty"}>${geneCard(n, genePips(n))}${tag}</button>`; }
-    return k ? `<div class="geneCard r-${s.rar} codex" data-name="${n.toLowerCase()}" title="${s.why}">${geneCard(n, s.a ? `<span class="geneHow">${gEm(s.a, "sm")} + ${gEm(s.b, "sm")}</span>` : "")}</div>`
+      return `<button class="geneCard r-${s.rar} ${geneSlots.includes(n) ? "sel" : ""}" data-gs="${n}" data-name="${(n + " " + t(n)).toLowerCase()}" ${(G.dna[n] || 0) ? "" : "data-empty"}>${geneCard(n, genePips(n))}${tag}</button>`; }
+    return k ? `<div class="geneCard r-${s.rar} codex" data-name="${(n + " " + t(n)).toLowerCase()}" title="${s.why}">${geneCard(n, s.a ? `<span class="geneHow">${gEm(s.a, "sm")} + ${gEm(s.b, "sm")}</span>` : "")}</div>`
       : `<div class="geneCard unknown" data-name=""><span class="geneEmoji">${gx("unknown", "")}</span><span class="geneName">???</span><span class="geneHow">${GENE_RARITY[s.rar].name}</span></div>`; }).join("");
   box.innerHTML = `
     <div class="geneTop">
