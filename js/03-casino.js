@@ -109,7 +109,8 @@ function casIco(id, cls = "biz") {
 const CASINO_GROUPS = [
   { name: "Roulette games", ico: "roulette", games: ["rouletteLow", "rouletteHigh", "rouletteSuper"] },
   { name: "Card games", ico: "blackjack",     games: ["bjLow", "bjHigh", "bjSuper", "bacLow", "bacHigh", "bacSuper", "vpLow", "vpHigh", "vpSuper", "uthLow", "uthHigh", "uthSuper"] },
-  { name: "Ball games", ico: "plinko",     games: ["plinko", "plinkoSuper", "climb", "climbHigh"] },
+  { name: "Plinko",     ico: "plinko",     games: ["plinko", "plinkoSuper"] },
+  { name: "Sky Climb",  ico: "climb",      games: ["climb", "climbHigh"] },
   { name: "Slot games", ico: "slot",       games: ["gcHigh", "gcSuper"] },
 ];
 let currentGame = null;   // null = game list
