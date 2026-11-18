@@ -728,7 +728,8 @@ function updateDebt() {
   const banners = document.querySelectorAll(".debtBanner");
   if (state.taxDebts.length === 0) { btn.hidden = true; banners.forEach(b => b.hidden = true); return; }
   const soonest = Math.min(...state.taxDebts.map(d => d.timeLeft));
-  const text = `${ico("tax")}TAX DEBT: ${fmt(totalDebt())} · ${clock(soonest)} left · click to pay`;
+  const text = debtMsgUntil > Date.now() ? `${ico("tax")}${debtMsg}`
+    : `${ico("tax")}TAX DEBT: ${fmt(totalDebt())} · ${clock(soonest)} left · click to pay`;
   banners.forEach(b => { b.hidden = false; if (b.innerHTML !== text) b.innerHTML = text; });
 
   // soonest deadline first
@@ -741,8 +742,11 @@ function updateDebt() {
 }
 
 // Clicking pays as much as you can, starting with the bill closest to its deadline
-$("debt").addEventListener("click", () => {
+// (the red button on Income, or the red banner at the top of every other tab)
+let debtMsg = "", debtMsgUntil = 0;   // a short result shown on the banner after clicking it
+function payTaxDebt() {
   if (isPaused()) return;
+  const before = totalDebt();
   state.taxDebts.sort((a, b) => a.timeLeft - b.timeLeft);
   for (const d of state.taxDebts) {
     const pay = Math.min(Math.floor(state.money), d.amount);
@@ -752,10 +756,15 @@ $("debt").addEventListener("click", () => {
   }
   state.stats.taxPaid = (state.stats.taxPaid || 0) + state.taxDebts.filter(d => d.amount <= 0).length;   // bills paid off
   state.taxDebts = state.taxDebts.filter(d => d.amount > 0);
+  const paid = before - totalDebt();
+  const msg = state.taxDebts.length && paid <= 0 ? `Not enough money: you have ${fmt(Math.floor(state.money))}, you owe ${fmt(totalDebt())}`
+    : state.taxDebts.length ? `Paid ${fmt(paid)}. Still owed: ${fmt(totalDebt())}` : paid > 0 ? `Tax paid: ${fmt(paid)}. All bills are settled.` : "";
+  if (msg) { showNotice("🧾 " + msg); debtMsg = msg; debtMsgUntil = Date.now() + 3000; }
   updateDebt();
   updateCounter();
   save();
-});
+}
+$("debt").addEventListener("click", payTaxDebt);
 
 let clickedThisSecond = 0;
 
@@ -871,4 +880,4 @@ $("tabs").addEventListener("click", (e) => {
   const tab = e.target.closest(".tab");
   if (tab) showView(tab.dataset.view);
 });
-document.querySelectorAll(".debtBanner").forEach(b => b.addEventListener("click", () => showView("income")));
+document.querySelectorAll(".debtBanner").forEach(b => b.addEventListener("click", payTaxDebt));   // pay right here, no need to go to Income

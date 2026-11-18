@@ -1668,3 +1668,7 @@ body.phone .gcBuyBtn { width: 150px; height: 40px; padding: 0 16px 0 38px; } bod
 /* 🚀 mission lists */
 .spLog .ico { width: 1.6em; height: 1.6em; vertical-align: -0.45em; }
 .spFail { color: #ff8a8a; }
+
+/* 🧾 tax debt banner: stays in view under the top menu while scrolling, pays when clicked */
+.debtBanner { position: sticky; top: 64px; z-index: 9; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45); }
+body.phone .debtBanner { top: 56px; }
