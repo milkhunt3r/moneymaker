@@ -1672,3 +1672,7 @@ body.phone .gcBuyBtn { width: 150px; height: 40px; padding: 0 16px 0 38px; } bod
 /* 🧾 tax debt banner: stays in view under the top menu while scrolling, pays when clicked */
 .debtBanner { position: sticky; top: 64px; z-index: 9; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45); }
 body.phone .debtBanner { top: 56px; }
+/* 🎁 reward cards: the collection emblem sits inside the title row instead of hanging over the text below */
+.rewardCard h2 { display: flex; align-items: center; gap: 4px; }
+.rewardCard .colEmblem { margin: 0 8px 0 0; flex-shrink: 0; }
+.rewardCard > .muted { margin-top: 6px; }
