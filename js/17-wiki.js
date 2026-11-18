@@ -16,7 +16,7 @@ function wikiGeneral() {
     <p><b>Empire of Coins</b> is an idle tycoon game. Click the coin, build businesses, play the casino, invest, run a logistics empire, and grow your fortune up to <b>1 gcoin</b>, where you can prestige (then 5, 10 and 20 gcoin).</p>
     <h3>Money units</h3>
     ${wt(["Unit", "Value", "Where you see it"], [
-      ["bcoin", "1", "Normal amounts"], ["scoin (sc)", "1,000,000 bcoin", "Amounts from 1 million (your main counter switches at 100 scoin)"], ["gcoin", "1,000,000 scoin", "The biggest amounts"]])}
+      ["bcoin", "1", "Normal amounts"], ["scoin (sc)", `${(1e6).toLocaleString()} bcoin`, "Amounts from 1 million (your main counter switches at 100 scoin)"], ["gcoin", `${(1e6).toLocaleString()} scoin`, "The biggest amounts"]])}
     <p class="muted">Hover your money counter to see it in the other unit.</p>
     <h3>The tabs</h3>
     ${wt(["Tab", "What you do there"], [
@@ -122,7 +122,7 @@ function wikiIncome() {
         ["🌌🌌 🔴 Mars Base", `${fmt(MARS_PRICE)} + 👩‍🔬 ${MARS_SCI} scientists`, "Moon Base + Genetics Laboratory · 2nd prestige", `Its own deep space mission every ${MARS_EVERY / 60} minutes: ${fmt(DEEP_MIN * 1e6)} – ${fmt(DEEP_MAX * 1e6)}, ${Math.round(MARS_FAIL * 100)}% chance to fail (+30% with the Genetics Laboratory). Moon Base missions launch ${MARS_MOON_CUT / 60} minutes sooner and fail ${MARS_MOON_FAIL_CUT * 100}% less often`],
       ] : [])])}
     ${secretsOpen() ? `<p class="muted">🌌 With both 🔭 and 🛸 a space mission launches every ${(SPACE_EVERY - ASTRO_TIME_CUT - STATION_TIME_CUT) / 60} minutes and fails ${Math.round((SPACE_FAIL - SAT_FAIL_CUT - STATION_FAIL_CUT) * 100)}% of the time with the satellite.</p>` : ""}
-    <p class="muted">Nobel Prizes can be won in 10 fields: Physics, Chemistry, Medicine and Physiology, Biology, Genetics, Molecular Biology, Neuroscience, Astronomy and Astrophysics, Materials Science and Environmental Science. A prestige resets Science.</p>`;
+    <p class="muted">Nobel Prizes can be won in 10 fields: Physics, Chemistry, Medicine and Physiology, Biology, Genetics, Molecular Biology, Neuroscience, Astronomy and Astrophysics, Materials Science and Environmental Science. A prestige resets Science, unless you picked Tycoon's Legacy.</p>`;
 }
 
 function wikiCasino() {
@@ -153,7 +153,7 @@ function wikiCasino() {
 
     <h3>🎡 Roulette (European, 0–36)</h3>
     <p>${tables(ROULETTE_TABLES)} per spot.</p>
-    ${wt(["Bet", "Covers", "Pays"], [["Straight", "1 number (incl. 0)", "35:1"], ["Split", "2 numbers next to each other (incl. 0–1/2/3)", "17:1"],
+    ${wt(["Bet", "Covers", "Pays"], [["Straight up", "1 number (incl. 0)", "35:1"], ["Split bet", "2 numbers next to each other (incl. 0–1/2/3)", "17:1"],
       ["Street", "3 numbers in a row (incl. 0-1-2, 0-2-3)", "11:1"], ["Corner", "4 numbers (incl. 0-1-2-3)", "8:1"], ["Six line", "2 rows, 6 numbers", "5:1"],
       ["Dozen / Column", "12 numbers", "2:1"], ["Red / Black, Odd / Even, 1–18 / 19–36", "18 numbers", "1:1"]])}
     <p class="muted">0 loses all outside bets. House edge 2.7%.</p>
@@ -331,7 +331,8 @@ function wikiSearch(q) {
   const tmp = document.createElement("div");
   for (const sec of WIKI_SECTIONS) {
     try { tmp.innerHTML = WIKI_RENDER[sec.id](); } catch (e) { continue; }
-    let heading = sec.name;
+    i18nApply(tmp);   // 🌐 search the words the player reads (Spanish when the game is in Spanish)
+    let heading = t(sec.name);
     tmp.querySelectorAll(WIKI_BLOCKS).forEach((el, idx) => {
       const raw = el.tagName === "TR" ? [...el.cells].map(c => c.textContent.trim()).filter(Boolean).join(" · ") : el.textContent;
       const text = raw.replace(/\s+/g, " ").trim();
@@ -339,7 +340,7 @@ function wikiSearch(q) {
       const low = text.toLowerCase();
       if (!text || !words.every(w => low.includes(w))) return;
       const score = (/^H[234]$/.test(el.tagName) ? 10 : 0) + words.reduce((a, w) => a + low.split(w).length - 1, 0);
-      hits.push({ sec: sec.id, secName: sec.name, heading, text, idx, score });
+      hits.push({ sec: sec.id, secName: t(sec.name), heading, text, idx, score });
     });
   }
   return hits.sort((a, b) => b.score - a.score).slice(0, 40);
@@ -363,14 +364,15 @@ function renderWikiResults() {
   $("wikiNav").querySelectorAll(".subTab").forEach(b => b.classList.remove("active"));
   $("wikiBody").innerHTML = `<h2>🔍 Results for “${escHtml(q)}”</h2>` + (hits.length
     ? hits.map((h, i) => `<button class="wikiHitRow" data-hit="${i}">
-        <span class="wikiHitWhere">${h.secName}${h.heading && h.heading !== h.secName ? " › " + escHtml(h.heading) : ""}</span>
-        <span class="wikiHitText">${wikiSnippet(h.text, words)}</span></button>`).join("")
+        <span class="wikiHitWhere" data-noi18n>${h.secName}${h.heading && h.heading !== h.secName ? " › " + escHtml(h.heading) : ""}</span>
+        <span class="wikiHitText" data-noi18n>${wikiSnippet(h.text, words)}</span></button>`).join("")
     : `<p class="muted">Nothing found. Try another word, e.g. a game, a building or a vehicle.</p>`);
   $("wikiBody")._hits = hits;
 }
 function openWikiHit(h) {
   const words = wikiWords(wikiQuery);
   state.wikiPage = h.sec; renderWiki(); save();
+  i18nApply($("wikiBody"));   // translate now, before the search words are marked
   // highlight the search words in the opened section and jump to the matching block
   const walker = document.createTreeWalker($("wikiBody"), NodeFilter.SHOW_TEXT), nodes = [];
   while (walker.nextNode()) nodes.push(walker.currentNode);

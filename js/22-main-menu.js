@@ -52,6 +52,7 @@ addEventListener("resize", fitBrand); fitBrand();
 const PATCH_NOTES = [
   { date: "18 November 2026", title: "Empire of Coins", items: [
     "🌐 More of the game in <b>Español</b>: the rules in Investing, Logistics and Live trading, every casino game (buttons, rules, pay tables and results), the Gold Mine Dig and Art Gallery mini-games, all achievement names and descriptions, and the Shop and reward items.",
+    "🌐 The 📖 Wiki, the ⭐ prestige screens and the special business details are now in <b>Español</b> too. The Wiki search finds Spanish words when the game is in Spanish.",
     "💼 Fix: <b>Tycoon's Legacy</b> now keeps your 🔬 Science buildings on every later reset too, not only on the reset you pick it (the satellite still resets).",
   ] },
   { date: "17 November 2026", title: "Empire of Coins", items: [

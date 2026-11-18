@@ -1,0 +1,359 @@
+/* =====================================================================
+   🌐 ESPAÑOL (España), session 3: the 📖 Wiki, the ⭐ prestige screens and the special business details.
+   Loaded after js/i18n-es-2.js. The generic fallbacks at the end must stay the last rules.
+   ===================================================================== */
+// vehicle names stay as they are (except the ones that are also words, e.g. Coral)
+for (const n of ["Albatross", "Aurora", "Borealis", "Condor", "Falcon", "Meridian", "Nautilus", "Neptune", "Odyssey", "Osprey", "Pelican"]) if (ES[n] === undefined) ES[n] = n;
+// people's names stay as they are
+for (const n of ["Ben", "Nina", "Ivan", "Tom", "Jonas", "Leo", "Lena", "Zoe", "Maria", "Mia", "Sofia", "Max", "Emma", "Noah", "Liam", "Olivia", "Lucas", "Anna", "Elias", "Ella", "Finn", "Lea", "Paul", "Hanna", "Felix", "Clara", "Jan", "Sara", "Tim", "Lisa", "Eva", "Luca", "Mila", "Omar", "Yuki", "Kai", "Ava", "Sam", "Ali", "Ida", "Kate", "Igor", "Alex", "Dan"])
+  if (ES[n] === undefined) ES[n] = n;
+
+/* ===================== ⭐ PRESTIGE ===================== */
+Object.assign(ES, {
+  "Are you sure? This": "¿Seguro? Esto", "resets": "reinicia", "This can't be undone.": "No se puede deshacer.", "Prestige now": "Hacer prestigio ya", "Back": "Volver",
+  "Kept: achievements, levels, cosmetics, statistics, Legacy bonuses, free bet chips, Art Gallery unlock, slots and paintings. 🛡️ No tax inspections for the first 10 minutes after the reset.":
+    "Se conservan: logros, niveles, cosméticos, estadísticas, bonificaciones de Legado, fichas de apuesta gratis, el desbloqueo de la Galería de arte, sus huecos y los cuadros. 🛡️ Sin inspecciones de Hacienda durante los 10 primeros minutos tras el reinicio.",
+  "Your Legacy": "Tu Legado", "next at": "el siguiente con", "Free chips: every 10 min → every 5 min": "Fichas gratis: cada 10 min → cada 5 min",
+  "+25% income from businesses, special businesses and clicks": "+25% de ingresos de negocios, negocios especiales y clics",
+  "Not picked yet: +25% income per pick": "Aún sin elegir: +25% de ingresos por elección", "Not picked yet: keep your logistics fleet on every reset": "Aún sin elegir: conserva tu flota logística en cada reinicio",
+  "Not picked yet: free 500 scoin VIP chips": "Aún sin elegir: fichas VIP gratis de 500 scoin",
+  "Fleet, warehouses, Trading Port and Logistics Center kept on every reset": "Flota, almacenes, Puerto comercial y Centro logístico se conservan en cada reinicio",
+  "Fleet, warehouses, Trading Port and Logistics Center kept on every reset · contracts take half the time": "Flota, almacenes, Puerto comercial y Centro logístico se conservan en cada reinicio · los contratos duran la mitad",
+  "All 4 prestiges done: you finished the game! You can keep playing.": "Has hecho los 4 prestigios: ¡has terminado el juego! Puedes seguir jugando.",
+  "This is your final prestige.": "Este es tu último prestigio.", "After it, no more resets are possible, but you can keep playing.": "Después ya no se puede reiniciar más, pero puedes seguir jugando.",
+});
+const RESET_PARTS = {
+  "your money, casino chips, businesses, workers, special businesses, investments and logistics fleet": "tu dinero, fichas del casino, negocios, trabajadores, negocios especiales, inversiones y flota logística",
+  "your money, casino chips, businesses, workers, other special businesses and investments": "tu dinero, fichas del casino, negocios, trabajadores, el resto de negocios especiales e inversiones",
+};
+const resetEs = (a, b) => (RESET_PARTS[a] || a) + (/kept/.test(b) ? " (tus edificios de 🔬 Ciencia se conservan; el 🛰️ satélite no)" : " y 🔬 Ciencia");
+hrx(String.raw`Are you sure\? This <b>resets<\/b> (.+?)( \(your 🔬 Science buildings are kept, the 🛰️ satellite is not\)| and 🔬 Science)\.`, (m, a, b) => `¿Seguro? Esto <b>reinicia</b> ${resetEs(a, b)}.`);
+rx(String.raw`(your money, .+?)( \(your 🔬 Science buildings are kept, the 🛰️ satellite is not\)| and 🔬 Science)\.`, (m, a, b) => `${resetEs(a, b)}.`);
+hrx(String.raw`(?:Prestige|Prestigio) <b>(\d) (?:of|de) (\d)<\/b> · next at <b>(${NUM})<\/b> \(you have (${NUM})\)`, "Prestigio <b>$1 de $2</b> · el siguiente con <b>$3</b> (tienes $4)");
+rx(String.raw`(\d) of (\d)`, "$1 de $2");
+rx(String.raw`\(you have (${NUM})\)`, "(tienes $1)");
+rx(String.raw`Your picks: (.+)`, (m, l) => "Tus elecciones: " + l.replace(/💼 Tycoon's Legacy/g, "💼 Legado del magnate").replace(/🚢 Global Empire/g, "🚢 Imperio global").replace(/🎟️ VIP Coins/g, "🎟️ Monedas VIP"));
+rx(String.raw`\+(\d+)% income from businesses, special businesses and clicks`, "+$1% de ingresos de negocios, negocios especiales y clics");
+rx(String.raw`A free 500 scoin VIP chip every (\d+) minutes for the Super high roller tables`, "Una ficha VIP gratis de 500 scoin cada $1 minutos para las mesas de súper altas apuestas");
+rx(String.raw`Income \+(\d+)% for good`, "Ingresos +$1% para siempre");
+
+/* ===================== 🏢 SPECIAL BUSINESSES (details and staffing plan) ===================== */
+Object.assign(ES, {
+  "Law Firm opened! Buy attorney slots to hire lawyers.": "¡Bufete abierto! Compra plazas de abogado para contratar letrados.",
+  "Logistics Center opened! Choose its first upgrade.": "¡Centro logístico abierto! Elige su primera mejora.",
+  "Choose the staff for every new hotel and casino. \"🎲 Random\" rolls a trait like normal hiring. Max 5 🛎️ Concierges per hotel.":
+    "Elige el personal de cada hotel y casino nuevo. «🎲 Al azar» sortea un rasgo como en una contratación normal. Máximo 5 🛎️ conserjes por hotel.",
+  "Save plan": "Guardar plan", "Apply staffing plan to all": "Aplicar el plan de personal a todos", "Random": "Al azar", "🎲 Random": "🎲 Al azar",
+  "58 workers hired. Workers who fit the plan keep their pay; new workers get random pay.": "58 trabajadores contratados. Los que encajan en el plan mantienen su sueldo; los nuevos cobran un sueldo al azar.",
+  "Hand": "Mano", "Slot": "Hueco", "Step": "Peldaño", "sell": "vender", "owned": "en propiedad", "1st prestige": "1.er prestigio", "2nd prestige": "2.º prestigio",
+});
+rx(String.raw`Worker (\d+)`, "Trabajador $1");
+rx(String.raw`Amusement park #(\d) opened next to Hotel #(\d)!`, "¡Parque de atracciones n.º $1 abierto junto al hotel n.º $2!");
+rx(String.raw`(\d+) places: accountant, HR and (\d+) workers · pay (\d+)–(\d+) \/ sec each \(random\)`, "$1 plazas: contable, RR. HH. y $2 trabajadores · sueldo $3–$4 / s cada uno (al azar)");
+hrx(String.raw`<b>(\d+)<\/b> businesses? needs? changes to match your plan\. Total cost: <b>(${NUM})<\/b> \(1 scoin per business\)\.`,
+  (m, n, c) => `<b>${n}</b> ${plural(n, "negocio necesita", "negocios necesitan")} cambios para ajustarse a tu plan. Coste total: <b>${c}</b> (1 scoin por negocio).`);
+rx(String.raw`(Casino|Hotel) #(\d+): hire (\d+)`, (m, b, n, h) => `${b === "Casino" ? "Casino" : "Hotel"} n.º ${n}: contratar ${h}`);
+rx(String.raw`(Casino|Hotel) #(\d+): (\d+) changes?`, (m, b, n, h) => `${b} n.º ${n}: ${h} ${plural(h, "cambio", "cambios")}`);
+rx(String.raw`(\d+) workers hired\. Workers who fit the plan keep their pay; new workers get random pay\.`, "$1 trabajadores contratados. Los que encajan en el plan mantienen su sueldo; los nuevos cobran un sueldo al azar.");
+rx(String.raw`Apply for (${NUM})`, "Aplicar por $1");
+
+/* ===================== 📖 WIKI ===================== */
+const TABLE_ES = { "Classic table": "mesa clásica", "High rollers": "altas apuestas", "Super high rollers": "súper altas apuestas" };
+const GAME_ES = (g) => ES[g] || g;
+rx(String.raw`(Roulette|Blackjack|Video Poker|Baccarat|Ultimate Texas Hold'em|Plinko|Sky Climb): (Classic table|High rollers|Super high rollers): (${NUM}) – (${NUM})(.*)`,
+  (m, g, tb, a, b, rest) => { const r = rest ? esq(rest) : ""; return r == null ? null : `${GAME_ES(g)}: ${TABLE_ES[tb]}: ${a} – ${b}${r}`; });
+Object.assign(ES, {
+  // shared table heads
+  "Effect": "Efecto", "Price": "Precio", "Always": "Siempre", "Pays": "Paga", "Achievement": "Logro", "Goal": "Objetivo", "Unlock": "Desbloqueo",
+  "What it does": "Qué hace", "Levels": "Niveles", "Business": "Negocio", "coin": "moneda", "background": "fondo", "cards": "cartas", "Unit": "Unidad",
+  "Where you see it": "Dónde lo ves", "Tab": "Pestaña", "What you do there": "Qué haces allí", "Level": "Nivel", "How you get XP": "Cómo ganas XP", "What it gives": "Qué te da",
+  "Bonus": "Bonificación", "Staff": "Personal", "Worker income": "Ingresos por trabajador", "Trait": "Rasgo", "Chance": "Probabilidad", "Booster": "Potenciador",
+  "Cooldown": "Recarga", "Attorney": "Abogado", "Attorneys": "Abogados", "Building": "Edificio", "Needs": "Requisitos", "Covers": "Cubre", "Jackpot": "Bote",
+  "Fleet": "Flota", "Slots": "Plazas", "Trip length": "Duración del viaje", "Agent unlock": "Desbloqueo del agente", "Bonuses": "Bonificaciones", "Oil tankers": "Petroleros",
+  "Tiers": "Niveles", "Tier": "Nivel", "Paintings": "Cuadros", "Full value": "Valor completo", "Tools": "Herramientas", "Tool": "Herramienta", "Grab": "Agarrar",
+  "Eraser": "Goma", "Paints white": "Pinta de blanco", "Item": "Artículo", "How to unlock": "Cómo desbloquearla", "Effect per level": "Efecto por nivel",
+  "Cost per level (money + ore)": "Coste por nivel (dinero + mineral)", "Classic": "Clásica", "Hot Tables": "Mesas calientes", "Insurance": "Seguro",
+  "Street": "Transversal", "Corner": "Cuadro", "Six line": "Seisena", "Dozen / Column": "Docena / Columna", "Player Pair / Banker Pair": "Pareja del jugador / Pareja de la banca",
+  // ⭐ general
+  "Money units": "Unidades de dinero", "Normal amounts": "Cantidades normales", "scoin (sc)": "scoin (sc)",
+  "Amounts from 1 million (your main counter switches at 100 scoin)": "Cantidades a partir de 1 millón (tu contador principal cambia a los 100 scoin)",
+  "The biggest amounts": "Las cantidades más grandes", "1,000,000 bcoin": "1.000.000 bcoin", "1,000,000 scoin": "1.000.000 scoin",
+  "Hover your money counter to see it in the other unit.": "Pasa el ratón por tu contador de dinero para verlo en la otra unidad.", "The tabs": "Las pestañas",
+  "Click the coin, buy businesses and special businesses, hire workers, use boosters": "Haz clic en la moneda, compra negocios y negocios especiales, contrata trabajadores, usa potenciadores",
+  "Move money into casino chips and play table games": "Pasa dinero a fichas del casino y juega en las mesas",
+  "Real estate, ETFs, gold, Broker ETF and live crypto trading": "Inmuebles, ETF, oro, ETF del bróker y trading de criptomonedas en directo",
+  "Trucks, oil tankers and cargo planes on contracts, with a world map": "Camiones, petroleros y aviones de carga con contratos, con un mapa del mundo",
+  "Art Gallery: copy paintings and sell them or keep them · ⛏️ Gold Mine Dig: dig for ore (needs a gold mine)": "Galería de arte: copia cuadros y véndelos o guárdalos · ⛏️ Excavación en la mina de oro: excava en busca de mineral (necesita una mina de oro)",
+  "Goals across the whole game": "Objetivos por todo el juego", "Cosmetics: backgrounds and coins": "Cosméticos: fondos y monedas", "This guide": "Esta guía",
+  "Gambler (Casino)": "Jugador (Casino)", "Investor (Investing)": "Inversor (Inversiones)",
+  "XP = bcoin you bet × the table's XP multiplier": "XP = bcoin que apuestas × el multiplicador de XP de la mesa",
+  "0.1% cashback on lost bets per level, casino businesses, free bet chips": "0,1% de reembolso en apuestas perdidas por nivel, casinos, fichas de apuesta gratis",
+  "XP every minute you have money invested, plus XP per crypto trade": "XP cada minuto que tienes dinero invertido, más XP por operación de cripto",
+  "Lower ETF fee, +0.1% on property sales per level, hotels, Brokerage Firm, lower crypto fee": "Menor comisión del ETF, +0,1% en ventas de inmuebles por nivel, hoteles, Agencia de valores, menor comisión de cripto",
+  "XP for every delivered contract (contract minutes × 1 truck / 3 tanker / 6 plane)": "XP por cada contrato entregado (minutos del contrato × 1 camión / 3 petrolero / 6 avión)",
+  "Logistics agents: trucks at 5, tankers at 25, planes at 50": "Agentes logísticos: camiones en el 5, petroleros en el 25, aviones en el 50",
+  "Each level card has a \"📋 All levels\" button with every level's XP and unlocks.": "Cada tarjeta de nivel tiene un botón «📋 Todos los niveles» con la XP y los desbloqueos de cada nivel.",
+  "1st: keep trucks, tankers, planes, warehouses, Trading Port and Logistics Center on every reset (the satellite resets with Science). 2nd: all contracts take half the time (same pay)":
+    "1.ª: conserva camiones, petroleros, aviones, almacenes, Puerto comercial y Centro logístico en cada reinicio (el satélite se reinicia con Ciencia). 2.ª: todos los contratos duran la mitad (misma paga)",
+  "A free 500 scoin bet chip every 10 min for the Super high roller tables, and all other free bet chips come twice as fast (every 10 / 7.5 / 5 min instead of 20 / 15 / 10)":
+    "Una ficha de apuesta gratis de 500 scoin cada 10 min para las mesas de súper altas apuestas, y el resto de fichas gratis llegan el doble de rápido (cada 10 / 7,5 / 5 min en vez de 20 / 15 / 10)",
+  "Tycoon's Legacy and VIP Coins can be picked once, Global Empire twice: 4 picks for 4 prestiges, so by the end you have every bonus, in the order you choose.":
+    "Legado del magnate y Monedas VIP se pueden elegir una vez, Imperio global dos: 4 elecciones para 4 prestigios, así que al final tendrás todas las bonificaciones, en el orden que elijas.",
+  "Saving": "Guardado", "The game saves automatically in your browser. In ⚙️ Settings you can save, download a backup file, load one, or reset the game.":
+    "El juego se guarda automáticamente en tu navegador. En ⚙️ Ajustes puedes guardar, descargar una copia de seguridad, cargar una o reiniciar la partida.",
+  "Tips and guided start": "Consejos e inicio guiado",
+  "New players get a short guided start (click the coin, buy a business, hire staff). After that, a small tip appears the first time you meet something new, with a link to the matching Wiki page. ⚙️ Settings: turn tips on/off, show all tips again, or replay the guided start.":
+    "Los jugadores nuevos tienen un breve inicio guiado (haz clic en la moneda, compra un negocio, contrata personal). Después aparece un pequeño consejo la primera vez que encuentras algo nuevo, con un enlace a la página correspondiente de la Wiki. ⚙️ Ajustes: activa o desactiva los consejos, vuelve a ver todos o repite el inicio guiado.",
+  "Background and offline": "En segundo plano y sin conexión",
+  "Art Gallery paintings are stored separately in the browser so a big collection never fills up the save; a downloaded backup includes them. If the browser ever refuses to save, a red warning appears at the bottom of the screen.":
+    "Los cuadros de la Galería de arte se guardan aparte en el navegador para que una colección grande nunca llene la partida guardada; la copia de seguridad descargada los incluye. Si el navegador se niega a guardar, aparece un aviso rojo en la parte inferior de la pantalla.",
+  // 💰 income
+  "Clicking": "Clics", "Every click on the coin gives 1 bcoin (up to 10 clicks per second). Boosters and Tycoon's Legacy increase it.":
+    "Cada clic en la moneda da 1 bcoin (hasta 10 clics por segundo). Los potenciadores y el Legado del magnate lo aumentan.",
+  "Buy a business, then hire workers. Each worker earns a random amount per second and has one trait. The first worker is free; each one after that costs more. You choose from 3 candidates, and \"New options\" refreshes them for a small growing price.":
+    "Compra un negocio y contrata trabajadores. Cada trabajador gana una cantidad al azar por segundo y tiene un rasgo. El primero es gratis; cada uno de los siguientes cuesta más. Eliges entre 3 candidatos, y «Nuevas opciones» los renueva por un pequeño precio que va subiendo.",
+  "2 workers (no accountant or HR)": "2 trabajadores (sin contable ni RR. HH.)", "Unlocks when you have 20 car wash workers": "Se desbloquea cuando tienes 20 trabajadores en lavaderos",
+  "Unlocks when you own all 3 car washes and all 3 repair shops": "Se desbloquea cuando tienes los 3 lavaderos y los 3 talleres",
+  "Casino #1 unlocks at Gambler level 5": "El casino n.º 1 se desbloquea en el nivel de jugador 5", "Hotel #1 unlocks at Investor level 5": "El hotel n.º 1 se desbloquea en el nivel de inversor 5",
+  "Worker traits": "Rasgos de los trabajadores", "Accountants (one per business)": "Contables (uno por negocio)", "HR managers (one per business)": "Responsables de RR. HH. (uno por negocio)",
+  "Boosters": "Potenciadores", "Clicks ×5 for 30 s": "Clics ×5 durante 30 s", "Each click also gives 10% of your income per second, for 30 s": "Cada clic da además el 10% de tus ingresos por segundo, durante 30 s",
+  "Business income ×2 for 2 min": "Ingresos de negocios ×2 durante 2 min",
+  "No workers, HR manager or accountant. Sorted from cheapest to most expensive.": "Sin trabajadores, responsable de RR. HH. ni contable. Ordenados del más barato al más caro.",
+  "Max 5; slots open at 3, 6, 9, 12, 15 trucks": "Máx. 5; las plazas se abren con 3, 6, 9, 12 y 15 camiones", "+2% on truck contract payouts each": "+2% en los pagos de contratos de camiones cada uno",
+  "Hire up to 10 attorneys (slot n costs 50.000 × n); pick 1 of 3 each time": "Contrata hasta 10 abogados (la plaza n cuesta 50.000 × n); elige 1 de 3 cada vez",
+  "2 hotels and 2 casinos": "2 hoteles y 2 casinos",
+  "Staffing plan: pick the accountant, HR and a trait for every worker place of a hotel and a casino. 👥 Hire staff fills every hotel and casino with no staff yet, 1 scoin per business (pay per second stays random). Businesses with staff are not touched. 🔄 Apply to all brings every hotel and casino in line with the plan, 1 scoin per business that needs changes (workers who fit the plan are kept). The plan is kept on prestige":
+    "Plan de personal: elige el contable, RR. HH. y un rasgo para cada plaza de trabajador de un hotel y un casino. 👥 Contratar personal llena todos los hoteles y casinos que aún no tienen personal, 1 scoin por negocio (el sueldo por segundo sigue siendo al azar). Los negocios con personal no se tocan. 🔄 Aplicar a todos ajusta todos los hoteles y casinos al plan, 1 scoin por negocio que necesite cambios (se mantienen los trabajadores que encajan). El plan se conserva al hacer prestigio",
+  "100.000 all-time real estate profit": "100.000 de beneficio inmobiliario total",
+  "+2% on property sales; agents join as real estate profit grows: 1st at 100.000, 2nd at 300.000, 3rd at 600.000, 4th at 1 scoin… (each step 100.000 bigger; max 100, reached at 505 scoin), each earns 0/5/10/15 per second":
+    "+2% en las ventas de inmuebles; se suman agentes a medida que crece el beneficio inmobiliario: el 1.º con 100.000, el 2.º con 300.000, el 3.º con 600.000, el 4.º con 1 scoin… (cada escalón 100.000 mayor; máx. 100, al llegar a 505 scoin), cada uno gana 0/5/10/15 por segundo",
+  "One per hotel": "Uno por hotel", "Earns 50% of its paired hotel's income": "Gana el 50% de los ingresos de su hotel emparejado",
+  "500.000 all-time gold profit; max 2": "500.000 de beneficio total en oro; máx. 2",
+  "500 / sec until its 20–30 scoin of gold is mined, then it closes. 🔥 Gold rush: 1 in 1000 chance per second per mine (2 mines: 1 in 500) of 2× mine income for 10 sec":
+    "500 / s hasta extraer sus 20–30 scoin de oro; después cierra. 🔥 Fiebre del oro: 1 probabilidad entre 1000 por segundo y mina (2 minas: 1 entre 500) de ×2 en los ingresos de la mina durante 10 s",
+  "Own an oil tanker; max 1": "Ten un petrolero; máx. 1", "350 / sec per tanker and +2.5% on tanker contracts": "350 / s por petrolero y +2,5% en los contratos de petroleros",
+  "20 paintings in your Art Gallery collection; max 1": "20 cuadros en tu colección de la Galería de arte; máx. 1", "250 / sec per painting in your collection, max 10.000 / sec": "250 / s por cuadro de tu colección, máx. 10.000 / s",
+  "Logistics level 20; max 1": "Nivel de logística 20; máx. 1",
+  "Choose 1 agent upgrade (fee 1%, best contract, or 3-second picks); the other two cost 1 scoin each": "Elige 1 mejora de agentes (comisión del 1%, mejor contrato o elección en 3 segundos); las otras dos cuestan 1 scoin cada una",
+  "When all 10 slots are filled, you can fire any attorney and choose a replacement from 3 offers for 1 scoin.": "Cuando las 10 plazas están ocupadas, puedes despedir a cualquier abogado y elegir un sustituto entre 3 ofertas por 1 scoin.",
+  "The 💰 Income tab has three pages: 🏢 Businesses, ⭐ Special and 🔬 Science. Science unlocks at Logistics level 50, Investor level 50 and Gambler level 25.":
+    "La pestaña 💰 Ingresos tiene tres páginas: 🏢 Negocios, ⭐ Especiales y 🔬 Ciencia. Ciencia se desbloquea con nivel de logística 50, nivel de inversor 50 y nivel de jugador 25.",
+  "Science unlocked": "Ciencia desbloqueada",
+  "1 scientist every 2 min, up to 50. Costs 5 / sec per empty place (−250 / sec at first); full: +500 / sec": "1 científico cada 2 min, hasta 50. Cuesta 5 / s por plaza vacía (−250 / s al principio); llena: +500 / s",
+  "Every second a 1 in 7,200 chance of a breakthrough (guaranteed after 2 hours): a Nobel Prize and 1000 scoin. The game pauses until you accept it. Offline: at most 1":
+    "Cada segundo, 1 probabilidad entre 7.200 de un avance (garantizado tras 2 horas): un Premio Nobel y 1000 scoin. El juego se pausa hasta que lo aceptas. Sin conexión: como mucho 1",
+  "2 breakthroughs": "2 avances", "A mission every 20 minutes: 2000 scoin – 5000 scoin, 20% chance to fail (15% with the satellite)": "Una misión cada 20 minutos: 2000 scoin – 5000 scoin, 20% de probabilidad de fracaso (15% con el satélite)",
+  "Satellite (🚢 Logistics)": "Satélite (🚢 Logística)",
+  "Missions fail 15% instead of 20% · cargo planes +5% pay · tankers 10% faster · broken trucks repaired for free after 5 sec": "Las misiones fracasan un 15% en vez de un 20% · aviones de carga +5% de paga · petroleros un 10% más rápidos · los camiones averiados se reparan gratis a los 5 s",
+  "Nobel Prizes can be won in 10 fields: Physics, Chemistry, Medicine and Physiology, Biology, Genetics, Molecular Biology, Neuroscience, Astronomy and Astrophysics, Materials Science and Environmental Science. A prestige resets Science, unless you picked Tycoon's Legacy.":
+    "Se pueden ganar Premios Nobel en 10 campos: Física, Química, Medicina y Fisiología, Biología, Genética, Biología molecular, Neurociencia, Astronomía y Astrofísica, Ciencia de materiales y Ciencias ambientales. Un prestigio reinicia la Ciencia, salvo si elegiste el Legado del magnate.",
+  "2nd University": "2.ª universidad", "3rd University": "3.ª universidad", "University · 1st prestige": "Universidad · 1.er prestigio", "2nd University · 2nd prestige": "2.ª universidad · 2.º prestigio",
+  "Trains its own scientists (1 every 2 min, up to 50) into the same shared pool, with the same running cost and full-house income": "Forma sus propios científicos (1 cada 2 min, hasta 50) para la misma reserva compartida, con el mismo coste y los mismos ingresos al llenarse",
+  "Space missions launch 5 minutes sooner": "Las misiones espaciales salen 5 minutos antes", "1st prestige · both Universities full": "1.er prestigio · las dos universidades llenas",
+  "Missions fail 5% less often and launch 5 minutes sooner · Research lab breakthroughs 1 in 3,600 (guaranteed within 1 hour)": "Las misiones fracasan un 5% menos y salen 5 minutos antes · avances del laboratorio 1 entre 3.600 (garantizado en menos de 1 hora)",
+  "A third University for the shared pool: up to 150 scientists in total": "Una tercera universidad para la reserva compartida: hasta 150 científicos en total",
+  "Orbital Space Station · 2nd prestige": "Estación Espacial Orbital · 2.º prestigio",
+  "A deep space mission every 20 minutes: 50.000 scoin – 70.000 scoin, 20% chance to fail (not changed by the satellite, Astronomy center or station)": "Una misión al espacio profundo cada 20 minutos: 50.000 scoin – 70.000 scoin, 20% de probabilidad de fracaso (no la cambian el satélite, el centro astronómico ni la estación)",
+  "Genetics Laboratory": "Laboratorio de genética", "Moon Base · 2nd prestige": "Base Lunar · 2.º prestigio", "+30% on every 🚀 space mission and 🌕 deep space mission reward": "+30% en cada premio de 🚀 misión espacial y 🌕 misión al espacio profundo",
+  "Mars Base": "Base en Marte", "Moon Base + Genetics Laboratory · 2nd prestige": "Base Lunar + Laboratorio de genética · 2.º prestigio",
+  "Its own deep space mission every 10 minutes: 50.000 scoin – 70.000 scoin, 10% chance to fail (+30% with the Genetics Laboratory). Moon Base missions launch 10 minutes sooner and fail 10% less often":
+    "Su propia misión al espacio profundo cada 10 minutos: 50.000 scoin – 70.000 scoin, 10% de probabilidad de fracaso (+30% con el Laboratorio de genética). Las misiones de la Base Lunar salen 10 minutos antes y fracasan un 10% menos",
+  "With both 🔭 and 🛸 a space mission launches every 10 minutes and fails 10% of the time with the satellite.": "Con 🔭 y 🛸 a la vez sale una misión espacial cada 10 minutos y fracasa el 10% de las veces con el satélite.",
+  // 🎰 casino
+  "Roulette (European, 0–36)": "Ruleta (europea, 0–36)", "1 number (incl. 0)": "1 número (incl. el 0)", "2 numbers next to each other (incl. 0–1/2/3)": "2 números juntos (incl. 0–1/2/3)",
+  "3 numbers in a row (incl. 0-1-2, 0-2-3)": "3 números en fila (incl. 0-1-2, 0-2-3)", "4 numbers (incl. 0-1-2-3)": "4 números (incl. 0-1-2-3)", "2 rows, 6 numbers": "2 filas, 6 números",
+  "12 numbers": "12 números", "Red / Black, Odd / Even, 1–18 / 19–36": "Rojo / Negro, Impar / Par, 1–18 / 19–36", "18 numbers": "18 números",
+  "0 loses all outside bets. House edge 2.7%.": "Con el 0 pierden todas las apuestas exteriores. Ventaja de la casa: 2,7%.",
+  "Video Poker (Jacks or Better + Joker)": "Videopóquer (Jotas o más + comodín)", "+100% of the jackpot (× your bet / max bet)": "+100% del bote (× tu apuesta / apuesta máx.)",
+  "+20% of the jackpot (× your bet / max bet)": "+20% del bote (× tu apuesta / apuesta máx.)",
+  "Bet on any spots you like: at least one bet on Player, Banker or Tie.": "Apuesta en las casillas que quieras: al menos una apuesta a Jugador, Banca o Empate.",
+  "0.95:1 (5% commission)": "0,95:1 (5% de comisión)", "8:1 (Player and Banker bets are returned)": "8:1 (se devuelven las apuestas a Jugador y Banca)",
+  "11:1 (first two cards of that hand are the same rank)": "11:1 (las dos primeras cartas de esa mano tienen el mismo valor)",
+  "Before the flop: check or raise 3×/4× the ante. After the flop: check or raise 2×. After the river: raise 1× or fold. You can raise only once.":
+    "Antes del flop: pasa o sube 3×/4× el ante. Después del flop: pasa o sube 2×. Después del river: sube 1× o retírate. Solo puedes subir una vez.",
+  "Gene Cascade (slot)": "Gene Cascade (tragaperras)",
+  "About 99% return (simulated over millions of spins): a win on about 41% of spins, free spins about once every 100 spins. Max win 5000× the bet. A spin is decided before it is shown, so leaving or reloading pays the same win.":
+    "Devolución de cerca del 99% (simulada en millones de tiradas): premio en cerca del 41% de las tiradas, tiradas gratis más o menos una vez cada 100. Premio máximo 5000× la apuesta. La tirada se decide antes de mostrarse, así que salir o recargar paga el mismo premio.",
+  "From Gambler level 5 you get free chips on timers (see the frame under the Gambler level). Use them at Roulette, Blackjack, Baccarat, Video Poker and Hold'em (not Plinko, Sky Climb or Gene Cascade). A free chip is a bet: whatever it wins goes to your casino chips. At Hold'em, a free Ante needs 2 chips (Ante + Blind).":
+    "Desde el nivel de jugador 5 recibes fichas gratis con temporizador (mira el recuadro bajo el nivel de jugador). Úsalas en ruleta, blackjack, baccarat, videopóquer y Hold'em (no en Plinko, Sky Climb ni Gene Cascade). Una ficha gratis es una apuesta: lo que gane va a tus fichas del casino. En Hold'em, un ante gratis necesita 2 fichas (ante + ciega).",
+  "Free chip": "Ficha gratis", "All timers 20 → 15 min": "Todos los temporizadores 20 → 15 min", "All timers 15 → 10 min": "Todos los temporizadores 15 → 10 min",
+  // 📈 investing
+  "Investor XP": "XP de inversor",
+  "every minute you have money invested gives 4 XP (8 XP from 1 scoin invested, 16 XP from 100 scoin), plus XP per crypto trade. Each level lowers the ETF fee, adds +0.1% to property sales and lowers the crypto fee every 10 levels. Hotels unlock at levels 5, 15, 25…, the Brokerage Firm at 10.":
+    "cada minuto que tienes dinero invertido da 4 XP (8 XP desde 1 scoin invertido, 16 XP desde 100 scoin), más XP por operación de cripto. Cada nivel baja la comisión del ETF y suma +0,1% a las ventas de inmuebles, y la comisión de cripto baja cada 10 niveles. Los hoteles se desbloquean en los niveles 5, 15, 25…; la Agencia de valores, en el 10.",
+  "Live trading (crypto)": "Trading en vivo (cripto)", "Unlocks at Investor level 20.": "Se desbloquea en el nivel de inversor 20.",
+  "Chart tools: Line or Candles (1 min, 5 min, 15 min, 4 hours), volume bars, and MA5 / MA10 / MA20 / MA50 moving averages. Hover the chart for details.":
+    "Herramientas del gráfico: línea o velas (1 min, 5 min, 15 min, 4 horas), barras de volumen y medias móviles MA5 / MA10 / MA20 / MA50. Pasa el ratón por el gráfico para ver detalles.",
+  // 🚢 logistics
+  "Logistics unlocks when you buy your first 🚘 Car Salon.": "La logística se desbloquea cuando compras tu primer 🚘 concesionario.",
+  "Buy vehicles, then pick one of 4 contract offers for each. When the trip ends, the contract is paid to your money and a new set of offers appears. Trips keep moving while the game is closed.":
+    "Compra vehículos y elige una de las 4 ofertas de contrato para cada uno. Al terminar el viaje, el contrato se paga a tu dinero y aparecen ofertas nuevas. Los viajes siguen avanzando con el juego cerrado.",
+  "Own 3 oil tankers": "Ten 3 petroleros",
+  "Shows every vehicle moving along its route (trucks on roads, tankers on sea lanes, planes on flight paths), and every contract city as a dot in the fleet's color. Hover a vehicle or city for details. A glowing ring means a vehicle is on its way there.":
+    "Muestra cada vehículo avanzando por su ruta (camiones por carretera, petroleros por rutas marítimas, aviones por rutas aéreas) y cada ciudad de contrato como un punto del color de la flota. Pasa el ratón por un vehículo o una ciudad para ver detalles. Un anillo brillante significa que un vehículo va hacia allí.",
+  "Warehouses: +2% on truck contracts each (max 5).": "Almacenes: +2% en los contratos de camiones cada uno (máx. 5).",
+  "Trading Port: +2.5% on tanker contracts and 350 / sec per tanker.": "Puerto comercial: +2,5% en los contratos de petroleros y 350 / s por petrolero.",
+  "Global Empire prestige: keep your fleet on resets; level 2 halves every contract's time.": "Prestigio Imperio global: conserva tu flota en los reinicios; el nivel 2 reduce a la mitad el tiempo de cada contrato.",
+  // 🎮 mini-games
+  "The 🎮 Mini-games tab holds games you unlock with your buildings and achievements. Play them to earn extra money.": "La pestaña 🎮 Minijuegos reúne juegos que desbloqueas con tus edificios y logros. Juega para ganar dinero extra.",
+  "Unlocks when you buy your first ⛏️ gold mine and stays unlocked even after the mine runs dry or a prestige. Each run costs ⚡ 1 energy: you have up to 5 (more with the ⚡ Energy tank), and 1 comes back every 20 minutes (faster with ⏱️ Fast recharge), also while the game is closed.":
+    "Se desbloquea al comprar tu primera ⛏️ mina de oro y sigue desbloqueado aunque la mina se agote o hagas prestigio. Cada partida cuesta ⚡ 1 de energía: tienes hasta 5 (más con el ⚡ depósito de energía) y recuperas 1 cada 20 minutos (más rápido con ⏱️ recarga rápida), también con el juego cerrado.",
+  "Dig with the arrow keys / WASD or the on-screen buttons. Every step burns lamp oil (100 at the start): walking through a tunnel 0.25, digging dirt 1, each hit on stone 1.25 (2 hits) and on granite 1.5 (3 hits). 🪨 Bedrock can't be dug. Your bag holds 25 ore. Walk back to the surface to sell; if the lamp runs out underground, the rescue team keeps you safe but you keep only 50% of your ore (more with 🆘 Rescue insurance).":
+    "Excava con las flechas / WASD o con los botones de la pantalla. Cada paso gasta aceite de la lámpara (100 al principio): andar por un túnel 0,25, cavar tierra 1, cada golpe a la piedra 1,25 (2 golpes) y al granito 1,5 (3 golpes). 🪨 La roca madre no se puede excavar. En tu bolsa caben 25 de mineral. Vuelve andando a la superficie para vender; si la lámpara se apaga bajo tierra, el equipo de rescate te pone a salvo, pero solo conservas el 50% de tu mineral (más con 🆘 seguro de rescate).",
+  "Ore is worth seconds of your income (your average business income over the last minute, at least 500 / sec)": "El mineral vale segundos de tus ingresos (tus ingresos medios de negocios en el último minuto, como mínimo 500 / s)",
+  "Coal 8 sec": "Carbón 8 s", "Copper 20 sec": "Cobre 20 s", "Silver 45 sec": "Plata 45 s", "Gold 100 sec": "Oro 100 s", "Diamond 250 sec": "Diamante 250 s",
+  "Ruby 500 sec. Deeper ore is rarer and worth more. 🔥 A gold rush in your real mines doubles ore value while it lasts.": "Rubí 500 s. El mineral más profundo es más raro y vale más. 🔥 Una fiebre del oro en tus minas reales duplica el valor del mineral mientras dura.",
+  "Vault and ⬆️ upgrades": "Cámara y ⬆️ mejoras", "Upgrades and the vault are kept on prestige.": "Las mejoras y la cámara se conservan al hacer prestigio.",
+  "Medium unlocks after you submit (sell or keep) 5 Easy paintings; 🔴 Hard unlocks after 10 Medium paintings.": "La dificultad media se desbloquea al entregar (vender o guardar) 5 cuadros fáciles; 🔴 la difícil, tras 10 cuadros de dificultad media.",
+  "Paints with the selected color: round or square tip, 6 sizes from 1 px to 44 px": "Pinta con el color elegido: punta redonda o cuadrada, 6 tamaños de 1 px a 44 px",
+  "Square / ⚫ Circle / 🔺 Triangle": "Cuadrado / ⚫ Círculo / 🔺 Triángulo",
+  "Drag a box to draw a filled shape. Hold Shift for a perfect square or circle. Turn an oval or a triangle to any angle (180° = upside down) with the ↻ slider or the mouse wheel, while drawing it or right after":
+    "Arrastra un recuadro para dibujar una forma rellena. Mantén Mayús para un cuadrado o un círculo perfecto. Gira un óvalo o un triángulo a cualquier ángulo (180° = boca abajo) con el control ↻ o la rueda del ratón, mientras lo dibujas o justo después",
+  "Fills an area of one color": "Rellena una zona de un solo color",
+  "Drag the last shape you drew to move it; pick a color to recolor it (works until you draw or paint something else)": "Arrastra la última forma que dibujaste para moverla; elige un color para cambiárselo (funciona hasta que dibujes o pintes otra cosa)",
+  "Undo / 🗑️ Clear": "Deshacer / 🗑️ Borrar", "Takes back the last step / starts over": "Deshace el último paso / empieza de nuevo", "How the match is scored": "Cómo se puntúa el parecido",
+  "Sell or keep": "Vender o guardar", "Art Gallery business": "Negocio Galería de arte",
+  "With 20 paintings in your collection you can buy the 🏛️ Art Gallery special business (💰 Income tab) for 50 scoin. It earns 250 / sec for every painting in your collection, up to 10.000 / sec. Selling paintings lowers it.":
+    "Con 20 cuadros en tu colección puedes comprar el negocio especial 🏛️ Galería de arte (pestaña 💰 Ingresos) por 50 scoin. Gana 250 / s por cada cuadro de tu colección, hasta 10.000 / s. Vender cuadros lo reduce.",
+  // 🏆 achievements, 🛍️ shop
+  "Finishing every achievement of a category unlocks a cosmetic collection that can't be bought in the Shop. Turn it on in 🏆 Achievements → 🎁 Rewards.":
+    "Completar todos los logros de una categoría desbloquea una colección cosmética que no se puede comprar en la Tienda. Actívala en 🏆 Logros → 🎁 Recompensas.",
+  "Cosmetics only: they change how the game looks, not how it plays. Each item belongs to a collection and a slot (background, coin or 🃏 cards, which changes the deck in every card game). You can wear one item per slot and switch any time in the Shop.":
+    "Solo cosméticos: cambian el aspecto del juego, no cómo se juega. Cada artículo pertenece a una colección y a un hueco (fondo, moneda o 🃏 cartas, que cambia la baraja en todos los juegos de cartas). Puedes llevar un artículo por hueco y cambiarlo cuando quieras en la Tienda.",
+  "Wearing the coin and background from the same collection unlocks the 🎨 \"Dressed to impress\" achievement.": "Llevar la moneda y el fondo de la misma colección desbloquea el logro 🎨 «Vestido para impresionar».",
+  "Nothing found. Try another word, e.g. a game, a building or a vehicle.": "No se ha encontrado nada. Prueba con otra palabra, por ejemplo un juego, un edificio o un vehículo.",
+});
+rx(String.raw`(\d+) achievements in (\d+) categories\. They are checked every second, kept forever \(also through prestige\) and shown with progress bars in the 🏆 tab\.`,
+  "$1 logros en $2 categorías. Se comprueban cada segundo, se conservan para siempre (también al hacer prestigio) y se muestran con barras de progreso en la pestaña 🏆.");
+rx(String.raw`(\d+) workers \+ accountant \+ HR`, "$1 trabajadores + contable + RR. HH.");
+rx(String.raw`(${NUM}), then ×2 each`, "$1, luego ×2 cada uno");
+rx(String.raw`([\d–]+) \/ sec per worker`, "$1 / s por trabajador");
+rx(String.raw`(\d+) min`, "$1 min");
+rx(String.raw`(${NUM}) \+ 👩‍🔬 (\d+) scientists`, "$1 + 👩‍🔬 $2 científicos");
+rx(String.raw`(\d+)–(\d+) min`, "$1–$2 min");
+rx(String.raw`Free (\S+) chip`, "Ficha gratis de $1");
+rx(String.raw`Plinko: (${NUM}) – (${NUM})`, "Plinko: $1 – $2");
+rx(String.raw`Plinko: Super high rollers: (${NUM}) – (${NUM}) per ball, up to 20 balls at once\. Each ball falls through 12 rows into a slot \(about 98% return\)`,
+  "Plinko: súper altas apuestas: $1 – $2 por bola, hasta 20 bolas a la vez. Cada bola cae por 12 filas hasta una casilla (devolución de cerca del 98%)");
+rx(String.raw`(\d+) lamp oil( → .*)?`, (m) => m.replace(/(\d+) lamp oil/g, "$1 de aceite"));
+rx(String.raw`(?:holds \d+ ore|stone \d|walking costs|\+\d+% ore value|up to \d+ energy|\+1 energy every|rescue keeps|survive one lava).* → .*`,
+  (m) => { const parts = m.split(" → ").map(p => esq(p)); return parts.includes(null) ? null : parts.join(" → "); });
+rx(String.raw`(\d+) (?:🔍 )?results?`, (m, n) => `${n} ${plural(n, "resultado", "resultados")}`);
+rx(String.raw`(\d+)\+ results`, "Más de $1 resultados");
+rx(String.raw`🔍 Results for “(.+)”`, "🔍 Resultados de «$1»");
+rx(String.raw`Results for “(.+)”`, "Resultados de «$1»");
+rx(String.raw`\+25% income from businesses, special businesses and clicks, once\. From the reset you pick it on, every reset keeps your Science buildings \((.+)\), but not the satellite`,
+  (m, l) => `+25% de ingresos de negocios, negocios especiales y clics, una vez. Desde el reinicio en que lo eliges, todos los reinicios conservan tus edificios de Ciencia (${l.split(", ").map(x => ES[x] || x).join(", ")}), pero no el satélite`);
+Object.assign(ES, { "Research lab": "Laboratorio de investigación", "Astronomy Research Center": "Centro de Investigación Astronómica" });
+
+// wiki sentences with bold words
+H("<b>Empire of Coins</b> is an idle tycoon game. Click the coin, build businesses, play the casino, invest, run a logistics empire, and grow your fortune up to <b>1 gcoin</b>, where you can prestige (then 5, 10 and 20 gcoin).",
+  "<b>Empire of Coins</b> es un juego de magnates idle. Haz clic en la moneda, monta negocios, juega en el casino, invierte, dirige un imperio logístico y haz crecer tu fortuna hasta <b>1 gcoin</b>, donde puedes hacer prestigio (luego con 5, 10 y 20 gcoin).");
+hrx(String.raw`Every second there is a 1 in (\d+) chance of a tax inspection \(and always after (\d+) minutes without one\)\. The bill is <b>(\d+%) of everything you earned in the last (\d+) minutes<\/b>\. You have <b>(\d+) minutes<\/b> to pay it with the red button on 💰 Income, or the red banner at the top of any other tab \(clicking it pays right there\)\. If you can't, the bill grows by (\d+%) and you get (\d+) more minutes\. Miss it again and you get a <b>final warning<\/b>: if your investments \(Broker ETF, ETF, gold, properties\) can cover the rest, you can sell them with a <b>20% fee<\/b> to pay \(only what's needed is sold\)\. If even that isn't enough, it's <b>game over<\/b>\. Bills stack, so keep some money ready\. A Debt &amp; financial lawyer gives part of every tax payment back\.`,
+  "Cada segundo hay 1 probabilidad entre $1 de una inspección de Hacienda (y siempre tras $2 minutos sin ninguna). La factura es <b>el $3 de todo lo que has ganado en los últimos $4 minutos</b>. Tienes <b>$5 minutos</b> para pagarla con el botón rojo de 💰 Ingresos o con el aviso rojo de la parte superior de cualquier otra pestaña (al hacer clic se paga allí mismo). Si no puedes, la factura sube un $6 y tienes $7 minutos más. Si vuelves a fallar, recibes un <b>último aviso</b>: si tus inversiones (ETF del bróker, ETF, oro, inmuebles) cubren el resto, puedes venderlas con una <b>comisión del 20%</b> para pagar (solo se vende lo necesario). Si ni eso alcanza, <b>se acaba la partida</b>. Las facturas se acumulan, así que ten dinero preparado. Un abogado financiero te devuelve parte de cada pago de impuestos.");
+hrx(String.raw`Every second there is a 1 in (\d+) chance of a tax inspection \(and always after (\d+) minutes without one\)\. The bill is <b>(\d+%) of everything you earned in the last (\d+) minutes<\/b>\. You have <b>(\d+) minutes<\/b> to pay it with the red button on 💰 Income, or the red banner at the top of any other tab \(clicking it pays right there\)\. If you can't, the bill grows by (\d+%) and you get (\d+) more minutes\. Miss it again and you get a <b>final warning<\/b>: if your investments \(Broker ETF, ETF, gold, properties\) can cover the rest, you can sell them with a <b>20% fee<\/b> to pay \(only what's needed is sold\)\. If even that isn't enough, it's <b>game over<\/b>\. Bills stack, so keep some money ready\. A Debt & financial lawyer gives part of every tax payment back\.`,
+  "Cada segundo hay 1 probabilidad entre $1 de una inspección de Hacienda (y siempre tras $2 minutos sin ninguna). La factura es <b>el $3 de todo lo que has ganado en los últimos $4 minutos</b>. Tienes <b>$5 minutos</b> para pagarla con el botón rojo de 💰 Ingresos o con el aviso rojo de la parte superior de cualquier otra pestaña (al hacer clic se paga allí mismo). Si no puedes, la factura sube un $6 y tienes $7 minutos más. Si vuelves a fallar, recibes un <b>último aviso</b>: si tus inversiones (ETF del bróker, ETF, oro, inmuebles) cubren el resto, puedes venderlas con una <b>comisión del 20%</b> para pagar (solo se vende lo necesario). Si ni eso alcanza, <b>se acaba la partida</b>. Las facturas se acumulan, así que ten dinero preparado. Un abogado financiero te devuelve parte de cada pago de impuestos.");
+H("When the money on hand reaches <b>1 gcoin</b> (1st prestige), <b>5 gcoin</b> (2nd), <b>10 gcoin</b> (3rd) or <b>20 gcoin</b> (4th), you can reset the game for a permanent Legacy bonus (max 4 prestiges; the 4th finishes the game, but you can keep playing). After every prestige there are <b>no tax inspections for the first 10 minutes</b>, whichever bonus you pick. <b>Always kept:</b> achievements, Gambler, Investor and Logistics levels, cosmetics, statistics, free bet chips, the 🖼️ Art Gallery unlock, its collection slots and your paintings.",
+  "Cuando el dinero en mano llega a <b>1 gcoin</b> (1.er prestigio), <b>5 gcoin</b> (2.º), <b>10 gcoin</b> (3.º) o <b>20 gcoin</b> (4.º), puedes reiniciar la partida a cambio de una bonificación de Legado permanente (máx. 4 prestigios; el 4.º termina el juego, pero puedes seguir jugando). Tras cada prestigio <b>no hay inspecciones de Hacienda durante los 10 primeros minutos</b>, elijas la bonificación que elijas. <b>Siempre se conservan:</b> logros, niveles de jugador, inversor y logística, cosméticos, estadísticas, fichas de apuesta gratis, el desbloqueo de la 🖼️ Galería de arte, sus huecos de colección y tus cuadros.");
+H("The game counts real time: in a background tab it earns at full speed (it catches up when the browser wakes it). When the game is closed (or the computer sleeps) for more than 5 minutes, you get <b>offline earnings</b> when you come back: up to 8 hours count, and businesses, special businesses, gold mines and rent pay 50%. Contracts on their way, free bet chips and VIP chips keep their timers running. Nothing random happens while you're away (no taxes, crashes, breakdowns or market moves), and Logistics agents only start new contracts while the game is open.",
+  "El juego cuenta el tiempo real: en una pestaña en segundo plano gana a toda velocidad (se pone al día cuando el navegador la despierta). Si el juego está cerrado (o el ordenador en reposo) más de 5 minutos, al volver recibes <b>ganancias sin conexión</b>: cuentan hasta 8 horas, y los negocios, negocios especiales, minas de oro y alquileres pagan el 50%. Los contratos en camino, las fichas de apuesta gratis y las fichas VIP siguen con sus temporizadores. Mientras no estás no pasa nada al azar (ni impuestos, ni desplomes, ni averías, ni movimientos del mercado), y los agentes logísticos solo empiezan contratos nuevos con el juego abierto.");
+H("👩‍🔬 <b>Scientists are a resource:</b> the Research lab costs 20 scientists and the Space Mission Center 50. They leave your University, which then trains new ones (1 every 2 minutes) and costs money again until it's back to 50.",
+  "👩‍🔬 <b>Los científicos son un recurso:</b> el laboratorio de investigación cuesta 20 científicos y el Centro de Misiones Espaciales 50. Se van de tu universidad, que entonces forma otros nuevos (1 cada 2 minutos) y vuelve a costar dinero hasta llegar otra vez a 50.");
+H("👩‍🔬 <b>Scientists are a resource:</b> the Research lab costs 20 scientists and the Space Mission Center 50, the 🔭 Astronomy Research Center 20 and the 🛸 Orbital Space Station 100, the 🌕 Moon Base 150 and the 🧬 Genetics Laboratory 75 and the 🔴 Mars Base 150. They leave your University, which then trains new ones (1 every 2 minutes) and costs money again until it's back to 50.",
+  "👩‍🔬 <b>Los científicos son un recurso:</b> el laboratorio de investigación cuesta 20 científicos, el Centro de Misiones Espaciales 50, el 🔭 Centro de Investigación Astronómica 20, la 🛸 Estación Espacial Orbital 100, la 🌕 Base Lunar 150, el 🧬 Laboratorio de genética 75 y la 🔴 Base en Marte 150. Se van de tu universidad, que entonces forma otros nuevos (1 cada 2 minutos) y vuelve a costar dinero hasta llegar otra vez a 50.");
+H("Move money into <b>casino chips</b> at the top of the Casino tab, play, then cash out. Most games have Classic, High roller and Super high roller tables. Bets give <b>Gambler XP</b> (bet × the table's XP multiplier) and you get <b>cashback</b> on lost bets (0.1% per Gambler level, +5% per Criminal defense lawyer). Random results use your browser's secure random generator.",
+  "Pasa dinero a <b>fichas del casino</b> en la parte superior de la pestaña Casino, juega y luego retíralo. La mayoría de juegos tienen mesas clásicas, de altas apuestas y de súper altas apuestas. Las apuestas dan <b>XP de jugador</b> (apuesta × el multiplicador de XP de la mesa) y recibes un <b>reembolso</b> de las apuestas perdidas (0,1% por nivel de jugador, +5% por cada abogado penalista). Los resultados al azar usan el generador aleatorio seguro de tu navegador.");
+hrx(String.raw`Every 20 minutes one game type becomes <b>hot<\/b>: for 10 minutes <b>all<\/b> its tables get a bonus on their XP multiplier, then there are 10 minutes with no bonus\. The bonus grows with your 🎲 Gambler level: <b>\+10<\/b> \(levels 1–49\), <b>\+20<\/b> from level 50, <b>\+40<\/b> from level 75 \(you get \+(\d+) now; High roller Blackjack ×4 becomes ×(\d+)\)\. The hot game is chosen at random and is never the same twice in a row\. The timer is shown under your Gambler level, together with the next hot game\.`,
+  "Cada 20 minutos un tipo de juego se pone <b>caliente</b>: durante 10 minutos <b>todas</b> sus mesas reciben una bonificación en su multiplicador de XP, y luego hay 10 minutos sin bonificación. La bonificación crece con tu nivel de 🎲 jugador: <b>+10</b> (niveles 1–49), <b>+20</b> desde el nivel 50, <b>+40</b> desde el nivel 75 (ahora tienes +$1; el blackjack de altas apuestas ×4 pasa a ×$2). El juego caliente se elige al azar y nunca se repite dos veces seguidas. El temporizador se muestra bajo tu nivel de jugador, junto con el siguiente juego caliente.");
+H("6-deck shoe, the dealer stands on 17. <b>Blackjack pays 3:2</b>, other wins 1:1, ties push.", "Zapato de 6 barajas, la banca se planta con 17. <b>El blackjack paga 3:2</b>, el resto de premios 1:1, los empates devuelven la apuesta.");
+H("<b>Double</b> on any first two cards (one more card). <b>Split</b> pairs once per seat; split aces get one card each.", "<b>Doblar</b> con cualquiera de las dos primeras cartas (una carta más). <b>Separar</b> parejas una vez por asiento; los ases separados reciben una carta cada uno.");
+H("<b>Surrender</b> a first-two-card hand to get half your bet back. <b>Insurance</b> (half your bet) pays 2:1 when the dealer shows an Ace and has blackjack.", "<b>Rendirse</b> con las dos primeras cartas para recuperar la mitad de tu apuesta. El <b>seguro</b> (la mitad de tu apuesta) paga 2:1 cuando la banca muestra un as y tiene blackjack.");
+hrx(String.raw`Video Poker: Classic table: (${NUM}) – (${NUM})<br>Video Poker: High rollers: (${NUM}) – (${NUM})<br>Video Poker: Super high rollers: (${NUM}) – (${NUM})\. 53 cards with one wild joker\. Get 5 cards, hold the ones you like, draw new ones for the rest\. Pays from a pair of Jacks or better\. <b>Jackpot<\/b> = 50× the table's max bet; your share is your bet ÷ the max bet\. About 98% return with perfect play\.`,
+  "Videopóquer: mesa clásica: $1 – $2<br>Videopóquer: altas apuestas: $3 – $4<br>Videopóquer: súper altas apuestas: $5 – $6. 53 cartas con un comodín. Recibes 5 cartas, guardas las que quieras y cambias el resto. Paga desde una pareja de jotas o más. <b>Bote</b> = 50× la apuesta máxima de la mesa; tu parte es tu apuesta ÷ la apuesta máxima. Devuelve cerca del 98% jugando perfecto.");
+hrx(String.raw`🔒 Unlocks at <b>Gambler level 20<\/b>\. Baccarat: Classic table: (${NUM}) – (${NUM})<br>Baccarat: High rollers: (${NUM}) – (${NUM})<br>Baccarat: Super high rollers: (${NUM}) – (${NUM}) per betting spot\. 8-deck shoe\.`,
+  "🔒 Se desbloquea en el <b>nivel de jugador 20</b>. Baccarat: mesa clásica: $1 – $2<br>Baccarat: altas apuestas: $3 – $4<br>Baccarat: súper altas apuestas: $5 – $6 por casilla. Zapato de 8 barajas.");
+H("Two hands are dealt, <b>Player</b> and <b>Banker</b>. The one closest to 9 wins. A = 1, 2–9 count as shown, 10/J/Q/K = 0, and only the last digit counts (7 + 8 = 5).",
+  "Se reparten dos manos, <b>Jugador</b> y <b>Banca</b>. Gana la que más se acerque a 9. A = 1, del 2 al 9 valen lo que marcan, 10/J/Q/K = 0, y solo cuenta la última cifra (7 + 8 = 5).");
+H("Nobody makes choices: a third card is drawn by the standard casino rules. An 8 or 9 in the first two cards is a <b>natural</b> and ends the hand.",
+  "Nadie decide nada: la tercera carta se saca según las reglas estándar del casino. Un 8 o un 9 con las dos primeras cartas es un <b>natural</b> y termina la mano.");
+H("Best 5 of 7 cards vs the dealer. <b>Play</b> pays 1:1 if you win. <b>Ante</b> pays 1:1, but pushes if the dealer has less than a pair. <b>Blind</b> pays the table below when you win with a straight or better (otherwise pushes on a win). Ties push. Folding loses Ante and Blind.",
+  "Las 5 mejores de 7 cartas contra la banca. <b>Jugar</b> paga 1:1 si ganas. El <b>ante</b> paga 1:1, pero empata si la banca tiene menos de una pareja. La <b>ciega</b> paga según la tabla de abajo cuando ganas con escalera o mejor (si no, empata al ganar). Los empates devuelven la apuesta. Retirarse pierde el ante y la ciega.");
+H("<b>Trips</b> pays on your own hand, even if you fold.", "<b>Trips</b> paga según tu propia mano, aunque te retires.");
+hrx(String.raw`🔒 Unlocks after your <b>1st prestige<\/b> and at <b>Gambler level 40<\/b>\. High rollers: (${NUM}) – (${NUM}) · Super high rollers: (${NUM}) – (${NUM}) per spin\. A 7×7 grid of specimens\.`,
+  "🔒 Se desbloquea tras tu <b>1.er prestigio</b> y en el <b>nivel de jugador 40</b>. Altas apuestas: $1 – $2 · Súper altas apuestas: $3 – $4 por tirada. Una cuadrícula de 7×7 especímenes.");
+H("<b>Clusters</b> of 5 or more of the same specimen touching up, down, left or right (not diagonal) pay. Winners pop, the rest fall and new ones drop in, which can win again (<b>tumbles</b>).",
+  "Pagan los <b>grupos</b> de 5 o más especímenes iguales que se tocan arriba, abajo, a la izquierda o a la derecha (no en diagonal). Los ganadores explotan, el resto cae y entran otros nuevos, que pueden volver a ganar (<b>cascadas</b>).");
+H("🔬 <b>Lab spots</b>: a square where a winner popped is marked; each later win popping there doubles it: ×2, ×4, ×8 … ×128. Spots inside one cluster are <b>added</b> and multiply that cluster's pay. They reset after each paid spin.",
+  "🔬 <b>Casillas de laboratorio</b>: la casilla donde explota un ganador queda marcada; cada premio posterior que explote allí la duplica: ×2, ×4, ×8 … ×128. Las casillas de un mismo grupo <b>se suman</b> y multiplican el premio de ese grupo. Se reinician tras cada tirada pagada.");
+H("🧪 <b>DNA vials</b>: 3 / 4 / 5 / 6 / 7 on the grid at the end of a spin give 10 / 12 / 15 / 20 / 30 <b>free spins</b>. In free spins the lab spots stay for the whole bonus, and vials can add more free spins.",
+  "🧪 <b>Viales de ADN</b>: 3 / 4 / 5 / 6 / 7 en la cuadrícula al terminar una tirada dan 10 / 12 / 15 / 20 / 30 <b>tiradas gratis</b>. En las tiradas gratis las casillas de laboratorio se mantienen durante todo el bono, y los viales pueden sumar más tiradas.");
+hrx(String.raw`🛒 <b>Buy free spins<\/b>: pay ([\d.,]+)× the bet to start the bonus at once \(mostly 10 free spins, sometimes more\)\. It also returns about 99% but swings a lot: half of bought bonuses pay under 15× the bet\.`,
+  (m, x) => `🛒 <b>Comprar tiradas gratis</b>: paga ${decFix(x)}× la apuesta para empezar el bono enseguida (casi siempre 10 tiradas gratis, a veces más). También devuelve cerca del 99%, pero varía mucho: la mitad de los bonos comprados pagan menos de 15× la apuesta.`);
+hrx(String.raw`Classic: (${NUM}) – (${NUM}) · High rollers: (${NUM}) – (${NUM})\. A bag has 28 balls: 19 green, 8 red, 1 gold, not put back during a round\. Green climbs one step, gold climbs one step and gives a shield against the next red, red pops your balloon \(you lose what is still riding\)\. After each step: <b>cash out<\/b>, <b>take half<\/b> \(once per round\), or <b>draw again<\/b>\. About 97\.7% return with perfect play\.`,
+  "Clásica: $1 – $2 · Altas apuestas: $3 – $4. La bolsa tiene 28 bolas: 19 verdes, 8 rojas y 1 dorada, que no se devuelven durante la ronda. La verde sube un peldaño, la dorada sube un peldaño y da un escudo contra la siguiente roja, y la roja pincha tu globo (pierdes lo que siga en juego). Tras cada peldaño: <b>retirar</b>, <b>llevarte la mitad</b> (una vez por ronda) o <b>sacar otra</b>. Devuelve cerca del 97,7% jugando perfecto.");
+H("XP for every delivered contract: contract minutes × 1 (truck), × 3 (tanker), × 6 (plane). The level unlocks the <b>Logistics agents</b>: turn one on and it picks a random contract 5 seconds after the offers appear, for 2% of that contract's profit. The 🏬 Logistics Center (Logistics level 20) upgrades all agents: 1% fee, the most profitable contract, and picks after 3 seconds.",
+  "XP por cada contrato entregado: minutos del contrato × 1 (camión), × 3 (petrolero), × 6 (avión). El nivel desbloquea los <b>agentes logísticos</b>: activa uno y elegirá un contrato al azar 5 segundos después de que aparezcan las ofertas, por el 2% del beneficio de ese contrato. El 🏬 Centro logístico (nivel de logística 20) mejora a todos los agentes: comisión del 1%, el contrato más rentable y elección a los 3 segundos.");
+H("At the end of a run you choose: <b>💰 sell</b> your ore, or <b>🏦 keep it in the vault</b>. Your vault (shown under the energy) pays for upgrades, and you can still sell vault ore later at its normal value (no gold rush bonus). If you're rescued, the team saves 50% of your ore (65% / 80% with insurance), starting with the most valuable piece.",
+  "Al final de cada partida eliges: <b>💰 vender</b> tu mineral o <b>🏦 guardarlo en la cámara</b>. Tu cámara (debajo de la energía) paga las mejoras, y aún puedes vender su mineral más tarde a su valor normal (sin la bonificación de fiebre del oro). Si te rescatan, el equipo salva el 50% de tu mineral (65% / 80% con seguro), empezando por la pieza más valiosa.");
+H("Copy a painting as closely as you can. The closer the match, the more your copy is worth. After you earn the 💵 Millionaire achievement (1 scoin on hand), the gallery can be opened for <b>500.000</b>.",
+  "Copia un cuadro lo más fielmente que puedas. Cuanto más se parezca, más vale tu copia. Cuando consigues el logro 💵 Millonario (1 scoin en mano), puedes abrir la galería por <b>500.000</b>.");
+H("Your copy is worth <b>match % × the full value</b>: an 80% copy of a Hard painting is worth 80 scoin. A copy under <b>50%</b> can't be sold or kept: keep working on it or start a new one. There is no timer.",
+  "Tu copia vale <b>% de parecido × el valor completo</b>: una copia al 80% de un cuadro difícil vale 80 scoin. Una copia por debajo del <b>50%</b> no se puede vender ni guardar: sigue trabajando en ella o empieza otra. No hay límite de tiempo.");
+H("Your copy is judged three ways: <b>🎨 Colors</b> (each part has the right color), <b>📐 Layout</b> (things are in the right places) and <b>🔷 Shapes found</b>: every separate shape in the original (each planet, star, sail, sun…) must appear in your copy in the same color, in about the same place and size. Brush strokes count as shapes too (a painted arm or branch is one shape), and if your whole drawing is a bit shifted, the shapes are lined up before they're compared. The shape count is worth the most, so painting only the background (sky, sea, space) scores low; drawing every object scores high. Extra scribbles cost points, small wobbles are forgiven, and an empty canvas scores 0%.",
+  "Tu copia se juzga de tres formas: <b>🎨 Colores</b> (cada parte tiene el color correcto), <b>📐 Composición</b> (las cosas están en su sitio) y <b>🔷 Formas encontradas</b>: cada forma separada del original (cada planeta, estrella, vela, sol…) debe aparecer en tu copia con el mismo color y más o menos en el mismo sitio y tamaño. Los trazos de pincel también cuentan como formas (un brazo o una rama pintados son una forma), y si todo tu dibujo está un poco desplazado, las formas se alinean antes de compararlas. Las formas son lo que más cuenta, así que pintar solo el fondo (cielo, mar, espacio) puntúa poco; dibujar cada objeto puntúa mucho. Los garabatos de más restan puntos, los pequeños temblores se perdonan y un lienzo vacío puntúa 0%.");
+H("After submitting, <b>sell</b> the copy for its value right away, or <b>keep</b> it in your 🖼️ Collection (no money now; sell it there any time for the same value). The collection starts with 10 slots; each +10 slots costs 500.000, then 750.000, 1 scoin… up to a maximum of 100 slots. A prestige keeps the gallery unlocked, your bought slots and all your paintings; only the 🏛️ Art Gallery business is reset (buy it again to earn from the paintings).",
+  "Tras entregarla, <b>vende</b> la copia por su valor enseguida o <b>guárdala</b> en tu 🖼️ Colección (sin dinero ahora; véndela allí cuando quieras por el mismo valor). La colección empieza con 10 huecos; cada +10 huecos cuesta 500.000, luego 750.000, 1 scoin… hasta un máximo de 100 huecos. Un prestigio conserva la galería desbloqueada, los huecos comprados y todos tus cuadros; solo se reinicia el negocio 🏛️ Galería de arte (cómpralo otra vez para ganar con los cuadros).");
+/* ---------- wiki: 🧬 Gene Splicer and leftovers ---------- */
+Object.assign(ES, {
+  "Straight up": "Pleno", "Split bet": "Caballo", "Taxes": "Impuestos", "Search the wiki (e.g. tanker, jackpot, Nobel)…": "Busca en la wiki (p. ej., petrolero, bote, Nobel)…", "Search the wiki": "Buscar en la wiki", "Rarity": "Rareza", "First discovery pays": "El primer descubrimiento paga",
+  "Splicing a species you already know pays nothing, but gives you one more DNA sample of it. The reward uses the same income base as the Gold Mine Dig.":
+    "Empalmar una especie que ya conoces no paga nada, pero te da una muestra más de su ADN. El premio usa la misma base de ingresos que la mina de oro.",
+  "per spot.": "por casilla.", "per hand. Play up to 3 seats.": "por mano. Juega hasta 3 asientos.",
+  "Ante per seat. Play 1 or 2 seats. Ante + equal Blind, optional Trips.": "de ante por asiento. Juega 1 o 2 asientos. Ante + una ciega igual, Trips opcional.",
+});
+rx(String.raw`(\d+) min of income`, "$1 min de ingresos");
+hrx(String.raw`Opens when you buy the 🧬 Genetics Laboratory \(🔬 Science\) and stays open for good, even after a prestige\. You start with 5 DNA samples: 🧑 Human, 🐟 Fish, 🦎 Lizard, 🕷️ Spider and 🌱 Plant\. Put two samples in the splicer \(the same one twice works too\): if they make a species, it goes into your ❄️ freezer and becomes a new sample to splice with\. There are (\d+) species to find\.`,
+  "Se abre al comprar el 🧬 Laboratorio de genética (🔬 Ciencia) y sigue abierto para siempre, incluso tras un prestigio. Empiezas con 5 muestras de ADN: 🧑 Humano, 🐟 Pez, 🦎 Lagarto, 🕷️ Araña y 🌱 Planta. Pon dos muestras en el empalmador (también vale la misma dos veces): si forman una especie, va a tu ❄️ congelador y se convierte en una muestra nueva para empalmar. Hay $1 especies por descubrir.");
+hrx(String.raw`🧪 <b>DNA:<\/b> you can hold up to (\d+) samples of each species\. Every 10 minutes every species you know gets \+1 \(also while you are away\)\. A splice uses 1 of each sample \(2 if both are the same\)\.`,
+  "🧪 <b>ADN:</b> puedes tener hasta $1 muestras de cada especie. Cada 10 minutos todas las especies que conoces reciben +1 (también mientras no estás). Un empalme usa 1 de cada muestra (2 si son la misma).");
+hrx(String.raw`🧪 <b>Mutations:<\/b> two samples that don't make a real species make a <b>mutant<\/b> instead, named after its parents \(🕷️ Spider \+ 🌳 Tree = Spidree\)\. It pays (\d+) sec of income the first time and goes in your 🧪 Mutant jar\. Mutants can't be spliced again, and each pair makes its mutant only once\.`,
+  "🧪 <b>Mutaciones:</b> dos muestras que no forman una especie real crean en su lugar un <b>mutante</b>, con un nombre sacado de sus padres (🕷️ Araña + 🌳 Árbol = Spidree). Paga $1 s de ingresos la primera vez y va a tu 🧪 tarro de mutantes. Los mutantes no se pueden volver a empalmar, y cada pareja crea su mutante una sola vez.");
+H("🏆 <b>Species bonuses</b> (for good, +1% for every species you discover in that category): 🐟 Aquatic → tanker contracts, 🐦 Birds → cargo plane contracts, 🐾 Mammals → truck contracts, 🐉 Mythical → space and deep space mission rewards, 🦕 Extinct → Art Gallery income, 🕷️ Bugs → ore sold in the Gold Mine Dig.",
+  "🏆 <b>Bonificaciones de especies</b> (para siempre, +1% por cada especie que descubras en esa categoría): 🐟 Acuáticos → contratos de petroleros, 🐦 Aves → contratos de aviones de carga, 🐾 Mamíferos → contratos de camiones, 🐉 Míticas → premios de misiones espaciales y al espacio profundo, 🦕 Extintas → ingresos de la Galería de arte, 🕷️ Bichos → mineral vendido en la mina de oro.");
+H("🔎 <b>Unfound partners:</b> each sample in your freezer shows how many new species you can still make with it and the samples you already have (\"3 unfound\"), or \"🔒 later\" when the rest need a sample you haven't found yet. Mutants never count, and hints only show real recipes.",
+  "🔎 <b>Parejas sin descubrir:</b> cada muestra de tu congelador indica cuántas especies nuevas puedes crear aún con ella y las muestras que ya tienes («3 sin descubrir»), o «🔒 más adelante» cuando el resto necesita una muestra que aún no has encontrado. Los mutantes nunca cuentan, y las pistas solo muestran recetas reales.");
+hrx(String.raw`💡 <b>Hints:<\/b> spend (\d+) scientists from your Universities to reveal one recipe you can make right now\. The 📖 Codex shows every species you've found and how you made it\.`,
+  "💡 <b>Pistas:</b> gasta $1 científicos de tus universidades para revelar una receta que puedas hacer ahora mismo. El 📖 Códice muestra todas las especies que has encontrado y cómo las creaste.");
+
+rx(String.raw`Opens when you buy the 🧬 Genetics Laboratory \(🔬 Science\) and stays open for good, even after a prestige\. You start with 5 DNA samples: 🧑 Human, 🐟 Fish, 🦎 Lizard, 🕷️ Spider and 🌱 Plant\. Put two samples in the splicer \(the same one twice works too\): if they make a species, it goes into your ❄️ freezer and becomes a new sample to splice with\. There are (\d+) species to find\.`,
+  "Se abre al comprar el 🧬 Laboratorio de genética (🔬 Ciencia) y sigue abierto para siempre, incluso tras un prestigio. Empiezas con 5 muestras de ADN: 🧑 Humano, 🐟 Pez, 🦎 Lagarto, 🕷️ Araña y 🌱 Planta. Pon dos muestras en el empalmador (también vale la misma dos veces): si forman una especie, va a tu ❄️ congelador y se convierte en una muestra nueva para empalmar. Hay $1 especies por descubrir.");
+Object.assign(ES, { "High rollers": "Altas apuestas", "Super high rollers": "Súper altas apuestas" });
+
+H("🌐 The 📖 Wiki, the ⭐ prestige screens and the special business details are now in <b>Español</b> too. The Wiki search finds Spanish words when the game is in Spanish.",
+  "🌐 La 📖 Wiki, las pantallas de ⭐ prestigio y los detalles de los negocios especiales ya están también en <b>español</b>. El buscador de la Wiki encuentra palabras en español cuando el juego está en español.");
+
+/* ===================== generic fallbacks (keep these last) ===================== */
+// a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
+ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {
+  const parts = s.split(/(?<=[.!?)])\s+(?=\S)/);
+  if (parts.length < 2) return null;
+  const out = [];
+  for (const p of parts) { const x = esq(p); if (x == null) return null; out.push(x); }
+  return out.join(" ");
+}]);
+// markup with short pieces of text ("✖ Release<small>all cards</small>", "{i}All <span>26/182</span>"): each piece on its own
+ES_HTML_RX.push([/^[\s\S]*$/, (key) => {
+  const bits = key.split(/(<[^>]+>|\{i\})/);
+  let any = false;
+  for (let i = 0; i < bits.length; i += 2) {
+    if (!LETTER.test(bits[i])) continue;
+    const x = esq(bits[i]); if (x == null) return null;
+    bits[i] = x; any = true;
+  }
+  return any ? bits.join("") : null;
+}]);
+
+
+I18N_READY = true;
+i18nApply(document.body);
+document.title = t(document.title);

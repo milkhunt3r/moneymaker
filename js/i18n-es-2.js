@@ -802,27 +802,3 @@ rx(String.raw`(.+?) (\d+\/\d+)`, (m, a, n) => { const x = esq(a); return x == nu
 H("💼 Fix: <b>Tycoon's Legacy</b> now keeps your 🔬 Science buildings on every later reset too, not only on the reset you pick it (the satellite still resets).",
   "💼 Corrección: <b>Legado del magnate</b> ahora conserva tus edificios de 🔬 Ciencia también en todos los reinicios posteriores, no solo en el reinicio en que lo eliges (el satélite se sigue reiniciando).");
 
-/* ===================== generic fallbacks (keep these last) ===================== */
-// a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
-ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {
-  const parts = s.split(/(?<=[.!?)])\s+(?=\S)/);
-  if (parts.length < 2) return null;
-  const out = [];
-  for (const p of parts) { const x = esq(p); if (x == null) return null; out.push(x); }
-  return out.join(" ");
-}]);
-// markup with short pieces of text ("✖ Release<small>all cards</small>", "{i}All <span>26/182</span>"): each piece on its own
-ES_HTML_RX.push([/^[\s\S]*$/, (key) => {
-  const bits = key.split(/(<[^>]+>|\{i\})/);
-  let any = false;
-  for (let i = 0; i < bits.length; i += 2) {
-    if (!LETTER.test(bits[i])) continue;
-    const x = esq(bits[i]); if (x == null) return null;
-    bits[i] = x; any = true;
-  }
-  return any ? bits.join("") : null;
-}]);
-
-I18N_READY = true;
-i18nApply(document.body);
-document.title = t(document.title);
