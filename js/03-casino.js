@@ -348,6 +348,7 @@ function betInfo(key) {
     const types = { 2: ["Split", 17], 3: ["Street", 11], 4: ["Corner", 8], 6: ["Six line", 5] };
     let [name, pays] = types[nums.length];
     if (key === "x0-1-2-3") name = "First four";
+    if (nums.length === 3 && nums.includes(0)) name = "Trio";   // 0-1-2 or 0-2-3: pays like a street
     return { label: name + " " + nums.join("-"), nums, wins: x => nums.includes(x), pays };
   }
   const all = {
@@ -468,11 +469,14 @@ function renderRoulette() {
   };
 
   // Table: zero on the left, 3 rows of 12 numbers, column bets on the right
-  // Zero: splits 0-3, 0-2, 0-1 on its right edge, and the 0-1-2-3 corner at its bottom-right corner
+  // Zero: splits 0-3, 0-2, 0-1 on its right edge, the trios 0-2-3 and 0-1-2 where two rows meet it,
+  // and the 0-1-2-3 corner at its bottom-right corner
   const zeroSpots =
     spot("right zsplit", [0, 3]).replace('class="spot', 'style="top:6%" class="spot') +
     spot("right zsplit", [0, 2]).replace('class="spot', 'style="top:40%" class="spot') +
     spot("right zsplit", [0, 1]).replace('class="spot', 'style="top:74%" class="spot') +
+    spot("trio", [0, 2, 3]).replace('class="spot', 'style="top:calc(33.33% - 10px)" class="spot') +
+    spot("trio", [0, 1, 2]).replace('class="spot', 'style="top:calc(66.67% - 10px)" class="spot') +
     spot("corner", [0, 1, 2, 3]);
   let table = cell("n0", "0", "green", "grid-row: 1 / span 3; grid-column: 1;", zeroSpots, 'data-n="0"');
   for (let row = 0; row < 3; row++) {
@@ -531,8 +535,8 @@ function renderRoulette() {
         <button class="btn ghost" id="rebet" ${roulette.spinning || !hasLast ? "disabled" : ""}>↺ Repeat last bets</button>
       </div>
       <div id="casinoMsg" class="flash" style="margin-top:8px"></div>
-      <div class="muted" style="margin-top:6px">Click a number, or the line between numbers: between 2 = split, where 4 meet = corner, bottom edge = street, bottom corner = six line (next to 0: first four 0-1-2-3).</div>
-      <div class="muted">Pays: number 35:1 · split 17:1 · street 11:1 · corner / first four 8:1 · six line 5:1 · dozen / column 2:1 · red, black, odd, even, 1–18, 19–36 1:1 · when 0 comes up, only bets on 0 win</div>
+      <div class="muted" style="margin-top:6px">Click a number, or the line between numbers: between 2 = split, where 4 meet = corner, bottom edge = street, bottom corner = six line (next to 0: trios 0-1-2 / 0-2-3 where two rows meet the zero, and first four 0-1-2-3 at its bottom).</div>
+      <div class="muted">Pays: number 35:1 · split 17:1 · street / trio 11:1 · corner / first four 8:1 · six line 5:1 · dozen / column 2:1 · red, black, odd, even, 1–18, 19–36 1:1 · when 0 comes up, only bets on 0 win</div>
     </div>`;
 }
 

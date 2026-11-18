@@ -1676,3 +1676,4 @@ body.phone .debtBanner { top: 56px; }
 .rewardCard h2 { display: flex; align-items: center; gap: 4px; }
 .rewardCard .colEmblem { margin: 0 8px 0 0; flex-shrink: 0; }
 .rewardCard > .muted { margin-top: 6px; }
+.spot.trio { right: -11px; width: 19px; height: 19px; z-index: 4; }   /* 0-2-3 and 0-1-2 on the zero's edge */
