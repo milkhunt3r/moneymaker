@@ -97,8 +97,8 @@ const ACHIEVEMENTS = [
   { id: "glevel50",   cat: "casino", icon: "👑", name: "Whale",              desc: "Reach Gambler level 50",              goal: 50, get: () => levelInfo(state.casinoXp).level },
   { id: "glevel99",   cat: "casino", icon: "💎", name: "Casino legend",      desc: "Reach Gambler level 99",              goal: 99, get: () => levelInfo(state.casinoXp).level },
   { id: "casinoUp",   cat: "casino", icon: "🤑", name: "Beat the house",     desc: "Be 1 scoin up in the casino (all-time earnings)", goal: SC, get: () => state.casinoStats.returned - state.casinoStats.wagered, money: true },
-  { id: "royal",      cat: "casino", icon: "♠️", name: "Royal Flush!",       desc: "Get a Royal Flush in Video Poker or Ultimate Texas Hold'em", goal: 1, get: flag("royal") },
-  { id: "bigWin",     cat: "casino", icon: "💰", name: "Jackpot!",           desc: "Win a Video Poker jackpot or reach the top of Sky Climb", goal: 1, get: () => (state.stats.vpJackpot || state.stats.climbTop ? 1 : 0) },
+  { id: "royal",      cat: "casino", icon: "♠️", name: "Royal Flush or Jackpot!", desc: "Get a Royal Flush in Video Poker or Ultimate Texas Hold'em, or reach the Sky Climb jackpot (the top step)", goal: 1,
+    get: () => (state.stats.royal || state.stats.climbTop || state.stats.vpJackpot ? 1 : 0) },
   { id: "quads4",     cat: "casino", icon: "🀄", name: "Four of a kind ×4",  desc: "Get 4 four-of-a-kinds in total (Video Poker and Ultimate Texas Hold'em)", goal: 4, get: () => state.stats.quads || 0 },
   { id: "sixSeven",   cat: "casino", icon: "🤷", name: "6 7",                desc: "Win an Ultimate Texas Hold'em hand holding a 6 and a 7", goal: 1, get: flag("sixSeven") },
   { id: "bj100",      cat: "casino", icon: "🃏", name: "Card counter",       desc: "Win 100 Blackjack hands",             goal: 100,  get: () => state.stats.bjWins || 0 },
@@ -227,13 +227,15 @@ if (!state.stats) state.stats = {};
 for (const [k, v] of Object.entries({ clicks: 0, minesBought: state.special.mines.length, bestIncome: 0 }))
   if (typeof state.stats[k] !== "number") state.stats[k] = v;
 if (!state.achievements) state.achievements = {};
+// "Royal Flush!" and "Jackpot!" became one achievement: whoever had the old Jackpot! keeps it as this one
+if (state.achievements.bigWin) { if (!state.achievements.royal) state.achievements.royal = state.achievements.bigWin; delete state.achievements.bigWin; }
 
 // 🏅 painted achievement badges (assets/ach/<id>.webp); achievements without one keep their emoji
 const ACH_PICS = new Set(["cash1s", "cash10s", "cash100s", "cash1g", "cash5g", "cash10g", "cash20g", "prestige1", "prestige2", "prestige4",
   "tax10", "tax100", "tax1000", "cosmetic1", "emperor", "fullSet",
   "click100", "click1k", "click10k", "click100k", "inc5k", "inc10k", "nobel1", "nobel5", "nobel10", "sciSpace", "spaceOk", "spaceFail",
   "glevel5", "bet1s", "glevel25", "bet100s", "glevel50", "glevel99", "bj500", "casinoUp", "vp500", "uth500", "plinko250", "rouNumber",
-  "royal", "bigWin", "quads4", "sixSeven", "bj100", "bj1000", "rouZero", "rb500",
+  "royal", "quads4", "sixSeven", "bj100", "bj1000", "rouZero", "rb500",
   "prop1", "prop10", "re1s", "re10s", "reSold100", "reCrash", "etf1s", "etf10s", "gold10s", "petf10s", "petf100s", "trade1",
   "trade10", "trade100", "gold1s", "petfFull", "ilevel5", "ilevel25", "ilevel50", "ilevel99",
   "llevel5", "llevel25", "llevel50", "llevel99", "truck15", "tanker1", "tanker10", "plane1", "plane5", "con100", "con1k", "con10k", "logi1s", "logi100s",
