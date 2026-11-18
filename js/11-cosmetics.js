@@ -30,11 +30,12 @@ const COLLECTIONS = [
   { id: "snake", name: "🐍 Snake in a Top Hat Deck", reward: { ids: ["play-blackjack-1000"], text: "Unlock 🃏 Blackjack veteran (1,000 hands)" } },
   { id: "dragon", name: "🐉 Dragon Deck", reward: { ids: ["bac500"], text: "Unlock 🎴 Baccarat high society (500 hands)" } },
   { id: "rat", name: "🐀 Rat Hacker Deck", reward: { ids: ["play-vp-1000"], text: "Unlock 🎴 Video Poker veteran (1,000 hands)" } },
+  { id: "cowboy", name: "🤠 Cat Cowboy Deck", reward: { ids: ["play-uth-1000"], text: "Unlock 🤠 Ultimate Texas Hold'em veteran (1,000 hands)" } },
   { id: "strongman", name: "🦛 The Strongman Collection", reward: { ids: ["boost-energy-100", "click100k"], text: "Unlock ⚡ Wired for life and 🦾 Iron finger" } },
 ];
 // 🛡️ painted collection emblems (assets/col/<id>.webp): the title shows the emblem instead of the leading emoji
 const COL_EMBLEMS = new Set(["wow", "ahead", "royal", "rain", "emperor", "artist", "bull", "shark",
-  "space", "global", "jackpot", "goldrush", "gambler99", "investor99", "logistics99", "strongman", "mutant", "snake", "dragon", "rat"]);
+  "space", "global", "jackpot", "goldrush", "gambler99", "investor99", "logistics99", "strongman", "mutant", "snake", "dragon", "rat", "cowboy"]);
 const colTitle = (col) => COL_EMBLEMS.has(col.id)
   ? `<img class="colEmblem" src="assets/col/${col.id}.webp" alt="">${col.name.replace(/^\S+\s/, "")}` : col.name;
 const COSMETICS = [
@@ -48,6 +49,8 @@ const COSMETICS = [
     preview: `<div class="preview cardsPreview"><img src="assets/cards-dragon/Jc.webp" alt=""><img src="assets/cards-dragon/Qh.webp" alt=""><img src="assets/cards-dragon/Ks.webp" alt="Dragon cards"></div>` },
   { id: "ratCards", collection: "rat", slot: "cards", name: "Rat Hacker Cards", price: 0, desc: "A full deck with the rat hacker crew on the Jacks, Queens, Kings and Joker, for every card game. Reward for 🎴 Video Poker veteran.",
     preview: `<div class="preview cardsPreview"><img src="assets/cards-rat/Jc.webp" alt=""><img src="assets/cards-rat/Qh.webp" alt=""><img src="assets/cards-rat/Ks.webp" alt="Rat Hacker cards"></div>` },
+  { id: "cowboyCards", collection: "cowboy", slot: "cards", name: "Cat Cowboy Cards", price: 0, desc: "A full deck with the cat cowboy posse on the Jacks, Queens, Kings and Joker, for every card game. Reward for 🤠 Ultimate Texas Hold'em veteran.",
+    preview: `<div class="preview cardsPreview"><img src="assets/cards-cowboy/Jc.webp" alt=""><img src="assets/cards-cowboy/Qh.webp" alt=""><img src="assets/cards-cowboy/Ks.webp" alt="Cat Cowboy cards"></div>` },
   { id: "wowCards", collection: "wow", slot: "cards", name: "Wow So Rich Cards", price: 5000000, desc: "A full deck with the Shiba tycoon on the Jacks, Queens, Kings and Joker, for every card game.",
     preview: `<div class="preview cardsPreview"><img src="assets/cards-wow/Jc.webp" alt=""><img src="assets/cards-wow/Qh.webp" alt=""><img src="assets/cards-wow/Ks.webp" alt="Wow So Rich cards"></div>` },
   { id: "aheadBg", collection: "ahead", slot: "background", name: "One Step Ahead Background", price: 25000000, desc: "A gentleman chimpanzee moves his golden knight in a grand chess library, always one step ahead, behind the whole game.",
