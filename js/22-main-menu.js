@@ -56,7 +56,7 @@ const PATCH_NOTES = [
     "🎈 New <b>Sky Climb: High rollers</b> table with bets from 5 to 500 scoin.",
     "🏆 Sky Climb veteran now needs 500 rounds instead of 1,000.",
     "🧬 New slot: <b>Gene Cascade</b>! A 7×7 grid of specimens: clusters of 5+ pay and tumble, 🔬 lab spots grow from ×2 up to ×128, and 🧪 DNA vials give up to 30 free spins where the spots stay. High rollers and Super high rollers tables. Unlocks after your <b>1st prestige</b> at <b>Gambler level 40</b>. You can also 🛒 buy the free spins for 50.5× your bet.",
-    "🐍 New reward card deck: <b>Snake in a Top Hat</b>, for reaching 🃏 Blackjack veteran (1,000 hands).",
+    "🐍🐉 New reward card decks: <b>Snake in a Top Hat</b> for 🃏 Blackjack veteran (1,000 hands) and <b>Dragon</b> for 🎴 Baccarat high society (500 hands).",
     "🏆 ♠️ Royal Flush! and 💰 Jackpot! are now one achievement, <b>Royal Flush or Jackpot!</b>: a Royal Flush in Video Poker or Hold'em, or the top of Sky Climb. If you had either one, you keep it.",
     "🌋 Gold Mine Dig lava is dangerous now: flowing lava spreads on its own every 0.7 s, bursting pockets splash you (−20% lamp), standing next to lava burns 5% lamp per step, and lava can rise 1 tile. The 🧯 Heat suit softens all of it.",
     "🆘 Final tax warning: if you can't pay a bill after the extension, you can now sell investments with a 20% fee to cover it instead of losing the game.",
