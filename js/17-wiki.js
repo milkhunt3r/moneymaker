@@ -29,7 +29,7 @@ function wikiGeneral() {
     <h3>🧾 Taxes</h3>
     <p>Every second there is a 1 in ${Math.round(1 / TAX_CHANCE).toLocaleString()} chance of a tax inspection (and always after ${TAX_FORCED_AFTER / 60} minutes without one).
       The bill is <b>${pctx(TAX_RATE)} of everything you earned in the last ${TAX_LOOKBACK / 60} minutes</b>. You have <b>${TAX_TIME_TO_PAY / 60} minutes</b> to pay it with the red button on 💰 Income, or the red banner at the top of any other tab (clicking it pays right there).
-      If you can't, the bill grows by ${pctx(TAX_LATE_PENALTY)} and you get ${TAX_TIME_TO_PAY / 60} more minutes. Miss it again and it's <b>game over</b>. Bills stack, so keep some money ready.
+      If you can't, the bill grows by ${pctx(TAX_LATE_PENALTY)} and you get ${TAX_TIME_TO_PAY / 60} more minutes. Miss it again and you get a <b>final warning</b>: if your investments (Broker ETF, ETF, gold, properties) can cover the rest, you can sell them with a <b>20% fee</b> to pay (only what's needed is sold). If even that isn't enough, it's <b>game over</b>. Bills stack, so keep some money ready.
       A Debt &amp; financial lawyer gives part of every tax payment back.</p>
     <h3>📊 Levels</h3>
     ${wt(["Level", "How you get XP", "What it gives"], [

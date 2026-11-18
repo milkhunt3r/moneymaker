@@ -56,6 +56,7 @@ const PATCH_NOTES = [
     "🎈 New <b>Sky Climb: High rollers</b> table with bets from 5 to 500 scoin.",
     "🏆 Sky Climb veteran now needs 500 rounds instead of 1,000.",
     "🧬 New slot: <b>Gene Cascade</b>! A 7×7 grid of specimens: clusters of 5+ pay and tumble, 🔬 lab spots grow from ×2 up to ×128, and 🧪 DNA vials give up to 30 free spins where the spots stay. High rollers and Super high rollers tables. Unlocks after your <b>1st prestige</b> at <b>Gambler level 40</b>. You can also 🛒 buy the free spins for 50.5× your bet.",
+    "🆘 Final tax warning: if you can't pay a bill after the extension, you can now sell investments with a 20% fee to cover it instead of losing the game.",
     "🧾 Tax debt can be paid from any tab: click the red banner at the top (it stays in view while you scroll).",
     "🏆 Easier achievements: 🏛️ Pillar of society needs 250 tax bills (was 500), 💰 Art market mogul 200 paintings sold (was 250), ⛏️ Mine foreman 200 runs (was 250).",
     "🏆 5 Gene Cascade achievements in 🎰 Casino: play 50, 100 and 500 spins, trigger free spins, and buy free spins.",

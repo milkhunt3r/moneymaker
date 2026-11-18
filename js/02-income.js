@@ -605,7 +605,8 @@ $("coin").addEventListener("click", (event) => {
    When a timer runs out:
      - enough money  -> game pauses, pop-up asks you to confirm payment
      - not enough    -> bill +50% and 5 more minutes (only once)
-     - still not enough after that -> game over
+     - still not enough after that -> if selling investments (20% fee) would cover it, the game pauses and offers
+       that (🆘 emergency sale); otherwise game over
    ===================================================================== */
 const isPaused = () => state.pendingTaxId !== null || state.gameOver || !!(state.science && state.science.lab && state.science.lab.pending);
 const totalDebt = () => state.taxDebts.reduce((a, d) => a + d.amount, 0);
@@ -648,6 +649,11 @@ function taxTick() {
       showNotice("⚠️ Not enough money! Tax bill raised to " + fmt(d.amount) + ". You have 5 more minutes.");
       continue;
     }
+    if (typeof emergencyValue === "function" && state.money + emergencyValue() >= d.amount - 1) {
+      state.pendingTaxId = d.id;      // pauses the game: sell investments to pay, or give up
+      showPaymentPopup(d);
+      return;
+    }
     state.gameOver = true;
     showGameOver(d);
     return;
@@ -673,10 +679,25 @@ function showModal(html) {
 function hideModal() { $("modal").hidden = true; $("modalBox").classList.remove("gold", "wide", "about", "ornate"); }
 
 function showPaymentPopup(d) {
+  if (state.money < d.amount) return showEmergencyPopup(d);   // final deadline and not enough money (also after a reload)
   showModal(`<h2>${ico("tax", "h")}Tax payment due</h2>
              <p>Time is up for your tax bill of <b>${fmt(d.amount)}</b>.</p>
              <p class="muted">The game is paused until you pay.</p>
              <button class="btn big" data-modal="pay">Pay ${fmt(d.amount)}</button>`);
+}
+
+// 🆘 final deadline, not enough money: sell investments with a 20% fee to pay the bill
+function showEmergencyPopup(d) {
+  const short = d.amount - Math.floor(state.money);
+  const rows = emergencyAssets().map(a => `<tr><td>${a.label}</td><td>${fmt(a.value)}</td><td>${fmt(a.value * (1 - EMERGENCY_FEE))}</td></tr>`).join("");
+  showModal(`<h2>${ico("tax", "h")}Final tax warning</h2>
+             <p>Your tax bill of <b>${fmt(d.amount)}</b> is due and you only have <b>${fmt(Math.floor(state.money))}</b>: <b>${fmt(short)}</b> is missing.</p>
+             <p>You can sell investments to cover it, with a <b>${EMERGENCY_FEE * 100}% fee</b>. Only what's needed is sold
+               (Broker ETF, then ETF, then gold, then the cheapest properties; a property is sold whole).</p>
+             <table class="wikiTable"><tr><th>Investment</th><th>Value</th><th>You get</th></tr>${rows}</table>
+             <p class="muted">The game is paused until you choose. Live trading positions are not touched.</p>
+             <button class="btn big" data-modal="emergency">Sell and pay ${fmt(d.amount)}</button>
+             <button class="btn ghost" data-modal="giveup" style="margin-top:8px">Don't sell (game over)</button>`);
 }
 
 function showGameOver(d) {
@@ -702,6 +723,29 @@ $("modal").addEventListener("click", (event) => {
     updateDebt();
     updateCounter();
     save();
+  }
+
+  if (action === "emergency") {
+    const d = state.taxDebts.find(x => x.id === state.pendingTaxId);
+    if (d) {
+      const raised = emergencySell((d.amount - state.money) / (1 - EMERGENCY_FEE) + 1);
+      if (state.money >= d.amount - 1) {   // (−1: rounding)
+        state.money = Math.max(0, state.money - d.amount);
+        taxRefund(d.amount);
+        state.taxDebts = state.taxDebts.filter(x => x !== d);
+        state.stats.taxPaid = (state.stats.taxPaid || 0) + 1;
+        showNotice(`🆘 Sold investments for ${fmt(raised)} (after the 20% fee) and paid the tax bill of ${fmt(d.amount)}.`);
+      } else { state.gameOver = true; showGameOver(d); save(); return; }
+    }
+    state.pendingTaxId = null;
+    hideModal(); updateDebt(); updateCounter();
+    if (typeof updateInvestLive === "function") updateInvestLive();
+    if (typeof renderProperties === "function") renderProperties();
+    save();
+  }
+  if (action === "giveup") {
+    const d = state.taxDebts.find(x => x.id === state.pendingTaxId);
+    state.pendingTaxId = null; state.gameOver = true; showGameOver(d || { amount: totalDebt() }); save();
   }
 
   if (action === "restart" || action === "confirmReset") {

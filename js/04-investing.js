@@ -475,6 +475,42 @@ function showPL(prefix, value, invested) {
 // Update all the numbers on the investing page (no rebuilding, so buttons and inputs keep working)
 /* ----- All-time profits per investment -----
    profit = everything you got back (sales, cash-outs after fees, rent) + what it is worth now - everything you put in */
+/* 🆘 Emergency sale for a final tax bill: investments sold with a 20% fee (gold cooldown and property locks don't apply).
+   Order: Broker ETF, ETF, gold (any amount), then properties from the cheapest (each sold whole). Live trading isn't touched. */
+const EMERGENCY_FEE = 0.2;
+function emergencyAssets() {
+  const list = [];
+  if (inv.petf > 0) list.push({ key: "petf", label: ivIco("petf") + "Broker ETF", value: inv.petf });
+  if (inv.etf > 0) list.push({ key: "etf", label: ivIco("etf") + "Stock market ETF", value: inv.etf });
+  if (inv.gold > 0) list.push({ key: "gold", label: ivIco("gold") + "Gold", value: inv.gold });
+  const re = inv.properties.reduce((a, p) => a + p.value, 0);
+  if (re > 0) list.push({ key: "re", label: ico("re-key") + `Real estate (${inv.properties.length})`, value: re });
+  return list;
+}
+const emergencyValue = () => emergencyAssets().reduce((a, x) => a + x.value, 0) * (1 - EMERGENCY_FEE);
+function emergencySell(gross) {   // sells at least `gross` worth (before the fee) if possible; returns the money received
+  let left = gross, got = 0;
+  const take = (key, amount) => { const net = amount * (1 - EMERGENCY_FEE); state.money += net; got += net; investRecord(key, 0, net); left -= amount; };
+  for (const key of ["petf", "etf", "gold"]) {
+    if (left <= 0) break;
+    const have = inv[key] || 0; if (have <= 0) continue;
+    const amount = Math.min(have, Math.ceil(left));
+    const share = amount / have;
+    if (key === "etf") inv.etfInvested *= 1 - share;
+    if (key === "gold") inv.goldInvested *= 1 - share;
+    if (key === "petf") inv.petfInvested = (inv.petfInvested || 0) * (1 - share);
+    inv[key] = have - amount;
+    if (inv[key] < 0.5) { inv[key] = 0; if (key === "etf") inv.etfInvested = 0; if (key === "gold") inv.goldInvested = 0; if (key === "petf") inv.petfInvested = 0; }
+    take(key, amount);
+  }
+  for (const p of [...inv.properties].sort((a, b) => a.value - b.value)) {
+    if (left <= 0) break;
+    inv.properties = inv.properties.filter(x => x !== p);
+    state.stats.reSold = (state.stats.reSold || 0) + 1;
+    take("re", p.value);
+  }
+  return got;
+}
 function investCurrent(key) {
   if (key === "re") return inv.properties.reduce((a, p) => a + p.value, 0);
   if (key === "crypto") return cryptoReady ? cryptoTotal() : 0;
