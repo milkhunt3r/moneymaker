@@ -604,13 +604,13 @@ $("casinoGame").addEventListener("mouseover", (e) => {
    outer track, slows to a crawl (the tease), then drops and bounces into its pocket. */
 const SPIN_MS = 7500;          // how long a spin lasts
 const BALL_TRACK = 126;        // ball distance from the center while rolling in the rim's channel
-const BALL_POCKET = 92;        // ball distance from the center once it lands (inside the pocket, below the number)
+const BALL_POCKET = 85;        // ball distance from the center once it lands (inside the pocket, below the number)
 const BALL_TURNS = 8;          // laps the ball makes (relative to the wheel)
 const DROP_AT = 0.72;          // when (0-1 of the spin) the ball starts falling in
 
 // Angle of each pocket's middle on the wheel picture (0 = top, clockwise), in WHEEL_ORDER.
-// Measured from the picture (its pockets aren't perfectly even), so the ball lands right in the number.
-const WHEEL_ANGLES = [3.97, 13.26, 22.59, 32.26, 41.8, 51.86, 61.62, 71.81, 81.51, 91.97, 102.02, 113.13, 123.29, 133.76, 143.44, 153.37, 163.01, 172.65, 182.02, 191.25, 200.72, 210.21, 220.12, 229.71, 239.92, 249.49, 259.57, 268.8, 278.68, 287.76, 297.79, 307.33, 317.3, 326.87, 336.18, 345.5, 354.74];
+// The wheel is drawn exactly (assets/roulette-wheel.webp, 37 equal pockets), so every pocket is 360/37° apart.
+const WHEEL_ANGLES = WHEEL_ORDER.map((_, i) => i * 360 / 37);
 const pocketAngle = (n) => WHEEL_ANGLES[WHEEL_ORDER.indexOf(n)];
 
 function ballTransform(angle, radius) {
