@@ -52,6 +52,8 @@ addEventListener("resize", fitBrand); fitBrand();
 const PATCH_NOTES = [
   { date: "18 November 2026", title: "Empire of Coins", items: [
     "🌐 More of the game in <b>Español</b>: the rules in Investing, Logistics and Live trading, every casino game (buttons, rules, pay tables and results), the Gold Mine Dig and Art Gallery mini-games, all achievement names and descriptions, and the Shop and reward items.",
+    "🚚 New in 📈 Investing: <b>Global Freight Co. shares</b>. The price follows your logistics deliveries: more contracts delivered than in the 20 seconds before, and it goes up; fewer, and it goes down.",
+    "📡 <b>Live trading</b>: <b>⏳ limit orders</b> (open a Long when the price drops to your price, or a Short when it rises to it) and <b>🎯 take profit / 🛑 stop loss</b> on every position.",
     "🎟️ <b>VIP Coins</b> prestige bonus: you can now hold up to <b>200</b> free 500 scoin chips instead of 100.",
     "🏆 Easier goals: <b>Blackjack legend</b> now needs 500 won hands, and <b>Ultimate Texas Hold'em veteran</b> 500 hands played.",
     "🎰 <b>Clear bets</b> now also empties the table after a finished hand (Baccarat and Blackjack), and <b>Repeat last bets</b> places your free bet chips again first when the last bet used them, paying only the rest from your chips.",

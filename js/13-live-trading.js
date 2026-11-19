@@ -48,6 +48,11 @@ const cryptoPrice = (sym) => live[sym].price || inv.crypto[sym].last || 0;
 const LEVERAGES = [1, 20, 50];
 if (!Array.isArray(inv.positions)) inv.positions = [];
 if (!Array.isArray(inv.tradeLog)) inv.tradeLog = [];
+/* ----- 🎯 Take profit / 🛑 Stop loss (on a position: close by itself when its profit or loss after the closing fee
+   reaches that % of the money put in) and ⏳ Limit orders (open a position when the price reaches your limit:
+   a Long when it drops to it, a Short when it rises to it; the money is set aside until then, Cancel gives it back).
+   They are checked on every live price while the game is open. ----- */
+if (!Array.isArray(inv.orders)) inv.orders = [];
 // older saves: coins you owned become ×1 Long positions with the same value
 for (const c of CRYPTOS) {
   const h = inv.crypto[c.sym];
@@ -60,7 +65,7 @@ const posPnl = (p, price = cryptoPrice(p.sym)) => p.qty * (price - p.entry) * (p
 const posValue = (p, price) => Math.max(0, p.margin + posPnl(p, price));
 const liqPrice = (p) => p.side === "long" ? p.entry * (1 - 1 / p.lev) : p.entry * (1 + 1 / p.lev);
 const cryptoValue = (sym) => inv.positions.filter(p => p.sym === sym).reduce((a, p) => a + posValue(p), 0);
-function cryptoTotal() { return inv.positions.reduce((a, p) => a + posValue(p), 0); }
+function cryptoTotal() { return inv.positions.reduce((a, p) => a + posValue(p), 0) + inv.orders.reduce((a, o) => a + o.amount, 0); }
 function logTrade(entry) { inv.tradeLog.unshift(entry); if (inv.tradeLog.length > 15) inv.tradeLog.length = 15; }
 // Called on every live price: closes positions whose value hit 0
 function checkLiquidations(sym, price) {
@@ -82,6 +87,39 @@ function onPrice(sym, price, open) {
   if (open > 0) L.open = open;
   inv.crypto[sym].last = price;
   checkLiquidations(sym, price);
+  checkAutoClose(sym, price);
+  checkOrders(sym, price);
+}
+// 🎯 / 🛑: result after the closing fee, as a share of the money put in
+const posResult = (p, price) => posValue(p, price) * (1 - cryptoFee()) - p.paid;
+function checkAutoClose(sym, price) {
+  for (const p of inv.positions.filter(x => x.sym === sym && (x.tp || x.sl))) {
+    const r = posResult(p, price) / p.paid;
+    if (p.tp && r >= p.tp) doClose(p, price, "tp");
+    else if (p.sl && r <= -p.sl) doClose(p, price, "sl");
+  }
+}
+// the price at which a position's result reaches `target` (+0.5 = +50%, −0.2 = −20%) of the money put in
+function triggerPrice(p, target) {
+  const dir = p.side === "long" ? 1 : -1, f = 1 - cryptoFee();
+  return p.entry + dir * (p.paid * (1 + target) / f - p.margin) / p.qty;
+}
+function checkOrders(sym, price) {
+  for (const o of inv.orders.filter(x => x.sym === sym)) {
+    if (o.side === "long" ? price > o.at : price < o.at) continue;
+    inv.orders = inv.orders.filter(x => x !== o);
+    const p = makePosition(o.sym, o.side, o.lev, o.amount, price, o.tp, o.sl);
+    showAlert(`⏳ Limit order filled: ${sym} ${o.side === "long" ? "Long" : "Short"} ×${o.lev}`, `Opened at ${priceText(price)} with ${fmt(o.amount)} (fee ${fmt(o.amount - p.margin)}).`, "good");
+    save();
+  }
+}
+function makePosition(sym, side, lev, amount, price, tp, sl) {
+  const fee = amount * cryptoFee(), margin = amount - fee;
+  const p = { id: state.nextId++, sym, side, lev, paid: amount, margin, entry: price, qty: margin * lev / price, at: Date.now() };
+  if (tp > 0) p.tp = tp;
+  if (sl > 0) p.sl = sl;
+  inv.positions.push(p);
+  return p;
 }
 // Binance first; if it doesn't deliver within 8 seconds (blocked or down), Coinbase
 function connectCrypto(source = "binance") {
@@ -152,18 +190,42 @@ function cryptoMsg(sym, text, good) {
   if (el) { el.textContent = text; el.className = good ? "income" : "flash"; }
 }
 const tradeSel = {};   // sym -> { side, lev }  chosen in the trade panel
-for (const c of CRYPTOS) tradeSel[c.sym] = { side: "long", lev: 1 };
+for (const c of CRYPTOS) tradeSel[c.sym] = { side: "long", lev: 1, type: "market" };
+// 🎯 / 🛑 inputs in % (empty = off) → fractions
+function readTpSl(tpId, slId) {
+  const tpRaw = $(tpId).value.trim(), slRaw = $(slId).value.trim();
+  const tp = tpRaw === "" ? 0 : Number(tpRaw) / 100, sl = slRaw === "" ? 0 : Number(slRaw) / 100;
+  if (tpRaw !== "" && !(tp >= 0.01 && tp <= 100)) return { err: "Take profit must be between 1% and 10000%." };
+  if (slRaw !== "" && !(sl >= 0.01 && sl <= 0.95)) return { err: "Stop loss must be between 1% and 95%." };
+  return { tp, sl };
+}
 function openPosition(sym) {
   if (isPaused()) return;
   if (!cryptoLive(sym)) return cryptoMsg(sym, "No live price right now: trading is paused.");
   const amount = Math.floor(Number($("cbuy-" + sym).value) || 0);
   if (amount < CRYPTO_MIN) return cryptoMsg(sym, "Minimum trade is " + fmt(CRYPTO_MIN) + ".");
   if (amount > state.money) return cryptoMsg(sym, "Not enough money.");
-  const { side, lev } = tradeSel[sym], price = live[sym].price;
-  const fee = amount * cryptoFee(), margin = amount - fee;
-  const p = { id: state.nextId++, sym, side, lev, paid: amount, margin, entry: price, qty: margin * lev / price, at: Date.now() };
+  const { side, lev, type } = tradeSel[sym], price = live[sym].price;
+  const tsl = readTpSl("ctp-" + sym, "csl-" + sym);
+  if (tsl.err) return cryptoMsg(sym, tsl.err);
+  const feesPct = (1 - (1 - cryptoFee()) ** 2) * 100;   // opening + closing fee: a smaller stop loss would close at once
+  if (tsl.sl && tsl.sl * 100 <= feesPct + 0.1) return cryptoMsg(sym, `Stop loss must be bigger than the trading fees (${feesPct.toFixed(1)}%).`);
+  if (type === "limit") {
+    const at = Number($("climit-" + sym).value) || 0;
+    if (!(at > 0)) return cryptoMsg(sym, "Enter the limit price.");
+    if (side === "long" && at >= price) return cryptoMsg(sym, "A Long limit must be below the current price (it opens when the price drops to it).");
+    if (side === "short" && at <= price) return cryptoMsg(sym, "A Short limit must be above the current price (it opens when the price rises to it).");
+    if (inv.orders.length >= 10) return cryptoMsg(sym, "You can have at most 10 limit orders.");
+    state.money -= amount;
+    inv.orders.push({ id: state.nextId++, sym, side, lev, amount, at, tp: tsl.tp, sl: tsl.sl, placed: Date.now() });
+    investRecord("crypto", amount, 0);
+    $("cbuy-" + sym).value = ""; $("climit-" + sym).value = "";
+    cryptoMsg(sym, `Limit order placed: ${side === "long" ? "Long" : "Short"} ×${lev} with ${fmt(amount)} when the price reaches ${priceText(at)}.`, true);
+    updateCounter(); updateInvestLive(); save(); renderCryptoNumbers();
+    return;
+  }
   state.money -= amount;
-  inv.positions.push(p);
+  const p = makePosition(sym, side, lev, amount, price, tsl.tp, tsl.sl), fee = amount - p.margin;
   investRecord("crypto", amount, 0);
   const xp = cryptoXp(amount);
   $("cbuy-" + sym).value = "";
@@ -175,7 +237,11 @@ function closePosition(id) {
   const p = inv.positions.find(x => x.id === id);
   if (!p) return;
   if (!cryptoLive(p.sym)) return cryptoMsg(p.sym, "No live price right now: trading is paused.");
-  const price = live[p.sym].price, value = posValue(p, price);
+  doClose(p, live[p.sym].price);
+}
+// closes a position at `price`; why = "tp" / "sl" when it closed by itself
+function doClose(p, price, why) {
+  const value = posValue(p, price);
   const fee = value * cryptoFee(), got = value - fee;
   inv.positions = inv.positions.filter(x => x !== p);
   state.money += got;
@@ -183,8 +249,10 @@ function closePosition(id) {
   const xp = value >= CRYPTO_MIN ? cryptoXp(value) : 0;
   const result = got - p.paid;
   if (result > 0) state.stats.profitTrades = (state.stats.profitTrades || 0) + 1;   // for achievements
-  logTrade({ sym: p.sym, side: p.side, lev: p.lev, entry: p.entry, exit: price, result, at: Date.now(), opened: p.at });
-  cryptoMsg(p.sym, `Closed ${p.side === "long" ? "Long" : "Short"} ×${p.lev} for ${fmt(got)} (fee ${fmt(fee)}) · ${result >= 0 ? "profit +" : "loss −"}${fmt(Math.abs(result))}${xp ? ` · +${xp} XP` : ""}.`, result >= 0);
+  logTrade({ sym: p.sym, side: p.side, lev: p.lev, entry: p.entry, exit: price, result, at: Date.now(), opened: p.at, why });
+  if (why) showAlert(`${why === "tp" ? "🎯 Take profit" : "🛑 Stop loss"}: ${p.sym} ${p.side === "long" ? "Long" : "Short"} ×${p.lev} closed`,
+    `Closed at ${priceText(price)} for ${fmt(got)} · ${result >= 0 ? "profit +" : "loss −"}${fmt(Math.abs(result))}.`, result >= 0 ? "good" : undefined);
+  cryptoMsg(p.sym, `${why === "tp" ? "🎯 " : why === "sl" ? "🛑 " : ""}Closed ${p.side === "long" ? "Long" : "Short"} ×${p.lev} for ${fmt(got)} (fee ${fmt(fee)}) · ${result >= 0 ? "profit +" : "loss −"}${fmt(Math.abs(result))}${xp ? ` · +${xp} XP` : ""}.`, result >= 0);
   updateCounter(); updateInvestLive(); save(); renderCryptoNumbers();
 }
 function ago(ms) {
@@ -307,6 +375,15 @@ function renderCrypto() {
         <button class="btn ghost small" data-cpct="${c.sym}" data-pct="1">All</button>
         <button class="btn" data-copen="${c.sym}" id="copen-${c.sym}">Open</button>
       </div>
+      <div class="tradePanel tradeExtra">
+        <div class="segGroup">
+          <button class="seg" data-ttype="${c.sym}" data-type="market" title="Open now at the live price">Market</button><button class="seg" data-ttype="${c.sym}" data-type="limit" title="Open when the price reaches your limit">⏳ Limit</button></div>
+        <input id="climit-${c.sym}" type="number" min="0" step="any" placeholder="Limit price" hidden>
+        <label class="tpslBox" title="Close by itself when the profit (after the closing fee) reaches this % of the money you put in">🎯 Take profit
+          <input id="ctp-${c.sym}" type="number" min="1" placeholder="+ %"></label>
+        <label class="tpslBox" title="Close by itself when the loss (after the closing fee) reaches this % of the money you put in">🛑 Stop loss
+          <input id="csl-${c.sym}" type="number" min="1" max="95" placeholder="− %"></label>
+      </div>
       <div class="muted" id="cprev-${c.sym}"></div>
       <div id="cmsg-${c.sym}" class="muted"></div>
       <div id="cpos-${c.sym}"></div>
@@ -320,8 +397,10 @@ function updateTradePanels() {
     const t = tradeSel[c.sym];
     document.querySelectorAll(`[data-tside="${c.sym}"]`).forEach(b => b.classList.toggle("on", b.dataset.side === t.side));
     document.querySelectorAll(`[data-tlev="${c.sym}"]`).forEach(b => b.classList.toggle("on", Number(b.dataset.lev) === t.lev));
+    document.querySelectorAll(`[data-ttype="${c.sym}"]`).forEach(b => b.classList.toggle("on", b.dataset.type === t.type));
+    if ($("climit-" + c.sym)) $("climit-" + c.sym).hidden = t.type !== "limit";
     const btn = $("copen-" + c.sym);
-    if (btn) { btn.textContent = `Open ${t.side === "long" ? "Long" : "Short"} ×${t.lev}`; btn.className = "btn " + (t.side === "long" ? "longBtn" : "shortBtn"); }
+    if (btn) { btn.textContent = `${t.type === "limit" ? "Place limit" : "Open"} ${t.side === "long" ? "Long" : "Short"} ×${t.lev}`; btn.className = "btn " + (t.side === "long" ? "longBtn" : "shortBtn"); }
   }
 }
 function renderCryptoNumbers() {
@@ -348,25 +427,34 @@ function renderCryptoNumbers() {
     $("cpl-" + c.sym).className = "bigValue " + (pl > 0 ? "up" : pl < 0 ? "down" : "");
     // preview of the trade you're about to open
     const t = tradeSel[c.sym], amt = Number($("cbuy-" + c.sym).value) || 0;
-    if (price && amt >= CRYPTO_MIN) {
-      const m = amt * (1 - f), liq = t.side === "long" ? price * (1 - 1 / t.lev) : price * (1 + 1 / t.lev);
+    const lim = t.type === "limit" ? Number($("climit-" + c.sym).value) || 0 : 0;
+    if (t.type === "limit" && !lim && amt >= CRYPTO_MIN) $("cprev-" + c.sym).textContent = `⏳ ${t.side === "long" ? "Enter a price below" : "Enter a price above"} ${priceText(price)}: the position opens when the price ${t.side === "long" ? "drops" : "rises"} to it.`;
+    else if (price && amt >= CRYPTO_MIN) {
+      const at = lim || price;
+      const m = amt * (1 - f), liq = t.side === "long" ? at * (1 - 1 / t.lev) : at * (1 + 1 / t.lev);
       $("cprev-" + c.sym).textContent = `Position size ${fmt(m * t.lev)} · fee ${fmt(amt * f)}` +
-        (t.lev > 1 || t.side === "short" ? ` · liquidated at ${priceText(liq)} (${(100 / t.lev).toFixed(0)}% ${t.side === "long" ? "drop" : "rise"})` : " · no liquidation");
+        (t.lev > 1 || t.side === "short" ? ` · liquidated at ${priceText(liq)} (${(100 / t.lev).toFixed(0)}% ${t.side === "long" ? "drop" : "rise"})` : " · no liquidation") +
+        (lim ? ` · opens at ${priceText(lim)}` : "");
     } else $("cprev-" + c.sym).textContent = "";
     // open positions and recent closed trades
     const log = inv.tradeLog.filter(x => x.sym === c.sym).slice(0, 5);
-    $("cpos-" + c.sym).innerHTML = (mine.length ? `<table class="posTable"><thead><tr><th>Position</th><th>Size</th><th>Entry</th><th>Now</th><th>Profit / loss</th><th>Liquidation</th><th>Open for</th><th></th></tr></thead><tbody>` +
+    const orders = inv.orders.filter(o => o.sym === c.sym);
+    $("cpos-" + c.sym).innerHTML = (mine.length ? `<table class="posTable"><thead><tr><th>Position</th><th>Size</th><th>Entry</th><th>Now</th><th>Profit / loss</th><th>Liquidation</th><th>Auto-close</th><th>Open for</th><th></th></tr></thead><tbody>` +
       mine.map(p => {
         const val = posValue(p, price), res = val - p.paid, pct = res / p.paid * 100;
         const liq = p.lev === 1 && p.side === "long" ? "–" : priceText(liqPrice(p));
         return `<tr><td>${sideTag(p.side, p.lev)}</td><td>${fmt(p.qty * p.entry)}</td><td>${priceText(p.entry)}</td><td>${priceText(price)}</td>
           <td class="${res >= 0 ? "up" : "down"}"><b>${res >= 0 ? "+" : "−"}${fmt(Math.abs(res))}</b> (${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%)</td>
-          <td>${liq}</td><td>${ago(Date.now() - p.at)}</td>
+          <td>${liq}</td><td class="tpslCell">${tpslText(p)}<button class="btn ghost small" data-ctpsl="${p.id}" title="Set take profit / stop loss">✏️</button></td><td>${ago(Date.now() - p.at)}</td>
           <td><button class="btn ghost small" data-cclose="${p.id}">Close</button></td></tr>`;
       }).join("") + `</tbody></table>` : "") +
+      (orders.length ? `<table class="posTable orderTable"><thead><tr><th>⏳ Limit order</th><th>Amount</th><th>Opens at</th><th>Now</th><th>Auto-close</th><th>Waiting for</th><th></th></tr></thead><tbody>` +
+        orders.map(o => `<tr><td>${sideTag(o.side, o.lev)}</td><td>${fmt(o.amount)}</td><td><b>${priceText(o.at)}</b></td>
+          <td>${priceText(price)} <small class="muted">(${((o.at / price - 1) * 100).toFixed(2)}%)</small></td><td>${tpslText(o)}</td><td>${ago(Date.now() - o.placed)}</td>
+          <td><button class="btn ghost small" data-ccancel="${o.id}">Cancel</button></td></tr>`).join("") + `</tbody></table>` : "") +
       (log.length ? `<div class="tradeLog"><span class="muted">Recent trades:</span> ${log.map(x =>
         `<span class="${x.result >= 0 ? "up" : "down"}">${sideTag(x.side, x.lev)} ${priceText(x.entry)} → ${priceText(x.exit)}
-          <b>${x.liq ? ivIco("crash") + "liquidated " : ""}${x.result >= 0 ? "+" : "−"}${fmt(Math.abs(x.result))}</b> <small class="muted">(${ago(x.at - x.opened)})</small></span>`).join("")}</div>` : "");
+          <b>${x.liq ? ivIco("crash") + "liquidated " : x.why === "tp" ? "🎯 " : x.why === "sl" ? "🛑 " : ""}${x.result >= 0 ? "+" : "−"}${fmt(Math.abs(x.result))}</b> <small class="muted">(${ago(x.at - x.opened)})</small></span>`).join("")}</div>` : "");
   }
 }
 // every second: numbers; every 5 seconds: one chart point (keeps the last ~20 minutes)
@@ -389,12 +477,54 @@ $("cryptoList").addEventListener("click", (e) => {
   if (op) return openPosition(op.dataset.copen);
   const cl = e.target.closest("[data-cclose]");
   if (cl) return closePosition(Number(cl.dataset.cclose));
+  const ty = e.target.closest("[data-ttype]");
+  if (ty) { tradeSel[ty.dataset.ttype].type = ty.dataset.type; updateTradePanels(); renderCryptoNumbers(); return; }
+  const cc = e.target.closest("[data-ccancel]");
+  if (cc) return cancelOrder(Number(cc.dataset.ccancel));
+  const ts = e.target.closest("[data-ctpsl]");
+  if (ts) return editTpSl(Number(ts.dataset.ctpsl));
 });
+function tpslText(x) {
+  if (!x.tp && !x.sl) return `<span class="muted">–</span> `;
+  const tip = (t) => x.entry ? ` <small class="muted">(${priceText(triggerPrice(x, t))})</small>` : "";
+  return (x.tp ? `<span class="up">🎯 +${+(x.tp * 100).toFixed(1)}%</span>${tip(x.tp)} ` : "") + (x.sl ? `<span class="down">🛑 −${+(x.sl * 100).toFixed(1)}%</span>${tip(-x.sl)} ` : "");
+}
+function cancelOrder(id) {
+  const o = inv.orders.find(x => x.id === id);
+  if (!o) return;
+  inv.orders = inv.orders.filter(x => x !== o);
+  state.money += o.amount;
+  investRecord("crypto", 0, o.amount);
+  cryptoMsg(o.sym, `Limit order cancelled: ${fmt(o.amount)} back to your money.`, true);
+  updateCounter(); updateInvestLive(); save(); renderCryptoNumbers();
+}
+function editTpSl(id) {
+  const p = inv.positions.find(x => x.id === id);
+  if (!p) return;
+  showModal(`<h2>🎯 Take profit / 🛑 Stop loss</h2>
+    <p>${sideTag(p.side, p.lev)} <b>${p.sym}</b> · entry ${priceText(p.entry)} · put in ${fmt(p.paid)}</p>
+    <p class="muted">The position closes by itself when its profit or loss (after the closing fee) reaches this % of the money you put in. Leave a box empty to turn it off.</p>
+    <div class="tradePanel" style="justify-content:center">
+      <label class="tpslBox">🎯 Take profit <input id="etp" type="number" min="1" placeholder="+ %" value="${p.tp ? +(p.tp * 100).toFixed(1) : ""}"></label>
+      <label class="tpslBox">🛑 Stop loss <input id="esl" type="number" min="1" max="95" placeholder="− %" value="${p.sl ? +(p.sl * 100).toFixed(1) : ""}"></label></div>
+    <p class="flash" id="etpslMsg"></p>
+    <div class="row" style="justify-content:center; gap:10px"><button class="btn" id="etpslSave">Save</button><button class="btn ghost" data-modal="close">Cancel</button></div>`);
+  $("etpslSave").onclick = () => {
+    const r = readTpSl("etp", "esl");
+    if (r.err) { $("etpslMsg").textContent = r.err; return; }
+    const now = cryptoPrice(p.sym), res = posResult(p, now) / p.paid;
+    if (r.tp && res >= r.tp) { $("etpslMsg").textContent = "The position is already past that profit: close it instead, or pick a higher %."; return; }
+    if (r.sl && res <= -r.sl) { $("etpslMsg").textContent = "The position is already past that loss: close it instead, or pick a bigger %."; return; }
+    if (r.tp) p.tp = r.tp; else delete p.tp;
+    if (r.sl) p.sl = r.sl; else delete p.sl;
+    hideModal(); save(); renderCryptoNumbers();
+  };
+}
 $("cryptoList").addEventListener("input", () => renderCryptoNumbers());
 // Investing tab: switch between the classic investments and Live trading (remembered)
 // 📡 Live trading unlocks at Investor level 20 (players with open positions can always reach them)
 const LIVE_LEVEL = 20;
-const liveOpen = () => levelInfo(inv.xp, INVEST_XP).level >= LIVE_LEVEL || (inv.positions || []).length > 0;
+const liveOpen = () => levelInfo(inv.xp, INVEST_XP).level >= LIVE_LEVEL || (inv.positions || []).length > 0 || (inv.orders || []).length > 0;
 function showInvestPage(p) {
   state.investPage = p === "live" ? "live" : "invest";
   const lockedLive = state.investPage === "live" && !liveOpen();

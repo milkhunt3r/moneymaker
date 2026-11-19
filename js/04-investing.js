@@ -58,7 +58,7 @@ const readAmount = (id) => Math.floor(Number($(id).value)) || 0;
 // 25% / 50% / All buttons fill in an amount of your money
 document.querySelectorAll("[data-invpct]").forEach(btn => {
   btn.addEventListener("click", () => {
-    const box = { re: "reAmount", etf: "etfAmount", petf: "petfAmount", gold: "goldAmount" }[btn.dataset.invpct];
+    const box = { re: "reAmount", etf: "etfAmount", petf: "petfAmount", gold: "goldAmount", gfc: "gfcAmount" }[btn.dataset.invpct];
     let amount = Math.floor(state.money * Number(btn.dataset.pct));
     if (btn.dataset.invpct === "petf") amount = Math.min(amount, PETF_MAX);
     $(box).value = amount;
@@ -391,7 +391,7 @@ function etfRoll() {
 
 /* ----- Runs every second from the game loop. Returns rent paid (taxable). ----- */
 // Investor XP: every minute with money invested (4 XP; 8 XP from 1 scoin; 16 XP from 100 scoin)
-function investedTotal() { return ["re", "etf", "gold", "petf", "crypto"].reduce((a, k) => a + investCurrent(k), 0); }
+function investedTotal() { return ["re", "etf", "gold", "petf", "gfc", "crypto"].reduce((a, k) => a + investCurrent(k), 0); }
 function investXpPerMinute() {
   const v = investedTotal();
   return v >= 100 * SCOIN ? 16 : v >= SCOIN ? 8 : v >= 1000 ? 4 : 0;
@@ -456,6 +456,7 @@ function investTick() {
     }
   }
 
+  if (typeof gfcTick === "function") gfcTick();   // 🚚 Global Freight Co. shares
   if (changed) renderProperties();
   updateInvestLive();
   return rent;
@@ -483,6 +484,7 @@ function emergencyAssets() {
   if (inv.petf > 0) list.push({ key: "petf", label: ivIco("petf") + "Broker ETF", value: inv.petf });
   if (inv.etf > 0) list.push({ key: "etf", label: ivIco("etf") + "Stock market ETF", value: inv.etf });
   if (inv.gold > 0) list.push({ key: "gold", label: ivIco("gold") + "Gold", value: inv.gold });
+  if (inv.gfc > 0) list.push({ key: "gfc", label: ico("lg-crates") + "Global Freight Co. shares", value: inv.gfc });
   const re = inv.properties.reduce((a, p) => a + p.value, 0);
   if (re > 0) list.push({ key: "re", label: ico("re-key") + `Real estate (${inv.properties.length})`, value: re });
   return list;
@@ -491,7 +493,7 @@ const emergencyValue = () => emergencyAssets().reduce((a, x) => a + x.value, 0) 
 function emergencySell(gross) {   // sells at least `gross` worth (before the fee) if possible; returns the money received
   let left = gross, got = 0;
   const take = (key, amount) => { const net = amount * (1 - EMERGENCY_FEE); state.money += net; got += net; investRecord(key, 0, net); left -= amount; };
-  for (const key of ["petf", "etf", "gold"]) {
+  for (const key of ["petf", "etf", "gold", "gfc"]) {
     if (left <= 0) break;
     const have = inv[key] || 0; if (have <= 0) continue;
     const amount = Math.min(have, Math.ceil(left));
@@ -499,8 +501,9 @@ function emergencySell(gross) {   // sells at least `gross` worth (before the fe
     if (key === "etf") inv.etfInvested *= 1 - share;
     if (key === "gold") inv.goldInvested *= 1 - share;
     if (key === "petf") inv.petfInvested = (inv.petfInvested || 0) * (1 - share);
+    if (key === "gfc") inv.gfcInvested = (inv.gfcInvested || 0) * (1 - share);
     inv[key] = have - amount;
-    if (inv[key] < 0.5) { inv[key] = 0; if (key === "etf") inv.etfInvested = 0; if (key === "gold") inv.goldInvested = 0; if (key === "petf") inv.petfInvested = 0; }
+    if (inv[key] < 0.5) { inv[key] = 0; if (key === "etf") inv.etfInvested = 0; if (key === "gold") inv.goldInvested = 0; if (key === "petf") inv.petfInvested = 0; if (key === "gfc") inv.gfcInvested = 0; }
     take(key, amount);
   }
   for (const p of [...inv.properties].sort((a, b) => a.value - b.value)) {
@@ -526,13 +529,13 @@ function investRecord(key, moneyIn, moneyOut) {
   inv.stats[key].out += moneyOut;
 }
 function updateInvestAllTime() {
-  const parts = [["re", ico("re-key") + "Real estate"], ["etf", ivIco("etf") + "ETF"], ["gold", ivIco("gold") + "Gold"], ["petf", ivIco("petf") + "Broker ETF"], ["crypto", ivIco("crypto") + "Crypto"]];
+  const parts = [["re", ico("re-key") + "Real estate"], ["etf", ivIco("etf") + "ETF"], ["gold", ivIco("gold") + "Gold"], ["petf", ivIco("petf") + "Broker ETF"], ["gfc", ico("lg-crates") + "Freight shares"], ["crypto", ivIco("crypto") + "Crypto"]];
   let total = 0, html = "";
   for (const [k, label] of parts) {
     const st = inv.stats[k];
     if (!st) continue;
     if (k === "petf" && st.in === 0 && !hasBroker()) continue;   // hide until you have a Brokerage Firm
-    if (k === "crypto" && st.in === 0) continue;                 // hide until your first crypto trade
+    if ((k === "crypto" || k === "gfc") && st.in === 0) continue;   // hide until your first trade
     const profit = st.out + investCurrent(k) - st.in;
     total += profit;
     const cls = profit > 0.5 ? "up" : profit < -0.5 ? "down" : "";

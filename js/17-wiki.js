@@ -213,6 +213,7 @@ function wikiInvesting() {
     <h3>📊 ETF</h3><p>${infoText("etf")}</p>
     <h3>🪙 Gold</h3><p>${infoText("gold")}</p>
     <h3>🏦 Broker ETF</h3><p>${infoText("petf")}</p>
+    <h3>🚚 Global Freight Co. shares</h3><p class="muted">🔒 Unlocks with 🚢 Logistics.</p><p>${infoText("gfc")}</p>
     <h3>📡 Live trading (crypto)</h3><p class="muted">🔒 Unlocks at Investor level ${LIVE_LEVEL}.</p><p>${infoText("crypto")}</p>
     <p class="muted">Chart tools: Line or Candles (1 min, 5 min, 15 min, 4 hours), volume bars, and MA5 / MA10 / MA20 / MA50 moving averages. Hover the chart for details.</p>`;
 }

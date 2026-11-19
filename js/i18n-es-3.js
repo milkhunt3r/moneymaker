@@ -365,6 +365,72 @@ rx(String.raw`Free (\S+) bet chip: a new one every ([\d.,]+) min( \(🎟️ VIP:
 H("🎟️ <b>VIP Coins</b> prestige bonus: you can now hold up to <b>200</b> free 500 scoin chips instead of 100.",
   "🎟️ Bonificación de prestigio <b>Monedas VIP</b>: ahora puedes tener hasta <b>200</b> fichas gratis de 500 scoin en vez de 100.");
 
+/* ===================== 📡 LIVE TRADING (positions, limit orders, take profit / stop loss) and 🚚 freight shares ===================== */
+const SIDE_ES = (s) => (s === "Long" ? "Largo" : "Corto");
+Object.assign(ES, {
+  "Position": "Posición", "Size": "Tamaño", "Entry": "Entrada", "Now": "Ahora", "Liquidation": "Liquidación", "Auto-close": "Cierre automático",
+  "Open for": "Abierta", "Live price": "Precio en vivo", "24h": "24 h", "Worth": "Valor", "Open profit / loss": "Beneficio / pérdida abierto",
+  "Recent trades:": "Operaciones recientes:", "Crypto": "Cripto", "Market": "A mercado", "Limit": "Límite", "Limit price": "Precio límite",
+  "Take profit": "Toma de beneficios", "Stop loss": "Stop loss", "Limit order": "Orden límite", "Opens at": "Se abre a", "Waiting for": "Esperando",
+  "Save": "Guardar", "Set take profit / stop loss": "Fijar toma de beneficios / stop loss", "Take profit / 🛑 Stop loss": "Toma de beneficios / 🛑 Stop loss",
+  "Open now at the live price": "Abrir ya al precio en vivo", "Open when the price reaches your limit": "Abrir cuando el precio llegue a tu límite",
+  "Close by itself when the profit (after the closing fee) reaches this % of the money you put in": "Se cierra sola cuando el beneficio (tras la comisión de cierre) llega a este % del dinero que pusiste",
+  "Close by itself when the loss (after the closing fee) reaches this % of the money you put in": "Se cierra sola cuando la pérdida (tras la comisión de cierre) llega a este % del dinero que pusiste",
+  "The position closes by itself when its profit or loss (after the closing fee) reaches this % of the money you put in. Leave a box empty to turn it off.":
+    "La posición se cierra sola cuando su beneficio o pérdida (tras la comisión de cierre) llega a este % del dinero que pusiste. Deja una casilla vacía para desactivarla.",
+  "Enter the limit price.": "Escribe el precio límite.", "No live price right now: trading is paused.": "Ahora no hay precio en vivo: el trading está en pausa.",
+  "You can have at most 10 limit orders.": "Puedes tener como máximo 10 órdenes límite.",
+  "A Long limit must be below the current price (it opens when the price drops to it).": "Un límite en largo debe estar por debajo del precio actual (se abre cuando el precio baja hasta él).",
+  "A Short limit must be above the current price (it opens when the price rises to it).": "Un límite en corto debe estar por encima del precio actual (se abre cuando el precio sube hasta él).",
+  "The position is already past that profit: close it instead, or pick a higher %.": "La posición ya ha superado ese beneficio: ciérrala o elige un % más alto.",
+  "The position is already past that loss: close it instead, or pick a bigger %.": "La posición ya ha superado esa pérdida: ciérrala o elige un % mayor.",
+  "Take profit must be between 1% and 10000%.": "La toma de beneficios debe estar entre el 1% y el 10000%.", "Stop loss must be between 1% and 95%.": "El stop loss debe estar entre el 1% y el 95%.",
+  "Minimum trade is": "La operación mínima es de", "no liquidation": "sin liquidación",
+  // freight shares
+  "Global Freight Co. shares": "Acciones de Global Freight Co.", "Freight shares": "Acciones de transporte", "Your shares": "Tus acciones",
+  "Deliveries · last 20 s": "Entregas · últimos 20 s", "Buy shares": "Comprar acciones", "Sell all": "Vender todo", "No shares to sell.": "No tienes acciones que vender.",
+  "Unlocks with 🚢 Logistics (buy your first Car Salon).": "Se desbloquea con 🚢 Logística (compra tu primer concesionario).",
+});
+rx(String.raw`(Long|Short) ×(\d+)`, (m, s, l) => `${SIDE_ES(s)} ×${l}`);
+rx(String.raw`(Place limit|Open) (Long|Short) ×(\d+)`, (m, a, s, l) => `${a === "Open" ? "Abrir" : "Orden límite"} ${SIDE_ES(s).toLowerCase()} ×${l}`);
+rx(String.raw`● Live \((Binance|Coinbase)\)`, "● En directo ($1)");
+rx(String.raw`Live \((Binance|Coinbase)\)`, "En directo ($1)");
+rx(String.raw`(\d+)-candle moving average`, "Media móvil de $1 velas");
+rx(String.raw`Waiting for (1-minute|5-minute|15-minute|4-hour) candles…`, (m, t) => `Esperando velas de ${{ "1-minute": "1 minuto", "5-minute": "5 minutos", "15-minute": "15 minutos", "4-hour": "4 horas" }[t]}…`);
+rx(String.raw`Opened (Long|Short) ×(\d+) at ([\d.,]+) \(fee (${NUM})\)( · \+(\d+) XP)?\.`, (m, s, l, p, f, x, n) => `Abierto ${SIDE_ES(s).toLowerCase()} ×${l} a ${p} (comisión ${f})${x ? ` · +${n} XP` : ""}.`);
+rx(String.raw`(🎯 |🛑 )?Closed (Long|Short) ×(\d+) for (${NUM}) \(fee (${NUM})\) · (profit \+|loss −)(${NUM})( · \+(\d+) XP)?\.`,
+  (m, w, s, l, g, f, k, r, x, n) => `${w || ""}Cerrado ${SIDE_ES(s).toLowerCase()} ×${l} por ${g} (comisión ${f}) · ${k === "profit +" ? "beneficio +" : "pérdida −"}${r}${x ? ` · +${n} XP` : ""}.`);
+rx(String.raw`Position size (${NUM}) · fee (${NUM})(.*)`, (m, a, f, rest) => {
+  const r = rest.replace(/ · liquidated at ([\d.,]+) \((\d+)% (drop|rise)\)/, (q, p, n, d) => ` · liquidación a ${p} (${d === "drop" ? "bajada" : "subida"} del ${n}%)`)
+    .replace(" · no liquidation", " · sin liquidación").replace(/ · opens at ([\d.,]+)/, " · se abre a $1");
+  return `Tamaño de la posición ${a} · comisión ${f}${r}`;
+});
+rx(String.raw`(?:⏳ )?(Enter a price below|Enter a price above) ([\d.,]+): the position opens when the price (drops|rises) to it\.`,
+  (m, a, p, d) => `${/below/.test(a) ? "Escribe un precio por debajo de" : "Escribe un precio por encima de"} ${p}: la posición se abre cuando el precio ${d === "drops" ? "baja" : "sube"} hasta él.`);
+rx(String.raw`Limit order placed: (Long|Short) ×(\d+) with (${NUM}) when the price reaches ([\d.,]+)\.`, (m, s, l, a, p) => `Orden límite colocada: ${SIDE_ES(s).toLowerCase()} ×${l} con ${a} cuando el precio llegue a ${p}.`);
+rx(String.raw`Limit order cancelled: (${NUM}) back to your money\.`, "Orden límite cancelada: $1 vuelven a tu dinero.");
+rx(String.raw`Limit order filled: (\w+) (Long|Short) ×(\d+)`, (m, c, s, l) => `Orden límite ejecutada: ${c} ${SIDE_ES(s).toLowerCase()} ×${l}`);
+rx(String.raw`Opened at ([\d.,]+) with (${NUM}) \(fee (${NUM})\)\.`, "Abierta a $1 con $2 (comisión $3).");
+rx(String.raw`(Take profit|Stop loss): (\w+) (Long|Short) ×(\d+) closed`, (m, k, c, s, l) => `${k === "Take profit" ? "Toma de beneficios" : "Stop loss"}: ${c} ${SIDE_ES(s).toLowerCase()} ×${l} cerrada`);
+rx(String.raw`Closed at ([\d.,]+) for (${NUM}) · (profit \+|loss −)(${NUM})\.`, (m, p, g, k, r) => `Cerrada a ${p} por ${g} · ${k === "profit +" ? "beneficio +" : "pérdida −"}${r}.`);
+rx(String.raw`Liquidated: (\w+) (Long|Short) ×(\d+)`, (m, c, s, l) => `Liquidada: ${c} ${SIDE_ES(s).toLowerCase()} ×${l}`);
+rx(String.raw`Stop loss must be bigger than the trading fees \(([\d.,]+)%\)\.`, (m, f) => `El stop loss debe ser mayor que las comisiones de trading (${decFix(f)}%).`);
+rx(String.raw`entry ([\d.,]+) · put in (${NUM})`, "entrada $1 · pusiste $2");
+hrx(String.raw`<span>(?:▲ |▼ )?(?:Long|Short|Largo|Corto) ×\d+<\/span> <b>(\w+)<\/b> · entry ([\d.,]+) · put in (${NUM})`,
+  (m) => m.replace(/(Long|Short) ×/, (q, s) => SIDE_ES(s) + " ×").replace(/ · entry ([\d.,]+) · put in /, " · entrada $1 · pusiste "));
+rx(String.raw`(\d+) s before: (\d+)`, "$1 s antes: $2");
+rx(String.raw`Bought (${NUM}) of Global Freight Co\. shares\.`, "Has comprado $1 en acciones de Global Freight Co.");
+rx(String.raw`Sold (${NUM}) of shares \(fee (${NUM})\): \+(${NUM}) to your money\.`, "Has vendido $1 en acciones (comisión $2): +$3 a tu dinero.");
+rx(String.raw`Shares need at least (${NUM})\.`, "Las acciones necesitan al menos $1.");
+H("A shipping company that lives on <b>your logistics deliveries</b>. Every 10 seconds the share price moves: it compares the contracts your trucks, tankers and planes delivered in the <b>last 20 seconds</b> with the 20 seconds before. More deliveries than before: the price jumps up (+1% for every extra contract). Fewer: it drops (−1% for every missing one). The same number: a small move around +0.1%. A little random noise is added to every move (±0.5%), and one move is at most ±8%. Min. 1,000. Selling has the same fee as the ETF cash-out fee. The price doesn't move while the game is closed.",
+  "Una naviera que vive de <b>tus entregas logísticas</b>. Cada 10 segundos se mueve el precio de la acción: compara los contratos que tus camiones, petroleros y aviones han entregado en los <b>últimos 20 segundos</b> con los 20 segundos anteriores. Más entregas que antes: el precio sube (+1% por cada contrato de más). Menos: baja (−1% por cada uno que falte). El mismo número: un pequeño movimiento de alrededor de +0,1%. A cada movimiento se le suma un poco de azar (±0,5%), y un movimiento es como mucho de ±8%. Mín. 1.000. Vender tiene la misma comisión que la retirada del ETF. El precio no se mueve con el juego cerrado.");
+
+Object.assign(ES, { "Unlocks with 🚢 Logistics.": "Se desbloquea con 🚢 Logística." });
+H("📡 <b>Live trading</b>: <b>⏳ limit orders</b> (open a Long when the price drops to your price, or a Short when it rises to it) and <b>🎯 take profit / 🛑 stop loss</b> on every position.",
+  "📡 <b>Trading en vivo</b>: <b>⏳ órdenes límite</b> (abre un largo cuando el precio baja a tu precio, o un corto cuando sube hasta él) y <b>🎯 toma de beneficios / 🛑 stop loss</b> en cada posición.");
+H("🚚 New in 📈 Investing: <b>Global Freight Co. shares</b>. The price follows your logistics deliveries: more contracts delivered than in the 20 seconds before, and it goes up; fewer, and it goes down.",
+  "🚚 Novedad en 📈 Inversiones: <b>acciones de Global Freight Co.</b> El precio sigue tus entregas logísticas: si entregas más contratos que en los 20 segundos anteriores, sube; si entregas menos, baja.");
+
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
 ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {

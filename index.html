@@ -18,7 +18,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
   <meta property="og:image" content="assets/logo/share.jpg">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="stylesheet" href="css/style.css?v=20261119e">
+  <link rel="stylesheet" href="css/style.css?v=20261119f">
 </head>
 <body>
   <!-- ===== Loading screen (removed when the game has started) ===== -->
@@ -534,6 +534,48 @@
 <div class="cardMsg" id="msg-petf"></div>
               </div>
             </div>
+
+            <!-- 🚚 Global Freight Co. shares: the price follows your logistics deliveries -->
+            <div class="card" id="gfcCard">
+              <div class="row"><h3><img class="ico h" src="assets/icons/ico-lg-crates.webp" alt="">Global Freight Co. shares</h3>
+                <button class="btn ghost small" data-info="gfc">ℹ️ Info</button></div>
+              <div class="muted infoBox" id="info-gfc" hidden>A shipping company that lives on <b>your logistics deliveries</b>. Every 10 seconds the share price moves:
+                it compares the contracts your trucks, tankers and planes delivered in the <b>last 20 seconds</b> with the 20 seconds before.
+                More deliveries than before: the price jumps up (+1% for every extra contract). Fewer: it drops (−1% for every missing one).
+                The same number: a small move around +0.1%. A little random noise is added to every move (±0.5%), and one move is at most ±8%.
+                Min. 1,000. Selling has the same fee as the ETF cash-out fee. The price doesn't move while the game is closed.</div>
+              <div id="gfcLocked" class="muted" style="margin-top:8px"><img class="ico lockS" src="assets/icons/ico-lock.webp" alt="">Unlocks with 🚢 Logistics (buy your first Car Salon).</div>
+              <div id="gfcBody" hidden>
+                <div class="row" style="margin-top:10px; justify-content:flex-start; gap:20px; flex-wrap:wrap">
+                  <div><div class="muted">Your shares</div><div class="bigValue" id="gfcValue">0</div></div>
+                  <div><div class="muted">Invested</div><div class="bigValue" id="gfcInvested">0</div></div>
+                  <div><div class="muted">Profit / loss</div><div class="bigValue" id="gfcPL">–</div></div>
+                  <div><div class="muted">Last move</div><div class="bigValue" id="gfcLast">–</div></div>
+                  <div><div class="muted">Next move in</div><div class="bigValue" id="gfcTimer">10s</div></div>
+                  <div><div class="muted">Deliveries · last 20 s</div><div class="bigValue" id="gfcDeliv">0</div>
+                    <div class="muted" id="gfcDelivPrev" style="font-size:12px"></div></div>
+                </div>
+                <div class="chartBox" id="gfcChart"></div>
+                <div id="gfcHistory" class="etfHist"></div>
+                <div class="moneyRow">
+                  <input id="gfcAmount" type="number" min="1000" placeholder="Amount (min 1,000)">
+                  <button class="btn ghost small" data-invpct="gfc" data-pct="0.05">5%</button>
+                  <button class="btn ghost small" data-invpct="gfc" data-pct="0.1">10%</button>
+                  <button class="btn ghost small" data-invpct="gfc" data-pct="0.25">25%</button>
+                  <button class="btn ghost small" data-invpct="gfc" data-pct="0.5">50%</button>
+                  <button class="btn ghost small" data-invpct="gfc" data-pct="0.75">75%</button>
+                  <button class="btn ghost small" data-invpct="gfc" data-pct="1">All</button>
+                  <button class="btn" id="gfcBuy">Buy shares</button>
+                </div>
+                <div class="moneyRow">
+                  <input id="gfcSellAmount" type="number" min="1" placeholder="Cash-out amount">
+                  <button class="btn ghost" id="gfcSell">Sell</button>
+                  <button class="btn ghost" id="gfcSellAll">Sell all</button>
+                  <span class="muted" id="gfcSellPreview"></span>
+                </div>
+                <div class="cardMsg" id="msg-gfc"></div>
+              </div>
+            </div>
         </div>
         <div id="liveLocked" class="card" hidden style="text-align:center"></div>
         <div id="livePane" hidden>
@@ -551,7 +593,9 @@
         and you lose the money you put in. Liquidations are checked while the game is open.
         <br><br><b>Fee:</b> 2% of the money you put in when you open and of what you get back when you close, 0.1% less for every 10 Investor levels (level 10, 20, 30…). At Investor level 99 trading is free.
                 <br><b>XP:</b> every trade gives Investor XP based on its size (1,000 → 1 XP, 1 scoin → 4 XP, 1 gcoin → 10 XP), at most once a minute.
-                Coins you hold also count as invested money for the per-minute Investor XP. Min. trade 1,000. Trading pauses if the live prices stop.</div>
+                Coins you hold also count as invested money for the per-minute Investor XP. Min. trade 1,000. Trading pauses if the live prices stop.
+                <br><br><b>⏳ Limit orders:</b> open a position only when the price reaches your limit: a Long when the price drops to it, a Short when it rises to it. The money is set aside until then (Cancel gives it back). At most 10 orders.
+                <b>🎯 Take profit / 🛑 Stop loss:</b> a position closes by itself when its profit or loss (after the closing fee) reaches the % of the money you put in that you chose. Set them when opening, or later with ✏️. Orders, take profit and stop loss are checked while the game is open (also in a background tab).</div>
               <div class="muted" id="cryptoFeeText" style="margin-top:6px"></div>
               <div id="cryptoList"></div>
             </div>
@@ -568,37 +612,38 @@
   <div id="tipCard" hidden role="status"></div>
   <div id="tutBubble" hidden role="dialog" aria-label="Guided start"></div>
   <!-- Game code, split by section. Files share one global scope and must load in this order. -->
-  <script src="js/00-i18n.js?v=20261119e"></script>
-  <script src="js/i18n-es.js?v=20261119e"></script>
-  <script src="js/i18n-es-2.js?v=20261119e"></script>
-  <script src="js/i18n-es-3.js?v=20261119e"></script>
-  <script src="js/00-phone.js?v=20261119e"></script>
-  <script src="js/01-core.js?v=20261119e"></script>
-  <script src="js/02-income.js?v=20261119e"></script>
-  <script src="js/03-casino.js?v=20261119e"></script>
-  <script src="js/04-investing.js?v=20261119e"></script>
-  <script src="js/05-settings.js?v=20261119e"></script>
-  <script src="js/06-casino-cards.js?v=20261119e"></script>
-  <script src="js/07-boosters.js?v=20261119e"></script>
-  <script src="js/08-sky-climb.js?v=20261119e"></script>
-  <script src="js/09-special.js?v=20261119e"></script>
-  <script src="js/10-plinko.js?v=20261119e"></script>
-  <script src="js/11-cosmetics.js?v=20261119e"></script>
-  <script src="js/12-logistics.js?v=20261119e"></script>
-  <script src="js/13-live-trading.js?v=20261119e"></script>
-  <script src="js/14-world-map.js?v=20261119e"></script>
-  <script src="js/15-achievements.js?v=20261119e"></script>
-  <script src="js/16-prestige.js?v=20261119e"></script>
-  <script src="js/17-wiki.js?v=20261119e"></script>
-  <script src="js/18-art.js?v=20261119e"></script>
-  <script src="js/19-science.js?v=20261119e"></script>
-  <script src="js/20-tips.js?v=20261119e"></script>
-  <script src="js/21-clock.js?v=20261119e"></script>
-  <script src="js/22-main-menu.js?v=20261119e"></script>
-  <script src="js/23-minigames.js?v=20261119e"></script>
-  <script src="js/24-genetics.js?v=20261119e"></script>
-  <script src="js/25-baccarat.js?v=20261119e"></script>
-  <script src="js/26-slot-engine.js?v=20261119e"></script>
-  <script src="js/27-gene-cascade.js?v=20261119e"></script>
+  <script src="js/00-i18n.js?v=20261119f"></script>
+  <script src="js/i18n-es.js?v=20261119f"></script>
+  <script src="js/i18n-es-2.js?v=20261119f"></script>
+  <script src="js/i18n-es-3.js?v=20261119f"></script>
+  <script src="js/00-phone.js?v=20261119f"></script>
+  <script src="js/01-core.js?v=20261119f"></script>
+  <script src="js/02-income.js?v=20261119f"></script>
+  <script src="js/03-casino.js?v=20261119f"></script>
+  <script src="js/04-investing.js?v=20261119f"></script>
+  <script src="js/05-settings.js?v=20261119f"></script>
+  <script src="js/06-casino-cards.js?v=20261119f"></script>
+  <script src="js/07-boosters.js?v=20261119f"></script>
+  <script src="js/08-sky-climb.js?v=20261119f"></script>
+  <script src="js/09-special.js?v=20261119f"></script>
+  <script src="js/10-plinko.js?v=20261119f"></script>
+  <script src="js/11-cosmetics.js?v=20261119f"></script>
+  <script src="js/12-logistics.js?v=20261119f"></script>
+  <script src="js/13-live-trading.js?v=20261119f"></script>
+  <script src="js/14-world-map.js?v=20261119f"></script>
+  <script src="js/15-achievements.js?v=20261119f"></script>
+  <script src="js/16-prestige.js?v=20261119f"></script>
+  <script src="js/17-wiki.js?v=20261119f"></script>
+  <script src="js/18-art.js?v=20261119f"></script>
+  <script src="js/19-science.js?v=20261119f"></script>
+  <script src="js/20-tips.js?v=20261119f"></script>
+  <script src="js/21-clock.js?v=20261119f"></script>
+  <script src="js/22-main-menu.js?v=20261119f"></script>
+  <script src="js/23-minigames.js?v=20261119f"></script>
+  <script src="js/24-genetics.js?v=20261119f"></script>
+  <script src="js/25-baccarat.js?v=20261119f"></script>
+  <script src="js/26-slot-engine.js?v=20261119f"></script>
+  <script src="js/27-gene-cascade.js?v=20261119f"></script>
+  <script src="js/28-freight-shares.js?v=20261119f"></script>
 </body>
 </html>

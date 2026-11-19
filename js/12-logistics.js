@@ -198,6 +198,7 @@ const clockLong = (sec) => sec >= 3600
   ? Math.floor(sec / 3600) + "h " + String(Math.floor((sec % 3600) / 60)).padStart(2, "0") + "m"
   : Math.floor(sec / 60) + ":" + String(sec % 60).padStart(2, "0");
 
+var deliveredThisSecond = 0;   // contracts delivered in the current game second (read by the freight shares)
 // Runs every second: moves every vehicle, pays arrivals. Returns money paid this second.
 function logisticsTick() {
   let paid = 0;
@@ -212,6 +213,7 @@ function logisticsTick() {
         paid += pay;
         logi.earned += pay;
         logi.contracts = (logi.contracts || 0) + 1;
+        deliveredThisSecond++;   // 🚚 Global Freight Co. shares follow the deliveries
         addLogiXp(key, v.contract.seconds);
         const r = F.routes[v.contract.route];
         showNotice(`${F.icon} ${v.name} arrived in ${r.to.replace(/ \S+$/, "")}: +${fmt(pay)}!`);
