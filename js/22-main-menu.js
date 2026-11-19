@@ -167,7 +167,7 @@ function showAbout() {
       <li>🏆 <b>Collect achievements</b> to win reward collections, and spend scoin in the 🛍️ Shop on looks for your coin and background.</li>
       <li>⭐ <b>Prestige</b> at 1, 5, 10 and 20 gcoin: start over with a permanent Legacy bonus.</li>
     </ul>
-    <p class="muted">💾 The game saves itself in this browser. Use ⚙️ Settings to download a backup of your progress.
+    <p class="muted">💾 The game saves itself in this browser. Sign in with Google (⚙️ Settings) to keep a ☁️ cloud copy.
       The 📖 Wiki in the game explains every feature.</p>
     <h3>📝 Patch notes</h3>
     ${notes}

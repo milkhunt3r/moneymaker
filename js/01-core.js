@@ -348,7 +348,7 @@ function flushSave() {
     if (w) {
       w.hidden = false;
       w.innerHTML = `⚠️ <b>Your progress is not being saved</b>: this browser's storage for the game is full.
-        Use ⚙️ Settings → 💾 Save game to download a backup. <button class="btn small" onclick="this.parentNode.hidden=true">OK</button>`;
+        Sign in (⚙️ Settings → Account) to keep it in the ☁️ cloud. <button class="btn small" onclick="this.parentNode.hidden=true">OK</button>`;
     }
   }
 }

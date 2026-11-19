@@ -34,12 +34,12 @@ Object.assign(ES, {
   "Tips are on.": "Consejos activados.", "Tips are off.": "Consejos desactivados.", "All tips will show again.": "Todos los consejos volverán a aparecer.",
   "Game saved!": "¡Partida guardada!", "Progress file downloaded.": "Archivo de progreso descargado.",
   "Could not save: browser storage is full. Download a backup instead.": "No se ha podido guardar: el almacenamiento del navegador está lleno. Descarga una copia de seguridad.",
-  "Reset game?": "¿Reiniciar la partida?", "Tip: download your progress file first if you might want it back.": "Consejo: descarga antes tu archivo de progreso por si quieres recuperarlo.",
+  "Reset game?": "¿Reiniciar la partida?", "Your ☁️ cloud save is not deleted: sign in again to get it back.": "Tu partida en la ☁️ nube no se borra: vuelve a iniciar sesión para recuperarla.",
   "Cancel": "Cancelar", "Yes, reset everything": "Sí, reiniciar todo", "OK": "Vale",
   // ----- about -----
   "About the game": "Acerca del juego", "How to play": "Cómo se juega", "Patch notes": "Notas de la versión",
-  "The game saves itself in this browser. Use ⚙️ Settings to download a backup of your progress. The 📖 Wiki in the game explains every feature.":
-    "La partida se guarda en este navegador. Usa ⚙️ Ajustes para descargar una copia de seguridad de tu progreso. La 📖 Wiki del juego explica todas las funciones.",
+  "The game saves itself in this browser. Sign in with Google (⚙️ Settings) to keep a ☁️ cloud copy. The 📖 Wiki in the game explains every feature.":
+    "La partida se guarda en este navegador. Inicia sesión con Google (⚙️ Ajustes) para tener una copia en la ☁️ nube. La 📖 Wiki del juego explica todas las funciones.",
   // ----- top bar: coins, boosters, counter -----
   "Currency info": "Información sobre las monedas", "Coins": "Monedas", "How the coins work": "Cómo funcionan las monedas", "the basic coin": "la moneda básica",
   "= 1,000,000 bcoin": "= 1.000.000 bcoin", "= 1,000,000 scoin": "= 1.000.000 scoin", "= 1,000,000,000,000 bcoin": "= 1.000.000.000.000 bcoin",

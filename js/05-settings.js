@@ -57,8 +57,6 @@ function showSettings(fromMenu) {
       <div class="orRibbon"><span>Settings</span></div>
       <button class="orClose" data-modal="close" aria-label="Close">✕</button>
       <div class="orSec">Game</div>
-      ${row("save", "Save game")}
-      ${row("download", "Download progress file")}
       ${row("load", "Load progress file")}
       <div class="orSec">Display</div>
       <div class="orRow slider">${orIcon("bright")}<span class="grow">Background brightness</span><span class="orVal" id="orBrightVal">${bgBright()}%</span>
@@ -129,7 +127,7 @@ $("settingsMenu").addEventListener("click", (e) => {
     $("settingsMenu").hidden = true;
     showModal(`<h2>🗑️ Reset game?</h2>
                <p>This deletes <b>all</b> your progress: money, businesses, levels and investments.</p>
-               <p class="muted">Tip: download your progress file first if you might want it back.</p>
+               <p class="muted">Your ☁️ cloud save is not deleted: sign in again to get it back.</p>
                <div class="row">
                  <button class="btn ghost big" data-modal="close">Cancel</button>
                  <button class="btn big dangerBtn" data-modal="confirmReset">Yes, reset everything</button>

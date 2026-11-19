@@ -100,7 +100,7 @@ function cloudConflict(row) {
       <button class="btn big" data-cloudpick="cloud"><b>☁️ Cloud save</b><small>${saveSummary(row.data)}</small><small>Saved ${whenText(row.saved_at)}</small></button>
       <button class="btn big ghost" data-cloudpick="device"><b>💻 This device</b><small>${saveSummary(local)}</small><small>Saved ${whenText(localAt())}</small></button>
     </div>
-    <p class="muted">The other one is replaced. Tip: download a progress file first (⚙️ Settings) if you are not sure.</p>`);
+    <p class="muted">The other one is replaced.</p>`);
   $("modalBox").querySelector('[data-cloudpick="cloud"]').onclick = () => cloudLoad(row);
   $("modalBox").querySelector('[data-cloudpick="device"]').onclick = () => { hideModal(); cloudUpload(true); };
 }

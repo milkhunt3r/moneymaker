@@ -99,8 +99,8 @@ Object.assign(ES, {
     "Una ficha de apuesta gratis de 500 scoin cada 10 min para las mesas de súper altas apuestas, y el resto de fichas gratis llegan el doble de rápido (cada 10 / 7,5 / 5 min en vez de 20 / 15 / 10). Puedes tener hasta 200 fichas de 500 scoin en vez de 100",
   "Tycoon's Legacy and VIP Coins can be picked once, Global Empire twice: 4 picks for 4 prestiges, so by the end you have every bonus, in the order you choose.":
     "Legado del magnate y Monedas VIP se pueden elegir una vez, Imperio global dos: 4 elecciones para 4 prestigios, así que al final tendrás todas las bonificaciones, en el orden que elijas.",
-  "Saving": "Guardado", "The game saves automatically in your browser. In ⚙️ Settings you can save, download a backup file, load one, or reset the game.":
-    "El juego se guarda automáticamente en tu navegador. En ⚙️ Ajustes puedes guardar, descargar una copia de seguridad, cargar una o reiniciar la partida.",
+  "Saving": "Guardado", "The game saves automatically in your browser. Sign in with Google (⚙️ Settings → Account) to keep a ☁️ cloud copy and play on other devices. In ⚙️ Settings you can also load an old progress file or reset the game.":
+    "El juego se guarda automáticamente en tu navegador. Inicia sesión con Google (⚙️ Ajustes → Cuenta) para tener una copia en la ☁️ nube y jugar en otros dispositivos. En ⚙️ Ajustes también puedes cargar un archivo de progreso antiguo o reiniciar la partida.",
   "Tips and guided start": "Consejos e inicio guiado",
   "New players get a short guided start (click the coin, buy a business, hire staff). After that, a small tip appears the first time you meet something new, with a link to the matching Wiki page. ⚙️ Settings: turn tips on/off, show all tips again, or replay the guided start.":
     "Los jugadores nuevos tienen un breve inicio guiado (haz clic en la moneda, compra un negocio, contrata personal). Después aparece un pequeño consejo la primera vez que encuentras algo nuevo, con un enlace a la página correspondiente de la Wiki. ⚙️ Ajustes: activa o desactiva los consejos, vuelve a ver todos o repite el inicio guiado.",
@@ -439,7 +439,7 @@ Object.assign(ES, {
   "Loading your cloud save…": "Cargando tu partida de la nube…", "Which progress do you want to keep?": "¿Qué progreso quieres conservar?",
   "Your cloud save and this device have different progress.": "Tu partida en la nube y este dispositivo tienen un progreso distinto.",
   "This device": "Este dispositivo",
-  "The other one is replaced. Tip: download a progress file first (⚙️ Settings) if you are not sure.": "La otra se sustituye. Consejo: si no estás seguro, descarga antes un archivo de progreso (⚙️ Ajustes).",
+  "The other one is replaced.": "La otra se sustituye.",
   "Delete your account?": "¿Eliminar tu cuenta?", "Yes, delete my account": "Sí, eliminar mi cuenta",
   "The progress on this device stays (you can keep playing without an account).": "El progreso de este dispositivo se queda (puedes seguir jugando sin cuenta).",
   "The cloud service can't be reached right now.": "Ahora mismo no se puede conectar con la nube.",
@@ -452,6 +452,9 @@ rx(String.raw`Saved (\d.+)`, "Guardado: $1");
 H("This deletes your account and your <b>cloud save</b> for good.", "Esto elimina tu cuenta y tu <b>partida en la nube</b> para siempre.");
 H("☁️ <b>Cloud save</b>: sign in with Google (⚙️ Settings or the main menu) to keep your progress in your account and continue on another device. Playing without an account works as before.",
   "☁️ <b>Guardado en la nube</b>: inicia sesión con Google (⚙️ Ajustes o el menú principal) para guardar tu progreso en tu cuenta y seguir en otro dispositivo. Jugar sin cuenta funciona como antes.");
+
+H("⚠️ <b>Your progress is not being saved</b>: this browser's storage for the game is full. Sign in (⚙️ Settings → Account) to keep it in the ☁️ cloud. <button>OK</button>",
+  "⚠️ <b>Tu progreso no se está guardando</b>: el almacenamiento del navegador para el juego está lleno. Inicia sesión (⚙️ Ajustes → Cuenta) para guardarlo en la ☁️ nube. <button>OK</button>");
 
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
