@@ -190,7 +190,7 @@ function updateVipBar() {
   const vip = state.legacy.vip > 0, nV = state.freeChips[VIP_CHIP] || 0;
   slots.push({ value: VIP_CHIP, open: vip, n: nV, vip: true,
     time: !vip ? "Prestige" : nV >= FREE_CHIP_MAX ? "full" : clock(state.vip.timer || vipMinutes() * 60),
-    tip: vip ? `🎫 VIP chip from the ⭐ VIP Coins prestige bonus: a free 500 scoin bet chip every ${vipMinutes()} min (shares the 500 scoin count, max ${FREE_CHIP_MAX}).`
+    tip: vip ? `🎫 VIP chip from the ⭐ VIP Coins prestige bonus: a free 500 scoin bet chip every ${vipMinutes()} min. It goes into the same 500 scoin pile as the slot next to it (you have ${nV}, max ${FREE_CHIP_MAX}).`
              : "🔒 Unlocks when you choose ⭐ VIP Coins as a prestige bonus (from 1 gcoin): a free 500 scoin bet chip every 10 min, and all free chips twice as fast." });
   // build the slots once, then only update their numbers (so the hover box doesn't flicker)
   const key = slots.map(x => x.open).join();
@@ -205,7 +205,8 @@ function updateVipBar() {
     $("fslot-" + i).dataset.tip = x.tip;
     $("fslot-" + i).classList.toggle("full", x.open && x.n >= FREE_CHIP_MAX);
     $("ftime-" + i).textContent = x.time;
-    $("fcount-" + i).textContent = `${x.n}/${FREE_CHIP_MAX}`;
+    // 🎫 the VIP chip has no pile of its own: it adds to the 500 scoin pile shown next to it, so it shows an arrow, not a second count
+    $("fcount-" + i).textContent = x.vip && x.open ? "→ 500sc" : `${x.n}/${FREE_CHIP_MAX}`;
   });
 }
 

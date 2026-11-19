@@ -353,6 +353,9 @@ Object.assign(ES, {
 H("🏆 Easier goals: <b>Blackjack legend</b> now needs 500 won hands, and <b>Ultimate Texas Hold'em veteran</b> 500 hands played.",
   "🏆 Objetivos más fáciles: <b>Leyenda del blackjack</b> ahora pide 500 manos ganadas, y <b>Veterano del Ultimate Texas Hold'em</b>, 500 manos jugadas.");
 
+rx(String.raw`🎫 VIP chip from the ⭐ VIP Coins prestige bonus: a free 500 scoin bet chip every (\d+) min\. It goes into the same 500 scoin pile as the slot next to it \(you have (\d+), max (\d+)\)\.`,
+  "🎫 Ficha VIP de la bonificación de prestigio ⭐ Monedas VIP: una ficha de apuesta gratis de 500 scoin cada $1 min. Va al mismo montón de 500 scoin que la casilla de al lado (tienes $2, máx. $3).");
+
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
 ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {
