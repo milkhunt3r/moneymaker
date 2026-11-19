@@ -111,14 +111,19 @@ function i18nApply(root) {
   i18nBusy = true;
   try {
     if (root.nodeType === 3) { const v = trText(root.nodeValue); if (v !== null && v !== root.nodeValue) root.nodeValue = v; return; }
-    if (root.nodeType !== 1 || I18N_SKIP.has(root.tagName) || root.closest("[data-noi18n]")) return;
+    if (root.nodeType !== 1 || root.closest("[data-noi18n]")) return;
+    if (I18N_SKIP.has(root.tagName) && root.tagName !== "INPUT") return;
     walk(root);
   } finally { i18nBusy = false; }
 }
-function walk(el) {
-  if (I18N_SKIP.has(el.tagName) || (el.dataset && "noi18n" in el.dataset)) return;
+function trAttrs(el) {
   for (const a of ATTRS) { const v = el.getAttribute(a); if (v && LETTER.test(v)) { const tv = trText(v); if (tv !== null && tv !== v) el.setAttribute(a, tv); } }
-  if (isBlock(el) && trBlock(el)) return;
+}
+function walk(el) {
+  if (el.tagName === "INPUT") { if (!("noi18n" in el.dataset)) trAttrs(el); return; }   // an input: only its placeholder / title, never its value
+  if (I18N_SKIP.has(el.tagName) || (el.dataset && "noi18n" in el.dataset)) return;
+  trAttrs(el);
+  if (isBlock(el) && trBlock(el)) { el.querySelectorAll("[title],[placeholder],[aria-label]").forEach(trAttrs); return; }   // a block keeps its own attributes: translate them too
   for (const n of [...el.childNodes]) {
     if (n.nodeType === 3) { const v = trText(n.nodeValue); if (v !== null && v !== n.nodeValue) n.nodeValue = v; }
     else if (n.nodeType === 1) walk(n);

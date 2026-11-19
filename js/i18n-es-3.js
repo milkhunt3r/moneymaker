@@ -335,6 +335,16 @@ H("🌐 The 📖 Wiki, the ⭐ prestige screens and the special business details
 H("🎰 <b>Clear bets</b> now also empties the table after a finished hand (Baccarat and Blackjack), and <b>Repeat last bets</b> places your free bet chips again first when the last bet used them, paying only the rest from your chips.",
   "🎰 <b>Quitar apuestas</b> ahora también vacía la mesa tras una mano terminada (baccarat y blackjack), y <b>Repetir últimas apuestas</b> vuelve a usar primero tus fichas de apuesta gratis si la última apuesta las usó, y solo paga el resto con tus fichas.");
 
+Object.assign(ES, {
+  "Dealer shows an Ace. Insurance pays 2:1 if the dealer has blackjack.": "La banca muestra un as. El seguro paga 2:1 si la banca tiene blackjack.",
+  "Only with recipes": "Solo con recetas", "No sample can make a new species right now.": "Ahora mismo ninguna muestra puede crear una especie nueva.",
+  "Show only samples that can still make a new species with what you have (hides ✓ done and 🔒 later)": "Muestra solo las muestras que aún pueden crear una especie nueva con lo que tienes (oculta ✓ completo y 🔒 más adelante)",
+});
+
+rx(String.raw`You have: (.+)`, (m, h) => { const x = esq(h); return x == null ? null : `Tienes: ${x}`; });
+H("🧬 <b>Gene Splicer</b>: a new <b>🔎 Only with recipes</b> button in the freezer shows only the samples that can still make a new species with what you have.",
+  "🧬 <b>Empalmador genético</b>: un nuevo botón <b>🔎 Solo con recetas</b> en el congelador muestra solo las muestras que aún pueden crear una especie nueva con lo que tienes.");
+
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
 ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {

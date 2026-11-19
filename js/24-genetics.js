@@ -311,7 +311,7 @@ function renderGene() {
   }
   // freezer (known samples) or codex (all species, undiscovered as ???)
   const list = geneTab === "mutants" ? [] : geneTab === "freezer"
-    ? G.known.filter(n => geneCat === "all" || GENE_SPECIES[n].cat === geneCat)
+    ? G.known.filter(n => (geneCat === "all" || GENE_SPECIES[n].cat === geneCat) && (!G.onlyOpen || geneUnfound(n).now > 0))   // 🔎 "Only with recipes" hides ✓ done and 🔒 later
     : [...GENE_BASE.map(b => b[0]), ...GENE_RECIPES.map(r => r[2])].filter(n => geneCat === "all" || GENE_SPECIES[n].cat === geneCat);
   const catCount = (c) => { const all = Object.values(GENE_SPECIES).filter(s => s.rar !== "s" && (c === "all" || s.cat === c));
     return c === "start" ? "" : ` ${all.filter(s => geneKnows(s.name)).length}/${all.length}`; };
@@ -352,13 +352,14 @@ function renderGene() {
       <div class="geneTabs"><button class="subTab ${geneTab === "freezer" ? "active" : ""}" data-gtab="freezer">❄️ Freezer (${G.known.length})</button>
         <button class="subTab ${geneTab === "codex" ? "active" : ""}" data-gtab="codex">${gx("codex")} Codex</button>
         <button class="subTab ${geneTab === "mutants" ? "active" : ""}" data-gtab="mutants">${gx("mutant")} Mutants (${mutantCount()})</button>
+        ${geneTab === "freezer" ? `<button class="subTab geneOnly ${G.onlyOpen ? "active" : ""}" data-gonly="1" title="Show only samples that can still make a new species with what you have (hides ✓ done and 🔒 later)">🔎 Only with recipes</button>` : ""}
         <input id="geneSearch" type="search" placeholder="🔍 Search" autocomplete="off"></div>
       <div class="achCats" ${geneTab === "mutants" ? "hidden" : ""}>${GENE_CATS.filter(([c]) => geneTab === "codex" ? c !== "start" || true : true).map(([c, l]) =>
         `<button class="achCat ${geneCat === c ? "active" : ""}" data-gcat="${c}">${l}${catCount(c)}</button>`).join("")}</div>
       ${geneTab === "mutants" ? `<p class="muted">Mutants come from pairs that don't make a real species. They can't be spliced again and don't count as species. You've made ${mutantCount()} of ${GENE_MUTANTS_ALL.toLocaleString("en-US")} possible.</p>
         <div class="geneGrid">${Object.keys(G.mutants).reverse().map(k => { const m = mutantOf(k);
           return `<div class="geneCard r-m codex" data-name="${m.name.toLowerCase()}" title="${m.a} + ${m.b}"><span class="geneEmoji">${gEm(m.a, "half")}${gEm(m.b, "half")}</span><span class="geneName">${m.name}</span><span class="geneHow">${gEm(m.a, "sm")} + ${gEm(m.b, "sm")}</span></div>`; }).join("") || `<p class="muted">No mutants yet.</p>`}</div>`
-      : `<div class="geneGrid">${cards || `<p class="muted">Nothing here yet.</p>`}</div>`}
+      : `<div class="geneGrid">${cards || `<p class="muted">${geneTab === "freezer" && G.onlyOpen ? "No sample can make a new species right now." : "Nothing here yet."}</p>`}</div>`}
     </div>`;
 }
 
@@ -422,6 +423,7 @@ $("geneView").addEventListener("click", (e) => {
   if (g && !g.disabled) { if (g.dataset.gene === "splice") geneSplice(); if (g.dataset.gene === "hint") geneHint(); return; }
   const tab = t.closest("[data-gtab]"); if (tab) { geneTab = tab.dataset.gtab; return renderGene(); }
   const c = t.closest("[data-gcat]"); if (c) { geneCat = c.dataset.gcat; return renderGene(); }
+  if (t.closest("[data-gonly]")) { G.onlyOpen = !G.onlyOpen; save(); return renderGene(); }
 });
 $("geneView").addEventListener("input", (e) => {   // search filters the cards without a re-render
   if (e.target.id !== "geneSearch") return;
