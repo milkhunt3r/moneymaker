@@ -282,7 +282,7 @@ function showLevelTable(kind) {
     <div class="levelTableWrap"><table class="levelTable">
       <thead><tr><th>Level</th><th>Total XP</th><th>This level</th>${lg ? "" : `<th>${gam ? "Cashback" : "Perks"}</th>`}<th>Unlocks</th></tr></thead>
       <tbody>${rows}</tbody></table></div>
-    <button class="btn" onclick="hideModal()">Close</button>`);
+    <button class="btn" data-modal="close">Close</button>`);
   $("modalBox").classList.add("wide");
   const now = $("levelNow");
   if (now) now.scrollIntoView({ block: "center" });

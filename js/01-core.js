@@ -301,10 +301,22 @@ const storage = {
   },
 };
 
+// 🛡️ A save can come from a file someone sent you, so it is cleaned before use: no text in it may carry HTML
+// (the game shows names and texts from the save inside the page) and no key may change how objects work.
+// The game itself never stores <, >, " or ` in its texts, so nothing real is lost.
+const BAD_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+function cleanSave(v, depth = 0) {
+  if (typeof v === "string") return v.replace(/<[^>]*>/g, "").replace(/[<>"`]/g, "").replace(/javascript:/gi, "");
+  if (!v || typeof v !== "object" || depth > 40) return v;
+  if (Array.isArray(v)) return v.map(x => cleanSave(x, depth + 1));
+  const out = {};
+  for (const k of Object.keys(v)) if (!BAD_KEYS.has(k)) out[cleanSave(k)] = cleanSave(v[k], depth + 1);
+  return out;
+}
 // Load the save: progress first, then this device's screen preferences on top
-const loadedSave = storage.loadGame();
+const loadedSave = cleanSave(storage.loadGame());
 if (loadedSave) Object.assign(state, loadedSave);
-Object.assign(state, storage.loadPrefs());
+Object.assign(state, cleanSave(storage.loadPrefs()) || {});
 
 // Fix up saves from the previous version: old workers had no income roll
 state.companies.forEach(c => {
@@ -348,7 +360,8 @@ function flushSave() {
     if (w) {
       w.hidden = false;
       w.innerHTML = `⚠️ <b>Your progress is not being saved</b>: this browser's storage for the game is full.
-        Sign in (⚙️ Settings → Account) to keep it in the ☁️ cloud. <button class="btn small" onclick="this.parentNode.hidden=true">OK</button>`;
+        Sign in (⚙️ Settings → Account) to keep it in the ☁️ cloud. <button class="btn small" id="saveWarnOk">OK</button>`;
+      $("saveWarnOk").addEventListener("click", () => { w.hidden = true; });
     }
   }
 }

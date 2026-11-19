@@ -84,16 +84,23 @@ function applyBlock(el, tpl) {
   const imgs = [...el.querySelectorAll("img")].map(i => i.cloneNode(true));
   const byTag = {};
   el.querySelectorAll("*").forEach(n => (byTag[n.tagName] = byTag[n.tagName] || []).push(n));
-  const box = document.createElement("div");
+  const box = document.createElement("template");   // a template: nothing inside it loads or runs while it is checked
   box.innerHTML = tpl.replace(/\{i\}/g, '<img data-i18n-i="1">');
+  // 🛡️ the translation is built from text that was on the page, so it is checked before it goes back:
+  // only tags the original element had (plus line breaks), and no attributes except those copied from the original
+  box.content.querySelectorAll("*").forEach(n => {
+    const ok = n.tagName === "BR" || (n.tagName === "IMG" && n.getAttribute("data-i18n-i") === "1") || (byTag[n.tagName] && n.tagName !== "IMG");
+    if (!ok) { n.replaceWith(document.createTextNode(n.textContent)); return; }
+    for (const a of [...n.attributes]) if (a.name !== "data-i18n-i") n.removeAttribute(a.name);
+  });
   const used = {};
-  box.querySelectorAll("*").forEach(n => {
+  box.content.querySelectorAll("*").forEach(n => {
     if (n.dataset && n.dataset.i18nI) { const im = imgs.shift(); if (im) n.replaceWith(im); else n.remove(); return; }
     const src = (byTag[n.tagName] || [])[used[n.tagName] = (used[n.tagName] || 0)];
     used[n.tagName]++;
     if (src) for (const a of src.attributes) n.setAttribute(a.name, a.value);
   });
-  if (el.innerHTML !== box.innerHTML) el.innerHTML = box.innerHTML;   // (no change → no new mutation, no loop)
+  if (el.innerHTML !== box.innerHTML) { el.replaceChildren(box.content.cloneNode(true)); }   // (no change → no new mutation, no loop)
 }
 function trBlock(el) {
   const key = squash(blockKey(el));
