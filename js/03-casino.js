@@ -33,7 +33,23 @@ function freeReturn(id, which = "placed") {       // give chips back to the inve
   freeTbl(id)[which] = [];
   return total;
 }
-function freeStart(id) { const f = freeTbl(id); f.inPlay = f.placed; f.placed = []; return sumOf(f.inPlay); }
+function freeStart(id) { const f = freeTbl(id); freeLast[id] = [...f.placed]; f.inPlay = f.placed; f.placed = []; return sumOf(f.inPlay); }
+// ↺ Repeat last bets: the free chips the last round used are placed again first (if you still have them),
+// and only the rest is paid from your chips. Returns how much they cover and a way to give them back.
+const freeLast = {};   // table id -> values of the free chips played in its last round
+function freeRebet(id, need) {
+  let covered = 0; const taken = [];
+  for (const v of freeLast[id] || []) {
+    if (covered + v > need) continue;
+    if (freeTake(id, v)) { covered += v; taken.push(v); }
+  }
+  const undo = () => taken.forEach(v => {
+    const pl = freeTbl(id).placed, i = pl.lastIndexOf(v);
+    if (i >= 0) pl.splice(i, 1);
+    state.freeChips[v] = (state.freeChips[v] || 0) + 1;
+  });
+  return { covered, undo };
+}
 function freeDone(id, which = "inPlay") { freeTbl(id)[which] = []; }   // played: they are used up
 const purse = (id) => vipOn(id) ? state.vip.coins : state.casinoChips;
 const purseName = (id) => vipOn(id) ? "VIP coins" : "chips";
@@ -574,11 +590,12 @@ $("casinoGame").addEventListener("click", (e) => {
 
   if (e.target.closest("#rebet") && !roulette.spinning) {
     const need = Object.values(roulette.lastBets).reduce((a, b) => a + b, 0);
-    if (purse(roulette.id) < need) return casinoMessage(`Not enough ${purseName(roulette.id)} to repeat (` + fmt(need) + " needed).");
     for (const k in roulette.lastBets)
       if ((roulette.bets[k] || 0) + roulette.lastBets[k] > roulette.max)
         return casinoMessage("Table limit: max " + fmt(roulette.max) + " on one spot.");
-    payFrom(roulette.id, need);
+    const fr = freeRebet(roulette.id, need), rest = need - fr.covered;
+    if (purse(roulette.id) < rest) { fr.undo(); return casinoMessage(`Not enough ${purseName(roulette.id)} to repeat (` + fmt(rest) + " needed)."); }
+    payFrom(roulette.id, rest);
     for (const k in roulette.lastBets) roulette.bets[k] = (roulette.bets[k] || 0) + roulette.lastBets[k];
     roulette.lastResult = null;
     updateCounter(); renderRoulette(); save();
@@ -692,6 +709,7 @@ function spinRoulette() {
   const result = secureRandomInt(37);                // 0 to 36, all equally likely
   table.spinning = true;
   table.lastBets = { ...table.bets };
+  freeLast[table.id] = [...freeTbl(table.id).placed];   // for ↺ Repeat last bets
   state.rouletteSpin = { id: table.id, result };   // 🔒 a reload mid-spin settles this same result
   save();
   renderRoulette();                    // draws the wheel at its current angle

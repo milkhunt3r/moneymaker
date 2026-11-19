@@ -332,6 +332,9 @@ Object.assign(ES, { "High rollers": "Altas apuestas", "Super high rollers": "Sú
 H("🌐 The 📖 Wiki, the ⭐ prestige screens and the special business details are now in <b>Español</b> too. The Wiki search finds Spanish words when the game is in Spanish.",
   "🌐 La 📖 Wiki, las pantallas de ⭐ prestigio y los detalles de los negocios especiales ya están también en <b>español</b>. El buscador de la Wiki encuentra palabras en español cuando el juego está en español.");
 
+H("🎰 <b>Clear bets</b> now also empties the table after a finished hand (Baccarat and Blackjack), and <b>Repeat last bets</b> places your free bet chips again first when the last bet used them, paying only the rest from your chips.",
+  "🎰 <b>Quitar apuestas</b> ahora también vacía la mesa tras una mano terminada (baccarat y blackjack), y <b>Repetir últimas apuestas</b> vuelve a usar primero tus fichas de apuesta gratis si la última apuesta las usó, y solo paga el resto con tus fichas.");
+
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
 ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {

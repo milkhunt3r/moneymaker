@@ -174,7 +174,7 @@ function renderBaccarat() {
       </div>${freeChipRow(t, t.chipFree)}` : ""}
       <div class="bjActions">${betting ? `
         <button class="btn" data-bac="deal" ${bacBets(t).player + bacBets(t).banker + bacBets(t).tie >= t.min && !t.busy ? "" : "disabled"}>🎴 Deal (bet ${fmt(total)})</button>
-        <button class="btn ghost" data-bac="clear" ${total ? "" : "disabled"}>Clear bets</button>
+        <button class="btn ghost" data-bac="clear" ${total || t.result ? "" : "disabled"}>Clear bets</button>
         <button class="btn ghost" data-bac="rebet" ${last && !total ? "" : "disabled"}>↺ Repeat last bets${last ? " (" + fmt(last) + ")" : ""}</button>`
         : `<span class="muted" style="align-self:center">Dealing...</span>`}</div>
       <div id="casinoMsg" class="${/won|broke even/.test(t.message) ? "income" : "flash"}" style="margin-top:10px; text-align:center">${t.message}</div>
@@ -206,12 +206,15 @@ $("casinoGame").addEventListener("click", (e) => {
   if (a === "deal" && t.phase === "betting" && !t.busy) bacDeal();
   if (a === "clear" && t.phase === "betting") {
     refundTo(t.id, bacTotal(bacBets(t)) - freeReturn(t.id));
-    state.bac[t.id].bets = bacEmpty(); t.message = ""; updateCounter(); renderBaccarat(); save();
+    state.bac[t.id].bets = bacEmpty(); t.message = "";
+    t.result = null; t.p = []; t.b = [];   // also empties the felt after a finished hand
+    updateCounter(); renderBaccarat(); save();
   }
   if (a === "rebet" && t.phase === "betting" && t.lastBets) {
     const need = bacTotal(t.lastBets);
-    if (purse(t.id) < need) return bacMsg(`Not enough ${purseName(t.id)} to repeat (${fmt(need)} needed).`);
-    payFrom(t.id, need); state.bac[t.id].bets = { ...t.lastBets };
+    const fr = freeRebet(t.id, need), rest = need - fr.covered;
+    if (purse(t.id) < rest) { fr.undo(); return bacMsg(`Not enough ${purseName(t.id)} to repeat (${fmt(rest)} needed).`); }
+    payFrom(t.id, rest); state.bac[t.id].bets = { ...t.lastBets };
     t.message = ""; t.result = null; t.p = []; t.b = []; updateCounter(); renderBaccarat(); save();
   }
 });

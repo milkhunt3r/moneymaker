@@ -371,7 +371,7 @@ function renderBlackjack() {
   if (betting) {
     actions = `
       <button class="btn" data-bj="deal" ${total === 0 ? "disabled" : ""}>🃏 Deal (bet ${fmt(total)})</button>
-      <button class="btn ghost" data-bj="clear" ${total === 0 ? "disabled" : ""}>Clear bets</button>
+      <button class="btn ghost" data-bj="clear" ${total === 0 && !t.hands.length ? "disabled" : ""}>Clear bets</button>
       <button class="btn ghost" data-bj="rebet" ${lastTotal === 0 ? "disabled" : ""}>↺ Repeat last bets</button>`;
   } else if (t.phase === "insurance") {
     const cost = insuranceCost(t);
@@ -457,14 +457,16 @@ $("casinoGame").addEventListener("click", (e) => {
     const bets = seatBets(t);
     refundTo(t.id, bets.reduce((x, y) => x + y, 0) - freeReturn(t.id));
     state.bj[t.id].bets = [0, 0, 0];
+    t.hands = []; t.dealer = []; t.message = "";   // also empties the seats after a finished round
     updateCounter(); renderBlackjack(); save();
   }
   if (a === "rebet") {
     const need = t.lastBets.reduce((x, y) => x + y, 0);
     const bets = seatBets(t);
     if (t.lastBets.some((b, i) => bets[i] + b > t.max)) return bjMsg("Table limit: max " + fmt(t.max) + " per hand.");
-    if (purse(t.id) < need) return bjMsg(`Not enough ${purseName(t.id)} to repeat (` + fmt(need) + " needed).");
-    payFrom(t.id, need);
+    const fr = freeRebet(t.id, need), rest = need - fr.covered;
+    if (purse(t.id) < rest) { fr.undo(); return bjMsg(`Not enough ${purseName(t.id)} to repeat (` + fmt(rest) + " needed)."); }
+    payFrom(t.id, rest);
     t.lastBets.forEach((b, i) => bets[i] += b);
     t.hands = []; t.dealer = []; t.message = "";
     updateCounter(); renderBlackjack(); save();
@@ -1182,8 +1184,9 @@ $("casinoGame").addEventListener("click", (e) => {
   if (a === "rebet" && t.phase === "betting" && t.lastBets) {
     const seats = uthSeats(t), need = uthCost(t.lastBets);
     if (t.lastBets.some((b, i) => seats[i].ante + b.ante > t.max || seats[i].trips + b.trips > t.max)) return uthMsg("That would go over the table limit.");
-    if (purse(t.id) < need) return uthMsg(`Not enough ${purseName(t.id)} to repeat (` + fmt(need) + " needed).");
-    payFrom(t.id, need);
+    const fr = freeRebet(t.id, need), rest = need - fr.covered;
+    if (purse(t.id) < rest) { fr.undo(); return uthMsg(`Not enough ${purseName(t.id)} to repeat (` + fmt(rest) + " needed)."); }
+    payFrom(t.id, rest);
     t.lastBets.forEach((b, i) => { seats[i].ante += b.ante; seats[i].trips += b.trips; });
     uthClearTable(t);
     t.message = ""; updateCounter(); renderUth(); save();
