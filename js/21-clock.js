@@ -49,22 +49,22 @@ function applyOffline(seconds) {
   }
   // free bet chips and VIP chips
   let chips = 0;
-  const addChips = (have, timer, gap) => {   // -> [new count, new timer]
-    if (have >= FREE_CHIP_MAX) return [have, gap];
+  const addChips = (have, timer, gap, cap = FREE_CHIP_MAX) => {   // -> [new count, new timer]
+    if (have >= cap) return [have, gap];
     if (away < timer) return [have, timer - away];
-    const n = 1 + Math.floor((away - timer) / gap), got = Math.min(n, FREE_CHIP_MAX - have);
+    const n = 1 + Math.floor((away - timer) / gap), got = Math.min(n, cap - have);
     chips += got;
-    return [have + got, have + got >= FREE_CHIP_MAX ? gap : gap - ((away - timer) % gap)];
+    return [have + got, have + got >= cap ? gap : gap - ((away - timer) % gap)];
   };
   if (!isPaused()) {
     const gap = freeChipMinutes() * 60;
     for (const c of freeUnlocked()) {
-      const [n, t] = addChips(state.freeChips[c.value] || 0, Math.min(state.freeTimers[c.value] || gap, gap), gap);
+      const [n, t] = addChips(state.freeChips[c.value] || 0, Math.min(state.freeTimers[c.value] || gap, gap), gap, freeCap(c.value));
       state.freeChips[c.value] = n; state.freeTimers[c.value] = Math.max(1, t);
     }
     if (state.legacy.vip > 0) {
       const gapV = vipMinutes() * 60;
-      const [n, t] = addChips(state.freeChips[VIP_CHIP] || 0, Math.min(state.vip.timer || gapV, gapV), gapV);
+      const [n, t] = addChips(state.freeChips[VIP_CHIP] || 0, Math.min(state.vip.timer || gapV, gapV), gapV, freeCap(VIP_CHIP));
       state.freeChips[VIP_CHIP] = n; state.vip.timer = Math.max(1, t);
     }
   }

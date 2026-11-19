@@ -44,7 +44,7 @@ function wikiGeneral() {
     ${wt(["Bonus", "Effect", "Max"], [
       ["💼 Tycoon's Legacy", `+25% income from businesses, special businesses and clicks, once. From the reset you pick it on, every reset keeps your Science buildings (University, Research lab, Space Mission Center${secretsOpen() ? ", 2nd University, Astronomy Research Center, Orbital Space Station" : ""}${secrets2Open() ? ", 3rd University, Moon Base, Genetics Laboratory, Mars Base" : ""}), but not the satellite`, "1"],
       ["🚢 Global Empire", "1st: keep trucks, tankers, planes, warehouses, Trading Port and Logistics Center on every reset (the satellite resets with Science). 2nd: all contracts take half the time (same pay)", "2"],
-      ["🎟️ VIP Coins", "A free 500 scoin bet chip every 10 min for the Super high roller tables, and all other free bet chips come twice as fast (every 10 / 7.5 / 5 min instead of 20 / 15 / 10)", "1"]])}
+      ["🎟️ VIP Coins", "A free 500 scoin bet chip every 10 min for the Super high roller tables, and all other free bet chips come twice as fast (every 10 / 7.5 / 5 min instead of 20 / 15 / 10). You can hold up to 200 chips of 500 scoin instead of 100", "1"]])}
     <p class="muted">Tycoon's Legacy and VIP Coins can be picked once, Global Empire twice: 4 picks for 4 prestiges, so by the end you have every bonus, in the order you choose.</p>
     <h3>💾 Saving</h3>
     <p>The game saves automatically in your browser. In ⚙️ Settings you can save, download a backup file, load one, or reset the game.</p>

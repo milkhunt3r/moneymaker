@@ -173,8 +173,8 @@ Object.assign(ES, {
     "+25% de ingresos de negocios, negocios especiales y clics, para siempre. A partir de este reinicio, todos los reinicios conservan tus edificios de 🔬 Ciencia (no el satélite).",
   "Keep all your trucks, oil tankers and cargo planes, plus warehouses, Trading Port and Logistics Center, on this and every future reset (not the 🛰️ satellite).":
     "Conserva todos tus camiones, petroleros y aviones de carga, además de almacenes, puerto comercial y centro logístico, en este reinicio y en todos los siguientes (no el 🛰️ satélite).",
-  "A free 500 scoin bet chip every 10 minutes for the Super high roller tables, and all your other free bet chips come twice as fast. What they win goes to your casino chips.":
-    "Una ficha de apuesta gratis de 500 scoin cada 10 minutos para las mesas de súper altas apuestas, y todas tus demás fichas gratis llegan el doble de rápido. Lo que ganen va a tus fichas de casino.",
+  "A free 500 scoin bet chip every 10 minutes for the Super high roller tables, and all your other free bet chips come twice as fast. You can hold up to 200 chips of 500 scoin instead of 100. What they win goes to your casino chips.":
+    "Una ficha de apuesta gratis de 500 scoin cada 10 minutos para las mesas de súper altas apuestas, y todas tus demás fichas gratis llegan el doble de rápido. Puedes tener hasta 200 fichas de 500 scoin en vez de 100. Lo que ganen va a tus fichas de casino.",
   // ----- headers and buttons of the other tabs -----
   "Your money": "Tu dinero", "Casino chips": "Fichas de casino", "VIP coins": "Monedas VIP",
   "Move money into the casino to play. You can add more at any time.": "Pasa dinero al casino para jugar. Puedes añadir más cuando quieras.",

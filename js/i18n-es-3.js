@@ -34,7 +34,7 @@ rx(String.raw`(\d) of (\d)`, "$1 de $2");
 rx(String.raw`\(you have (${NUM})\)`, "(tienes $1)");
 rx(String.raw`Your picks: (.+)`, (m, l) => "Tus elecciones: " + l.replace(/💼 Tycoon's Legacy/g, "💼 Legado del magnate").replace(/🚢 Global Empire/g, "🚢 Imperio global").replace(/🎟️ VIP Coins/g, "🎟️ Monedas VIP"));
 rx(String.raw`\+(\d+)% income from businesses, special businesses and clicks`, "+$1% de ingresos de negocios, negocios especiales y clics");
-rx(String.raw`A free 500 scoin VIP chip every (\d+) minutes for the Super high roller tables`, "Una ficha VIP gratis de 500 scoin cada $1 minutos para las mesas de súper altas apuestas");
+rx(String.raw`A free 500 scoin VIP chip every (\d+) minutes for the Super high roller tables( · up to 200 chips of 500 scoin)?`, (m, n, c) => `Una ficha VIP gratis de 500 scoin cada ${n} minutos para las mesas de súper altas apuestas${c ? " · hasta 200 fichas de 500 scoin" : ""}`);
 rx(String.raw`Income \+(\d+)% for good`, "Ingresos +$1% para siempre");
 
 /* ===================== 🏢 SPECIAL BUSINESSES (details and staffing plan) ===================== */
@@ -95,8 +95,8 @@ Object.assign(ES, {
   "Each level card has a \"📋 All levels\" button with every level's XP and unlocks.": "Cada tarjeta de nivel tiene un botón «📋 Todos los niveles» con la XP y los desbloqueos de cada nivel.",
   "1st: keep trucks, tankers, planes, warehouses, Trading Port and Logistics Center on every reset (the satellite resets with Science). 2nd: all contracts take half the time (same pay)":
     "1.ª: conserva camiones, petroleros, aviones, almacenes, Puerto comercial y Centro logístico en cada reinicio (el satélite se reinicia con Ciencia). 2.ª: todos los contratos duran la mitad (misma paga)",
-  "A free 500 scoin bet chip every 10 min for the Super high roller tables, and all other free bet chips come twice as fast (every 10 / 7.5 / 5 min instead of 20 / 15 / 10)":
-    "Una ficha de apuesta gratis de 500 scoin cada 10 min para las mesas de súper altas apuestas, y el resto de fichas gratis llegan el doble de rápido (cada 10 / 7,5 / 5 min en vez de 20 / 15 / 10)",
+  "A free 500 scoin bet chip every 10 min for the Super high roller tables, and all other free bet chips come twice as fast (every 10 / 7.5 / 5 min instead of 20 / 15 / 10). You can hold up to 200 chips of 500 scoin instead of 100":
+    "Una ficha de apuesta gratis de 500 scoin cada 10 min para las mesas de súper altas apuestas, y el resto de fichas gratis llegan el doble de rápido (cada 10 / 7,5 / 5 min en vez de 20 / 15 / 10). Puedes tener hasta 200 fichas de 500 scoin en vez de 100",
   "Tycoon's Legacy and VIP Coins can be picked once, Global Empire twice: 4 picks for 4 prestiges, so by the end you have every bonus, in the order you choose.":
     "Legado del magnate y Monedas VIP se pueden elegir una vez, Imperio global dos: 4 elecciones para 4 prestigios, así que al final tendrás todas las bonificaciones, en el orden que elijas.",
   "Saving": "Guardado", "The game saves automatically in your browser. In ⚙️ Settings you can save, download a backup file, load one, or reset the game.":
@@ -355,6 +355,15 @@ H("🏆 Easier goals: <b>Blackjack legend</b> now needs 500 won hands, and <b>Ul
 
 rx(String.raw`🎫 VIP chip from the ⭐ VIP Coins prestige bonus: a free 500 scoin bet chip every (\d+) min\. It goes into the same 500 scoin pile as the slot next to it \(you have (\d+), max (\d+)\)\.`,
   "🎫 Ficha VIP de la bonificación de prestigio ⭐ Monedas VIP: una ficha de apuesta gratis de 500 scoin cada $1 min. Va al mismo montón de 500 scoin que la casilla de al lado (tienes $2, máx. $3).");
+
+Object.assign(ES, {
+  "🔒 Unlocks when you choose ⭐ VIP Coins as a prestige bonus (from 1 gcoin): a free 500 scoin bet chip every 10 min, all free chips twice as fast, and room for 200 chips of 500 scoin.":
+    "🔒 Se desbloquea al elegir ⭐ Monedas VIP como bonificación de prestigio (desde 1 gcoin): una ficha de apuesta gratis de 500 scoin cada 10 min, todas las fichas gratis el doble de rápido y espacio para 200 fichas de 500 scoin.",
+});
+rx(String.raw`Free (\S+) bet chip: a new one every ([\d.,]+) min( \(🎟️ VIP: twice as fast\))?, even while the game is closed \(max (\d+)\)\. Unlocked at Gambler level (\d+)\.`,
+  (m, c, g, v, x, l) => `Ficha de apuesta gratis de ${c}: una nueva cada ${decFix(g)} min${v ? " (🎟️ VIP: el doble de rápido)" : ""}, también con el juego cerrado (máx. ${x}). Desbloqueada en el nivel de jugador ${l}.`);
+H("🎟️ <b>VIP Coins</b> prestige bonus: you can now hold up to <b>200</b> free 500 scoin chips instead of 100.",
+  "🎟️ Bonificación de prestigio <b>Monedas VIP</b>: ahora puedes tener hasta <b>200</b> fichas gratis de 500 scoin en vez de 100.");
 
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")

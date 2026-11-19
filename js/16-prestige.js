@@ -26,7 +26,7 @@ const PRESTIGE_CHOICES = [
       : "Keep all your trucks, oil tankers and cargo planes, plus warehouses, Trading Port and Logistics Center, on this and every future reset (not the 🛰️ satellite).",
     now: () => { const n = (x, w) => `${x} ${w}${x === 1 ? "" : "s"}`; return state.legacy.empire ? "Your fleet is already kept on every reset" : `You'd keep ${n(logi.trucks.length, "truck")}, ${n(logi.tankers.length, "tanker")}, ${n(logi.planes.length, "plane")}`; } },
   { id: "vip", icon: "🎟️", name: "VIP Coins", max: 1,
-    text: "A free 500 scoin bet chip every 10 minutes for the Super high roller tables, and all your other free bet chips come twice as fast. What they win goes to your casino chips.",
+    text: "A free 500 scoin bet chip every 10 minutes for the Super high roller tables, and all your other free bet chips come twice as fast. You can hold up to 200 chips of 500 scoin instead of 100. What they win goes to your casino chips.",
     now: () => `Free chips: every ${fmtMin(freeChipBase())} min → every ${fmtMin(freeChipBase() / 2)} min` },
 ];
 
@@ -133,6 +133,8 @@ const FREE_CHIP_TYPES = [
   { value: 10000000, level: 55 }, { value: 100000000, level: 65 }, { value: 250000000, level: 75 }, { value: 500000000, level: 99 },
 ];
 const FREE_CHIP_MAX = 100;
+// 🎟️ VIP Coins prestige bonus: the 500 scoin pile holds up to 200
+const freeCap = (v) => v === VIP_CHIP && state.legacy && state.legacy.vip > 0 ? 200 : FREE_CHIP_MAX;
 const VIP_CHIP = 500000000;
 function freeChipBase() { const L = levelInfo(state.casinoXp).level; return L >= 85 ? 10 : L >= 45 ? 15 : 20; }
 // ⭐ VIP Coins prestige bonus: every free chip twice as fast (20 / 15 / 10 min → 10 / 7.5 / 5 min)
@@ -144,7 +146,7 @@ const freeUnlocked = () => FREE_CHIP_TYPES.filter(c => levelInfo(state.casinoXp)
 // Old VIP coins (a balance) become 500 scoin free chips; any leftover goes to casino chips
 if (state.vip && state.vip.coins > 0) {
   const n = Math.floor(state.vip.coins / VIP_CHIP);
-  state.freeChips[VIP_CHIP] = Math.min(FREE_CHIP_MAX, (state.freeChips[VIP_CHIP] || 0) + n);
+  state.freeChips[VIP_CHIP] = Math.min(freeCap(VIP_CHIP), (state.freeChips[VIP_CHIP] || 0) + n);
   state.casinoChips += state.vip.coins - n * VIP_CHIP;
   state.vip.coins = 0;
 }
@@ -157,13 +159,13 @@ function freeTick() {
   for (const c of freeUnlocked()) {
     const v = c.value, have = state.freeChips[v] || 0;
     if (!state.freeTimers[v] || state.freeTimers[v] > gap) state.freeTimers[v] = gap;
-    if (have >= FREE_CHIP_MAX) { state.freeTimers[v] = gap; continue; }     // full: the timer waits
+    if (have >= freeCap(v)) { state.freeTimers[v] = gap; continue; }     // full: the timer waits
     if (--state.freeTimers[v] <= 0) { state.freeChips[v] = have + 1; state.freeTimers[v] = gap; showNotice(`🎁 Free ${chipLabel(v)} chip!`); }
   }
   if (state.legacy.vip > 0) {   // ⭐ VIP Coins prestige bonus
     const gapV = vipMinutes() * 60, have = state.freeChips[VIP_CHIP] || 0;
     if (!state.vip.timer || state.vip.timer > gapV) state.vip.timer = gapV;
-    if (have >= FREE_CHIP_MAX) state.vip.timer = gapV;
+    if (have >= freeCap(VIP_CHIP)) state.vip.timer = gapV;
     else if (--state.vip.timer <= 0) {
       state.freeChips[VIP_CHIP] = have + 1; state.vip.timer = gapV;
       showAlert("🎫 VIP: free 500 scoin chip!", "Use it as a free bet at the Super high roller tables.", "good");
@@ -183,15 +185,15 @@ function updateVipBar() {
   const slots = FREE_CHIP_TYPES.map(c => {
     const open = L >= c.level, n = state.freeChips[c.value] || 0;
     return { value: c.value, open, n, vip: false,
-      time: !open ? `Level ${c.level}` : n >= FREE_CHIP_MAX ? "full" : clock(state.freeTimers[c.value] || gap * 60),
-      tip: open ? `Free ${chipLabel(c.value)} bet chip: a new one every ${fmtMin(gap)} min${state.legacy.vip > 0 ? " (🎟️ VIP: twice as fast)" : ""}, even while the game is closed (max ${FREE_CHIP_MAX}). Unlocked at Gambler level ${c.level}.`
+      time: !open ? `Level ${c.level}` : n >= freeCap(c.value) ? "full" : clock(state.freeTimers[c.value] || gap * 60),
+      tip: open ? `Free ${chipLabel(c.value)} bet chip: a new one every ${fmtMin(gap)} min${state.legacy.vip > 0 ? " (🎟️ VIP: twice as fast)" : ""}, even while the game is closed (max ${freeCap(c.value)}). Unlocked at Gambler level ${c.level}.`
                 : `🔒 Unlocks at Gambler level ${c.level} (you are level ${L}). Then you get a free ${chipLabel(c.value)} bet chip every ${fmtMin(gap)} min.` };
   });
   const vip = state.legacy.vip > 0, nV = state.freeChips[VIP_CHIP] || 0;
   slots.push({ value: VIP_CHIP, open: vip, n: nV, vip: true,
-    time: !vip ? "Prestige" : nV >= FREE_CHIP_MAX ? "full" : clock(state.vip.timer || vipMinutes() * 60),
-    tip: vip ? `🎫 VIP chip from the ⭐ VIP Coins prestige bonus: a free 500 scoin bet chip every ${vipMinutes()} min. It goes into the same 500 scoin pile as the slot next to it (you have ${nV}, max ${FREE_CHIP_MAX}).`
-             : "🔒 Unlocks when you choose ⭐ VIP Coins as a prestige bonus (from 1 gcoin): a free 500 scoin bet chip every 10 min, and all free chips twice as fast." });
+    time: !vip ? "Prestige" : nV >= freeCap(VIP_CHIP) ? "full" : clock(state.vip.timer || vipMinutes() * 60),
+    tip: vip ? `🎫 VIP chip from the ⭐ VIP Coins prestige bonus: a free 500 scoin bet chip every ${vipMinutes()} min. It goes into the same 500 scoin pile as the slot next to it (you have ${nV}, max ${freeCap(VIP_CHIP)}).`
+             : "🔒 Unlocks when you choose ⭐ VIP Coins as a prestige bonus (from 1 gcoin): a free 500 scoin bet chip every 10 min, all free chips twice as fast, and room for 200 chips of 500 scoin." });
   // build the slots once, then only update their numbers (so the hover box doesn't flicker)
   const key = slots.map(x => x.open).join();
   if ($("freeChipsGrid").dataset.key !== key) {
@@ -203,10 +205,10 @@ function updateVipBar() {
   }
   slots.forEach((x, i) => {
     $("fslot-" + i).dataset.tip = x.tip;
-    $("fslot-" + i).classList.toggle("full", x.open && x.n >= FREE_CHIP_MAX);
+    $("fslot-" + i).classList.toggle("full", x.open && x.n >= freeCap(x.value));
     $("ftime-" + i).textContent = x.time;
     // 🎫 the VIP chip has no pile of its own: it adds to the 500 scoin pile shown next to it, so it shows an arrow, not a second count
-    $("fcount-" + i).textContent = x.vip && x.open ? "→ 500sc" : `${x.n}/${FREE_CHIP_MAX}`;
+    $("fcount-" + i).textContent = x.vip && x.open ? "→ 500sc" : `${x.n}/${freeCap(x.value)}`;
   });
 }
 
@@ -302,7 +304,7 @@ function legacyBonuses() {
       text: L.empire >= 2 ? "Fleet, warehouses, Trading Port and Logistics Center kept on every reset · contracts take half the time"
         : L.empire ? "Fleet, warehouses, Trading Port and Logistics Center kept on every reset" : "Not picked yet: keep your logistics fleet on every reset" },
     { icon: "🎟️", name: "VIP Coins", on: L.vip > 0, level: `${L.vip || 0}/2`,
-      text: L.vip ? `A free 500 scoin VIP chip every ${L.vip >= 2 ? 10 : 20} minutes for the Super high roller tables` : "Not picked yet: free 500 scoin VIP chips" },
+      text: L.vip ? `A free 500 scoin VIP chip every ${L.vip >= 2 ? 10 : 20} minutes for the Super high roller tables · up to 200 chips of 500 scoin` : "Not picked yet: free 500 scoin VIP chips" },
   ];
 }
 function updateLegacyBadge() {
