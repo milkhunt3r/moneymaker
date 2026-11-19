@@ -1700,3 +1700,14 @@ html[lang="en"] [data-lang="en"], html[lang="es"] [data-lang="es"] { background:
 .orLang button { font: 700 13px system-ui, sans-serif; padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(255, 211, 77, 0.5); background: rgba(255, 255, 255, 0.06); color: #fff; cursor: pointer; }
 /* 🌐 longer Spanish labels: keep amounts on one line */
 #shop .income, #shop .card > .row > .muted, #shop .row > span.muted:last-child { white-space: nowrap; }
+
+/* ☁️ Cloud save: main menu badge, Google letter, the "which progress to keep" choice */
+#menuAccount { position: absolute; right: 28px; top: 92px; z-index: 3; font: 700 20px/1 inherit; font-family: inherit; color: #fff; cursor: pointer;
+  padding: 10px 16px; border-radius: 14px; background: rgba(10, 8, 24, 0.7); border: 1px solid rgba(255, 211, 77, 0.5); display: flex; align-items: center; gap: 8px; max-width: 360px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#menuAccount:hover { border-color: #ffd34d; }
+.gIcon { display: inline-grid; place-items: center; width: 1.3em; height: 1.3em; border-radius: 50%; background: #fff; color: #4285f4; font-weight: 900; font-family: Arial, sans-serif; margin-right: 6px; flex: none; }
+.cloudInfo .grow { display: flex; flex-direction: column; gap: 2px; }
+.cloudInfo small { color: #b9b4d6; font-weight: 600; }
+.cloudPick { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin: 12px 0; }
+.cloudPick .btn { display: flex; flex-direction: column; gap: 4px; min-width: 240px; }
+.cloudPick small { font-weight: 600; opacity: 0.85; }

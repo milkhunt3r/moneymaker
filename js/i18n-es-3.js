@@ -431,6 +431,28 @@ H("📡 <b>Live trading</b>: <b>⏳ limit orders</b> (open a Long when the price
 H("🚚 New in 📈 Investing: <b>Global Freight Co. shares</b>. The price follows your logistics deliveries: more contracts delivered than in the 20 seconds before, and it goes up; fewer, and it goes down.",
   "🚚 Novedad en 📈 Inversiones: <b>acciones de Global Freight Co.</b> El precio sigue tus entregas logísticas: si entregas más contratos que en los 20 segundos anteriores, sube; si entregas menos, baja.");
 
+/* ===================== ☁️ CLOUD SAVE (account) ===================== */
+Object.assign(ES, {
+  "G": "G", "Account": "Cuenta", "Cloud save": "Guardado en la nube", "Connecting…": "Conectando…", "Not available": "No disponible",
+  "Sign in with Google": "Iniciar sesión con Google", "Sign in": "Iniciar sesión", "Save to the cloud now": "Guardar en la nube ahora",
+  "Sign out": "Cerrar sesión", "Delete account": "Eliminar cuenta", "Last upload failed": "Falló la última subida", "Google account": "Cuenta de Google",
+  "Loading your cloud save…": "Cargando tu partida de la nube…", "Which progress do you want to keep?": "¿Qué progreso quieres conservar?",
+  "Your cloud save and this device have different progress.": "Tu partida en la nube y este dispositivo tienen un progreso distinto.",
+  "This device": "Este dispositivo",
+  "The other one is replaced. Tip: download a progress file first (⚙️ Settings) if you are not sure.": "La otra se sustituye. Consejo: si no estás seguro, descarga antes un archivo de progreso (⚙️ Ajustes).",
+  "Delete your account?": "¿Eliminar tu cuenta?", "Yes, delete my account": "Sí, eliminar mi cuenta",
+  "The progress on this device stays (you can keep playing without an account).": "El progreso de este dispositivo se queda (puedes seguir jugando sin cuenta).",
+  "The cloud service can't be reached right now.": "Ahora mismo no se puede conectar con la nube.",
+  "Signed out. Your progress stays on this device.": "Sesión cerrada. Tu progreso se queda en este dispositivo.",
+  "Could not delete the account. Try again later.": "No se ha podido eliminar la cuenta. Inténtalo más tarde.",
+  "Your account and cloud save were deleted.": "Se han eliminado tu cuenta y tu partida en la nube.",
+  "Saved to the cloud.": "Guardado en la nube.", "Cloud save failed. Your progress is still saved on this device.": "Falló el guardado en la nube. Tu progreso sigue guardado en este dispositivo.",
+});
+rx(String.raw`Saved (\d.+)`, "Guardado: $1");
+H("This deletes your account and your <b>cloud save</b> for good.", "Esto elimina tu cuenta y tu <b>partida en la nube</b> para siempre.");
+H("☁️ <b>Cloud save</b>: sign in with Google (⚙️ Settings or the main menu) to keep your progress in your account and continue on another device. Playing without an account works as before.",
+  "☁️ <b>Guardado en la nube</b>: inicia sesión con Google (⚙️ Ajustes o el menú principal) para guardar tu progreso en tu cuenta y seguir en otro dispositivo. Jugar sin cuenta funciona como antes.");
+
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
 ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {
