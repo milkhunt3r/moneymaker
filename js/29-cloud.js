@@ -153,7 +153,8 @@ function cloudRowsHtml() {
   const icon = '<svg viewBox="0 0 24 24"><path d="M19 18H6.5a4.5 4.5 0 0 1-.6-9 6 6 0 0 1 11.6 1.5A3.8 3.8 0 0 1 19 18z"/></svg>';
   const r = (k, text, extra = "") => `<button class="orRow" data-cloud="${k}">${icon}<span class="grow">${text}</span>${extra}</button>`;
   if (!cloud.sb) return `<div class="orRow off">${icon}<span class="grow">Cloud save</span><span class="orSoon">${cloud.status === "loading" ? "Connecting…" : "Not available"}</span></div>`;
-  if (!cloud.user) return r("in", `<span class="gIcon">G</span>Sign in with Google`, `<span class="orSoon">Cloud save</span>`);
+  if (!cloud.user) return r("in", `<span class="gIcon">G</span>Sign in with Google`, `<span class="orSoon">Cloud save</span>`) +
+    `<div class="guestWarn">⚠️ Playing as a guest: ${GUEST_WARN}</div>`;
   const st = cloud.status === "error" ? "⚠️ Last upload failed" : cloud.lastAt ? `Saved ${whenText(cloud.lastAt)}` : "…";
   return `<div class="orRow cloudInfo">${icon}<span class="grow"><b data-noi18n>${escapeHtml(cloud.user.email || "Google account")}</b><small id="cloudSt">${st}</small></span></div>` +
     `<div class="cloudBtns"><button data-cloud="now">Save now</button><button data-cloud="out">Sign out</button><button data-cloud="del" class="danger">Delete account</button></div>`;
@@ -183,6 +184,30 @@ $("modalBox").addEventListener("click", (e) => {
 });
 $("menuCorner").insertAdjacentHTML("beforeend", `<button id="menuAccount" hidden></button>`);
 $("menuAccount").addEventListener("click", () => cloud.user ? showSettings(true) : cloudSignIn());
+
+// 👤 Playing as a guest: pressing ▶ Play without being signed in asks once (until "don't ask again" is ticked)
+const GUEST_WARN = "your progress is saved only in this browser. It can be lost if you clear your browsing data, play in a private window or switch to another device.";
+const GUEST_OK = "eoc-guest-ok";
+let guestAsked = false;   // ask at most once per visit
+$("mainMenu").addEventListener("click", (e) => {
+  const b = e.target.closest('[data-menu="play"]');
+  if (!b || !cloud.sb || cloud.user || guestAsked || localStorage.getItem(GUEST_OK)) return;
+  e.stopPropagation();   // don't start yet: ask first
+  guestAsked = true;
+  showModal(`<h2>☁️ Keep your progress safe</h2>
+    <p>Sign in with Google to save your progress in the cloud and play on any device.</p>
+    <p class="guestWarn">⚠️ As a guest, ${GUEST_WARN}</p>
+    <div class="cloudPick">
+      <button class="btn big" id="guestSignIn"><span class="gIcon">G</span>Sign in with Google</button>
+      <button class="btn big ghost" id="guestPlay">Play as guest</button>
+    </div>
+    <label class="guestAgain"><input type="checkbox" id="guestNoAsk"> Don't ask again on this device</label>`);
+  $("guestSignIn").onclick = () => { hideModal(); cloudSignIn(); };
+  $("guestPlay").onclick = () => {
+    if ($("guestNoAsk").checked) try { localStorage.setItem(GUEST_OK, "1"); } catch (err) {}
+    hideModal(); closeMenu();
+  };
+}, true);
 
 // ---------- start: load the Supabase library (the game works without it) ----------
 function cloudStart() {

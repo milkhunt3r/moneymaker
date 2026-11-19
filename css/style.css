@@ -1736,3 +1736,7 @@ html[lang="en"] [data-lang="en"], html[lang="es"] [data-lang="es"] { background:
 #tabBlock .tabIcon { font-size: 44px; }
 #tabBlock h2 { margin: 8px 0; }
 #tabBlock p { color: #c9c6e0; }
+.guestWarn { color: #ffcf7a; font-size: 13px; line-height: 1.35; margin: 2px 4px 8px; }
+p.guestWarn { font-size: 14px; background: rgba(255, 170, 0, 0.1); border: 1px solid rgba(255, 170, 0, 0.35); border-radius: 10px; padding: 8px 10px; }
+.guestAgain { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; color: #b9b4d6; cursor: pointer; }
+.cloudPick #guestSignIn, .cloudPick #guestPlay { flex-direction: row; justify-content: center; align-items: center; }

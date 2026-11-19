@@ -465,6 +465,17 @@ Object.assign(ES, {
 H("🗂️ The game now runs in <b>one tab at a time</b>: opening it in a second tab no longer overwrites your progress. Click <b>Play here</b> to move it.",
   "🗂️ El juego ahora funciona en <b>una sola pestaña a la vez</b>: abrirlo en otra pestaña ya no sobrescribe tu progreso. Pulsa <b>Jugar aquí</b> para moverlo.");
 
+Object.assign(ES, {
+  "Keep your progress safe": "Protege tu progreso", "Play as guest": "Jugar como invitado", "Don't ask again on this device": "No volver a preguntar en este dispositivo",
+  "Sign in with Google to save your progress in the cloud and play on any device.": "Inicia sesión con Google para guardar tu progreso en la nube y jugar en cualquier dispositivo.",
+  "As a guest, your progress is saved only in this browser. It can be lost if you clear your browsing data, play in a private window or switch to another device.":
+    "Como invitado, tu progreso solo se guarda en este navegador. Puede perderse si borras los datos de navegación, juegas en una ventana privada o cambias de dispositivo.",
+  "Playing as a guest: your progress is saved only in this browser. It can be lost if you clear your browsing data, play in a private window or switch to another device.":
+    "Jugando como invitado: tu progreso solo se guarda en este navegador. Puede perderse si borras los datos de navegación, juegas en una ventana privada o cambias de dispositivo.",
+});
+H("👤 You can keep playing as a <b>guest</b> without signing in. The game reminds you that guest progress is only saved in this browser.",
+  "👤 Puedes seguir jugando como <b>invitado</b> sin iniciar sesión. El juego te recuerda que el progreso de invitado solo se guarda en este navegador.");
+
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
 ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {
