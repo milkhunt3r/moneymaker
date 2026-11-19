@@ -86,6 +86,7 @@ function onPrice(sym, price, open) {
   L.price = price; L.at = Date.now();
   if (open > 0) L.open = open;
   inv.crypto[sym].last = price;
+  if (!tabActive) return;   // 🗂️ a paused tab (the game plays in another tab) doesn't trade on its stale copy
   checkLiquidations(sym, price);
   checkAutoClose(sym, price);
   checkOrders(sym, price);
@@ -132,6 +133,7 @@ function connectCrypto(source = "binance") {
       const streams = CRYPTOS.flatMap(c => [c.binance.toLowerCase() + "@miniTicker", ...TIMEFRAMES.map(f => c.binance.toLowerCase() + "@kline_" + f.id)]);
       ws = new WebSocket("wss://data-stream.binance.vision/stream?streams=" + streams.join("/"));
       ws.onmessage = (e) => {
+        if (cryptoWs !== ws) return;   // a replaced connection may still deliver a last message
         const d = (JSON.parse(e.data) || {}).data;
         const c = d && CRYPTOS.find(x => x.binance === d.s);
         if (!c) return;
@@ -143,6 +145,7 @@ function connectCrypto(source = "binance") {
       ws = new WebSocket("wss://ws-feed.exchange.coinbase.com");
       ws.onopen = () => ws.send(JSON.stringify({ type: "subscribe", product_ids: CRYPTOS.map(c => c.coinbase), channels: ["ticker"] }));
       ws.onmessage = (e) => {
+        if (cryptoWs !== ws) return;
         const d = JSON.parse(e.data);
         const c = d && d.type === "ticker" && CRYPTOS.find(x => x.coinbase === d.product_id);
         if (c) {

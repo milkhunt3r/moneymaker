@@ -48,10 +48,12 @@ if (!tabActive) {
   if (tabChan) tabChan.onmessage = (e) => {
     if (!e.data || e.data.type !== "takeover" || !tabActive) return;
     // another tab takes over: save everything now, stop saving, and hand over the lock
+    // (no cloud upload here: the new tab uploads the same save; two tabs uploading at once would trip over each other)
     try { save(); flushSave(); } catch (err) {}
-    if (typeof cloud !== "undefined" && cloud.user && cloud.dirty && typeof cloudUpload === "function") cloudUpload();
     tabActive = false; stopSaving = true;
     tabScreen("You opened the game in another tab, so it was paused here. Your progress is saved.");
-    setTimeout(() => { if (tabRelease) { tabRelease(); tabRelease = null; } }, 400);   // give the cloud upload a moment to start
+    // an upload already running finishes first (at most 5 s), then the lock goes to the new tab
+    const running = typeof cloud !== "undefined" && cloud.inflight ? cloud.inflight.catch(() => {}) : Promise.resolve();
+    Promise.race([running, new Promise(r => setTimeout(r, 5000))]).then(() => { if (tabRelease) { tabRelease(); tabRelease = null; } });
   };
 }

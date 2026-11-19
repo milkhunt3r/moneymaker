@@ -452,6 +452,8 @@ $("casinoGame").addEventListener("click", (e) => {
   const btn = e.target.closest("[data-bj]");
   if (!btn || btn.disabled) return;
   const a = btn.dataset.bj;
+  // a button drawn just before the round started can still be clicked: only act between rounds
+  if ((a === "deal" || a === "clear" || a === "rebet") && (t.phase !== "betting" || t.busy)) return;
   if (a === "deal") bjDeal();
   if (a === "clear") {
     const bets = seatBets(t);
@@ -781,6 +783,7 @@ $("casinoGame").addEventListener("click", (e) => {
   const a = btn.dataset.vp;
   if (a === "deal" && !t.busy) vpDeal();
   if (a === "draw" && t.phase === "holding" && !t.busy) vpDraw();
+  if ((a === "max" || a === "clear") && (t.phase !== "betting" || t.busy)) return;   // only between hands
   if (a === "max") { state.vp[t.id].bet = t.max; t.message = ""; renderVideoPoker(); save(); }
   if (a === "clear") { freeReturn(t.id); state.vp[t.id].bet = 0; t.message = ""; renderVideoPoker(); save(); }
   if ((a === "holdAll" || a === "holdNone") && t.phase === "holding" && !t.busy) { t.held = t.held.map(() => a === "holdAll"); renderVideoPoker(); }

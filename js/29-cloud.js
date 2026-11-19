@@ -19,7 +19,11 @@ const CLOUD_LIB = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd
 const CLOUD_EVERY = 60000;
 const CLOUD_META = "eoc-cloud", LOCAL_AT = "eoc-local-at", LOCAL_GRACE = 15000;
 
-const cloud = { sb: null, user: null, status: "loading", lastAt: 0, busy: false, dirty: false, ready: false };
+const cloud = { sb: null, user: null, status: "loading", lastAt: 0, busy: false, dirty: false, ready: false,
+  inflight: null,     // the upload in progress (others wait for it instead of being dropped)
+  syncing: false,     // comparing with the cloud after login: no uploads until that is decided
+  conflict: false,    // waiting for the player to choose a save: no automatic uploads
+  loading: false };   // the cloud save is being loaded (page about to reload): nothing may change the sync record
 const cloudMeta = () => { try { return JSON.parse(localStorage.getItem(CLOUD_META) || "null"); } catch (e) { return null; } };
 const setCloudMeta = (m) => { try { m ? localStorage.setItem(CLOUD_META, JSON.stringify(m)) : localStorage.removeItem(CLOUD_META); } catch (e) {} };
 const localAt = () => Number(localStorage.getItem(LOCAL_AT)) || 0;
@@ -50,12 +54,20 @@ async function cloudFetch() {
   return data;   // null when there is no cloud save yet
 }
 // upload this device's progress; `force` overwrites whatever the cloud has
-async function cloudUpload(force) {
-  if (!cloud.user || cloud.busy || !tabActive) return false;   // only the tab that plays uploads (js/01-tabs.js)
+// ⏱️ one upload at a time: a second request waits for the running one and then runs (it is never silently dropped)
+function cloudUpload(force) {
+  if (cloud.inflight) return cloud.inflight.then(() => cloudUpload(force));
+  cloud.inflight = cloudUploadNow(force).finally(() => { cloud.inflight = null; });
+  return cloud.inflight;
+}
+async function cloudUploadNow(force) {
+  if (!cloud.user || !tabActive || cloud.loading || cloud.syncing) return false;   // only the tab that plays uploads (js/01-tabs.js)
+  if (cloud.conflict && !force) return false;                                         // the player is choosing a save
   cloud.busy = true;
   try {
     flushSave();
-    const progress = splitState(state).progress, now = Date.now(), meta = cloudMeta();
+    // snapshot: exactly what is uploaded, and the local save time it matches (saves made during the upload stay "not uploaded")
+    const sentAt = localAt(), progress = splitState(state).progress, now = Date.now(), meta = cloudMeta();
     const known = meta && meta.user === cloud.user.id ? meta.cloudAt : null;
     let ok = false;
     if (force || known == null) {
@@ -68,14 +80,15 @@ async function cloudUpload(force) {
       if (error) throw error;
       ok = data && data.length > 0;
       if (!ok) {   // the cloud copy changed on another device since we last saw it: let the player choose
-        cloud.busy = false;
         const row = await cloudFetch();
-        if (row) return cloudConflict(row), false;
-        return cloudUpload(true);
+        if (row) { cloudConflict(row); return false; }
+        return cloudUploadNow(true);
       }
     }
-    setCloudMeta({ user: cloud.user.id, cloudAt: now, localAt: localAt() });
-    cloud.lastAt = now; cloud.dirty = false; cloud.status = "ok";
+    if (cloud.loading || !tabActive) return false;   // the page is switching saves or tabs: leave the sync record alone
+    setCloudMeta({ user: cloud.user.id, cloudAt: now, localAt: sentAt });
+    cloud.lastAt = now; cloud.status = "ok";
+    if (localAt() === sentAt) cloud.dirty = false;   // anything saved during the upload goes up next time
     return true;
   } catch (e) {
     console.warn("Cloud save failed:", e);
@@ -85,6 +98,7 @@ async function cloudUpload(force) {
 }
 // replace this device's save with the cloud one and restart
 function cloudLoad(row) {
+  cloud.loading = true; cloud.conflict = false;
   stopSaving = true;
   _saveGameLocal(row.data);
   try { localStorage.setItem(LOCAL_AT, String(Date.now())); } catch (e) {}
@@ -93,6 +107,8 @@ function cloudLoad(row) {
   setTimeout(() => location.reload(), 300);
 }
 function cloudConflict(row) {
+  if (cloud.loading) return;
+  cloud.conflict = true;
   const local = splitState(state).progress;
   showModal(`<h2>☁️ Which progress do you want to keep?</h2>
     <p>Your cloud save and this device have different progress.</p>
@@ -102,20 +118,25 @@ function cloudConflict(row) {
     </div>
     <p class="muted">The other one is replaced.</p>`);
   $("modalBox").querySelector('[data-cloudpick="cloud"]').onclick = () => cloudLoad(row);
-  $("modalBox").querySelector('[data-cloudpick="device"]').onclick = () => { hideModal(); cloudUpload(true); };
+  $("modalBox").querySelector('[data-cloudpick="device"]').onclick = () => { cloud.conflict = false; hideModal(); cloudUpload(true); };
 }
 // after a session starts: compare the cloud save with this device
 async function cloudSync() {
   if (!tabActive) { setTimeout(cloudSync, 2000); return; }   // a second tab waits until it plays
+  if (cloud.syncing) return;
+  if (cloud.inflight) await cloud.inflight.catch(() => {});
+  cloud.syncing = true;
+  let next = null;   // what to do once the comparison is finished
   try {
     const row = await cloudFetch(), meta = cloudMeta(), mine = meta && meta.user === cloud.user.id;
-    if (!row) return cloudUpload(true);
-    if (mine && row.saved_at === meta.cloudAt) { if (localAt() > meta.localAt) cloudUpload(); else { cloud.lastAt = row.saved_at; cloud.status = "ok"; } return; }
+    if (!row) next = () => cloudUpload(true);
+    else if (mine && row.saved_at === meta.cloudAt) { if (localAt() > meta.localAt) next = () => cloudUpload(); else { cloud.lastAt = row.saved_at; cloud.status = "ok"; } }
     // only the cloud changed (a few seconds of saves right after the last upload, e.g. when closing the tab, don't count)
-    if ((mine && localAtStart <= meta.localAt + LOCAL_GRACE) || localIsFresh()) return cloudLoad(row);
-    cloudConflict(row);
+    else if ((mine && localAtStart <= meta.localAt + LOCAL_GRACE) || localIsFresh()) next = () => cloudLoad(row);
+    else next = () => cloudConflict(row);
   } catch (e) { console.warn("Cloud sync failed:", e); cloud.status = "error"; }
-  finally { updateCloudUi(); }
+  finally { cloud.syncing = false; updateCloudUi(); }
+  if (next) next();
 }
 
 function cloudSignIn() {
@@ -180,7 +201,11 @@ $("modalBox").addEventListener("click", (e) => {
   if (k === "in") cloudSignIn();
   if (k === "out") cloudSignOut();
   if (k === "del") cloudDeleteAsk();
-  if (k === "now") cloudUpload().then(ok => showNotice(ok ? "☁️ Saved to the cloud." : "❌ Cloud save failed. Your progress is still saved on this device."));
+  if (k === "now") {
+    if (cloud.conflict) return cloudSync();   // still undecided: show the choice again
+    cloud.dirty = true;
+    cloudUpload().then(ok => { if (!cloud.conflict) showNotice(ok ? "☁️ Saved to the cloud." : "❌ Cloud save failed. Your progress is still saved on this device."); });
+  }
 });
 $("menuCorner").insertAdjacentHTML("beforeend", `<button id="menuAccount" hidden></button>`);
 $("menuAccount").addEventListener("click", () => cloud.user ? showSettings(true) : cloudSignIn());
@@ -233,5 +258,6 @@ function cloudStart() {
   s.onerror = () => { cloud.status = "off"; updateCloudUi(); };
   document.head.appendChild(s);
 })();
-setInterval(() => { if (cloud.user && cloud.dirty && !stopSaving) cloudUpload(); }, CLOUD_EVERY);
-document.addEventListener("visibilitychange", () => { if (document.hidden && cloud.user && cloud.dirty && !stopSaving) cloudUpload(); });
+const cloudAuto = () => cloud.user && cloud.dirty && !stopSaving && !cloud.conflict && !cloud.syncing && !cloud.inflight;
+setInterval(() => { if (cloudAuto()) cloudUpload(); }, CLOUD_EVERY);
+document.addEventListener("visibilitychange", () => { if (document.hidden && cloudAuto()) cloudUpload(); });
