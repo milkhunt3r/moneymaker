@@ -456,6 +456,15 @@ H("☁️ <b>Cloud save</b>: sign in with Google (⚙️ Settings or the main me
 H("⚠️ <b>Your progress is not being saved</b>: this browser's storage for the game is full. Sign in (⚙️ Settings → Account) to keep it in the ☁️ cloud. <button>OK</button>",
   "⚠️ <b>Tu progreso no se está guardando</b>: el almacenamiento del navegador para el juego está lleno. Inicia sesión (⚙️ Ajustes → Cuenta) para guardarlo en la ☁️ nube. <button>OK</button>");
 
+Object.assign(ES, {
+  "The game is open in another tab": "El juego está abierto en otra pestaña", "Play here": "Jugar aquí",
+  "Only one tab can play at a time, so your progress is never overwritten. Play here to move the game to this tab.":
+    "Solo una pestaña puede jugar a la vez, así tu progreso nunca se sobrescribe. Pulsa «Jugar aquí» para pasar el juego a esta pestaña.",
+  "You opened the game in another tab, so it was paused here. Your progress is saved.": "Has abierto el juego en otra pestaña, así que aquí se ha pausado. Tu progreso está guardado.",
+});
+H("🗂️ The game now runs in <b>one tab at a time</b>: opening it in a second tab no longer overwrites your progress. Click <b>Play here</b> to move it.",
+  "🗂️ El juego ahora funciona en <b>una sola pestaña a la vez</b>: abrirlo en otra pestaña ya no sobrescribe tu progreso. Pulsa <b>Jugar aquí</b> para moverlo.");
+
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
 ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {

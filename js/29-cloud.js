@@ -51,7 +51,7 @@ async function cloudFetch() {
 }
 // upload this device's progress; `force` overwrites whatever the cloud has
 async function cloudUpload(force) {
-  if (!cloud.user || cloud.busy) return false;
+  if (!cloud.user || cloud.busy || !tabActive) return false;   // only the tab that plays uploads (js/01-tabs.js)
   cloud.busy = true;
   try {
     flushSave();
@@ -106,6 +106,7 @@ function cloudConflict(row) {
 }
 // after a session starts: compare the cloud save with this device
 async function cloudSync() {
+  if (!tabActive) { setTimeout(cloudSync, 2000); return; }   // a second tab waits until it plays
   try {
     const row = await cloudFetch(), meta = cloudMeta(), mine = meta && meta.user === cloud.user.id;
     if (!row) return cloudUpload(true);
@@ -119,6 +120,8 @@ async function cloudSync() {
 
 function cloudSignIn() {
   if (!cloud.sb) return showNotice("☁️ The cloud service can't be reached right now.");
+  if (Date.now() - (cloud.signInAt || 0) < 5000) return;   // one login at a time (no repeated clicks)
+  cloud.signInAt = Date.now();
   save(); flushSave();
   cloud.sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: location.origin + location.pathname } });
 }

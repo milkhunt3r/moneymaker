@@ -1728,3 +1728,11 @@ html[lang="en"] [data-lang="en"], html[lang="es"] [data-lang="es"] { background:
   .orPanel { padding-top: 14px; }
   #modal:has(#modalBox.ornate) { padding-top: 56px; }
 }
+
+/* 🗂️ the game is open in another tab */
+#tabBlock { position: fixed; inset: 0; z-index: 2000; background: rgba(8, 6, 20, 0.92); display: grid; place-items: center; padding: 20px; }
+#tabBlock[hidden] { display: none; }
+#tabBlock .tabCard { max-width: 420px; text-align: center; background: #2b2d42; border: 2px solid #ffd34d; border-radius: 18px; padding: 26px 24px; color: #fff; }
+#tabBlock .tabIcon { font-size: 44px; }
+#tabBlock h2 { margin: 8px 0; }
+#tabBlock p { color: #c9c6e0; }

@@ -38,3 +38,8 @@ language sql security definer set search_path = '' as $$
 $$;
 revoke all on function public.delete_my_account() from public, anon;
 grant execute on function public.delete_my_account() to authenticated;
+
+-- 4) Hardening (run once more if you already ran the parts above):
+--    a save may be at most 2 MB, so nobody can fill the database with huge rows
+alter table public.saves drop constraint if exists saves_size;
+alter table public.saves add constraint saves_size check (pg_column_size(data) < 2000000);
