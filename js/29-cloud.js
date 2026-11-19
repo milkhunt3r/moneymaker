@@ -153,7 +153,7 @@ function cloudRowsHtml() {
   if (!cloud.user) return r("in", `<span class="gIcon">G</span>Sign in with Google`, `<span class="orSoon">Cloud save</span>`);
   const st = cloud.status === "error" ? "⚠️ Last upload failed" : cloud.lastAt ? `Saved ${whenText(cloud.lastAt)}` : "…";
   return `<div class="orRow cloudInfo">${icon}<span class="grow"><b data-noi18n>${escapeHtml(cloud.user.email || "Google account")}</b><small id="cloudSt">${st}</small></span></div>` +
-    r("now", "Save to the cloud now") + r("out", "Sign out") + r("del", "Delete account");
+    `<div class="cloudBtns"><button data-cloud="now">Save now</button><button data-cloud="out">Sign out</button><button data-cloud="del" class="danger">Delete account</button></div>`;
 }
 const escapeHtml = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 function updateCloudUi() {
@@ -178,7 +178,7 @@ $("modalBox").addEventListener("click", (e) => {
   if (k === "del") cloudDeleteAsk();
   if (k === "now") cloudUpload().then(ok => showNotice(ok ? "☁️ Saved to the cloud." : "❌ Cloud save failed. Your progress is still saved on this device."));
 });
-$("menuStage").insertAdjacentHTML("beforeend", `<button id="menuAccount" hidden></button>`);
+$("menuCorner").insertAdjacentHTML("beforeend", `<button id="menuAccount" hidden></button>`);
 $("menuAccount").addEventListener("click", () => cloud.user ? showSettings(true) : cloudSignIn());
 
 // ---------- start: load the Supabase library (the game works without it) ----------

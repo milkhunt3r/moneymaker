@@ -1692,8 +1692,9 @@ body.phone .debtBanner { top: 56px; }
 /* 🌐 language switch */
 .langRow { display: flex; align-items: center; gap: 6px; padding: 6px 10px; }
 #settingsMenu .langRow button { flex: 1; padding: 6px 8px; text-align: center; border-radius: 8px; }
-#menuLang { position: absolute; right: 28px; top: 22px; display: flex; gap: 4px; padding: 4px; border-radius: 14px; background: rgba(10, 8, 24, 0.7); border: 1px solid rgba(255, 211, 77, 0.5); z-index: 3; }
-#menuLang button { font: 700 22px/1 inherit; font-family: inherit; color: #d9d6ea; background: transparent; border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; }
+#menuCorner { position: absolute; right: 12px; top: 12px; z-index: 5; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+#menuLang { display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: rgba(10, 8, 24, 0.75); border: 1px solid rgba(255, 211, 77, 0.5); }
+#menuLang button { font: 700 15px/1 inherit; font-family: inherit; color: #d9d6ea; background: transparent; border: none; padding: 8px 12px; border-radius: 9px; cursor: pointer; }
 #menuLang button:hover { color: #fff; }
 html[lang="en"] [data-lang="en"], html[lang="es"] [data-lang="es"] { background: linear-gradient(180deg, #ffe27a, #f0a81c) !important; color: #2a1800 !important; }
 .orLang { display: flex; gap: 4px; }
@@ -1702,12 +1703,28 @@ html[lang="en"] [data-lang="en"], html[lang="es"] [data-lang="es"] { background:
 #shop .income, #shop .card > .row > .muted, #shop .row > span.muted:last-child { white-space: nowrap; }
 
 /* ☁️ Cloud save: main menu badge, Google letter, the "which progress to keep" choice */
-#menuAccount { position: absolute; right: 28px; top: 92px; z-index: 3; font: 700 20px/1 inherit; font-family: inherit; color: #fff; cursor: pointer;
-  padding: 10px 16px; border-radius: 14px; background: rgba(10, 8, 24, 0.7); border: 1px solid rgba(255, 211, 77, 0.5); display: flex; align-items: center; gap: 8px; max-width: 360px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#menuAccount { font: 700 15px/1 inherit; font-family: inherit; color: #fff; cursor: pointer;
+  padding: 9px 14px; border-radius: 12px; background: rgba(10, 8, 24, 0.75); border: 1px solid rgba(255, 211, 77, 0.5); display: flex; align-items: center; gap: 6px; max-width: 60vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #menuAccount:hover { border-color: #ffd34d; }
+#menuAccount[hidden] { display: none; }
+/* ⚙️ the ornate settings panel: scroll the page of the pop-up when it is taller than the screen */
+#modal:has(#modalBox.ornate) { overflow-y: auto; align-items: flex-start; padding: 70px 0 20px; box-sizing: border-box; }
+#modalBox.ornate { margin: auto; }
+.cloudBtns { display: flex; gap: 6px; flex-wrap: wrap; margin: -2px 0 6px; }
+.cloudBtns button { flex: 1; font: 700 13px/1.2 inherit; font-family: inherit; color: #fff; cursor: pointer; padding: 8px 6px; border-radius: 10px;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255, 211, 77, 0.35); }
+.cloudBtns button:hover { border-color: #ffd34d; background: rgba(255,255,255,0.1); }
+.cloudBtns button.danger { color: #ff9a9a; border-color: rgba(255, 107, 107, 0.4); }
 .gIcon { display: inline-grid; place-items: center; width: 1.3em; height: 1.3em; border-radius: 50%; background: #fff; color: #4285f4; font-weight: 900; font-family: Arial, sans-serif; margin-right: 6px; flex: none; }
 .cloudInfo .grow { display: flex; flex-direction: column; gap: 2px; }
 .cloudInfo small { color: #b9b4d6; font-weight: 600; }
 .cloudPick { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin: 12px 0; }
 .cloudPick .btn { display: flex; flex-direction: column; gap: 4px; min-width: 240px; }
 .cloudPick small { font-weight: 600; opacity: 0.85; }
+/* ⚙️ settings on short screens: tighter rows so most of the panel fits without scrolling */
+@media (max-height: 820px) {
+  .orRow { padding: 6px 12px; margin-bottom: 4px; }
+  .orSec { margin: 4px 4px 3px; }
+  .orPanel { padding-top: 14px; }
+  #modal:has(#modalBox.ornate) { padding-top: 56px; }
+}

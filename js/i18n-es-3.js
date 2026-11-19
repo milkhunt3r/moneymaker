@@ -435,7 +435,7 @@ H("🚚 New in 📈 Investing: <b>Global Freight Co. shares</b>. The price follo
 Object.assign(ES, {
   "G": "G", "Account": "Cuenta", "Cloud save": "Guardado en la nube", "Connecting…": "Conectando…", "Not available": "No disponible",
   "Sign in with Google": "Iniciar sesión con Google", "Sign in": "Iniciar sesión", "Save to the cloud now": "Guardar en la nube ahora",
-  "Sign out": "Cerrar sesión", "Delete account": "Eliminar cuenta", "Last upload failed": "Falló la última subida", "Google account": "Cuenta de Google",
+  "Sign out": "Cerrar sesión", "Save now": "Guardar ahora", "Delete account": "Eliminar cuenta", "Last upload failed": "Falló la última subida", "Google account": "Cuenta de Google",
   "Loading your cloud save…": "Cargando tu partida de la nube…", "Which progress do you want to keep?": "¿Qué progreso quieres conservar?",
   "Your cloud save and this device have different progress.": "Tu partida en la nube y este dispositivo tienen un progreso distinto.",
   "This device": "Este dispositivo",
