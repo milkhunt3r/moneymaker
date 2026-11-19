@@ -345,6 +345,14 @@ rx(String.raw`You have: (.+)`, (m, h) => { const x = esq(h); return x == null ? 
 H("🧬 <b>Gene Splicer</b>: a new <b>🔎 Only with recipes</b> button in the freezer shows only the samples that can still make a new species with what you have.",
   "🧬 <b>Empalmador genético</b>: un nuevo botón <b>🔎 Solo con recetas</b> en el congelador muestra solo las muestras que aún pueden crear una especie nueva con lo que tienes.");
 
+Object.assign(ES, {
+  "Win 500 Blackjack hands": "Gana 500 manos de blackjack",
+  "Play 500 Ultimate Texas Hold'em hands (each seat you bet on counts)": "Juega 500 manos de Ultimate Texas Hold'em (cuenta cada asiento en el que apuestas)",
+  "Unlock 🤠 Ultimate Texas Hold'em veteran (500 hands)": "Desbloquea 🤠 Veterano del Ultimate Texas Hold'em (500 manos)",
+});
+H("🏆 Easier goals: <b>Blackjack legend</b> now needs 500 won hands, and <b>Ultimate Texas Hold'em veteran</b> 500 hands played.",
+  "🏆 Objetivos más fáciles: <b>Leyenda del blackjack</b> ahora pide 500 manos ganadas, y <b>Veterano del Ultimate Texas Hold'em</b>, 500 manos jugadas.");
+
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
 ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {

@@ -105,7 +105,7 @@ const ACHIEVEMENTS = [
   { id: "quads4",     cat: "casino", icon: "🀄", name: "Four of a kind ×4",  desc: "Get 4 four-of-a-kinds in total (Video Poker and Ultimate Texas Hold'em)", goal: 4, get: () => state.stats.quads || 0 },
   { id: "sixSeven",   cat: "casino", icon: "🤷", name: "6 7",                desc: "Win an Ultimate Texas Hold'em hand holding a 6 and a 7", goal: 1, get: flag("sixSeven") },
   { id: "bj100",      cat: "casino", icon: "🃏", name: "Card counter",       desc: "Win 100 Blackjack hands",             goal: 100,  get: () => state.stats.bjWins || 0 },
-  { id: "bj1000",     cat: "casino", icon: "🂡", name: "Blackjack legend",   desc: "Win 1,000 Blackjack hands",           goal: 1000, get: () => state.stats.bjWins || 0 },
+  { id: "bj1000",     cat: "casino", icon: "🂡", name: "Blackjack legend",   desc: "Win 500 Blackjack hands",             goal: 500,  get: () => state.stats.bjWins || 0 },
   { id: "rouNumber",  cat: "casino", icon: "🎯", name: "Called it",          desc: "Win a bet on a single number in Roulette", goal: 1, get: flag("rouletteNumber") },
   { id: "rouZero",    cat: "casino", icon: "🟢", name: "All on zero",        desc: "Win a Roulette spin with your only bet on 0", goal: 1, get: flag("rouletteZeroOnly") },
   { id: "plinko250",  cat: "casino", icon: "🔻", name: "Edge of glory",      desc: "Hit the 250× slot in Plinko",          goal: 1, get: flag("plinko250") },
@@ -115,7 +115,7 @@ const ACHIEVEMENTS = [
   { id: "uth500",     cat: "casino", icon: "🤠", name: "All in",             desc: "Play an Ultimate Texas Hold'em hand with a 500 scoin ante", goal: 1, get: flag("uth500") },
   ...[["roulette", "🎡", "Roulette", "spins"], ["blackjack", "🃏", "Blackjack", "hands"], ["plinko", "🔻", "Plinko", "balls"],
       ["climb", "🎈", "Sky Climb", "rounds"], ["vp", "🎴", "Video Poker", "hands"], ["uth", "🤠", "Ultimate Texas Hold'em", "hands"]]
-    .flatMap(([g, icon, label, unit]) => [100, g === "climb" ? 500 : 1000].map(n => ({   // Sky Climb veteran: 500 rounds (id kept for old saves)
+    .flatMap(([g, icon, label, unit]) => [100, g === "climb" || g === "uth" ? 500 : 1000].map(n => ({   // Sky Climb and Hold'em veteran: 500 (id kept for old saves)
       id: `play-${g}-${n === 100 ? 100 : 1000}`, cat: "casino", icon, name: `${label} ${n === 100 ? "regular" : "veteran"}`,
       desc: `${unit === "balls" ? "Drop" : "Play"} ${n.toLocaleString()} ${label} ${unit}${g === "blackjack" || g === "uth" ? " (each seat you bet on counts)" : ""}`, goal: n, get: () => (state.stats.played && state.stats.played[g]) || 0 }))),
   // 🎴 Baccarat

@@ -30,7 +30,7 @@ const COLLECTIONS = [
   { id: "snake", name: "🐍 Snake in a Top Hat Deck", reward: { ids: ["play-blackjack-1000"], text: "Unlock 🃏 Blackjack veteran (1,000 hands)" } },
   { id: "dragon", name: "🐉 Dragon Deck", reward: { ids: ["bac500"], text: "Unlock 🎴 Baccarat high society (500 hands)" } },
   { id: "rat", name: "🐀 Rat Hacker Deck", reward: { ids: ["play-vp-1000"], text: "Unlock 🎴 Video Poker veteran (1,000 hands)" } },
-  { id: "cowboy", name: "🤠 Cat Cowboy Deck", reward: { ids: ["play-uth-1000"], text: "Unlock 🤠 Ultimate Texas Hold'em veteran (1,000 hands)" } },
+  { id: "cowboy", name: "🤠 Cat Cowboy Deck", reward: { ids: ["play-uth-1000"], text: "Unlock 🤠 Ultimate Texas Hold'em veteran (500 hands)" } },
   { id: "strongman", name: "🦛 The Strongman Collection", reward: { ids: ["boost-energy-100", "click100k"], text: "Unlock ⚡ Wired for life and 🦾 Iron finger" } },
 ];
 // 🛡️ painted collection emblems (assets/col/<id>.webp): the title shows the emblem instead of the leading emoji
