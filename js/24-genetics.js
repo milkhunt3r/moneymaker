@@ -289,6 +289,7 @@ function renderGene() {
   const canSplice = A && B && (G.dna[A] || 0) >= need(A) && (G.dna[B] || 0) >= need(B);
   const pk = A && B ? genePair(A, B) : null, isRecipe = pk && GENE_BY_PAIR[pk];
   const tried = pk && !isRecipe && (G.mutants[pk] || G.tried.includes(pk));   // this mutant is already in your jar
+  const knownRecipe = isRecipe && geneKnows(isRecipe) ? isRecipe : null;          // ⚠️ this pair makes a species you already have
   const slot = (i) => { const n = geneSlots[i];
     return `<button class="geneSlot ${n ? "full r-" + GENE_SPECIES[n].rar : ""}" data-gslot="${i}" title="${n ? "Click to take it out" : "Pick a sample below"}">
       ${n ? geneCard(n, genePips(n)) : `<span class="geneEmoji">${gx("dna", "empty")}</span><span class="geneName muted">Sample ${i ? "B" : "A"}</span>`}</button>`; };
@@ -331,9 +332,11 @@ function renderGene() {
     </div>
     <div class="card geneLab">
       <div class="geneSplicer">${slot(0)}<div class="genePlus">+</div>${slot(1)}
-        <button class="btn big" data-gene="splice" ${canSplice && !tried ? "" : "disabled"}>🧬 Splice</button></div>
-      <div class="muted geneNote">${!A || !B ? "Pick two samples from your freezer (the same one twice works too)."
-        : tried ? `🧪 You already made this mutant (${mutantName(...pk.split("|"))}).` : canSplice ? `Uses 1 DNA of each sample${A === B ? " (2 of this one)" : ""}. A pair that isn't a real recipe makes a 🧪 mutant.`
+        <button class="btn big ${knownRecipe ? "ghost" : ""}" data-gene="splice" ${canSplice && !tried ? "" : "disabled"}>🧬 Splice</button></div>
+      <div class="muted geneNote ${knownRecipe ? "geneKnownWarn" : ""}">${!A || !B ? "Pick two samples from your freezer (the same one twice works too)."
+        : tried ? `🧪 You already made this mutant (${mutantName(...pk.split("|"))}).`
+        : knownRecipe ? `⚠️ You already have ${gEm(knownRecipe, "sm")} <b>${knownRecipe}</b>: this recipe gives no reward, only +1 ${knownRecipe} DNA${(G.dna[knownRecipe] || 0) >= GENE_DNA_MAX ? " (and it's already full)" : ""}.`
+        : canSplice ? `Uses 1 DNA of each sample${A === B ? " (2 of this one)" : ""}. A pair that isn't a real recipe makes a 🧪 mutant.`
         : "Not enough DNA: each sample refills by 1 every 10 minutes (max 3)."}</div>
       ${result}
     </div>

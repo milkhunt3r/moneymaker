@@ -476,6 +476,11 @@ Object.assign(ES, {
 H("👤 You can keep playing as a <b>guest</b> without signing in. The game reminds you that guest progress is only saved in this browser.",
   "👤 Puedes seguir jugando como <b>invitado</b> sin iniciar sesión. El juego te recuerda que el progreso de invitado solo se guarda en este navegador.");
 
+hrx(String.raw`⚠️ You already have \{i\} <b>([^<]+)<\/b>: this recipe gives no reward, only \+1 ([^<]+?) DNA( \(and it's already full\))?\.`,
+  (m, a, b, f) => `⚠️ Ya tienes {i} <b>${es(a)}</b>: esta receta no da premio, solo +1 de ADN de ${es(b)}${f ? " (y ya está lleno)" : ""}.`);
+hrx(String.raw`⚠️ You already have <b>([^<]+)<\/b>: this recipe gives no reward, only \+1 ([^<]+?) DNA( \(and it's already full\))?\.`,
+  (m, a, b, f) => `⚠️ Ya tienes <b>${es(a)}</b>: esta receta no da premio, solo +1 de ADN de ${es(b)}${f ? " (y ya está lleno)" : ""}.`);
+
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
 ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {
