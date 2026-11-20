@@ -52,6 +52,7 @@ addEventListener("resize", fitBrand); fitBrand();
 const PATCH_NOTES = [
   { date: "18 November 2026", title: "Empire of Coins", items: [
     "🌐 More of the game in <b>Español</b>: the rules in Investing, Logistics and Live trading, every casino game (buttons, rules, pay tables and results), the Gold Mine Dig and Art Gallery mini-games, all achievement names and descriptions, and the Shop and reward items.",
+    "🚚 <b>Global Freight Co. shares</b>: up moves are now bigger than down moves, so the price rises over time (faster the more you deliver).",
     "👤 You can keep playing as a <b>guest</b> without signing in. The game reminds you that guest progress is only saved in this browser.",
     "🗂️ The game now runs in <b>one tab at a time</b>: opening it in a second tab no longer overwrites your progress. Click <b>Play here</b> to move it.",
     "☁️ <b>Cloud save</b>: sign in with Google (⚙️ Settings or the main menu) to keep your progress in your account and continue on another device. Playing without an account works as before.",

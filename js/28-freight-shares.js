@@ -1,12 +1,15 @@
 /* =====================================================================
    🚚 GLOBAL FREIGHT CO. SHARES (📈 Investing): a share price that follows your logistics deliveries.
    Every 10 game seconds: deliveries in the last 20 seconds (n) vs the 20 seconds before (m).
-     move = +0.1% + 1% × (n − m) + noise (±0.5%), at most ±8% per move
-   More deliveries than before → up, fewer → down; a bigger fleet makes bigger swings.
+     move = +0.12% + 1.1% for every extra delivery (n > m) or −0.9% for every missing one (n < m) + noise (±0.5%),
+     at most +8% / −6% per move
+   More deliveries than before → up, fewer → down; a bigger fleet makes bigger swings. Ups are a bit bigger than downs,
+   so over time the price rises (simulated: about +54% an hour with no fleet, +94% with 1.5 deliveries a minute).
    Your shares are a value that moves with the price (like the ETF); selling pays the ETF cash-out fee.
    The price doesn't move while the game is closed (offline time runs no market moves).
    ===================================================================== */
-const GFC_EVERY = 10, GFC_WINDOW = 20, GFC_MAX_MOVE = 0.08;
+const GFC_EVERY = 10, GFC_WINDOW = 20, GFC_MAX_UP = 0.08, GFC_MAX_DOWN = 0.06;
+const GFC_DRIFT = 0.0012, GFC_UP = 0.011, GFC_DOWN = 0.009;
 if (typeof inv.gfc !== "number") { inv.gfc = 0; inv.gfcInvested = 0; }
 if (!Array.isArray(inv.gfcPrices)) inv.gfcPrices = [100];
 if (!Array.isArray(inv.gfcHistory)) inv.gfcHistory = [];
@@ -18,8 +21,9 @@ const gfcCount = (from, to) => gfcSeconds.slice(Math.max(0, gfcSeconds.length - 
 
 function gfcMove() {
   const n = gfcCount(0, GFC_WINDOW), m = gfcCount(GFC_WINDOW, GFC_WINDOW * 2);
-  const move = 0.001 + 0.01 * (n - m) + (Math.random() - 0.5) * 0.01;
-  return Math.max(-GFC_MAX_MOVE, Math.min(GFC_MAX_MOVE, move));
+  const d = n - m;
+  const move = GFC_DRIFT + (d > 0 ? GFC_UP * d : GFC_DOWN * d) + (Math.random() - 0.5) * 0.01;
+  return Math.max(-GFC_MAX_DOWN, Math.min(GFC_MAX_UP, move));
 }
 // Called every game second from investTick (after logisticsTick has counted this second's deliveries)
 function gfcTick() {
