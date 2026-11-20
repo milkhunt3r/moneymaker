@@ -443,7 +443,7 @@ Object.assign(ES, {
   "Delete your account?": "¿Eliminar tu cuenta?", "Yes, delete my account": "Sí, eliminar mi cuenta",
   "The progress on this device stays (you can keep playing without an account).": "El progreso de este dispositivo se queda (puedes seguir jugando sin cuenta).",
   "The cloud service can't be reached right now.": "Ahora mismo no se puede conectar con la nube.",
-  "Signed out. Your progress stays on this device.": "Sesión cerrada. Tu progreso se queda en este dispositivo.",
+  "Signed out. Playing on here as a guest won't change your account's cloud save.": "Sesión cerrada. Si sigues jugando aquí como invitado, tu partida en la nube no cambiará.",
   "Could not delete the account. Try again later.": "No se ha podido eliminar la cuenta. Inténtalo más tarde.",
   "Your account and cloud save were deleted.": "Se han eliminado tu cuenta y tu partida en la nube.",
   "Saved to the cloud.": "Guardado en la nube.", "Cloud save failed. Your progress is still saved on this device.": "Falló el guardado en la nube. Tu progreso sigue guardado en este dispositivo.",
@@ -483,6 +483,9 @@ hrx(String.raw`⚠️ You already have <b>([^<]+)<\/b>: this recipe gives no rew
 
 H("🚚 <b>Global Freight Co. shares</b>: up moves are now bigger than down moves, so the price rises over time (faster the more you deliver).",
   "🚚 <b>Acciones de Global Freight Co.</b>: ahora las subidas son mayores que las bajadas, así que el precio sube con el tiempo (más rápido cuanto más entregas).");
+
+Object.assign(ES, { "Fix: after signing out, a guest game no longer replaces your account's cloud save when you sign in again (you choose which progress to keep), and signing in always lets you pick a Google account.":
+  "Corrección: tras cerrar sesión, una partida de invitado ya no sustituye tu partida en la nube al volver a entrar (eliges qué progreso conservar), y al iniciar sesión siempre puedes elegir la cuenta de Google." });
 
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")

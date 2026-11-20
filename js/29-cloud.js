@@ -128,11 +128,17 @@ async function cloudSync() {
   cloud.syncing = true;
   let next = null;   // what to do once the comparison is finished
   try {
-    const row = await cloudFetch(), meta = cloudMeta(), mine = meta && meta.user === cloud.user.id;
+    const row = await cloudFetch(), meta = cloudMeta(), same = meta && meta.user === cloud.user.id;
+    const mine = same && !meta.out;   // after a sign-out the device played as a guest: not the account's progress any more
+    const untouched = same && localAtStart <= meta.localAt + LOCAL_GRACE;   // nothing played since the last sync / sign-out
     if (!row) next = () => cloudUpload(true);
+    else if (same && meta.out && untouched) {   // signed out and back in without playing in between
+      if (row.saved_at === meta.cloudAt) { setCloudMeta({ user: cloud.user.id, cloudAt: meta.cloudAt, localAt: meta.localAt }); cloud.lastAt = row.saved_at; cloud.status = "ok"; }
+      else next = () => cloudLoad(row);
+    }
     else if (mine && row.saved_at === meta.cloudAt) { if (localAt() > meta.localAt) next = () => cloudUpload(); else { cloud.lastAt = row.saved_at; cloud.status = "ok"; } }
     // only the cloud changed (a few seconds of saves right after the last upload, e.g. when closing the tab, don't count)
-    else if ((mine && localAtStart <= meta.localAt + LOCAL_GRACE) || localIsFresh()) next = () => cloudLoad(row);
+    else if ((mine && untouched) || localIsFresh()) next = () => cloudLoad(row);
     else next = () => cloudConflict(row);
   } catch (e) { console.warn("Cloud sync failed:", e); cloud.status = "error"; }
   finally { cloud.syncing = false; updateCloudUi(); }
@@ -144,13 +150,18 @@ function cloudSignIn() {
   if (Date.now() - (cloud.signInAt || 0) < 5000) return;   // one login at a time (no repeated clicks)
   cloud.signInAt = Date.now();
   save(); flushSave();
-  cloud.sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: location.origin + location.pathname } });
+  // prompt=select_account: Google always shows its account list, so you can switch to another Google account
+  cloud.sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: location.origin + location.pathname, queryParams: { prompt: "select_account" } } });
 }
 async function cloudSignOut() {
   if (cloud.dirty) await cloudUpload();
+  // 👤 from now on this device plays as a guest: its progress no longer belongs to the account, so the next login
+  // never uploads it by itself (it asks which progress to keep if the guest game changed)
+  const meta = cloudMeta();
+  if (meta && cloud.user && meta.user === cloud.user.id) setCloudMeta({ ...meta, out: true });
   await cloud.sb.auth.signOut();
   cloud.user = null; cloud.status = "out";
-  showNotice("☁️ Signed out. Your progress stays on this device.");
+  showNotice("☁️ Signed out. Playing on here as a guest won't change your account's cloud save.");
   updateCloudUi();
 }
 function cloudDeleteAsk() {
