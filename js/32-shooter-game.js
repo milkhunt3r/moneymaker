@@ -269,14 +269,14 @@ const SH_BOSS = {
     circles: [[0.13, 0.02, 0.21], [-0.33, -0.25, 0.1], [-0.33, 0.21, 0.1], [0.1, -0.42, 0.06], [0.26, -0.42, 0.06]] },
   hive:   { name: "Hive Queen", img: "boss-hive", w: 390, ar: 376 / 800, hp: 340, hx: SHW - 205, dust: 100,
     circles: [[-0.43, 0.06, 0.06], [-0.3, 0.12, 0.075], [-0.14, 0.17, 0.08], [0.03, 0.17, 0.085], [0.2, 0.16, 0.08], [0.36, 0.12, 0.065]] },
-  taxman: { name: "The Taxman", img: "boss-taxman", w: 500, ar: 401 / 800, hp: 1200, hx: SHW - 255, dust: 160,
+  taxman: { name: "The Taxman", img: "boss-taxman", w: 430, ar: 401 / 800, hp: 1200, hx: SHW - 220, dust: 160,
     phases: [0.66, 0.33], dmgImg: "boss-taxman-dmg", drift: true, noDrift: { beam: 1 },
     circles: [[-0.42, 0.04, 0.045], [-0.28, 0.02, 0.07], [-0.12, 0.0, 0.085], [0.06, 0.0, 0.11], [0.24, 0.02, 0.08], [0.39, 0.04, 0.06]] },
   // 🏴‍☠️ level 4
   cutlass: { name: "Captain Cutlass", img: "boss-cutlass", w: 430, ar: 398 / 800, hp: 900, hx: SHW - 235, dust: 120,
     phases: [0.5], drift: true, noDrift: { skullbeam: 1 },
     circles: [[-0.41, 0.17, 0.07], [-0.26, 0.24, 0.075], [-0.09, 0.25, 0.08], [0.08, 0.25, 0.08], [0.25, 0.22, 0.075], [0.4, 0.2, 0.06], [-0.05, -0.15, 0.08]] },
-  dreadmaw: { name: "Admiral Dreadmaw", img: "boss-dreadmaw", w: 540, ar: 398 / 800, hp: 2000, hx: SHW - 285, dust: 220,
+  dreadmaw: { name: "Admiral Dreadmaw", img: "boss-dreadmaw", w: 460, ar: 398 / 800, hp: 2000, hx: SHW - 235, dust: 220,
     phases: [0.66, 0.33], dmgImg: "boss-dreadmaw-dmg", drift: true, noDrift: { jaw: 1 },
     circles: [[-0.42, 0.14, 0.06], [-0.28, 0.17, 0.07], [-0.12, 0.18, 0.08], [0.02, 0.16, 0.09], [0.17, 0.18, 0.08], [0.32, 0.17, 0.07], [0.44, 0.12, 0.05], [-0.02, -0.2, 0.07]] },
 };
