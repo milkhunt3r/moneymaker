@@ -20,6 +20,9 @@ const SH_CFG = [
     gap: [3.6, 2.3], spd: 1.1, fire: 0.85, hp: 1.6, bs: 250, boss: "hive" },
   { waves: { line: [1.5, 0], junk: [1.5, 0], sentinel: [1.6, 0], vee: [2, 0], sine: [2, 0], rocks: [1, 0], gunners: [2, 0], mines: [1.5, 0], column: [1.5, 0], brute: [1.5, 40], swarm: [2, 0], homers: [2, 30] },
     gap: [3.0, 1.8], spd: 1.2, fire: 1.1, hp: 2.3, bs: 285, boss: "taxman" },
+  // 🏴‍☠️ level 4: two bosses (Captain Cutlass after the first stretch of waves, Admiral Dreadmaw after the second)
+  { waves: { line: [1, 0], junk: [1.5, 0], sentinel: [1.6, 0], vee: [2, 0], sine: [1.5, 0], rocks: [1, 0], gunners: [2, 0], mines: [1.5, 0], column: [1.5, 0], brute: [1.6, 0], swarm: [2, 0], homers: [2, 0] },
+    gap: [2.6, 1.8], spd: 1.25, fire: 1.2, hp: 2.6, bs: 300, bosses: ["cutlass", "dreadmaw"] },
 ];
 // enemy base stats (HP × the level's hp factor; ✨ stardust × 1 / 1.5 / 2 by level)
 const SH_EN = {
@@ -31,7 +34,7 @@ const SH_EN = {
 };
 // ⭐ score: points for every destroyed enemy (asteroids by size) and boss
 const SH_POINTS = { drone: 100, darter: 100, weaver: 150, gunner: 300, mine: 200, brute: 1000, homer: 200, tiny: 50, carrier: 250, tmissile: 100, junk: 120, sentinel: 400 };
-const SH_BOSS_POINTS = { crab: 5000, hive: 10000, taxman: 20000 };
+const SH_BOSS_POINTS = { crab: 5000, hive: 10000, taxman: 20000, cutlass: 15000, dreadmaw: 30000 };
 const shPoints = (e) => e.type === "rock" ? Math.round(e.size * 3 / 10) * 10 : SH_POINTS[e.type] || 0;
 // 🎁 special weapons (ammo × the Special ammo upgrade)
 const SH_SPECIAL = {
@@ -40,6 +43,7 @@ const SH_SPECIAL = {
   spread:  { ammo: 6, icon: "💠", name: "Nova spread", cd: 0.35 },
 };
 
+const shBossList = (R) => R.cfg.bosses || [R.cfg.boss];
 function shStats() {
   const id = SH.ship, s = SH_SHIPS[id], u = (k) => shUp(id, k);
   return { id, speed: s.speed, hearts: s.hearts + u("hull"), dmg: s.dmg * (1 + 0.15 * u("dmg")), dmgMul: 1 + 0.15 * u("dmg"),
@@ -51,17 +55,17 @@ function shStats() {
    ▶ START / END
    --------------------------------------------------------------------- */
 function shStart(lv) {
-  if (!shUnlocked() || lv < 1 || lv > 3 || lv > SH.done + 1) return;
+  if (!shUnlocked() || lv < 1 || lv > SH_LEVELS.length || lv > SH.done + 1) return;
   const st = shStats(), L = SH_LEVELS[lv - 1], cfg = SH_CFG[lv - 1];
   shR = { lv, L, cfg, st, t: 0, phase: "intro", bgX: 0,
     p: { x: 150, y: SHH / 2, hearts: st.hearts, inv: 2, cool: 0, shield: 0, shieldCd: 0, special: null, ammo: 0, spCool: 0, tdx: 0, tdy: 0 },
     en: [], pb: [], eb: [], fx: [], pk: [], beams: [], laser: 0, boss: null,
-    nextWave: 3, nextCarrier: 16, kills: 0, dust: 0, score: 0, hits: 0, blocks: 0, shake: 0, banner: null, paused: false, end: null,
+    nextWave: 3, nextCarrier: 16, segStart: 0, bossIdx: 0, kills: 0, dust: 0, score: 0, hits: 0, blocks: 0, shake: 0, banner: null, paused: false, end: null,
     stars: Array.from({ length: 90 }, (_, i) => ({ x: Math.random() * SHW, y: Math.random() * SHH, z: i % 3 })),
     planet: { x: SHW + 200, y: shRand(120, 420), r: Math.round(shRand(50, 90)), next: 40 } };
   shR.banner = { big: t(`Level ${lv}`), small: t(L.name), life: 3 };
   SH.runs++; save();
-  [st.img, L.img, `bg-level${lv}`, `bg-boss${lv}`, "rock-small", "rock-medium", "rock-big", ...Object.values(SH_EN_PIC).map(p => p[0]), ...(lv === 3 ? ["boss-taxman-dmg"] : [])].forEach(shImg);
+  [st.img, L.img, `bg-level${lv}`, `bg-boss${lv}`, "rock-small", "rock-medium", "rock-big", ...Object.values(SH_EN_PIC).map(p => p[0]), ...(cfg.bosses || [cfg.boss]).flatMap(k => [SH_BOSS[k].img, SH_BOSS[k].dmgImg || SH_BOSS[k].img])].forEach(shImg);
   renderShooter(); shKick();
 }
 // 🏅 best score per level (any run: won, lost or quit)
@@ -77,7 +81,11 @@ function shQuit() {
 }
 function shWin() {
   const R = shR, L = R.L, first = SH.done < R.lv;
-  const money = shReward(L, first), dust = first ? L.dustFirst : L.dustAgain;
+  // 🏴‍☠️ the pirate level opens a loot box instead (rolled and paid right away, revealed when you open it)
+  const loot = L.loot ? shLootRoll() : null;
+  const lootMin = loot && loot.min ? Math.round(shRand(loot.min[0], loot.min[1])) : 0;
+  const money = loot ? (loot.k === "pet" ? 0 : Math.round(lootMin * 60 * mineBase())) : shReward(L, first), dust = first ? L.dustFirst : L.dustAgain;
+  if (loot) { SH.loots = (SH.loots || 0) + 1; if (loot.k === "pet") state.pet = { owned: true, at: Date.now() }; }
   state.money += money; clickedThisSecond += money; SH.earned += money;   // counts as income (taxes)
   SH.dust += dust; SH.dustAll += dust; R.dust += dust;
   if (first) SH.done = R.lv;
@@ -85,13 +93,14 @@ function shWin() {
   if (!R.hits) SH.perfect++;
   if (!SH.best[R.lv] || R.t < SH.best[R.lv]) SH.best[R.lv] = Math.round(R.t);
   shRecordScore(R);
-  R.end = { win: true, first, money, bonus: dust };
+  R.end = { win: true, first, money, bonus: dust, loot: loot && { k: loot.k, name: loot.name, min: lootMin }, opened: false };
   save(); updateCounter(); shShowEnd();
 }
 function shLose() {
   const R = shR;
   shRecordScore(R);
-  R.end = { win: false, pct: Math.min(99, Math.floor(R.t / (R.L.len + 60) * 100)) };
+  const n = shBossList(R).length, seg = R.L.len + 60;
+  R.end = { win: false, pct: Math.min(99, Math.floor((R.bossIdx * seg + Math.min(seg, R.t - R.segStart)) / (n * seg) * 100)) };
   save(); shShowEnd();
 }
 
@@ -254,7 +263,15 @@ const SH_BOSS = {
   hive:   { name: "Hive Queen", img: "boss-hive", w: 390, ar: 376 / 800, hp: 340, hx: SHW - 205, dust: 100,
     circles: [[-0.43, 0.06, 0.06], [-0.3, 0.12, 0.075], [-0.14, 0.17, 0.08], [0.03, 0.17, 0.085], [0.2, 0.16, 0.08], [0.36, 0.12, 0.065]] },
   taxman: { name: "The Taxman", img: "boss-taxman", w: 500, ar: 401 / 800, hp: 1200, hx: SHW - 255, dust: 160,
+    phases: [0.66, 0.33], dmgImg: "boss-taxman-dmg", drift: true, noDrift: { beam: 1 },
     circles: [[-0.42, 0.04, 0.045], [-0.28, 0.02, 0.07], [-0.12, 0.0, 0.085], [0.06, 0.0, 0.11], [0.24, 0.02, 0.08], [0.39, 0.04, 0.06]] },
+  // 🏴‍☠️ level 4
+  cutlass: { name: "Captain Cutlass", img: "boss-cutlass", w: 430, ar: 398 / 800, hp: 900, hx: SHW - 235, dust: 120,
+    phases: [0.5], drift: true, noDrift: { skullbeam: 1 },
+    circles: [[-0.41, 0.17, 0.07], [-0.26, 0.24, 0.075], [-0.09, 0.25, 0.08], [0.08, 0.25, 0.08], [0.25, 0.22, 0.075], [0.4, 0.2, 0.06], [-0.05, -0.15, 0.08]] },
+  dreadmaw: { name: "Admiral Dreadmaw", img: "boss-dreadmaw", w: 540, ar: 398 / 800, hp: 2000, hx: SHW - 285, dust: 220,
+    phases: [0.66, 0.33], dmgImg: "boss-dreadmaw-dmg", drift: true, noDrift: { jaw: 1 },
+    circles: [[-0.42, 0.14, 0.06], [-0.28, 0.17, 0.07], [-0.12, 0.18, 0.08], [0.02, 0.16, 0.09], [0.17, 0.18, 0.08], [0.32, 0.17, 0.07], [0.44, 0.12, 0.05], [-0.02, -0.2, 0.07]] },
 };
 function shBossMake(k) {
   const d = SH_BOSS[k];
@@ -272,9 +289,19 @@ function shEvery(b, from, gap, n, fn) { while (b.fired < n && b.at >= from + b.f
 const SH_BOSS_SEQ = {
   crab: (b) => b.phase === 1 ? ["spread", "idle", "eye", "idle", "claw", "idle"] : ["spread", "eye", "claw", "idle", "spread", "claw", "idle"],
   hive: (b) => b.phase === 1 ? ["stream", "idle", "brood", "idle", "ring", "idle"] : ["stream", "spiral", "brood", "ring", "idle"],
+  cutlass: (b) => b.phase === 1 ? ["broadside", "idle", "grape", "idle", "skullbeam", "idle", "boarders", "idle"] : ["broadside", "grape", "skullbeam", "boarders", "idle"],
+  dreadmaw: (b) => b.phase === 1 ? ["broadside", "idle", "core", "idle", "jaw", "idle", "treasure", "idle"]
+    : b.phase === 2 ? ["broadside", "boarders", "core", "jaw", "treasure", "idle"] : ["curtain", "broadside", "jaw", "core", "boarders", "spiral", "jaw", "idle"],
   taxman: (b) => b.phase === 1 ? ["volley", "idle", "beam", "idle", "volley", "idle"]
     : b.phase === 2 ? ["volley", "coins", "idle", "beam", "missiles", "idle"] : ["curtain", "volley", "beam", "coins", "missiles", "beam", "idle"],
 };
+// a beam attack: the boss lines its muzzle up with you, shows a warning line, then fires
+function shBossBeam(b, dt, R, dx, dy, tele, w, col) {
+  b.dur = 1.0 + tele + 1.0;
+  const muzzle = () => shBossPt(b, dx, dy);
+  if (b.at < 1.0) { const [, my] = muzzle(); shBossTrack(b, b.y + (R.p.y - my), 190, dt); }
+  else if (!b.mem.beam) { const [x, y] = muzzle(); b.mem.beam = true; R.beams.push({ x0: x, y, t: 0, tele, on: 1.0, w, col }); }
+}
 const SH_BOSS_ACT = {
   crab: {
     idle(b, dt, R) { b.dur = b.phase === 1 ? 1.1 : 0.8; shBossTrack(b, R.p.y, 55, dt); },
@@ -330,6 +357,60 @@ const SH_BOSS_ACT = {
       shEvery(b, 0.2, 0.06, 40, (i) => { const [x, y] = shBossPt(b, 0, 0.1); shEnemyShot(x, y, i * 0.42 + Math.PI * 0.5, R.cfg.bs * 0.65, "acid"); });
     },
   },
+  // 🏴‍☠️ Captain Cutlass: broadside cannons, grapeshot from the skull, a green skull beam and boarding parties
+  cutlass: {
+    idle(b) { b.dur = b.phase === 1 ? 1.0 : 0.6; },
+    broadside(b, dt, R) {
+      b.dur = b.phase === 1 ? 1.9 : 2.5;
+      shEvery(b, 0.3, 0.6, b.phase === 1 ? 2 : 3, () => [-0.22, -0.11, 0, 0.11, 0.22].forEach(dx => {
+        const [x, y] = shBossPt(b, dx, 0.17); shEnemyShot(x, y, shAim(x, y) + shRand(-0.08, 0.08), R.cfg.bs * 0.85, "ebBig");
+      }));
+    },
+    grape(b, dt, R) {
+      b.dur = 1.5;
+      shEvery(b, 0.25, 0.45, b.phase === 1 ? 2 : 3, () => { const [x, y] = shBossPt(b, -0.4, 0.24), a = shAim(x, y);
+        for (let i = -4; i <= 4; i++) shEnemyShot(x, y, a + i * 0.12, R.cfg.bs * 1.05); });
+    },
+    skullbeam(b, dt, R) { shBossBeam(b, dt, R, -0.38, 0.14, b.phase === 1 ? 0.85 : 0.6, 26, "green"); },
+    boarders(b, dt, R) {
+      b.dur = 1.3;
+      shEvery(b, 0.2, 0.3, b.phase === 1 ? 3 : 4, (i) => { const [x, y] = shBossPt(b, 0.1 + i * 0.06, i % 2 ? 0.3 : -0.3);
+        shAdd(b.phase === 1 ? "darter" : "junk", x, y, { vx: -300, ph: i }); });
+    },
+  },
+  // 💀 Admiral Dreadmaw: broadsides, a ring from the green core, a huge jaw beam, treasure coins, boarders; then curtains and spirals
+  dreadmaw: {
+    idle(b) { b.dur = [1.1, 0.8, 0.5][b.phase - 1]; },
+    broadside(b, dt, R) {
+      b.dur = b.phase === 1 ? 1.9 : 2.5;
+      shEvery(b, 0.3, 0.6, b.phase === 1 ? 2 : 3, () => [-0.25, -0.14, 0.2, 0.31].forEach(dx => {
+        const [x, y] = shBossPt(b, dx, 0.2), a = shAim(x, y);
+        shEnemyShot(x, y, a, R.cfg.bs * 0.9, "ebBig");
+        if (b.phase === 3) { shEnemyShot(x, y, a - 0.18, R.cfg.bs * 0.9); shEnemyShot(x, y, a + 0.18, R.cfg.bs * 0.9); }
+      }));
+    },
+    core(b, dt, R) {
+      b.dur = 1.4;
+      shEvery(b, 0.3, 0.5, 2, (k) => { const [x, y] = shBossPt(b, 0.02, 0.19), n = [18, 22, 26][b.phase - 1];
+        for (let i = 0; i < n; i++) shEnemyShot(x, y, (i + k * 0.5) / n * Math.PI * 2, R.cfg.bs * 0.7, "acid"); });
+    },
+    jaw(b, dt, R) { shBossBeam(b, dt, R, -0.44, 0.22, [0.9, 0.75, 0.6][b.phase - 1], 40, "green"); },
+    treasure(b, dt, R) {
+      b.dur = 2.2;
+      shEvery(b, 0.3, 0.9, 2, () => { const [x, y] = shBossPt(b, 0.05, -0.1);
+        for (let i = 0; i < 10; i++) R.eb.push({ x, y, vx: -150 - i * 45 - Math.random() * 30, vy: -330 + Math.random() * 290, g: 320, r: 8, kind: "coin" }); });
+    },
+    boarders(b, dt, R) {
+      b.dur = 1.3;
+      shEvery(b, 0.2, 0.3, 4, (i) => { const [x, y] = shBossPt(b, 0.25, i % 2 ? 0.3 : -0.32);
+        if (i < 2) shAdd("junk", x, y, { vx: -260, ph: i }); else shAdd("homer", x, y, { vx: -200, ang: Math.PI }); });
+    },
+    curtain(b, dt, R) { SH_BOSS_ACT.taxman.curtain(b, dt, R); },
+    spiral(b, dt, R) {
+      b.dur = 2.6;
+      shEvery(b, 0.2, 0.06, 40, (i) => { const [x, y] = shBossPt(b, 0.02, 0.19); shEnemyShot(x, y, i * 0.42 + Math.PI * 0.5, R.cfg.bs * 0.65, "acid"); });
+    },
+  },
   taxman: {
     idle(b, dt) { b.dur = [1.2, 0.9, 0.6][b.phase - 1]; },
     volley(b, dt, R) {
@@ -378,14 +459,14 @@ function shBossStep(R, b, dt) {
   }
   // phases: crab and hive get angry at 50%, the Taxman at 66% and 33% (then he shows his battle damage)
   const f = b.hp / b.max;
-  const ph = b.k === "taxman" ? (f > 0.66 ? 1 : f > 0.33 ? 2 : 3) : (f > 0.5 ? 1 : 2);
+  const ph = 1 + (b.def.phases || [0.5]).filter(x => f <= x).length;
   if (ph > b.phase) {
     b.phase = ph; b.inv = 1.0; R.shake = 0.5;
-    if (b.k === "taxman" && ph === 3) { b.img = "boss-taxman-dmg"; for (let i = 0; i < 6; i++) shBoom(b.x + shRand(-0.4, 0.4) * b.w, b.y + shRand(-0.3, 0.3) * shBossH(b), 30); }
+    if (b.def.dmgImg && ph === (b.def.phases || [0.5]).length + 1) { b.img = b.def.dmgImg; for (let i = 0; i < 6; i++) shBoom(b.x + shRand(-0.4, 0.4) * b.w, b.y + shRand(-0.3, 0.3) * shBossH(b), 30); }
     R.banner = { big: t("⚠️ " + b.def.name + " is getting angry!"), small: "", life: 2, warn: true };
   }
   if (b.k === "hive") shBossTrack(b, SHH / 2 + 10 + Math.sin(b.t * (b.phase === 1 ? 0.8 : 1.1)) * 120, 120, dt);
-  if (b.k === "taxman" && b.act !== "beam") shBossTrack(b, SHH / 2 + Math.sin(b.t * 0.45) * 70, 45, dt);
+  if (b.def.drift && !b.def.noDrift[b.act]) shBossTrack(b, SHH / 2 + Math.sin(b.t * 0.45) * 70, 45, dt);
   b.at += dt;
   if (!b.act || b.at >= b.dur) {
     const seq = SH_BOSS_SEQ[b.k](b);
@@ -439,11 +520,12 @@ function shUpdate(dt) {
   // 🗺️ director
   if (R.phase === "intro" && R.t >= 2.5) R.phase = "waves";
   if (R.phase === "waves") {
-    if (R.t >= R.nextWave) { shSpawnWave(R); const k = Math.min(1, R.t / R.L.len); R.nextWave = R.t + (R.cfg.gap[0] + (R.cfg.gap[1] - R.cfg.gap[0]) * k) * shRand(0.85, 1.15); }
+    const segT = R.t - R.segStart;   // time in this stretch of waves (level 4 has two, one before each boss)
+    if (R.t >= R.nextWave) { shSpawnWave(R); const k = Math.min(1, segT / R.L.len); R.nextWave = R.t + (R.cfg.gap[0] + (R.cfg.gap[1] - R.cfg.gap[0]) * k) * shRand(0.85, 1.15); }
     if (R.t >= R.nextCarrier) { shAdd("carrier", SHW + 40, shRand(90, SHH - 90), { vx: -90 }); R.nextCarrier = R.t + shRand(20, 28); }
-    if (R.t >= R.L.len) { R.phase = "warn"; R.warnT = 0; R.banner = { big: t("⚠️ WARNING"), small: t(SH_BOSS[R.cfg.boss].name + " is coming!"), life: 3.5, warn: true }; }
+    if (segT >= R.L.len) { R.phase = "warn"; R.warnT = 0; R.banner = { big: t("⚠️ WARNING"), small: t(SH_BOSS[shBossList(R)[R.bossIdx]].name + " is coming!"), life: 3.5, warn: true }; }
   }
-  if (R.phase === "warn" && (R.warnT += dt) > 3.5) { R.phase = "boss"; R.boss = shBossMake(R.cfg.boss); R.bossT0 = R.t; }
+  if (R.phase === "warn" && (R.warnT += dt) > 3.5) { R.phase = "boss"; R.boss = shBossMake(shBossList(R)[R.bossIdx]); R.bossT0 = R.t; }
   if (R.phase === "boss" && R.boss) shBossStep(R, R.boss, dt);
   // during the boss fight supply ships drift down from the top, in front of the boss
   if (R.phase === "boss" && R.nextCarrier <= R.t) { shAdd("carrier", shRand(220, 420), -30, { vx: -15, fromTop: true }); R.nextCarrier = R.t + 26; }
@@ -451,7 +533,11 @@ function shUpdate(dt) {
     const b = R.boss; R.dieT += dt; R.shake = 0.3;
     if (R.dieT < 2.6 && Math.random() < 0.25) shBoom(b.x + shRand(-0.4, 0.4) * b.w, b.y + shRand(-0.35, 0.35) * shBossH(b), shRand(20, 45));
     if (R.dieT >= 2.6 && !b.gone) { b.gone = true; shBoom(b.x, b.y, 120); shFx(b.x, b.y, 60, "#ffffff", 400, 4); }
-    if (R.dieT >= 4 && !R.end) { R.phase = "won"; shWin(); }
+    const last = R.bossIdx >= shBossList(R).length - 1;
+    if (!last && R.dieT >= 3.4) {   // a mid-level boss: back to the waves for the next stretch
+      R.bossIdx++; R.boss = null; R.phase = "waves"; R.segStart = R.t; R.nextWave = R.t + 2;
+      R.banner = { big: t("Onwards!"), small: t("The final boss is waiting further ahead…"), life: 2.5 };
+    } else if (last && R.dieT >= 4 && !R.end) { R.phase = "won"; shWin(); }
   }
 
   // 👾 enemies
@@ -676,7 +762,8 @@ function shDraw() {
     g.drawImage(neb.c, nx, 0, 1920, 540); g.drawImage(neb.c, nx + 1920, 0, 1920, 540);
   }
   // 👹 boss fight background: fades in during the ⚠️ warning and stays for the whole fight
-  const bossA = R.phase === "warn" ? Math.min(1, R.warnT / 3) : R.boss ? 1 : 0, bossBg = shImg(`bg-boss${lv}`);
+  const lastBoss = R.bossIdx >= shBossList(R).length - 1;   // the arena background is for the final boss only
+  const bossA = !lastBoss ? 0 : R.phase === "warn" ? Math.min(1, R.warnT / 3) : R.boss ? 1 : 0, bossBg = shImg(`bg-boss${lv}`);
   if (bossA > 0 && bossBg.complete && bossBg.naturalWidth) { g.globalAlpha = bossA; g.drawImage(bossBg, 0, 0, SHW, SHH); g.globalAlpha = 1; }
   if (R.shake > 0) g.translate(shRand(-1, 1) * 8 * R.shake, shRand(-1, 1) * 8 * R.shake);
   for (const s of R.stars) { g.fillStyle = ["rgba(255,255,255,0.35)", "rgba(255,255,255,0.6)", "#fff"][s.z]; const sz = s.z + 1; g.fillRect(s.x, s.y, s.z === 2 ? 5 : sz, s.z === 2 ? 2 : sz); }
@@ -706,7 +793,7 @@ function shDraw() {
       }
       g.restore();
     }
-    if (b.k === "taxman" && b.phase === 3 && Math.random() < 0.3) R.fx.push({ x: bx + shRand(-0.4, 0.4) * b.w, y: by - shRand(0, 0.3) * h, vx: -30, vy: -50, life: 0.9, max: 0.9, r: 8, c: "rgba(70,60,70,0.5)", smoke: true });
+    if (b.def.dmgImg && b.img === b.def.dmgImg && Math.random() < 0.3) R.fx.push({ x: bx + shRand(-0.4, 0.4) * b.w, y: by - shRand(0, 0.3) * h, vx: -30, vy: -50, life: 0.9, max: 0.9, r: 8, c: "rgba(70,60,70,0.5)", smoke: true });
   }
   // ☄️ beams (red warning line, then the beam)
   for (const bm of R.beams) {
@@ -716,7 +803,8 @@ function shDraw() {
       const k = Math.min(1, (bm.t - bm.tele) / 0.12), w = bm.w * k * (0.9 + Math.random() * 0.2);
       g.save(); g.globalCompositeOperation = "lighter";
       const gr = g.createLinearGradient(0, bm.y - w, 0, bm.y + w);
-      const c1 = bm.small ? "rgba(255,40,90," : "rgba(255,80,40,", c2 = bm.small ? "rgba(255,70,120," : "rgba(255,120,40,";
+      const c1 = bm.col === "green" ? "rgba(40,255,110," : bm.small ? "rgba(255,40,90," : "rgba(255,80,40,";
+      const c2 = bm.col === "green" ? "rgba(140,255,150," : bm.small ? "rgba(255,70,120," : "rgba(255,120,40,";
       gr.addColorStop(0, c1 + "0)"); gr.addColorStop(0.35, c2 + "0.85)"); gr.addColorStop(0.5, "rgba(255,240,240,1)"); gr.addColorStop(0.65, c2 + "0.85)"); gr.addColorStop(1, c1 + "0)");
       g.fillStyle = gr; g.fillRect(0, bm.y - w, bm.x0, w * 2); g.restore();
     }
@@ -805,7 +893,8 @@ function shDrawHud(g, R) {
     g.strokeStyle = "#1a0f2e"; g.lineWidth = 2; g.strokeRect(bx, 13, bw, 14);
     shTextOut(g, t(b.def.name), bx + bw / 2, 20, 13);
   } else if (!R.boss) {
-    const k = Math.min(1, R.t / R.L.len);
+    const k = Math.min(1, (R.t - R.segStart) / R.L.len);
+    if (shBossList(R).length > 1) shTextOut(g, `${R.bossIdx + 1}/${shBossList(R).length}`, bx - 22, 20, 13, "#ffd34d");
     g.fillStyle = "rgba(255,255,255,0.12)"; g.fillRect(bx, 15, bw, 10);
     g.fillStyle = "#7ad7ff"; g.fillRect(bx, 15, bw * k, 10);
     g.strokeStyle = "#1a0f2e"; g.lineWidth = 2; g.strokeRect(bx, 15, bw, 10);
@@ -865,10 +954,10 @@ function shShowEnd() {
         <p><b>${R.L.boss}</b> was defeated in ${shClock(R.t)}.</p>
         <div class="shScore">⭐ Score: <b>${R.score.toLocaleString()}</b>${R.newBest ? ` <span class="shNewBest">🏅 New best score!</span>` : ""}</div>
         <div class="shEndStats"><span>👾 Enemies destroyed: <b>${R.kills}</b></span><span>💔 Lives lost: <b>${R.hits}</b></span><span>🛡️ Hits blocked: <b>${R.blocks}</b></span></div>
-        <div class="shEndReward"><span>💰 <b>+${fmt(E.money)}</b></span><span>✨ <b>+${R.dust.toLocaleString()}</b> stardust</span></div>
-        ${E.first ? `<p class="shFirst">⭐ First clear!${R.lv < 3 ? ` Level ${R.lv + 1} is now open.` : " You beat every level!"}</p>` : ""}
-        <div class="moneyRow" style="justify-content:center">
-          ${R.lv < 3 ? `<button class="btn big" data-shp="next">▶ Level ${R.lv + 1}</button>` : ""}
+        ${E.loot ? shLootHtml(E) : `<div class="shEndReward"><span>💰 <b>+${fmt(E.money)}</b></span><span>✨ <b>+${R.dust.toLocaleString()}</b> stardust</span></div>`}
+        ${E.first ? `<p class="shFirst">⭐ First clear!${R.lv < SH_LEVELS.length ? ` Level ${R.lv + 1} is now open.` : " You beat every level!"}</p>` : ""}
+        <div class="moneyRow" style="justify-content:center" ${E.loot && !E.opened ? "hidden" : ""}>
+          ${R.lv < SH_LEVELS.length ? `<button class="btn big" data-shp="next">▶ Level ${R.lv + 1}</button>` : ""}
           <button class="btn" data-shp="again">🔁 Play again</button><button class="btn ghost" data-shp="hangar">🛸 Hangar</button></div></div>`
     : `<div class="shPanel lose"><h2>💥 Your ship was destroyed</h2>
         <p>You made it ${E.pct}% of the way through level ${R.lv}. The level starts over from the beginning.</p>
@@ -877,6 +966,24 @@ function shShowEnd() {
         <p>✨ You keep the <b>${R.dust.toLocaleString()}</b> stardust you collected. Spend it on upgrades in the hangar.</p>
         <div class="moneyRow" style="justify-content:center"><button class="btn big" data-shp="again">🔁 Try again</button>
           <button class="btn ghost" data-shp="hangar">🛸 Hangar</button></div></div>`;
+}
+// 🏴‍☠️ loot box on the win screen: closed chest + button, then it shakes, opens and shows the prize
+function shLootHtml(E) {
+  const L = E.loot;
+  if (!E.opened) return `<div class="shLoot"><img class="shChest" src="assets/shooter/chest-closed.webp" alt="Loot box">
+    <button class="btn big" data-shp="loot">🏴‍☠️ Open the loot box</button><div class="shEndReward small"><span>✨ <b>+${shR.dust.toLocaleString()}</b> stardust</span></div></div>`;
+  return `<div class="shLoot open"><img class="shChest" src="assets/shooter/chest-open.webp" alt="Loot box">
+    <div class="shLootTier ${L.k}">${L.k === "pet" ? "🐾 Pet" : L.name}</div>
+    ${L.k === "pet"
+      ? `<div class="shPetWin"><img src="assets/pet/pet-portrait.webp" alt="Pet"><div><b>You found a pet!</b><br>Your new friend will soon move into your 💰 Income page.</div></div>`
+      : `<div class="shEndReward"><span>💰 <b>+${fmt(E.money)}</b></span><span class="muted">${L.min} min of income</span></div>`}
+    <div class="shEndReward small"><span>✨ <b>+${shR.dust.toLocaleString()}</b> stardust</span></div></div>`;
+}
+function shOpenLoot() {
+  const E = shR && shR.end; if (!E || !E.loot || E.opened || E.opening) return;
+  E.opening = true;
+  const img = document.querySelector(".shChest"); if (img) img.classList.add("shake");
+  setTimeout(() => { E.opened = true; E.opening = false; if (shR && shR.end === E) shShowEnd(); }, 900);
 }
 function shRenderPlay() {
   const v = $("shooterView");
@@ -929,6 +1036,7 @@ $("shooterView").addEventListener("pointerdown", (e) => {
 $("shooterView").addEventListener("click", (e) => {
   const b = e.target.closest("[data-shp]"); if (!b || !shR) return;
   const a = b.dataset.shp, lv = shR.lv;
+  if (a === "loot") shOpenLoot();
   if (a === "pause") shPause(!shR.paused);
   if (a === "resume") shPause(false);
   if (a === "quit" || a === "hangar") shQuit();

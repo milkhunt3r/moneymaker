@@ -541,6 +541,19 @@ Object.assign(ES, {
     "🌌 Nebula Strike: nuevos fondos pintados a mano para los 3 niveles, y cada jefe tiene ahora su propia arena (el desguace del Cangrejo Chatarra, el nido de la Reina de la Colmena y la cámara acorazada de El Recaudador) que aparece cuando llega el jefe.",
   "🦀 Nebula Strike: the Scrap Crab has a new look: it now flies on three rocket jets.": "🦀 Nebula Strike: el Cangrejo Chatarra tiene un nuevo aspecto: ahora vuela con tres propulsores.",
   "👾 Nebula Strike: new hand-painted enemies: saucer drones (with their pilots), darters, gun pods, space mines, wasp hunters, swarm bugs, armoured gunships, supply ships and The Taxman's missiles.": "👾 Nebula Strike: nuevos enemigos pintados a mano: platillos (con sus pilotos), dardos, cápsulas cañón, minas espaciales, avispas cazadoras, bichos de enjambre, cañoneras blindadas, naves de suministros y los misiles de El Recaudador.",
+  "Pirate's Cove": "Cala Pirata", "Captain Cutlass": "Capitán Sable", "Admiral Dreadmaw": "Almirante Fauces Negras",
+  "💀 Very hard": "💀 Muy difícil", "Very hard": "Muy difícil", "and": "y", "Open the loot box": "Abrir el cofre del botín",
+  "Common": "Común", "Rare": "Raro", "Epic": "Épico", "Legendary": "Legendario", "Pet": "Mascota", "Prize": "Premio",
+  "You found a pet!": "¡Has encontrado una mascota!", "Your new friend will soon move into your 💰 Income page.": "Tu nuevo amigo se mudará pronto a tu página de 💰 Ingresos.",
+  "Pirate's bane": "Azote de piratas", "Treasure hunter": "Cazatesoros", "A new friend": "Un nuevo amigo",
+  "Beat Admiral Dreadmaw in level 4 of Nebula Strike": "Derrota al Almirante Fauces Negras en el nivel 4 de Nebula Strike",
+  "Open 10 pirate loot boxes": "Abre 10 cofres del botín pirata", "Find the pet in a pirate loot box": "Encuentra la mascota en un cofre del botín pirata",
+  "Onwards!": "¡Adelante!", "The final boss is waiting further ahead…": "El jefe final te espera más adelante…",
+  "Captain Cutlass + Admiral Dreadmaw": "Capitán Sable + Almirante Fauces Negras",
+  "A pet that lives on your 💰 Income page (you can only have one; after that its chance goes to Epic)": "Una mascota que vive en tu página de 💰 Ingresos (solo puedes tener una; después, su probabilidad pasa a Épico)",
+  "A side-scrolling space shooter. It opens when you build the 🚀 Space Mission Center (🔬 Science) and stays open for good, even after a prestige. Fly your ship through 4 levels of enemy waves; each level ends with a boss (level 4 has two). Beating a level opens the next one. Levels are free to play, but if you lose all your lives, the level starts over from the beginning.":
+    "Un matamarcianos de desplazamiento lateral. Se abre al construir el 🚀 Centro de misiones espaciales (🔬 Ciencia) y queda abierto para siempre, incluso tras un prestigio. Pilota tu nave por 4 niveles de oleadas enemigas; cada nivel termina con un jefe (el nivel 4 tiene dos). Superar un nivel abre el siguiente. Jugar los niveles es gratis, pero si pierdes todas tus vidas, el nivel empieza de nuevo desde el principio.",
+  "Fly a spaceship through 4 levels of enemy waves and defeat the bosses waiting at the end.": "Pilota una nave por 4 niveles de oleadas enemigas y derrota a los jefes que esperan al final.",
   "/ WASD": "/ WASD", "Shift / K": "Shift / K", "X / L": "X / L", "P / Esc": "P / Esc", "Move": "Moverse", "Shoot": "Disparar", "Auto-fire on": "Disparo automático", "Space": "Espacio",
   "about 5 min": "unos 5 min", "about 6–7 min": "unos 6–7 min",
   // achievements
@@ -585,8 +598,8 @@ rx(String.raw`shield stays up ([\d.]+) sec( at max)?`, (m, n, x) => `el escudo d
 rx(String.raw`\+(\d+)% special weapon ammo( at max)?`, (m, n, x) => `+${n}% de munición especial${x ? " al máximo" : ""}`);
 rx(String.raw`large pull range at max`, "alcance grande al máximo");
 // hangar and levels
-rx(String.raw`Level (\d): (Scrap Belt|Hive Nebula|Crimson Fortress)( · (\d+:\d\d))?`, (m, n, l, c, tm) => `Nivel ${n}: ${shEsName(l)}${tm ? " · " + tm : ""}`);
-rx(String.raw`(\d): (Scrap Belt|Hive Nebula|Crimson Fortress)`, (m, n, l) => `${n}: ${shEsName(l)}`);
+rx(String.raw`Level (\d): (Scrap Belt|Hive Nebula|Crimson Fortress|Pirate's Cove)( · (\d+:\d\d))?`, (m, n, l, c, tm) => `Nivel ${n}: ${shEsName(l)}${tm ? " · " + tm : ""}`);
+rx(String.raw`(\d): (Scrap Belt|Hive Nebula|Crimson Fortress|Pirate's Cove)`, (m, n, l) => `${n}: ${shEsName(l)}`);
 rx(String.raw`Upgrades for the (Sparrow|Dart|Bulwark|Sovereign)`, "Mejoras de la $1");
 rx(String.raw`(?:🟢 )?Easy · about 5 min · Boss`, "Fácil · unos 5 min · Jefe");
 rx(String.raw`(?:🟠 )?Medium · about 6–7 min · Boss`, "Media · unos 6–7 min · Jefe");
@@ -609,10 +622,11 @@ rx(String.raw`Runs: (\d+) · Levels won: (\d+) · Enemies destroyed: ([\d.,]+) �
   "Partidas: $1 · Niveles ganados: $2 · Enemigos destruidos: $3 · Golpes bloqueados: $4 · Polvo estelar ganado: $5 · Dinero ganado: $6");
 rx(String.raw`You bought the (Sparrow|Dart|Bulwark|Sovereign)!`, "¡Has comprado la $1!");
 // in game
-rx(String.raw`(Scrap Crab|Hive Queen|The Taxman) is coming!`, (m, n) => `¡Se acerca ${n === "The Taxman" ? "El Recaudador" : "la " + shEsName(n)}!`.replace("la Cangrejo", "el Cangrejo"));
-rx(String.raw`(?:⚠️ )?(Scrap Crab|Hive Queen|The Taxman) is getting angry!`, (m, n) => `⚠️ ¡${n === "The Taxman" ? "El Recaudador" : n === "Scrap Crab" ? "El Cangrejo Chatarra" : "La Reina de la Colmena"} se está enfadando!`);
+const shEsBoss = (n) => ({ "Scrap Crab": "el Cangrejo Chatarra", "Hive Queen": "la Reina de la Colmena", "The Taxman": "El Recaudador", "Captain Cutlass": "el Capitán Sable", "Admiral Dreadmaw": "el Almirante Fauces Negras" })[n] || n;
+rx(String.raw`(Scrap Crab|Hive Queen|The Taxman|Captain Cutlass|Admiral Dreadmaw) is coming!`, (m, n) => `¡Se acerca ${shEsBoss(n)}!`);
+rx(String.raw`(?:⚠️ )?(Scrap Crab|Hive Queen|The Taxman|Captain Cutlass|Admiral Dreadmaw) is getting angry!`, (m, n) => { const a = shEsBoss(n); return `⚠️ ¡${a[0].toUpperCase() + a.slice(1)} se está enfadando!`; });
 rx(String.raw`Level (\d) cleared!`, "¡Nivel $1 superado!");
-hrx(String.raw`<b>(Scrap Crab|Hive Queen|The Taxman)<\/b> was defeated in (\d+:\d\d)\.`, (m, n, tm) => `<b>${shEsName(n)}</b> ha sido derrotado en ${tm}.`);
+hrx(String.raw`<b>(Scrap Crab|Hive Queen|The Taxman|Captain Cutlass|Admiral Dreadmaw)<\/b> was defeated in (\d+:\d\d)\.`, (m, n, tm) => `<b>${shEsName(n)}</b> ha sido derrotado en ${tm}.`);
 rx(String.raw`was defeated in (\d+:\d\d)\.`, "ha sido derrotado en $1.");
 hrx(String.raw`✨ <b>\+([\d.,]+)<\/b> stardust`, "✨ <b>+$1</b> de polvo estelar");
 rx(String.raw`First clear! Level (\d) is now open\.`, "¡Primera victoria! El nivel $1 ya está abierto.");
@@ -627,6 +641,9 @@ rx(String.raw`(Sparrow|Dart|Bulwark|Sovereign): (Damage|Fire rate|Hull armour|Sh
 H("🚀 New mini-game: <b>Nebula Strike</b>! A side-scrolling space shooter that opens when you build the 🚀 Space Mission Center. Fight through 3 levels of enemy waves and beat the <b>Scrap Crab</b>, the <b>Hive Queen</b> and <b>The Taxman</b>. Time your 🛡️ shield, grab special weapons from supply ships and collect ✨ stardust to buy 4 ships and their upgrades.",
   "🚀 Nuevo minijuego: ¡<b>Nebula Strike</b>! Un matamarcianos de desplazamiento lateral que se abre al construir el 🚀 Centro de misiones espaciales. Abre paso por 3 niveles de oleadas enemigas y derrota al <b>Cangrejo Chatarra</b>, a la <b>Reina de la Colmena</b> y a <b>El Recaudador</b>. Usa el 🛡️ escudo en el momento justo, consigue armas especiales de las naves de suministros y recoge ✨ polvo estelar para comprar 4 naves y sus mejoras.");
 ES["⌨️ Nebula Strike: you can change the keys for the 🛡️ shield and 🚀 special weapon in the hangar."] = "⌨️ Nebula Strike: puedes cambiar las teclas del 🛡️ escudo y del 🚀 arma especial en el hangar.";
+H("🏴‍☠️ Nebula Strike: new <b>level 4: Pirate's Cove</b> (very hard, opens after level 3). Two bosses: <b>Captain Cutlass</b> after 2 minutes, then 2 more minutes of waves and the final boss <b>Admiral Dreadmaw</b> in his treasure cave. Every clear opens a <b>pirate loot box</b>: 40–180 minutes of income by rarity (Common, Rare, Epic, Legendary), or a rare pet!",
+  "🏴‍☠️ Nebula Strike: nuevo <b>nivel 4: Cala Pirata</b> (muy difícil, se abre tras el nivel 3). Dos jefes: el <b>Capitán Sable</b> a los 2 minutos, luego 2 minutos más de oleadas y el jefe final, el <b>Almirante Fauces Negras</b>, en su cueva del tesoro. Cada victoria abre un <b>cofre del botín pirata</b>: de 40 a 180 minutos de ingresos según la rareza (Común, Raro, Épico, Legendario) ¡o una mascota rara!");
+ES["🏆 3 new Nebula Strike achievements: 🏴‍☠️ Pirate's bane, 💰 Treasure hunter and 🐾 A new friend."] = "🏆 3 logros nuevos de Nebula Strike: 🏴‍☠️ Azote de piratas, 💰 Cazatesoros y 🐾 Un nuevo amigo.";
 H("🤖 Nebula Strike: two new enemies! <b>Junk Bots</b> (from level 1) charge straight at you when they line up with your ship, and <b>Laser Sentinels</b> (from level 2) park on the right and fire a beam across the screen after a red warning line. Dodge it or block it with your 🛡️ shield.", "🤖 Nebula Strike: ¡dos enemigos nuevos! Los <b>robots chatarra</b> (desde el nivel 1) cargan en línea recta contra ti cuando se alinean con tu nave, y los <b>centinelas láser</b> (desde el nivel 2) se colocan a la derecha y disparan un rayo de lado a lado de la pantalla tras una línea roja de aviso. Esquívalo o bloquéalo con tu 🛡️ escudo.");
 H("🚀 Nebula Strike: the pause screen now shows the controls, and the 💠 nova spread is stronger (a tighter fan of bullets that go through enemies).", "🚀 Nebula Strike: la pantalla de pausa ahora muestra los controles y el 💠 abanico nova es más fuerte (un abanico más cerrado de balas que atraviesan a los enemigos).");
 H("🏆 New <b>🚀 Nebula Strike</b> achievements section: 10 achievements.", "🏆 Nueva sección de logros <b>🚀 Nebula Strike</b>: 10 logros.");
@@ -634,6 +651,16 @@ H("🏆 New <b>🚀 Nebula Strike</b> achievements section: 10 achievements.", "
 hrx(String.raw`⛏️ The top levels also need 💎 diamonds or 🔴 rubies from your 🏦 vault in the Gold Mine Dig \(keep ore after a run instead of selling it\)\. You have (.+)`,
   "⛏️ Los niveles más altos también necesitan 💎 diamantes o 🔴 rubíes de tu 🏦 cámara de la mina de oro (guarda el mineral tras una excavación en vez de venderlo). Tienes $1");
 rx(String.raw`Lv (\d): ((?:💎|🔴) \d+)( · Lv (\d): ((?:💎|🔴) \d+))?`, (m, a, b, c, d, e) => `Nv ${a}: ${b}${c ? ` · Nv ${d}: ${e}` : ""}`);
+rx(String.raw`(?:💀 )?Very hard · about 5 min · Bosses`, "Muy difícil · unos 5 min · Jefes");
+hrx(String.raw`💀 Very hard · about 5 min · Bosses: <b>Captain Cutlass<\/b> and <b>Admiral Dreadmaw<\/b>`, "💀 Muy difícil · unos 5 min · Jefes: <b>Capitán Sable</b> y <b>Almirante Fauces Negras</b>");
+hrx(String.raw`🏴‍☠️ Every clear: a <b>pirate loot box<\/b> \(40–180 min of income( or a rare pet)?\) \+ <span>✨<\/span> (\d+)(?:<br>✅ Cleared · Best time (\d+:\d\d))?(?:(?: · |<br>)⭐ Best score ([\d.,]+))?`,
+  (m, pet, d, tm, sc) => `🏴‍☠️ Cada victoria: un <b>cofre del botín pirata</b> (40–180 min de ingresos${pet ? " o una mascota rara" : ""}) + <span>✨</span> ${d}${tm ? `<br>✅ Superado · Mejor tiempo ${tm}` : ""}${sc ? `${tm ? " · " : "<br>"}⭐ Mejor puntuación ${sc}` : ""}`);
+H("<b>You found a pet!</b><br>Your new friend will soon move into your 💰 Income page.", "<b>¡Has encontrado una mascota!</b><br>Tu nuevo amigo se mudará pronto a tu página de 💰 Ingresos.");
+H("🏴‍☠️ <b>Pirate loot box</b> (level 4, every clear): after Captain Cutlass, the waves continue for about 2 more minutes before Admiral Dreadmaw. Beat him to open a loot box:",
+  "🏴‍☠️ <b>Cofre del botín pirata</b> (nivel 4, en cada victoria): tras el Capitán Sable, las oleadas siguen unos 2 minutos más antes del Almirante Fauces Negras. Derrótalo para abrir un cofre del botín:");
+rx(String.raw`Loot box \+ ✨ (\d+)`, "Cofre del botín + ✨ $1");
+rx(String.raw`(\d+)–(\d+) min of income`, "$1–$2 min de ingresos");
+rx(String.raw`(\d+) min of income`, "$1 min de ingresos");
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
 ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {

@@ -899,8 +899,8 @@ function renderGames() {
       </div>` : ""}
       ${typeof SH !== "undefined" ? (() => { const on = shUnlocked(); return `<div class="card gameCard ${on ? "" : "locked"}">
         <img class="gameIcon gameIconImg shGameIcon" src="assets/shooter/ship-sparrow.webp" alt=""><h3>Nebula Strike</h3>
-        <p class="muted">Fly a spaceship through 3 levels of enemy waves and defeat a boss at the end of each one.</p>
-        <div class="gameStatus">${on ? `🏁 ${SH.done} / 3 levels cleared · ✨ ${SH.dust.toLocaleString()}${typeof shR !== "undefined" && shR && !shR.end ? " · 🚀 level in progress" : ""}` : "🔒 Build the 🚀 Space Mission Center (💰 Income → 🔬 Science)"}</div>
+        <p class="muted">Fly a spaceship through 4 levels of enemy waves and defeat the bosses waiting at the end.</p>
+        <div class="gameStatus">${on ? `🏁 ${SH.done} / ${SH_LEVELS.length} levels cleared · ✨ ${SH.dust.toLocaleString()}${typeof shR !== "undefined" && shR && !shR.end ? " · 🚀 level in progress" : ""}` : "🔒 Build the 🚀 Space Mission Center (💰 Income → 🔬 Science)"}</div>
         <button class="btn" data-game="shooter" ${on ? "" : "disabled"}>${typeof shR !== "undefined" && shR && !shR.end ? "▶ Continue" : "▶ Play"}</button>
       </div>`; })() : ""}
       <div class="card gameCard soon"><div class="gameIcon">❔</div><h3>More coming soon</h3>

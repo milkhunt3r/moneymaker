@@ -91,7 +91,25 @@ const SH_LEVELS = [
   { n: 1, name: "Scrap Belt",       boss: "Scrap Crab", img: "boss-crab",    diff: "🟢 Easy",   time: "about 5 min",   len: 255, first: 30,  again: 3, dustFirst: 100, dustAgain: 30 },
   { n: 2, name: "Hive Nebula",      boss: "Hive Queen", img: "boss-hive",    diff: "🟠 Medium", time: "about 6–7 min", len: 345, first: 60,  again: 5, dustFirst: 200, dustAgain: 60 },
   { n: 3, name: "Crimson Fortress", boss: "The Taxman", img: "boss-taxman",  diff: "🔴 Hard",   time: "about 6–7 min", len: 330, first: 120, again: 8, dustFirst: 400, dustAgain: 100 },
+  // 🏴‍☠️ two bosses (len = each stretch of waves); every clear opens a pirate loot box instead of a fixed money reward
+  { n: 4, name: "Pirate's Cove",    boss: "Admiral Dreadmaw", boss1: "Captain Cutlass", img: "boss-dreadmaw", diff: "💀 Very hard", time: "about 5 min", len: 120, loot: true, dustFirst: 600, dustAgain: 150 },
 ];
+/* ----- 🏴‍☠️ PIRATE LOOT BOX (level 4): minutes of income by rarity, or the pet -----
+   Once you have the pet, its 5% goes to Epic (you can only have one pet). */
+const SH_LOOT = [
+  { k: "common",    name: "Common",    min: [40, 60],   p: 50 },
+  { k: "rare",      name: "Rare",      min: [60, 90],   p: 30 },
+  { k: "epic",      name: "Epic",      min: [90, 120],  p: 10 },
+  { k: "legendary", name: "Legendary", min: [180, 180], p: 5 },
+  { k: "pet",       name: "Pet",       p: 5 },
+];
+const shHasPet = () => !!(state.pet && state.pet.owned);
+const shLootOdds = () => SH_LOOT.map(T => ({ ...T, p: T.k === "pet" ? (shHasPet() ? 0 : T.p) : T.k === "epic" && shHasPet() ? T.p + 5 : T.p }));
+function shLootRoll() {
+  let r = Math.random() * 100;
+  for (const T of shLootOdds()) if ((r -= T.p) < 0) return T;
+  return SH_LOOT[0];
+}
 const shReward = (L, first) => Math.round((first ? L.first : L.again) * 60 * mineBase());
 
 function shUnlocked() {
@@ -133,8 +151,10 @@ function renderShooter() {
       return `<div class="card shLevel ${open ? "" : "locked"} ${done ? "done" : ""}">
         <div class="shBossPic"><img src="assets/shooter/${L.img}.webp" alt="${L.boss}"></div>
         <h3>Level ${L.n}: ${L.name}</h3>
-        <div class="muted">${L.diff} · ${L.time} · Boss: <b>${L.boss}</b></div>
-        <div class="shLvReward">${done
+        <div class="muted">${L.diff} · ${L.time} · ${L.boss1 ? `Bosses: <b>${L.boss1}</b> and <b>${L.boss}</b>` : `Boss: <b>${L.boss}</b>`}</div>
+        <div class="shLvReward">${L.loot
+          ? `🏴‍☠️ Every clear: a <b>pirate loot box</b> (40–180 min of income${shHasPet() ? "" : " or a rare pet"}) + ${shDustIco} ${done ? L.dustAgain : L.dustFirst}${done && SH.best[L.n] ? `<br>✅ Cleared · Best time ${shClock(SH.best[L.n])}` : ""}${SH.bestScore[L.n] ? `${done ? " · " : "<br>"}⭐ Best score ${SH.bestScore[L.n].toLocaleString()}` : ""}`
+          : done
           ? `✅ Cleared${SH.best[L.n] ? ` · Best time ${shClock(SH.best[L.n])}` : ""}${SH.bestScore[L.n] ? ` · ⭐ Best score ${SH.bestScore[L.n].toLocaleString()}` : ""}<br>Play again: 💰 ${fmt(shReward(L, false))} + ${shDustIco} ${L.dustAgain}`
           : `First clear: 💰 <b>${fmt(shReward(L, true))}</b> + ${shDustIco} ${L.dustFirst}${SH.bestScore[L.n] ? `<br>⭐ Best score ${SH.bestScore[L.n].toLocaleString()}` : ""}`}</div>
         ${open ? `<button class="btn" data-sh-play="${L.n}">▶ Play</button>` : `<button class="btn" disabled>🔒 Beat level ${L.n - 1} first</button>`}

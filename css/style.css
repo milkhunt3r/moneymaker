@@ -1751,7 +1751,7 @@ p.guestWarn { font-size: 14px; background: rgba(255, 170, 0, 0.1); border: 1px s
 .shAuto { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; margin: 4px 0 8px; }
 .shDustBig { font-size: 20px; color: #ffe66b; }
 .shDustIco { filter: drop-shadow(0 0 4px rgba(255, 230, 107, 0.7)); }
-.shLevels { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 14px; }
+.shLevels { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-bottom: 14px; }
 .shLevel { display: flex; flex-direction: column; gap: 6px; align-items: center; text-align: center; margin: 0; }
 .shLevel h3 { margin: 2px 0 0; }
 .shLevel.locked { opacity: 0.55; }
@@ -1822,3 +1822,18 @@ p.guestWarn { font-size: 14px; background: rgba(255, 170, 0, 0.1); border: 1px s
 .shScore { font-size: 18px; margin: 4px 0; }
 .shScore b { color: #ffd34d; }
 .shNewBest { color: #9dff9d; font-weight: 700; font-size: 15px; }
+.shLoot { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 6px 0; }
+.shChest { width: 170px; height: auto; filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.6)); }
+.shLoot:not(.open) .shChest { animation: shChestBob 1.6s ease-in-out infinite; }
+.shChest.shake { animation: shChestShake 0.15s linear infinite !important; filter: drop-shadow(0 0 18px rgba(120, 240, 255, 0.9)); }
+.shLoot.open .shChest { animation: shChestPop 0.45s ease-out; filter: drop-shadow(0 0 26px rgba(255, 210, 80, 0.8)); }
+@keyframes shChestBob { 50% { transform: translateY(-5px); } }
+@keyframes shChestShake { 0% { transform: rotate(-4deg); } 50% { transform: rotate(4deg) scale(1.04); } 100% { transform: rotate(-4deg); } }
+@keyframes shChestPop { 0% { transform: scale(0.7); } 70% { transform: scale(1.12); } 100% { transform: scale(1); } }
+.shLootTier { font-size: 22px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 0 12px currentColor; }
+.shLootTier.common { color: #8be38b; } .shLootTier.rare { color: #5ab8ff; } .shLootTier.epic { color: #c77dff; }
+.shLootTier.legendary { color: #ffcc33; } .shLootTier.pet { color: #ff8ad8; }
+.shPetWin { display: flex; align-items: center; gap: 12px; text-align: left; max-width: 360px; }
+.shPetWin img { width: 86px; height: 86px; border-radius: 50%; border: 3px solid #ff8ad8; box-shadow: 0 0 18px rgba(255, 138, 216, 0.7); }
+.shEndReward.small { font-size: 15px; }
+@media (max-width: 700px) { .shChest { width: 110px; } .shLootTier { font-size: 17px; } .shPetWin img { width: 60px; height: 60px; } }

@@ -53,6 +53,8 @@ const PATCH_NOTES = [
   { date: "21 November 2026", title: "Empire of Coins", items: [
     "🚀 New mini-game: <b>Nebula Strike</b>! A side-scrolling space shooter that opens when you build the 🚀 Space Mission Center. Fight through 3 levels of enemy waves and beat the <b>Scrap Crab</b>, the <b>Hive Queen</b> and <b>The Taxman</b>. Time your 🛡️ shield, grab special weapons from supply ships and collect ✨ stardust to buy 4 ships and their upgrades.",
     "🏆 New <b>🚀 Nebula Strike</b> achievements section: 10 achievements.",
+    "🏴‍☠️ Nebula Strike: new <b>level 4: Pirate's Cove</b> (very hard, opens after level 3). Two bosses: <b>Captain Cutlass</b> after 2 minutes, then 2 more minutes of waves and the final boss <b>Admiral Dreadmaw</b> in his treasure cave. Every clear opens a <b>pirate loot box</b>: 40–180 minutes of income by rarity (Common, Rare, Epic, Legendary), or a rare pet!",
+    "🏆 3 new Nebula Strike achievements: 🏴‍☠️ Pirate's bane, 💰 Treasure hunter and 🐾 A new friend.",
     "🤖 Nebula Strike: two new enemies! <b>Junk Bots</b> (from level 1) charge straight at you when they line up with your ship, and <b>Laser Sentinels</b> (from level 2) park on the right and fire a beam across the screen after a red warning line. Dodge it or block it with your 🛡️ shield.",
     "👾 Nebula Strike: new hand-painted enemies: saucer drones (with their pilots), darters, gun pods, space mines, wasp hunters, swarm bugs, armoured gunships, supply ships and The Taxman's missiles.",
     "🦀 Nebula Strike: the Scrap Crab has a new look: it now flies on three rocket jets.",
