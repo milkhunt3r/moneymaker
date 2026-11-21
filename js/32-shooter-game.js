@@ -21,8 +21,9 @@ const SH_CFG = [
   { waves: { line: [1.5, 0], junk: [1.5, 0], sentinel: [1.6, 0], vee: [2, 0], sine: [2, 0], rocks: [1, 0], gunners: [2, 0], mines: [1.5, 0], column: [1.5, 0], brute: [1.5, 40], swarm: [2, 0], homers: [2, 30] },
     gap: [3.0, 1.8], spd: 1.2, fire: 1.1, hp: 2.3, bs: 285, boss: "taxman" },
   // 🏴‍☠️ level 4: two bosses (Captain Cutlass after the first stretch of waves, Admiral Dreadmaw after the second)
-  { waves: { skiff: [1.6, 0], raider: [1.6, 0], line: [1, 0], junk: [1.5, 0], sentinel: [1.6, 0], vee: [2, 0], sine: [1.5, 0], rocks: [1, 0], gunners: [2, 0], mines: [1.5, 0], column: [1.5, 0], brute: [1.6, 0], swarm: [2, 0], homers: [2, 0] },
-    gap: [2.6, 1.8], spd: 1.25, fire: 1.2, hp: 2.6, bs: 300, bosses: ["cutlass", "dreadmaw"] },
+  { waves: { skiff: [1.6, 0], raider: [1.6, 0], line: [1, 0], junk: [1.5, 0], sentinel: [1.6, 0], vee: [2, 0], sine: [1.5, 0], rocks: [2.2, 0], gunners: [2, 0], mines: [2.5, 0], column: [1.5, 0], brute: [1.6, 0], swarm: [2, 0], homers: [2, 0] },
+    gap: [2.1, 1.5], spd: 1.25, fire: 1.2, hp: 2.6, bs: 300, bosses: ["cutlass", "dreadmaw"],
+    minOnScreen: 4, filler: [1.2, 2.0] },   // never a quiet moment: a new wave comes early below 4 enemies, plus a steady drift of mines and asteroids
 ];
 // enemy base stats (HP × the level's hp factor; ✨ stardust × 1 / 1.5 / 2 by level)
 const SH_EN = {
@@ -129,6 +130,11 @@ const SH_WAVES = {
       const size = Math.round({ small: 18, medium: 25, big: 34 }[tier] + shRand(-1, 1));
       shAdd("rock", SHW + 40 + i * shRand(40, 90), shRand(50, SHH - 50), { vx: -shRand(90, 170) * s, vy: shRand(-25, 25), r: size * 0.85, hp: Math.round(size / 6) * R.cfg.hp, size, tier, v: i % 4, spin: shRand(-1.5, 1.5) });
     }
+  },
+  rock1(R, s) {
+    const tier = shPick(["small", "medium", "medium", "big", "big"]);
+    const size = Math.round({ small: 18, medium: 25, big: 34 }[tier] + shRand(-1, 1));
+    shAdd("rock", SHW + 40, shRand(50, SHH - 50), { vx: -shRand(90, 160) * s, vy: shRand(-20, 20), r: size * 0.85, hp: Math.round(size / 6) * R.cfg.hp, size, tier, v: Math.floor(Math.random() * 4), spin: shRand(-1.5, 1.5) });
   },
   mines(R, s) { for (let i = 0; i < 3 + (R.lv > 1 ? 1 : 0); i++) shAdd("mine", SHW + 40 + i * 70, shRand(70, SHH - 70), { vx: -75 * s }); },
   brute(R, s) { shAdd("brute", SHW + 70, shRand(140, SHH - 140), { vx: -110 * s, stopX: shRand(740, 800), stay: 9, fireAt: 1.2 }); },
@@ -533,6 +539,15 @@ function shUpdate(dt) {
   if (R.phase === "intro" && R.t >= 2.5) R.phase = "waves";
   if (R.phase === "waves") {
     const segT = R.t - R.segStart;   // time in this stretch of waves (level 4 has two, one before each boss)
+    if (R.cfg.minOnScreen && R.t > 4 && R.t >= R.nextWave - (R.cfg.gap[0] - 0.8)) {   // too few enemies left: bring the next wave now
+      const alive = R.en.reduce((a, e) => a + (!e.dead && e.x < SHW + 30 && e.type !== "hook" && e.type !== "carrier"), 0);
+      if (alive < R.cfg.minOnScreen) R.nextWave = R.t;
+    }
+    if (R.cfg.filler && R.t > 3 && R.t >= (R.nextFill || 0)) {   // 💣🪨 a single mine or asteroid drifting in
+      R.nextFill = R.t + shRand(R.cfg.filler[0], R.cfg.filler[1]);
+      if (Math.random() < 0.45) shAdd("mine", SHW + 30, shRand(60, SHH - 60), { vx: -shRand(70, 110) * R.cfg.spd });
+      else SH_WAVES.rock1(R, R.cfg.spd);
+    }
     if (R.t >= R.nextWave) { shSpawnWave(R); const k = Math.min(1, segT / R.L.len); R.nextWave = R.t + (R.cfg.gap[0] + (R.cfg.gap[1] - R.cfg.gap[0]) * k) * shRand(0.85, 1.15); }
     if (R.t >= R.nextCarrier) { shAdd("carrier", SHW + 40, shRand(90, SHH - 90), { vx: -90 }); R.nextCarrier = R.t + shRand(20, 28); }
     if (segT >= R.L.len) { R.phase = "warn"; R.warnT = 0; R.banner = { big: t("⚠️ WARNING"), small: t(SH_BOSS[shBossList(R)[R.bossIdx]].name + " is coming!"), life: 3.5, warn: true }; }
