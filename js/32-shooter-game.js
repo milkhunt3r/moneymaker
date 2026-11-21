@@ -1030,12 +1030,27 @@ function shShowEnd() {
         <div class="moneyRow" style="justify-content:center"><button class="btn big" data-shp="again">🔁 Try again</button>
           <button class="btn ghost" data-shp="hangar">🛸 Hangar</button></div></div>`;
 }
-// 🏴‍☠️ loot box on the win screen: closed chest + button, then it shakes, opens and shows the prize
+// 🏴‍☠️ loot box on the win screen: closed chest → it shakes → a reel of rarity cards spins and slows down onto the prize
+// (the prize was already rolled and paid in shWin; the reel only shows it)
+const SH_REEL_CARD = () => (isPhone() ? 78 : 104), SH_REEL_GAP = 8, SH_REEL_WIN = 46, SH_REEL_LEN = 54, SH_REEL_MS = 5600;
+const shLootCard = (k) => `<div class="shCard ${k}"><img src="assets/shooter/loot-${k}.webp" alt=""><span>${k === "pet" ? "Pet" : SH_LOOT.find(T => T.k === k).name}</span></div>`;
+function shReelCards(win) {
+  const odds = shLootOdds().filter(T => T.p > 0), sum = odds.reduce((a, T) => a + T.p, 0);
+  const pick = () => { let r = Math.random() * sum; for (const T of odds) if ((r -= T.p) < 0) return T.k; return "common"; };
+  const cards = Array.from({ length: SH_REEL_LEN }, pick);
+  cards[SH_REEL_WIN] = win;
+  // a "near miss": often put something better right next to the prize
+  const better = { common: "rare", rare: "epic", epic: "legendary", legendary: shHasPet() ? "epic" : "pet", pet: "legendary" };
+  if (Math.random() < 0.6) cards[SH_REEL_WIN + (Math.random() < 0.5 ? 1 : -1)] = better[win];
+  return cards;
+}
 function shLootHtml(E) {
   const L = E.loot;
+  if (E.reel) return `<div class="shReel"><div class="shReelStrip" id="shReelStrip">${E.reel.map(shLootCard).join("")}</div><div class="shReelPointer"></div></div>
+    <button class="btn ghost small" data-shp="lootskip">⏩ Skip</button>`;
   if (!E.opened) return `<div class="shLoot"><img class="shChest" src="assets/shooter/chest-closed.webp" alt="Loot box">
     <button class="btn big" data-shp="loot">🏴‍☠️ Open the loot box</button><div class="shEndReward small"><span>✨ <b>+${shR.dust.toLocaleString()}</b> stardust</span></div></div>`;
-  return `<div class="shLoot open"><img class="shChest" src="assets/shooter/chest-open.webp" alt="Loot box">
+  return `<div class="shLoot open"><div class="shWinCard">${shLootCard(L.k)}</div>
     <div class="shLootTier ${L.k}">${L.k === "pet" ? "🐾 Pet" : L.name}</div>
     ${L.k === "pet"
       ? `<div class="shPetWin"><img src="assets/pet/pet-portrait.webp" alt="Pet"><div><b>You found a pet!</b><br>Your new friend now lives on your 💰 Income page. It drinks the ⚡ energy drink and taps the coin for you!</div></div>`
@@ -1043,10 +1058,32 @@ function shLootHtml(E) {
     <div class="shEndReward small"><span>✨ <b>+${shR.dust.toLocaleString()}</b> stardust</span></div></div>`;
 }
 function shOpenLoot() {
-  const E = shR && shR.end; if (!E || !E.loot || E.opened || E.opening) return;
+  const E = shR && shR.end; if (!E || !E.loot || E.opened || E.opening || E.reel) return;
   E.opening = true;
   const img = document.querySelector(".shChest"); if (img) img.classList.add("shake");
-  setTimeout(() => { E.opened = true; E.opening = false; if (shR && shR.end === E) shShowEnd(); }, 900);
+  setTimeout(() => {
+    E.opening = false; if (!shR || shR.end !== E) return;
+    E.reel = shReelCards(E.loot.k); shShowEnd(); shSpinReel(E);
+  }, 700);
+}
+function shSpinReel(E) {
+  const strip = $("shReelStrip"); if (!strip) return;
+  const box = strip.parentElement.clientWidth, cw = SH_REEL_CARD() + SH_REEL_GAP;
+  // stop somewhere inside the winning card (sometimes close to its edge, for tension)
+  const inside = (Math.random() - 0.5) * SH_REEL_CARD() * 0.8;
+  const to = -(SH_REEL_WIN * cw + SH_REEL_CARD() / 2 + inside) + box / 2;
+  E.anim = strip.animate([{ transform: "translateX(0)" }, { transform: `translateX(${to}px)` }],
+    { duration: SH_REEL_MS, easing: "cubic-bezier(0.08, 0.6, 0.12, 1)", fill: "forwards" });
+  E.anim.onfinish = () => {
+    const win = strip.children[SH_REEL_WIN]; if (win) win.classList.add("won");
+    setTimeout(() => shReelDone(E), 900);
+  };
+}
+function shReelDone(E) {
+  if (!E || E.opened) return;
+  if (E.anim) { E.anim.onfinish = null; E.anim.cancel(); }
+  E.reel = null; E.opened = true;
+  if (shR && shR.end === E) shShowEnd();
 }
 function shRenderPlay() {
   const v = $("shooterView");
@@ -1067,7 +1104,7 @@ function shRenderPlay() {
   shCanvas.width = SHW * k; shCanvas.height = SHH * k;
   shCtx = shCanvas.getContext("2d"); shCtx.setTransform(k, 0, 0, k, 0, 0);
   shBindTouch();
-  if (shR.end) { shDraw(); shShowEnd(); }
+  if (shR.end) { shDraw(); if (shR.end.reel) { shR.end.reel = null; shR.end.opened = true; } shShowEnd(); }
   else if (shR.paused) { shR.paused = false; shPause(true); }
   else shKick();
 }
@@ -1100,6 +1137,7 @@ $("shooterView").addEventListener("click", (e) => {
   const b = e.target.closest("[data-shp]"); if (!b || !shR) return;
   const a = b.dataset.shp, lv = shR.lv;
   if (a === "loot") shOpenLoot();
+  if (a === "lootskip") shReelDone(shR.end);
   if (a === "pause") shPause(!shR.paused);
   if (a === "resume") shPause(false);
   if (a === "quit" || a === "hangar") shQuit();
