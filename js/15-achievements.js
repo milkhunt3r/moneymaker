@@ -15,7 +15,7 @@ const ACH_CATEGORIES = [
   { id: "genetics", name: "🧬 Genetics", hidden: () => !((state.legacy && state.legacy.count) >= 2) },
 ];
 // 🎨 painted category icons (assets/icons/ico-ui-*.webp); the name's emoji stays for plain text
-const ACH_CAT_PIC = { general: "general", income: "income", casino: "casino", invest: "invest", logistics: "logistics", art: "art", mine: "mining", secret: "secrets", genetics: "genetics" };
+const ACH_CAT_PIC = { general: "general", income: "income", casino: "casino", invest: "invest", logistics: "logistics", art: "art", mine: "mining", secret: "secrets", genetics: "genetics", shooter: "nebula" };
 const catLabel = (c) => ACH_CAT_PIC[c.id] ? ico("ui-" + ACH_CAT_PIC[c.id]) + c.name.replace(/^\S+\s/, "") : c.name;
 const achCatsShown = () => ACH_CATEGORIES.filter(c => !(c.hidden && c.hidden()));
 // an achievement with a tier stays hidden until that many prestiges (🌌🌌 second-tier secrets: 2)
@@ -270,7 +270,9 @@ const ACH_PICS = new Set(["cash1s", "cash10s", "cash100s", "cash1g", "cash5g", "
   "artcol10", "artcol50", "artcol100", "artslots", "artsold1", "artsold50", "artsold100", "artsold1000",
   "uni2", "uni3", "sci150", "moon", "deep1", "deep10", "gene", "gene1", "gene100", "geneKraken", "geneElder", "geneUnicorn", "mars",
   // built from existing art in a badge rim (bronze rim = the first step, gold = the bigger one)
-  "astro", "station", "wash3", "repair3", "salon3", "casino2", "hotel2", "warehouse5", "law10", "agents100", "mine1", "mine4", "port", "recruit", "artbiz", "sciUni", "sciLab", "parks2", "boost-energy-10", "boost-energy-100", "boost-pill-10", "boost-pill-100", "boost-influence-10", "boost-influence-100", "mineCoal", "mineSilver", "mineGold", "mineDiamond", "mineChest1", "mineLift1", "mineLift20", "gene10", "gene50", "satellite", "play-roulette-100", "play-roulette-1000", "play-blackjack-100", "play-blackjack-1000", "play-plinko-100", "play-plinko-1000", "play-climb-100", "play-climb-1000", "play-vp-100", "play-vp-1000", "play-uth-100", "play-uth-1000", "bac50", "bac100", "bac500", "bacStreak3", "gc50", "gc100", "gc500", "gcFree", "gcBuy"]);
+  "astro", "station", "wash3", "repair3", "salon3", "casino2", "hotel2", "warehouse5", "law10", "agents100", "mine1", "mine4", "port", "recruit", "artbiz", "sciUni", "sciLab", "parks2", "boost-energy-10", "boost-energy-100", "boost-pill-10", "boost-pill-100", "boost-influence-10", "boost-influence-100", "mineCoal", "mineSilver", "mineGold", "mineDiamond", "mineChest1", "mineLift1", "mineLift20", "gene10", "gene50", "satellite", "play-roulette-100", "play-roulette-1000", "play-blackjack-100", "play-blackjack-1000", "play-plinko-100", "play-plinko-1000", "play-climb-100", "play-climb-1000", "play-vp-100", "play-vp-1000", "play-uth-100", "play-uth-1000", "bac50", "bac100", "bac500", "bacStreak3", "gc50", "gc100", "gc500", "gcFree", "gcBuy",
+  // 🚀 Nebula Strike
+  "shLv1", "shLv2", "shLv3", "shLv4", "shLoot10", "petLove", "petTaps", "shPet", "shPerfect", "shBlock50", "shKill1k", "shWins10", "shFleet", "shMaxShip", "shDust5k"]);
 const achIcon = (a, cls = "") => {
   if (!ACH_PICS.has(a.id)) return a.icon;
   const diff = (a.id.match(/^art(easy|medium|hard)\d/) || [])[1];   // 🖼️ Art Gallery brushes: a dot shows Easy / Medium / Hard
