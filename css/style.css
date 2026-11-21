@@ -1837,3 +1837,14 @@ p.guestWarn { font-size: 14px; background: rgba(255, 170, 0, 0.1); border: 1px s
 .shPetWin img { width: 86px; height: 86px; border-radius: 50%; border: 3px solid #ff8ad8; box-shadow: 0 0 18px rgba(255, 138, 216, 0.7); }
 .shEndReward.small { font-size: 15px; }
 @media (max-width: 700px) { .shChest { width: 110px; } .shLootTier { font-size: 17px; } .shPetWin img { width: 60px; height: 60px; } }
+
+/* 🐾 Pet on the Income page */
+#petLayer { position: absolute; inset: 0; pointer-events: none; z-index: 3; overflow: visible; }
+#petLayer[hidden] { display: none; }
+#pet { position: absolute; left: 0; top: 0; pointer-events: auto; cursor: pointer; will-change: transform; -webkit-tap-highlight-color: transparent; }
+#pet img { width: 100%; height: 100%; display: block; transform-origin: 50% 100%; filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.45)); user-select: none; }
+#pet:focus-visible { outline: 2px dashed #ffd34d; outline-offset: 2px; border-radius: 12px; }
+.petFloat { position: absolute; pointer-events: none; font-size: 22px; font-weight: 900; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
+.petFloat.z { color: #cfe4ff; font-size: 18px; font-style: italic; }
+.petSetPic { width: 34px; height: 34px; border-radius: 50%; margin-right: 8px; border: 2px solid #ff8ad8; }
+.petNameInput { width: 140px; padding: 5px 8px; border-radius: 8px; border: 1px solid rgba(255, 211, 77, 0.5); background: rgba(0, 0, 0, 0.35); color: #fff; font: inherit; }

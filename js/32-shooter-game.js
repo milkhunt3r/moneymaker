@@ -85,7 +85,7 @@ function shWin() {
   const loot = L.loot ? shLootRoll() : null;
   const lootMin = loot && loot.min ? Math.round(shRand(loot.min[0], loot.min[1])) : 0;
   const money = loot ? (loot.k === "pet" ? 0 : Math.round(lootMin * 60 * mineBase())) : shReward(L, first), dust = first ? L.dustFirst : L.dustAgain;
-  if (loot) { SH.loots = (SH.loots || 0) + 1; if (loot.k === "pet") state.pet = { owned: true, at: Date.now() }; }
+  if (loot) { SH.loots = (SH.loots || 0) + 1; if (loot.k === "pet") state.pet = { owned: true, at: Date.now(), name: "Mochi", pets: 0, taps: 0 }; }
   state.money += money; clickedThisSecond += money; SH.earned += money;   // counts as income (taxes)
   SH.dust += dust; SH.dustAll += dust; R.dust += dust;
   if (first) SH.done = R.lv;
@@ -975,7 +975,7 @@ function shLootHtml(E) {
   return `<div class="shLoot open"><img class="shChest" src="assets/shooter/chest-open.webp" alt="Loot box">
     <div class="shLootTier ${L.k}">${L.k === "pet" ? "🐾 Pet" : L.name}</div>
     ${L.k === "pet"
-      ? `<div class="shPetWin"><img src="assets/pet/pet-portrait.webp" alt="Pet"><div><b>You found a pet!</b><br>Your new friend will soon move into your 💰 Income page.</div></div>`
+      ? `<div class="shPetWin"><img src="assets/pet/pet-portrait.webp" alt="Pet"><div><b>You found a pet!</b><br>Your new friend now lives on your 💰 Income page. It drinks the ⚡ energy drink and taps the coin for you!</div></div>`
       : `<div class="shEndReward"><span>💰 <b>+${fmt(E.money)}</b></span><span class="muted">${L.min} min of income</span></div>`}
     <div class="shEndReward small"><span>✨ <b>+${shR.dust.toLocaleString()}</b> stardust</span></div></div>`;
 }

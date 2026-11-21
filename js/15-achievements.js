@@ -233,6 +233,8 @@ const ACHIEVEMENTS = [
       { id: "shLv3",     icon: "👁️", name: "Tax evasion",         desc: "Beat The Taxman in level 3 of Nebula Strike",         goal: 1, get: () => (N().done || 0) >= 3 ? 1 : 0 },
       { id: "shLv4",     icon: "🏴‍☠️", name: "Pirate's bane",       desc: "Beat Admiral Dreadmaw in level 4 of Nebula Strike", goal: 1, get: () => (N().done || 0) >= 4 ? 1 : 0 },
       { id: "shLoot10",  icon: "💰", name: "Treasure hunter",     desc: "Open 10 pirate loot boxes",                       goal: 10, get: () => N().loots || 0 },
+      { id: "petLove",   icon: "💖", name: "Best friends",        desc: "Pet your pet 100 times",                          goal: 100, get: () => (state.pet && state.pet.pets) || 0 },
+      { id: "petTaps",   icon: "🐾", name: "Paw power",           desc: "Let your pet tap the coin 10,000 times",          goal: 10000, get: () => (state.pet && state.pet.taps) || 0 },
       { id: "shPet",     icon: "🐾", name: "A new friend",        desc: "Find the pet in a pirate loot box",               goal: 1, get: () => state.pet && state.pet.owned ? 1 : 0 },
       { id: "shPerfect", icon: "✨", name: "Untouchable",         desc: "Beat a Nebula Strike level without losing a life",  goal: 1, get: () => N().perfect || 0 },
       { id: "shBlock50", icon: "🛡️", name: "Perfect timing",      desc: "Block 50 hits with your shield",                    goal: 50, get: () => N().blocks || 0 },

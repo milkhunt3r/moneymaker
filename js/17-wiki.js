@@ -319,6 +319,9 @@ function wikiArt() {
       return [s.name, s.price ? `✨ ${s.price.toLocaleString()}${s.needs ? ` (after level ${s.needs})` : ""}` : "Free", String(s.speed), String(s.hearts), s.desc]; }))}
     ${wt(["Upgrade", "Levels", "Effect", "⛏️ Mine ore"], SH_UP_IDS.map(k => [SH_UPS[k].icon + " " + SH_UPS[k].name, String(SH_UPS[k].max), SH_UPS[k].eff(SH_UPS[k].max) + " at max",
       Object.entries(SH_UP_ORE[k] || {}).map(([lv, ore]) => `Lv ${lv}: ${Object.entries(ore).map(([o, n]) => `${o === "ruby" ? "🔴" : "💎"} ${n}`).join(" ")}`).join(" · ") || "—"]))}
+    <p>🐾 <b>The pet</b> (5% from the pirate loot box, only one): it lives on your 💰 Income page next to the coin. When the ⚡ energy drink is ready it drinks it for you (it pays the normal price),
+      then taps the coin at the max speed of 10 clicks per second while the drink lasts (its taps count as clicks, also for achievements, and share the 10-per-second limit with your own clicks).
+      During the drink's cooldown it sleeps and wakes up 10 seconds before the next one. It only works while the Income page is on screen. Click it to pet it; hide it or rename it in ⚙️ Settings.</p>
     <p>⭐ Score: every destroyed enemy gives points (100 for small ships, up to 1,000 for big gunships) and each boss gives a big bonus (Scrap Crab 5,000, Hive Queen 10,000, The Taxman 20,000). Your best score for each level is shown in the hangar.</p>
     <p>⛏️ The top upgrade levels also need 💎 diamonds or 🔴 rubies from your 🏦 vault in the ⛏️ Gold Mine Dig, on every ship. Keep ore after a dig instead of selling it to save up.</p>
     <p>⌨️ Move with the arrows or WASD, 🛡️ shield with Shift or K, 🚀 special weapon with X or L, ⏸️ pause with P or Esc. You can change the shield and special weapon keys in the hangar. Auto-fire is on by default (turn it off in the hangar to shoot with Space).
