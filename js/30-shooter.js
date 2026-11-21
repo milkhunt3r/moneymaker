@@ -160,6 +160,7 @@ function renderShooter() {
         ${open ? `<button class="btn" data-sh-play="${L.n}">▶ Play</button>` : `<button class="btn" disabled>🔒 Beat level ${L.n - 1} first</button>`}
       </div>`;
     }).join("")}</div>
+    ${shChestCard()}
     <div class="card shHangar">
       <h3>🛸 Hangar</h3>
       <div class="shShips">${SH_SHIP_IDS.map(id => {

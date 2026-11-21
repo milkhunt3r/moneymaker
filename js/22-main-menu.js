@@ -53,6 +53,7 @@ const PATCH_NOTES = [
   { date: "21 November 2026", title: "Empire of Coins", items: [
     "🚀 New mini-game: <b>Nebula Strike</b>! A side-scrolling space shooter that opens when you build the 🚀 Space Mission Center. Fight through 3 levels of enemy waves and beat the <b>Scrap Crab</b>, the <b>Hive Queen</b> and <b>The Taxman</b>. Time your 🛡️ shield, grab special weapons from supply ships and collect ✨ stardust to buy 4 ships and their upgrades.",
     "🏆 New <b>🚀 Nebula Strike</b> achievements section: 10 achievements.",
+    "🏴‍☠️ Nebula Strike: after beating Admiral Dreadmaw, you can buy a <b>pirate chest</b> in the hangar for ✨ 10,000 stardust. Same prizes and odds as the level 4 loot box, pet included.",
     "🏴‍☠️ Nebula Strike level 4 is much busier: waves come faster, a new one arrives as soon as the screen empties, and space mines and asteroids keep drifting in the whole way to the bosses.",
     "🚀 Nebula Strike: The Taxman and Admiral Dreadmaw are a bit smaller, so you can fly further forward during their fights.",
     "🎰 Nebula Strike: opening the pirate loot box is now a spin! A reel of rarity cards races past and slowly stops on your prize. Can't wait? Press ⏩ Skip.",

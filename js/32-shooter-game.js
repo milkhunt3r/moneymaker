@@ -1071,7 +1071,7 @@ function shReelCards(win) {
 function shLootHtml(E) {
   const L = E.loot;
   if (E.reel) return `<div class="shReel"><div class="shReelStrip" id="shReelStrip">${E.reel.map(shLootCard).join("")}</div><div class="shReelPointer"></div></div>
-    <button class="btn ghost small" data-shp="lootskip">⏩ Skip</button>`;
+    <button class="btn small" data-shp="lootskip">⏩ Skip</button>`;
   if (!E.opened) return `<div class="shLoot"><img class="shChest" src="assets/shooter/chest-closed.webp" alt="Loot box">
     <button class="btn big" data-shp="loot">🏴‍☠️ Open the loot box</button><div class="shEndReward small"><span>✨ <b>+${shR.dust.toLocaleString()}</b> stardust</span></div></div>`;
   return `<div class="shLoot open"><div class="shWinCard">${shLootCard(L.k)}</div>
@@ -1184,3 +1184,79 @@ document.addEventListener("keyup", (e) => { shKeys[e.code] = false; });
 document.addEventListener("visibilitychange", () => { if (document.hidden && shR && !shR.end) shPause(true); });
 window.addEventListener("blur", () => { for (const k in shKeys) shKeys[k] = false; });
 if (state.view === "games" && state.gamePage === "shooter") renderGames();
+
+/* ---------------------------------------------------------------------
+   🏴‍☠️ PIRATE CHEST SHOP (hangar): after beating Admiral Dreadmaw, buy a pirate loot box for ✨ 10,000 stardust.
+   Same prizes and odds as the level 4 loot box; the prize is rolled and paid at purchase, the reel just shows it.
+   --------------------------------------------------------------------- */
+const SH_CHEST_PRICE = 10000;
+function shChestCard() {
+  const open = SH.done >= 4;
+  return `<div class="card shChestShop ${open ? "" : "locked"}">
+    <img class="shChestShopImg" src="assets/shooter/chest-closed.webp" alt="">
+    <div class="grow"><h3>🏴‍☠️ Pirate chest</h3>
+      <div class="muted">The same loot box as level 4: 40–180 min of income by rarity${shHasPet() ? "" : " or the rare pet"}.</div></div>
+    ${open ? `<button class="btn" data-sh-chest ${SH.dust >= SH_CHEST_PRICE ? "" : "disabled"}>Buy · ${shDustIco} ${SH_CHEST_PRICE.toLocaleString()}</button>`
+      : `<button class="btn" disabled>🔒 Beat Admiral Dreadmaw first</button>`}
+  </div>`;
+}
+let shChest = null;   // the chest being opened in the pop-up
+function shBuyChest() {
+  if (shChest && !$("modal").hidden) return;   // one chest at a time (a closed pop-up frees it)
+  shChest = null;
+  if (SH.done < 4 || SH.dust < SH_CHEST_PRICE) return;
+  SH.dust -= SH_CHEST_PRICE;
+  const loot = shLootRoll(), min = loot.min ? Math.round(shRand(loot.min[0], loot.min[1])) : 0;
+  const money = loot.k === "pet" ? 0 : Math.round(min * 60 * mineBase());
+  state.money += money; clickedThisSecond += money; SH.earned += money;
+  SH.loots = (SH.loots || 0) + 1; SH.chestsBought = (SH.chestsBought || 0) + 1;
+  if (loot.k === "pet") state.pet = { owned: true, at: Date.now(), name: "Mochi", pets: 0, taps: 0 };
+  save(); updateCounter(); renderShooter();
+  shChest = { k: loot.k, name: loot.name, min, money, stage: "closed" };
+  shChestShow();
+}
+function shChestShow() {
+  const C = shChest; if (!C) return;
+  let body;
+  if (C.stage === "closed") body = `<div class="shLoot"><img class="shChest" src="assets/shooter/chest-closed.webp" alt="Loot box">
+    <button class="btn big" data-shc="open">🏴‍☠️ Open the loot box</button></div>`;
+  else if (C.stage === "reel") body = `<div class="shReel"><div class="shReelStrip" id="shcStrip">${C.reel.map(shLootCard).join("")}</div><div class="shReelPointer"></div></div>
+    <button class="btn small" data-shc="skip">⏩ Skip</button>`;
+  else body = `<div class="shLoot open"><div class="shWinCard">${shLootCard(C.k)}</div>
+    <div class="shLootTier ${C.k}">${C.k === "pet" ? "🐾 Pet" : C.name}</div>
+    ${C.k === "pet"
+      ? `<div class="shPetWin"><img src="assets/pet/pet-portrait.webp" alt="Pet"><div><b>You found a pet!</b><br>Your new friend now lives on your 💰 Income page. It drinks the ⚡ energy drink and taps the coin for you!</div></div>`
+      : `<div class="shEndReward"><span>💰 <b>+${fmt(C.money)}</b></span><span class="muted">${C.min} min of income</span></div>`}
+    <div class="moneyRow" style="justify-content:center">
+      ${SH.dust >= SH_CHEST_PRICE ? `<button class="btn" data-shc="again">🏴‍☠️ Buy another · ${shDustIco} ${SH_CHEST_PRICE.toLocaleString()}</button>` : ""}
+      <button class="btn ghost" data-shc="close">Close</button></div></div>`;
+  showModal(`<div class="shChestModal"><h2>🏴‍☠️ Pirate chest</h2>${body}</div>`);
+  $("modalBox").classList.add("wide");
+  if (C.stage === "reel") shChestSpin();
+}
+function shChestSpin() {
+  const C = shChest, strip = $("shcStrip"); if (!strip) return;
+  const box = strip.parentElement.clientWidth, cw = SH_REEL_CARD() + SH_REEL_GAP;
+  const to = -(SH_REEL_WIN * cw + SH_REEL_CARD() / 2 + (Math.random() - 0.5) * SH_REEL_CARD() * 0.8) + box / 2;
+  C.anim = strip.animate([{ transform: "translateX(0)" }, { transform: `translateX(${to}px)` }],
+    { duration: SH_REEL_MS, easing: "cubic-bezier(0.08, 0.6, 0.12, 1)", fill: "forwards" });
+  C.anim.onfinish = () => { const w = strip.children[SH_REEL_WIN]; if (w) w.classList.add("won"); C.doneT = setTimeout(shChestDone, 900); };
+}
+function shChestDone() {
+  const C = shChest; if (!C || C.stage === "done") return;
+  if (C.anim) { C.anim.onfinish = null; C.anim.cancel(); }
+  clearTimeout(C.doneT); C.stage = "done"; shChestShow();
+}
+$("modalBox").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-shc]"); if (!b || !shChest) return;
+  const a = b.dataset.shc, C = shChest;
+  if (a === "open" && C.stage === "closed") {
+    const img = document.querySelector(".shChestModal .shChest"); if (img) img.classList.add("shake");
+    b.disabled = true;
+    setTimeout(() => { if (shChest !== C) return; C.reel = shReelCards(C.k); C.stage = "reel"; shChestShow(); }, 700);
+  }
+  if (a === "skip") shChestDone();
+  if (a === "close") { shChest = null; hideModal(); renderShooter(); }
+  if (a === "again") { shChest = null; shBuyChest(); }
+});
+document.addEventListener("click", (e) => { if (e.target.closest("[data-sh-chest]") && !e.target.closest("[data-sh-chest]").disabled) shBuyChest(); });

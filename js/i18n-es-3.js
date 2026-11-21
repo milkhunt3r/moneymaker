@@ -556,7 +556,11 @@ Object.assign(ES, {
   "Fly a spaceship through 4 levels of enemy waves and defeat the bosses waiting at the end.": "Pilota una nave por 4 niveles de oleadas enemigas y derrota a los jefes que esperan al final.",
   "Show on the Income page": "Mostrar en la página de Ingresos", "Name": "Nombre", "🐾 Pet": "🐾 Mascota", "The pet": "La mascota",
   "Best friends": "Mejores amigos", "Pet your pet 100 times": "Acaricia a tu mascota 100 veces", "Paw power": "Poder de patitas", "Let your pet tap the coin 10,000 times": "Deja que tu mascota pulse la moneda 10.000 veces",
-  "Skip": "Saltar", "⏩ Skip": "⏩ Saltar",
+  "Skip": "Saltar", "Pirate chest": "Cofre pirata", "Beat Admiral Dreadmaw first": "Derrota antes al Almirante Fauces Negras", "Buy another": "Comprar otro", "Close": "Cerrar",
+  "The same loot box as level 4: 40–180 min of income by rarity or the rare pet.": "El mismo cofre del botín que en el nivel 4: de 40 a 180 min de ingresos según la rareza o la mascota rara.",
+  "The same loot box as level 4: 40–180 min of income by rarity.": "El mismo cofre del botín que en el nivel 4: de 40 a 180 min de ingresos según la rareza.",
+  "🏴‍☠️ Nebula Strike: after beating Admiral Dreadmaw, you can buy a <b>pirate chest</b> in the hangar for ✨ 10,000 stardust. Same prizes and odds as the level 4 loot box, pet included.":
+    "🏴‍☠️ Nebula Strike: tras derrotar al Almirante Fauces Negras, puedes comprar un <b>cofre pirata</b> en el hangar por ✨ 10.000 de polvo estelar. Mismos premios y probabilidades que el cofre del botín del nivel 4, mascota incluida.", "⏩ Skip": "⏩ Saltar",
   "/ WASD": "/ WASD", "Shift / K": "Shift / K", "X / L": "X / L", "P / Esc": "P / Esc", "Move": "Moverse", "Shoot": "Disparar", "Auto-fire on": "Disparo automático", "Space": "Espacio",
   "about 5 min": "unos 5 min", "about 6–7 min": "unos 6–7 min",
   // achievements
@@ -668,11 +672,12 @@ hrx(String.raw`💀 Very hard · about 5 min · Bosses: <b>Captain Cutlass<\/b> 
 hrx(String.raw`🏴‍☠️ Every clear: a <b>pirate loot box<\/b> \(40–180 min of income( or a rare pet)?\) \+ <span>✨<\/span> (\d+)(?:<br>✅ Cleared · Best time (\d+:\d\d))?(?:(?: · |<br>)⭐ Best score ([\d.,]+))?`,
   (m, pet, d, tm, sc) => `🏴‍☠️ Cada victoria: un <b>cofre del botín pirata</b> (40–180 min de ingresos${pet ? " o una mascota rara" : ""}) + <span>✨</span> ${d}${tm ? `<br>✅ Superado · Mejor tiempo ${tm}` : ""}${sc ? `${tm ? " · " : "<br>"}⭐ Mejor puntuación ${sc}` : ""}`);
 H("<b>You found a pet!</b><br>Your new friend now lives on your 💰 Income page. It drinks the ⚡ energy drink and taps the coin for you!", "<b>¡Has encontrado una mascota!</b><br>Tu nuevo amigo ya vive en tu página de 💰 Ingresos. ¡Se bebe la ⚡ bebida energética y pulsa la moneda por ti!");
-H("🏴‍☠️ <b>Pirate loot box</b> (level 4, every clear): after Captain Cutlass, the waves continue for about 2 more minutes before Admiral Dreadmaw. Beat him to open a loot box:",
-  "🏴‍☠️ <b>Cofre del botín pirata</b> (nivel 4, en cada victoria): tras el Capitán Sable, las oleadas siguen unos 2 minutos más antes del Almirante Fauces Negras. Derrótalo para abrir un cofre del botín:");
+H("🏴‍☠️ <b>Pirate loot box</b> (level 4, every clear): after Captain Cutlass, the waves continue for about 2 more minutes before Admiral Dreadmaw. Beat him to open a loot box (after your first win you can also buy one in the hangar for ✨ 10,000 stardust):",
+  "🏴‍☠️ <b>Cofre del botín pirata</b> (nivel 4, en cada victoria): tras el Capitán Sable, las oleadas siguen unos 2 minutos más antes del Almirante Fauces Negras. Derrótalo para abrir un cofre del botín (tras tu primera victoria también puedes comprar uno en el hangar por ✨ 10.000 de polvo estelar):");
 rx(String.raw`Loot box \+ ✨ (\d+)`, "Cofre del botín + ✨ $1");
 rx(String.raw`(\d+)–(\d+) min of income`, "$1–$2 min de ingresos");
 rx(String.raw`(\d+) min of income`, "$1 min de ingresos");
+hrx(String.raw`🏴‍☠️ Buy another · <span>✨<\/span> ([\d.,]+)`, "🏴‍☠️ Comprar otro · <span>✨</span> $1");
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
 ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {
