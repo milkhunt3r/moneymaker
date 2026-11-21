@@ -28,6 +28,10 @@ const SH_EN = {
   homer: { hp: 2, r: 15, dust: 2 }, tiny: { hp: 1, r: 11, dust: 1 }, carrier: { hp: 4, r: 24, dust: 3 },
   rock: { hp: 4, r: 24, dust: 1 }, tmissile: { hp: 2, r: 12, dust: 0 },
 };
+// ⭐ score: points for every destroyed enemy (asteroids by size) and boss
+const SH_POINTS = { drone: 100, darter: 100, weaver: 150, gunner: 300, mine: 200, brute: 1000, homer: 200, tiny: 50, carrier: 250, tmissile: 100 };
+const SH_BOSS_POINTS = { crab: 5000, hive: 10000, taxman: 20000 };
+const shPoints = (e) => e.type === "rock" ? Math.round(e.size * 3 / 10) * 10 : SH_POINTS[e.type] || 0;
 // 🎁 special weapons (ammo × the Special ammo upgrade)
 const SH_SPECIAL = {
   missile: { ammo: 8, icon: "🚀", name: "Homing missiles", cd: 0.25 },
@@ -51,7 +55,7 @@ function shStart(lv) {
   shR = { lv, L, cfg, st, t: 0, phase: "intro", bgX: 0,
     p: { x: 150, y: SHH / 2, hearts: st.hearts, inv: 2, cool: 0, shield: 0, shieldCd: 0, special: null, ammo: 0, spCool: 0, tdx: 0, tdy: 0 },
     en: [], pb: [], eb: [], fx: [], pk: [], beams: [], laser: 0, boss: null,
-    nextWave: 3, nextCarrier: 16, kills: 0, dust: 0, hits: 0, blocks: 0, shake: 0, banner: null, paused: false, end: null,
+    nextWave: 3, nextCarrier: 16, kills: 0, dust: 0, score: 0, hits: 0, blocks: 0, shake: 0, banner: null, paused: false, end: null,
     stars: Array.from({ length: 90 }, (_, i) => ({ x: Math.random() * SHW, y: Math.random() * SHH, z: i % 3 })),
     planet: { x: SHW + 200, y: shRand(120, 420), r: Math.round(shRand(50, 90)), next: 40 } };
   shR.banner = { big: t(`Level ${lv}`), small: t(L.name), life: 3 };
@@ -59,7 +63,15 @@ function shStart(lv) {
   [st.img, L.img, ...(lv === 3 ? ["boss-taxman-dmg"] : [])].forEach(shImg);
   renderShooter(); shKick();
 }
+// 🏅 best score per level (any run: won, lost or quit)
+function shRecordScore(R) {
+  if (!R || R.scored) return; R.scored = true;
+  SH.bestScore = SH.bestScore || {};
+  R.newBest = R.score > 0 && R.score > (SH.bestScore[R.lv] || 0);
+  if (R.newBest) SH.bestScore[R.lv] = R.score;
+}
 function shQuit() {
+  shRecordScore(shR);
   shR = null; shStop(); save(); renderShooter();
 }
 function shWin() {
@@ -71,11 +83,13 @@ function shWin() {
   SH.wins++; SH.bossKills++; SH.clears[R.lv] = (SH.clears[R.lv] || 0) + 1;
   if (!R.hits) SH.perfect++;
   if (!SH.best[R.lv] || R.t < SH.best[R.lv]) SH.best[R.lv] = Math.round(R.t);
+  shRecordScore(R);
   R.end = { win: true, first, money, bonus: dust };
   save(); updateCounter(); shShowEnd();
 }
 function shLose() {
   const R = shR;
+  shRecordScore(R);
   R.end = { win: false, pct: Math.min(99, Math.floor(R.t / (R.L.len + 60) * 100)) };
   save(); shShowEnd();
 }
@@ -174,6 +188,8 @@ function shDrop(k, x, y, v = 0) { shR.pk.push({ k, x, y, v, t: 0, vx: k === "dus
 function shKill(e) {
   const R = shR;
   e.dead = true; R.kills++; SH.kills++;
+  const pts = shPoints(e); R.score += pts;
+  if (pts >= 250) shText(e.x, e.y - e.r - 6, `+${pts}`, "#ffd34d");
   shBoom(e.x, e.y, e.r);
   if (e.type === "carrier") {
     const P = R.p, opts = ["missile", "missile", "spread", "spread", "laser", "laser"];
@@ -369,6 +385,7 @@ function shBossKilled(R, b) {
   R.en.forEach(e => { if (!e.dead) { e.dead = true; shBoom(e.x, e.y, e.r); } });
   const d = Math.round(b.def.dust);
   R.dust += d; SH.dust += d; SH.dustAll += d;
+  R.score += SH_BOSS_POINTS[b.k]; shText(b.x, b.y - 90, `+${SH_BOSS_POINTS[b.k].toLocaleString()} ⭐`, "#ffd34d");
   shText(b.x, b.y - 60, `+${d} ✨`, "#ffe66b");
 }
 
@@ -704,6 +721,7 @@ function shDrawHud(g, R) {
   if (P.special) { shTextOut(g, `${SH_SPECIAL[P.special].icon} ×${P.ammo}`, x, 21, 17, "#fff", "left"); }
   // ✨ stardust
   shTextOut(g, `✨ ${R.dust}`, SHW - 70, 21, 17, "#ffe66b", "right");
+  shTextOut(g, `⭐ ${R.score.toLocaleString()}`, SHW - 150, 21, 17, "#fff", "right");
   // progress (waves) or boss health
   const bx = 360, bw = 300;
   if (R.boss && !R.boss.dead && !R.boss.entering) {
@@ -754,6 +772,7 @@ function shPause(on) {
     o.hidden = !on;
     if (on) o.innerHTML = `<div class="shPanel"><h2>⏸️ Paused</h2>
       <p class="muted">Level ${R.lv}: ${R.L.name} · ${shClock(R.t)}</p>
+      <div class="shScore">⭐ Score: <b>${R.score.toLocaleString()}</b></div>
       <div class="moneyRow" style="justify-content:center"><button class="btn big" data-shp="resume">▶ Resume</button>
       <button class="btn ghost" data-shp="quit">🏳️ Quit level</button></div>
       <div class="shPauseKeys">${shTouchUI
@@ -770,6 +789,7 @@ function shShowEnd() {
   o.innerHTML = E.win
     ? `<div class="shPanel win"><h2>🏆 Level ${R.lv} cleared!</h2>
         <p><b>${R.L.boss}</b> was defeated in ${shClock(R.t)}.</p>
+        <div class="shScore">⭐ Score: <b>${R.score.toLocaleString()}</b>${R.newBest ? ` <span class="shNewBest">🏅 New best score!</span>` : ""}</div>
         <div class="shEndStats"><span>👾 Enemies destroyed: <b>${R.kills}</b></span><span>💔 Lives lost: <b>${R.hits}</b></span><span>🛡️ Hits blocked: <b>${R.blocks}</b></span></div>
         <div class="shEndReward"><span>💰 <b>+${fmt(E.money)}</b></span><span>✨ <b>+${R.dust.toLocaleString()}</b> stardust</span></div>
         ${E.first ? `<p class="shFirst">⭐ First clear!${R.lv < 3 ? ` Level ${R.lv + 1} is now open.` : " You beat every level!"}</p>` : ""}
@@ -778,6 +798,7 @@ function shShowEnd() {
           <button class="btn" data-shp="again">🔁 Play again</button><button class="btn ghost" data-shp="hangar">🛸 Hangar</button></div></div>`
     : `<div class="shPanel lose"><h2>💥 Your ship was destroyed</h2>
         <p>You made it ${E.pct}% of the way through level ${R.lv}. The level starts over from the beginning.</p>
+        <div class="shScore">⭐ Score: <b>${R.score.toLocaleString()}</b>${R.newBest ? ` <span class="shNewBest">🏅 New best score!</span>` : ""}</div>
         <div class="shEndStats"><span>👾 Enemies destroyed: <b>${R.kills}</b></span><span>🛡️ Hits blocked: <b>${R.blocks}</b></span></div>
         <p>✨ You keep the <b>${R.dust.toLocaleString()}</b> stardust you collected. Spend it on upgrades in the hangar.</p>
         <div class="moneyRow" style="justify-content:center"><button class="btn big" data-shp="again">🔁 Try again</button>

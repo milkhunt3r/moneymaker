@@ -530,6 +530,11 @@ Object.assign(ES, {
     "Los niveles más altos de las mejoras también necesitan 💎 diamantes o 🔴 rubíes de tu 🏦 cámara en la ⛏️ mina de oro, en todas las naves. Guarda el mineral tras excavar en vez de venderlo para ahorrar.",
   "⛏️ Nebula Strike: the top upgrade levels now also need 💎 diamonds or 🔴 rubies from the Gold Mine Dig vault.":
     "⛏️ Nebula Strike: los niveles más altos de las mejoras ahora también necesitan 💎 diamantes o 🔴 rubíes de la cámara de la mina de oro.",
+  "Score": "Puntuación", "New best score!": "¡Nueva mejor puntuación!", "Best score": "Mejor puntuación",
+  "⭐ Nebula Strike: every destroyed enemy and boss now gives ⭐ points. Your best score for each level is shown next to its best time.":
+    "⭐ Nebula Strike: cada enemigo y jefe destruido da ahora ⭐ puntos. Tu mejor puntuación de cada nivel aparece junto a su mejor tiempo.",
+  "Score: every destroyed enemy gives points (100 for small ships, up to 1,000 for big gunships) and each boss gives a big bonus (Scrap Crab 5,000, Hive Queen 10,000, The Taxman 20,000). Your best score for each level is shown in the hangar.":
+    "Puntuación: cada enemigo destruido da puntos (100 por las naves pequeñas, hasta 1.000 por las cañoneras grandes) y cada jefe da una gran bonificación (Cangrejo Chatarra 5.000, Reina de la Colmena 10.000, El Recaudador 20.000). Tu mejor puntuación de cada nivel aparece en el hangar.",
   "/ WASD": "/ WASD", "Shift / K": "Shift / K", "X / L": "X / L", "P / Esc": "P / Esc", "Move": "Moverse", "Shoot": "Disparar", "Auto-fire on": "Disparo automático", "Space": "Espacio",
   "about 5 min": "unos 5 min", "about 6–7 min": "unos 6–7 min",
   // achievements
@@ -582,8 +587,11 @@ rx(String.raw`(?:🟠 )?Medium · about 6–7 min · Boss`, "Media · unos 6–7
 rx(String.raw`(?:🔴 )?Hard · about 6–7 min · Boss`, "Difícil · unos 6–7 min · Jefe");
 Object.assign(ES, { "🟢 Easy": "🟢 Fácil", "🟠 Medium": "🟠 Media", "🔴 Hard": "🔴 Difícil", "Easy": "Fácil", "Medium": "Media", "Hard": "Difícil" });
 hrx(String.raw`First clear: 💰 <b>(${NUM})<\/b> \+ <span>✨<\/span> (\d+)`, "Primera victoria: 💰 <b>$1</b> + <span>✨</span> $2");
-hrx(String.raw`✅ Cleared(?: · Best time (\d+:\d\d))?<br>Play again: 💰 (${NUM}) \+ <span>✨<\/span> (\d+)`, (m, tm, a, d) =>
-  `✅ Superado${tm ? " · Mejor tiempo " + tm : ""}<br>Otra vez: 💰 ${a} + <span>✨</span> ${d}`);
+hrx(String.raw`✅ Cleared(?: · Best time (\d+:\d\d))?(?: · ⭐ Best score ([\d.,]+))?<br>Play again: 💰 (${NUM}) \+ <span>✨<\/span> (\d+)`, (m, tm, sc, a, d) =>
+  `✅ Superado${tm ? " · Mejor tiempo " + tm : ""}${sc ? " · ⭐ Mejor puntuación " + sc : ""}<br>Otra vez: 💰 ${a} + <span>✨</span> ${d}`);
+hrx(String.raw`First clear: 💰 <b>(${NUM})<\/b> \+ <span>✨<\/span> (\d+)<br>⭐ Best score ([\d.,]+)`, "Primera victoria: 💰 <b>$1</b> + <span>✨</span> $2<br>⭐ Mejor puntuación $3");
+rx(String.raw`(?:⭐ )?Best score ([\d.,]+)`, "⭐ Mejor puntuación $1");
+rx(String.raw`Cleared · Best time (\d+:\d\d) · ⭐ Best score ([\d.,]+)`, "Superado · Mejor tiempo $1 · ⭐ Mejor puntuación $2");
 rx(String.raw`Cleared · Best time (\d+:\d\d)`, "Superado · Mejor tiempo $1");
 rx(String.raw`Play again: 💰 (${NUM}) \+`, "Otra vez: 💰 $1 +");
 hrx(String.raw`<span>✨<\/span> Stardust: <b>([\d.,]+)<\/b>`, "<span>✨</span> Polvo estelar: <b>$1</b>");

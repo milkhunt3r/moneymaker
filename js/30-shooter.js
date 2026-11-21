@@ -21,6 +21,7 @@ SH.owned = SH.owned || ["sparrow"];
 SH.up = SH.up || {};               // { ship: { upgrade: level } }
 SH.best = SH.best || {};           // fastest clear per level (seconds)
 SH.clears = SH.clears || {};       // clears per level
+SH.bestScore = SH.bestScore || {};  // ⭐ best score per level
 for (const k of ["runs", "wins", "kills", "blocks", "earned", "perfect", "bossKills"]) SH[k] = SH[k] || 0;
 if (typeof SH.auto !== "boolean") SH.auto = true;   // 🔫 auto-fire (otherwise hold Space)
 // ⌨️ key bindings for the shield and the special weapon: null = the default keys, otherwise { code, label } picked in the hangar
@@ -134,8 +135,8 @@ function renderShooter() {
         <h3>Level ${L.n}: ${L.name}</h3>
         <div class="muted">${L.diff} · ${L.time} · Boss: <b>${L.boss}</b></div>
         <div class="shLvReward">${done
-          ? `✅ Cleared${SH.best[L.n] ? ` · Best time ${shClock(SH.best[L.n])}` : ""}<br>Play again: 💰 ${fmt(shReward(L, false))} + ${shDustIco} ${L.dustAgain}`
-          : `First clear: 💰 <b>${fmt(shReward(L, true))}</b> + ${shDustIco} ${L.dustFirst}`}</div>
+          ? `✅ Cleared${SH.best[L.n] ? ` · Best time ${shClock(SH.best[L.n])}` : ""}${SH.bestScore[L.n] ? ` · ⭐ Best score ${SH.bestScore[L.n].toLocaleString()}` : ""}<br>Play again: 💰 ${fmt(shReward(L, false))} + ${shDustIco} ${L.dustAgain}`
+          : `First clear: 💰 <b>${fmt(shReward(L, true))}</b> + ${shDustIco} ${L.dustFirst}${SH.bestScore[L.n] ? `<br>⭐ Best score ${SH.bestScore[L.n].toLocaleString()}` : ""}`}</div>
         ${open ? `<button class="btn" data-sh-play="${L.n}">▶ Play</button>` : `<button class="btn" disabled>🔒 Beat level ${L.n - 1} first</button>`}
       </div>`;
     }).join("")}</div>

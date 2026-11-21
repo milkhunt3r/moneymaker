@@ -316,6 +316,7 @@ function wikiArt() {
       return [s.name, s.price ? `✨ ${s.price.toLocaleString()}${s.needs ? ` (after level ${s.needs})` : ""}` : "Free", String(s.speed), String(s.hearts), s.desc]; }))}
     ${wt(["Upgrade", "Levels", "Effect", "⛏️ Mine ore"], SH_UP_IDS.map(k => [SH_UPS[k].icon + " " + SH_UPS[k].name, String(SH_UPS[k].max), SH_UPS[k].eff(SH_UPS[k].max) + " at max",
       Object.entries(SH_UP_ORE[k] || {}).map(([lv, ore]) => `Lv ${lv}: ${Object.entries(ore).map(([o, n]) => `${o === "ruby" ? "🔴" : "💎"} ${n}`).join(" ")}`).join(" · ") || "—"]))}
+    <p>⭐ Score: every destroyed enemy gives points (100 for small ships, up to 1,000 for big gunships) and each boss gives a big bonus (Scrap Crab 5,000, Hive Queen 10,000, The Taxman 20,000). Your best score for each level is shown in the hangar.</p>
     <p>⛏️ The top upgrade levels also need 💎 diamonds or 🔴 rubies from your 🏦 vault in the ⛏️ Gold Mine Dig, on every ship. Keep ore after a dig instead of selling it to save up.</p>
     <p>⌨️ Move with the arrows or WASD, 🛡️ shield with Shift or K, 🚀 special weapon with X or L, ⏸️ pause with P or Esc. You can change the shield and special weapon keys in the hangar. Auto-fire is on by default (turn it off in the hangar to shoot with Space).
       📱 On a phone, drag anywhere on the screen to fly and tap the buttons for the shield and special weapon.</p>` : ""}
