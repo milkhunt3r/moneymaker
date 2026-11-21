@@ -314,7 +314,9 @@ function wikiArt() {
       It buys ships and upgrades in the 🛸 hangar. Every ship has its own upgrades.</p>
     ${wt(["Ship", "Price", "Speed", "Lives", "Gun"], SH_SHIP_IDS.map(id => { const s = SH_SHIPS[id];
       return [s.name, s.price ? `✨ ${s.price.toLocaleString()}${s.needs ? ` (after level ${s.needs})` : ""}` : "Free", String(s.speed), String(s.hearts), s.desc]; }))}
-    ${wt(["Upgrade", "Levels", "Effect"], SH_UP_IDS.map(k => [SH_UPS[k].icon + " " + SH_UPS[k].name, String(SH_UPS[k].max), SH_UPS[k].eff(SH_UPS[k].max) + " at max"]))}
+    ${wt(["Upgrade", "Levels", "Effect", "⛏️ Mine ore"], SH_UP_IDS.map(k => [SH_UPS[k].icon + " " + SH_UPS[k].name, String(SH_UPS[k].max), SH_UPS[k].eff(SH_UPS[k].max) + " at max",
+      Object.entries(SH_UP_ORE[k] || {}).map(([lv, ore]) => `Lv ${lv}: ${Object.entries(ore).map(([o, n]) => `${o === "ruby" ? "🔴" : "💎"} ${n}`).join(" ")}`).join(" · ") || "—"]))}
+    <p>⛏️ The top upgrade levels also need 💎 diamonds or 🔴 rubies from your 🏦 vault in the ⛏️ Gold Mine Dig, on every ship. Keep ore after a dig instead of selling it to save up.</p>
     <p>⌨️ Move with the arrows or WASD, 🛡️ shield with Shift or K, 🚀 special weapon with X or L, ⏸️ pause with P or Esc. You can change the shield and special weapon keys in the hangar. Auto-fire is on by default (turn it off in the hangar to shoot with Space).
       📱 On a phone, drag anywhere on the screen to fly and tap the buttons for the shield and special weapon.</p>` : ""}
     ${typeof secrets2Open === "function" && secrets2Open() && typeof GENE_TOTAL === "number" ? `<h2>🌌🌌 🧬 Gene Splicer</h2>

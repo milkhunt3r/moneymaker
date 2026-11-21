@@ -525,6 +525,11 @@ Object.assign(ES, {
   "That key is used to move, shoot or pause. Pick another one.": "Esa tecla se usa para moverse, disparar o pausar. Elige otra.",
   "That key is already used for the shield. Pick another one.": "Esa tecla ya se usa para el escudo. Elige otra.",
   "That key is already used for the special weapon. Pick another one.": "Esa tecla ya se usa para el arma especial. Elige otra.",
+  "Mine ore": "Mineral de la mina",
+  "The top upgrade levels also need 💎 diamonds or 🔴 rubies from your 🏦 vault in the ⛏️ Gold Mine Dig, on every ship. Keep ore after a dig instead of selling it to save up.":
+    "Los niveles más altos de las mejoras también necesitan 💎 diamantes o 🔴 rubíes de tu 🏦 cámara en la ⛏️ mina de oro, en todas las naves. Guarda el mineral tras excavar en vez de venderlo para ahorrar.",
+  "⛏️ Nebula Strike: the top upgrade levels now also need 💎 diamonds or 🔴 rubies from the Gold Mine Dig vault.":
+    "⛏️ Nebula Strike: los niveles más altos de las mejoras ahora también necesitan 💎 diamantes o 🔴 rubíes de la cámara de la mina de oro.",
   "/ WASD": "/ WASD", "Shift / K": "Shift / K", "X / L": "X / L", "P / Esc": "P / Esc", "Move": "Moverse", "Shoot": "Disparar", "Auto-fire on": "Disparo automático", "Space": "Espacio",
   "about 5 min": "unos 5 min", "about 6–7 min": "unos 6–7 min",
   // achievements
@@ -611,6 +616,9 @@ ES["⌨️ Nebula Strike: you can change the keys for the 🛡️ shield and �
 H("🚀 Nebula Strike: the pause screen now shows the controls, and the 💠 nova spread is stronger (a tighter fan of bullets that go through enemies).", "🚀 Nebula Strike: la pantalla de pausa ahora muestra los controles y el 💠 abanico nova es más fuerte (un abanico más cerrado de balas que atraviesan a los enemigos).");
 H("🏆 New <b>🚀 Nebula Strike</b> achievements section: 10 achievements.", "🏆 Nueva sección de logros <b>🚀 Nebula Strike</b>: 10 logros.");
 
+hrx(String.raw`⛏️ The top levels also need 💎 diamonds or 🔴 rubies from your 🏦 vault in the Gold Mine Dig \(keep ore after a run instead of selling it\)\. You have (.+)`,
+  "⛏️ Los niveles más altos también necesitan 💎 diamantes o 🔴 rubíes de tu 🏦 cámara de la mina de oro (guarda el mineral tras una excavación en vez de venderlo). Tienes $1");
+rx(String.raw`Lv (\d): ((?:💎|🔴) \d+)( · Lv (\d): ((?:💎|🔴) \d+))?`, (m, a, b, c, d, e) => `Nv ${a}: ${b}${c ? ` · Nv ${d}: ${e}` : ""}`);
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
 ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {

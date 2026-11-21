@@ -1818,3 +1818,4 @@ p.guestWarn { font-size: 14px; background: rgba(255, 170, 0, 0.1); border: 1px s
 .shBind .btn { min-width: 110px; }
 .shBind .btn.waiting { animation: shBlink 0.8s ease-in-out infinite; }
 @keyframes shBlink { 50% { opacity: 0.5; } }
+.shOreNote .oreIcon, .shHangar .mineUpCost .oreIcon { width: 18px; height: 18px; vertical-align: -4px; }

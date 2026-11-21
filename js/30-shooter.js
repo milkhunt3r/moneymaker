@@ -69,6 +69,20 @@ const SH_UPS = {
 };
 const SH_UP_IDS = Object.keys(SH_UPS);
 const shUp = (ship, k) => ((SH.up[ship] || {})[k] || 0);
+/* ⛏️ ore from the Gold Mine Dig 🏦 vault, needed on top of stardust for some levels (the same for every ship).
+   Key = the level you are buying. */
+const SH_UP_ORE = {
+  dmg:        { 4: { diamond: 6 }, 5: { ruby: 3 } },
+  rate:       { 4: { diamond: 5 }, 5: { ruby: 2 } },
+  hull:       { 2: { diamond: 8 } },
+  shieldCd:   { 5: { ruby: 2 } },
+  shieldTime: { 5: { diamond: 6 } },
+  ammo:       { 3: { ruby: 1 } },
+};
+const shVault = () => (state.mine && state.mine.vault) || {};
+const shUpOre = (ship, k) => { const l = shUp(ship, k); return l >= SH_UPS[k].max ? null : (SH_UP_ORE[k] || {})[l + 1] || null; };
+const shHasOre = (ore) => !ore || Object.keys(ore).every(o => (shVault()[o] || 0) >= ore[o]);
+const shOreTag = (o, n) => (typeof oreIcon === "function" ? oreIcon(o) : o === "ruby" ? "🔴" : "💎") + " " + n;
 const shUpCost = (ship, k) => { const l = shUp(ship, k), U = SH_UPS[k]; return l >= U.max ? 0 : Math.round(U.costs[l] * SH_SHIPS[ship].cost / 5) * 5; };
 
 /* ----- 🗺️ LEVELS (len = seconds of waves before the boss; first / again = minutes of income) ----- */
@@ -142,13 +156,16 @@ function renderShooter() {
       }).join("")}</div>
       <h3 class="shUpTitle">⬆️ Upgrades for the ${SH_SHIPS[ship].name}</h3>
       <p class="muted">Every ship has its own upgrades. They are paid with ${shDustIco} stardust.</p>
+      <p class="muted shOreNote">⛏️ The top levels also need 💎 diamonds or 🔴 rubies from your 🏦 vault in the Gold Mine Dig (keep ore after a run instead of selling it).
+        You have ${shOreTag("diamond", `<b>${shVault().diamond || 0}</b>`)} · ${shOreTag("ruby", `<b>${shVault().ruby || 0}</b>`)}</p>
       <div class="mineUpGrid">${SH_UP_IDS.map(k => {
-        const U = SH_UPS[k], l = shUp(ship, k), c = shUpCost(ship, k);
+        const U = SH_UPS[k], l = shUp(ship, k), c = shUpCost(ship, k), ore = shUpOre(ship, k);
         return `<div class="mineUp ${c ? "" : "maxed"}">
           <div class="mineUpHead"><span class="mineUpIcon">${U.icon}</span><b>${U.name}</b><span class="mineUpLv">Lv ${l}/${U.max}</span></div>
           <div class="mineUpEff">Now: ${U.eff(l)}</div>
           ${c ? `<div class="mineUpEff next">Next: ${U.eff(l + 1)}</div>
-            <button class="btn small" data-sh-up="${k}" ${SH.dust >= c ? "" : "disabled"}>⬆️ Upgrade · ${shDustIco} ${c.toLocaleString()}</button>`
+            ${ore ? `<div class="mineUpCost">${Object.keys(ore).map(o => `<span class="${(shVault()[o] || 0) >= ore[o] ? "" : "short"}">${shOreTag(o, `${shVault()[o] || 0}/${ore[o]}`)}</span>`).join("")}</div>` : ""}
+            <button class="btn small" data-sh-up="${k}" ${SH.dust >= c && shHasOre(ore) ? "" : "disabled"}>⬆️ Upgrade · ${shDustIco} ${c.toLocaleString()}</button>`
           : `<div class="mineUpEff next">✅ Max level</div>`}
         </div>`;
       }).join("")}</div>
@@ -164,9 +181,10 @@ function shBuyShip(id) {
   save(); renderShooter();
 }
 function shBuyUp(k) {
-  const ship = SH.ship, c = shUpCost(ship, k);
-  if (!c || SH.dust < c) return;
+  const ship = SH.ship, c = shUpCost(ship, k), ore = shUpOre(ship, k);
+  if (!c || SH.dust < c || !shHasOre(ore)) return;
   SH.dust -= c;
+  if (ore) for (const o in ore) state.mine.vault[o] -= ore[o];   // ⛏️ paid from the Gold Mine Dig vault
   SH.up[ship] = SH.up[ship] || {}; SH.up[ship][k] = shUp(ship, k) + 1;
   showNotice(`${SH_UPS[k].icon} ${SH_SHIPS[ship].name}: ${SH_UPS[k].name} level ${SH.up[ship][k]}: ${SH_UPS[k].eff(SH.up[ship][k])}!`);
   save(); renderShooter();
