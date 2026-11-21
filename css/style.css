@@ -1881,3 +1881,12 @@ p.guestWarn { font-size: 14px; background: rgba(255, 170, 0, 0.1); border: 1px s
 .ico.shAutoIco { width: 26px; height: 26px; margin: 0; }
 .shTBtn .ico { width: 40px; height: 40px; margin: 0; pointer-events: none; }
 @media (max-width: 700px) { .shTBtn .ico { width: 32px; height: 32px; } }
+/* 🔞 age and entertainment notice */
+.ageGate { text-align: left; max-width: 640px; margin: 0 auto; line-height: 1.5; }
+.ageGate h2 { text-align: center; margin-top: 0; }
+.ageGate ul { margin: 6px 0 10px; padding-left: 22px; }
+.ageGate li { margin: 5px 0; }
+.ageCheck { display: flex; align-items: center; gap: 8px; margin: 12px 0 4px; font-weight: 700; cursor: pointer; }
+.ageCheck input { width: 18px; height: 18px; }
+.ageGate .cloudPick { justify-content: center; }
+.ageNoMsg { text-align: center; color: #ff8a8a; font-weight: 700; }

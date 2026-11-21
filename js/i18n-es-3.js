@@ -678,6 +678,27 @@ rx(String.raw`Loot box \+ ✨ (\d+)`, "Cofre del botín + ✨ $1");
 rx(String.raw`(\d+)–(\d+) min of income`, "$1–$2 min de ingresos");
 rx(String.raw`(\d+) min of income`, "$1 min de ingresos");
 hrx(String.raw`🏴‍☠️ Buy another · <span>✨<\/span> ([\d.,]+)`, "🏴‍☠️ Comprar otro · <span>✨</span> $1");
+/* ===================== 🔞 age and entertainment notice ===================== */
+Object.assign(ES, {
+  "Before you play": "Antes de jugar", "Al continuar, confirmas que": "Al continuar, confirmas que", "By continuing, you confirm that:": "Al continuar, confirmas que:",
+  "I have read and agree to the above.": "He leído y acepto lo anterior.",
+  "results in the game do not indicate future results in real gambling or on real financial markets, and nothing in the game constitutes financial or investment advice.":
+    "los resultados en el juego no indican resultados futuros en juegos de azar reales ni en los mercados financieros reales, y nada de lo que aparece en el juego constituye asesoramiento financiero o de inversión.", "I confirm, continue": "Lo confirmo, continuar", "I am under 18": "Soy menor de 18 años",
+  "We are sorry, but Empire of Coins is only available to players aged 18 and over.": "Lo sentimos, pero Empire of Coins solo está disponible para jugadores mayores de 18 años.",
+  "If gambling is causing problems for you or someone close to you, please contact a support service in your country.": "Si el juego te está causando problemas a ti o a alguien cercano, ponte en contacto con un servicio de ayuda de tu país.",
+});
+H("<b>Empire of Coins</b> is intended for adults. It contains <b>simulated gambling</b> (casino games such as roulette, blackjack, poker and slot-style games) and <b>simulated investing</b> (shares, real estate, precious metals and cryptocurrency trading).",
+  "<b>Empire of Coins</b> está destinado a personas adultas. Contiene <b>juegos de azar simulados</b> (juegos de casino como la ruleta, el blackjack, el póquer y juegos de tipo tragaperras) e <b>inversiones simuladas</b> (acciones, inmuebles, metales preciosos y compraventa de criptomonedas).");
+H("you are at least <b>18 years old</b>, or of the age of majority in your country of residence if that is higher;",
+  "tienes al menos <b>18 años</b>, o la mayoría de edad de tu país de residencia si esta es superior;");
+H("you understand that this game is provided <b>solely for entertainment purposes</b>;",
+  "entiendes que este juego se ofrece <b>únicamente con fines de entretenimiento</b>;");
+H("all coins, winnings, investments and other items in the game are <b>virtual</b>. They have <b>no monetary value</b>, cannot be purchased with real money, and cannot be exchanged, withdrawn or redeemed for real money, goods or services of any kind;",
+  "todas las monedas, ganancias, inversiones y demás elementos del juego son <b>virtuales</b>. <b>No tienen valor monetario</b>, no pueden comprarse con dinero real y no pueden canjearse, retirarse ni cambiarse por dinero real, bienes ni servicios de ningún tipo;");
+H("the game does <b>not</b> offer real-money gambling or real investing. Market prices shown in the game may be based on real market data, but every trade is simulated;",
+  "el juego <b>no</b> ofrece juegos de azar con dinero real ni inversiones reales. Los precios de mercado que se muestran en el juego pueden basarse en datos reales del mercado, pero todas las operaciones son simuladas;");
+H("results in the game do not indicate future results in real gambling or on real financial markets, and nothing in the game constitutes financial or investment advice.",
+  "los resultados en el juego no indican resultados futuros en juegos de azar reales ni en los mercados financieros reales, y nada de lo que aparece en el juego constituye asesoramiento financiero o de inversión.");
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
 ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {
