@@ -83,13 +83,13 @@ Object.assign(ES, {
     "Contratar y renovar candidatos cuesta un 30% menos. Beneficio de la empresa +5% con todas las plazas ocupadas",
   "Schedule specialist": "Especialista en horarios",
   "Night owls and morning people earn ×3 (instead of ×2) during their double-income 10 seconds":
-    "Noctámbulos y madrugadores ganan ×3 (en vez de ×2) durante sus 10 segundos de ingresos dobles",
+    "Nocturnos y madrugadores ganan ×3 (en vez de ×2) durante sus 10 segundos de ingresos dobles",
   // worker traits
   "Friendship": "Compañerismo", "+20% for every Friendship worker in the company": "+20% por cada trabajador con Compañerismo en la empresa",
   "Leader": "Líder", "Doubles the income of one random co-worker each second": "Cada segundo duplica los ingresos de un compañero al azar",
   "Lazy": "Vago", "30% chance to earn nothing each second": "Cada segundo, 30% de probabilidad de no ganar nada",
-  "Bully": "Abusón", "Earns double, but one random co-worker earns nothing": "Gana el doble, pero un compañero al azar no gana nada",
-  "Night owl": "Noctámbulo", "Morning person": "Madrugador", "10 seconds double income, then 10 seconds half income": "10 segundos de ingresos dobles y luego 10 segundos a la mitad",
+  "Bully": "Matón", "Earns double, but one random co-worker earns nothing": "Gana el doble, pero un compañero al azar no gana nada",
+  "Night owl": "Nocturno", "Morning person": "Madrugador", "10 seconds double income, then 10 seconds half income": "10 segundos de ingresos dobles y luego 10 segundos a la mitad",
   "The Legend": "La Leyenda", "Every worker in the company earns +1 per second (stacks)": "Cada trabajador de la empresa gana +1 por segundo (se acumula)",
   "Hard worker": "Currante", "Earns +50%, but sometimes burns out for 10 seconds": "Gana +50%, pero a veces se quema durante 10 segundos",
   "Mentor": "Mentor", "The lowest-earning co-worker earns double": "El compañero que menos gana gana el doble",
