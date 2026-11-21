@@ -60,7 +60,7 @@ function shStart(lv) {
     planet: { x: SHW + 200, y: shRand(120, 420), r: Math.round(shRand(50, 90)), next: 40 } };
   shR.banner = { big: t(`Level ${lv}`), small: t(L.name), life: 3 };
   SH.runs++; save();
-  [st.img, L.img, "rock-small", "rock-medium", "rock-big", "enemy-spinner", ...(lv === 3 ? ["boss-taxman-dmg"] : [])].forEach(shImg);
+  [st.img, L.img, `bg-level${lv}`, `bg-boss${lv}`, "rock-small", "rock-medium", "rock-big", "enemy-spinner", ...(lv === 3 ? ["boss-taxman-dmg"] : [])].forEach(shImg);
   renderShooter(); shKick();
 }
 // 🏅 best score per level (any run: won, lost or quit)
@@ -626,10 +626,19 @@ function shDraw() {
   const sky = SH_SKY[lv - 1];
   const bg = g.createLinearGradient(0, 0, 0, SHH); bg.addColorStop(0, sky.top); bg.addColorStop(1, sky.bottom);
   g.fillStyle = bg; g.fillRect(0, 0, SHW, SHH);
+  // 🖼️ painted level background: a strip that loops while it scrolls (drawn nebula until the picture has loaded)
+  const lvBg = shImg(`bg-level${lv}`);
+  if (lvBg.complete && lvBg.naturalWidth) {
+    const w = lvBg.naturalWidth * SHH / lvBg.naturalHeight;
+    for (let x = -((R.bgX * 0.35) % w); x < SHW; x += w) g.drawImage(lvBg, x, 0, w + 1, SHH);
+  } else {
+    const neb = shNebula(lv), nx = -((R.bgX * 0.3) % 1920);
+    g.drawImage(neb.c, nx, 0, 1920, 540); g.drawImage(neb.c, nx + 1920, 0, 1920, 540);
+  }
+  // 👹 boss fight background: fades in during the ⚠️ warning and stays for the whole fight
+  const bossA = R.phase === "warn" ? Math.min(1, R.warnT / 3) : R.boss ? 1 : 0, bossBg = shImg(`bg-boss${lv}`);
+  if (bossA > 0 && bossBg.complete && bossBg.naturalWidth) { g.globalAlpha = bossA; g.drawImage(bossBg, 0, 0, SHW, SHH); g.globalAlpha = 1; }
   if (R.shake > 0) g.translate(shRand(-1, 1) * 8 * R.shake, shRand(-1, 1) * 8 * R.shake);
-  const neb = shNebula(lv), nx = -((R.bgX * 0.3) % 1920);
-  g.drawImage(neb.c, nx, 0, 1920, 540); g.drawImage(neb.c, nx + 1920, 0, 1920, 540);
-  shDrawSprite(g, shPlanet(lv, R.planet.r), R.planet.x, R.planet.y);
   for (const s of R.stars) { g.fillStyle = ["rgba(255,255,255,0.35)", "rgba(255,255,255,0.6)", "#fff"][s.z]; const sz = s.z + 1; g.fillRect(s.x, s.y, s.z === 2 ? 5 : sz, s.z === 2 ? 2 : sz); }
 
   // 🎁 pick-ups

@@ -141,6 +141,7 @@ function shRock(size, v) {
 const shEnemySprite = (type) => { const a = SH_ENEMY_ART[type]; return shSprite("en-" + type, a[0], a[1], a[2]); };
 
 /* ----- 💥 SHOTS ----- */
+// enemy shots get a dark ring so they stand out on the bright red and green backgrounds
 const SH_SHOT_ART = {
   single: [22, 10, (g) => { g.shadowColor = "#ffd34d"; g.shadowBlur = 6; g.beginPath(); g.roundRect(-9, -3, 18, 6, 3); g.fillStyle = shLin(g, -9, 0, 9, 0, ["#ff9d00", "#fff3a8"]); g.fill(); }],
   twin:   [20, 8, (g) => { g.shadowColor = "#5ef2ff"; g.shadowBlur = 6; g.beginPath(); g.roundRect(-8, -2, 16, 4, 2); g.fillStyle = shLin(g, -8, 0, 8, 0, ["#2a9dff", "#e6fdff"]); g.fill(); }],
@@ -153,9 +154,9 @@ const SH_SHOT_ART = {
     g.beginPath(); g.moveTo(-6, -4.5); g.lineTo(-12, -8); g.lineTo(-12, 8); g.lineTo(-6, 4.5); g.closePath(); shPaint(g, "#ff8a1a", 1.5);
   }],
   // enemy shots
-  eb:     [16, 16, (g) => { g.shadowColor = "#ff3b2b"; g.shadowBlur = 7; g.beginPath(); g.arc(0, 0, 6, 0, Math.PI * 2); g.fillStyle = shRad(g, -1, -1, 0.5, 7, ["#ffffff", "#ffb03b", "#ff2b2b"]); g.fill(); }],
-  acid:   [16, 16, (g) => { g.shadowColor = "#9dff2b"; g.shadowBlur = 7; g.beginPath(); g.arc(0, 0, 6, 0, Math.PI * 2); g.fillStyle = shRad(g, -1, -1, 0.5, 7, ["#ffffff", "#d9ff5c", "#3fae12"]); g.fill(); }],
-  ebBig:  [26, 26, (g) => { g.shadowColor = "#ff3b2b"; g.shadowBlur = 10; g.beginPath(); g.arc(0, 0, 10, 0, Math.PI * 2); g.fillStyle = shRad(g, -2, -2, 1, 11, ["#ffffff", "#ff8a3b", "#c4122b"]); g.fill(); }],
+  eb:     [18, 18, (g) => { g.shadowColor = "#ff3b2b"; g.shadowBlur = 7; g.beginPath(); g.arc(0, 0, 6, 0, Math.PI * 2); g.fillStyle = shRad(g, -1, -1, 0.5, 7, ["#ffffff", "#ffb03b", "#ff2b2b"]); g.fill(); g.shadowBlur = 0; g.strokeStyle = "rgba(25,5,30,0.95)"; g.lineWidth = 2; g.beginPath(); g.arc(0, 0, 6.5, 0, Math.PI * 2); g.stroke(); }],
+  acid:   [18, 18, (g) => { g.shadowColor = "#9dff2b"; g.shadowBlur = 7; g.beginPath(); g.arc(0, 0, 6, 0, Math.PI * 2); g.fillStyle = shRad(g, -1, -1, 0.5, 7, ["#ffffff", "#d9ff5c", "#3fae12"]); g.fill(); g.shadowBlur = 0; g.strokeStyle = "rgba(25,5,30,0.95)"; g.lineWidth = 2; g.beginPath(); g.arc(0, 0, 6.5, 0, Math.PI * 2); g.stroke(); }],
+  ebBig:  [28, 28, (g) => { g.shadowColor = "#ff3b2b"; g.shadowBlur = 10; g.beginPath(); g.arc(0, 0, 10, 0, Math.PI * 2); g.fillStyle = shRad(g, -2, -2, 1, 11, ["#ffffff", "#ff8a3b", "#c4122b"]); g.fill(); g.shadowBlur = 0; g.strokeStyle = "rgba(25,5,30,0.95)"; g.lineWidth = 2; g.beginPath(); g.arc(0, 0, 10.5, 0, Math.PI * 2); g.stroke(); }],
   coin:   [22, 22, (g) => {
     g.beginPath(); g.arc(0, 0, 9, 0, Math.PI * 2); shPaint(g, shRad(g, -3, -3, 1, 10, ["#fff8c4", "#ffcc22", "#c27a00"]), 2);
     g.beginPath(); g.arc(0, 0, 5.5, 0, Math.PI * 2); g.strokeStyle = "#a35f00"; g.lineWidth = 1.5; g.stroke();
