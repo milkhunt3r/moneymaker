@@ -13,11 +13,12 @@ if (state.pet && state.pet.owned) {
 }
 const petOwned = () => !!(state.pet && state.pet.owned);
 const PET_WAKE_BEFORE = 10;          // wakes up this many seconds before the drink is ready
-const PET_TAP_MS = 100;              // one tap every 0.1 s = 10 clicks / sec
+const PET_TAP_MS = 100;
+const PET_V = "2";                   // bump when a pet picture changes (browser cache)              // one tap every 0.1 s = 10 clicks / sec
 // where the feet are in each frame (part of the picture height), so every pose stands on the same line
-const PET_FOOT = { "idle-1": 0.982, "idle-2": 0.982, "tap-1": 0.985, "tap-2": 0.984, "drink-1": 0.982, "drink-2": 0.982, "happy-1": 0.98, "happy-2": 0.98,
+const PET_FOOT = { "idle-1": 0.982, "idle-2": 0.982, "tap-1": 0.985, "tap-2": 0.984, "drink-1": 0.982, "drink-2": 0.982, "happy-1": 0.98, "happy-2": 0.874,
   "sleep-1": 0.869, "sleep-2": 0.868, "wake": 0.985, "walk-1": 0.909, "walk-2": 0.906, "walk-3": 0.909, "walk-4": 0.892 };
-Object.keys(PET_FOOT).forEach(k => { const im = new Image(); im.src = `assets/pet/${k}.webp`; });   // preload
+Object.keys(PET_FOOT).forEach(k => { const im = new Image(); im.src = `assets/pet/${k}.webp?v=${PET_V}`; });   // preload
 
 const P_ = { mode: "idle", x: -1, tx: 0, face: -1, t: 0, until: 0, frame: "", flip: false, next: null, raf: 0, last: 0,
   tapAcc: 0, tapOn: false, petStreak: 0, petLast: 0, layout: null, layoutAt: 0, zAt: 0, jump: 0, blinkAt: 0 };
@@ -44,7 +45,7 @@ function petLayout(now) {
 }
 function petShow(frame, flip, dy = 0) {
   const L = P_.layout, s = L.s;
-  if (frame !== P_.frame) { petImg.src = `assets/pet/${frame}.webp`; P_.frame = frame; }
+  if (frame !== P_.frame) { petImg.src = `assets/pet/${frame}.webp?v=${PET_V}`; P_.frame = frame; }
   const y = L.floor - s * PET_FOOT[frame] + dy;
   petEl.style.width = petEl.style.height = s + "px";
   petEl.style.transform = `translate(${Math.round(P_.x - s / 2)}px, ${Math.round(y)}px)`;
