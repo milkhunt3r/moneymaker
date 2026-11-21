@@ -1183,7 +1183,6 @@ document.addEventListener("keydown", (e) => {
 document.addEventListener("keyup", (e) => { shKeys[e.code] = false; });
 document.addEventListener("visibilitychange", () => { if (document.hidden && shR && !shR.end) shPause(true); });
 window.addEventListener("blur", () => { for (const k in shKeys) shKeys[k] = false; });
-if (state.view === "games" && state.gamePage === "shooter") renderGames();
 
 /* ---------------------------------------------------------------------
    🏴‍☠️ PIRATE CHEST SHOP (hangar): after beating Admiral Dreadmaw, buy a pirate loot box for ✨ 10,000 stardust.
@@ -1260,3 +1259,6 @@ $("modalBox").addEventListener("click", (e) => {
   if (a === "again") { shChest = null; shBuyChest(); }
 });
 document.addEventListener("click", (e) => { if (e.target.closest("[data-sh-chest]") && !e.target.closest("[data-sh-chest]").disabled) shBuyChest(); });
+
+// keep this last: if the game was left on the Nebula Strike page, draw it now (everything above must be defined first)
+if (state.view === "games" && state.gamePage === "shooter") renderGames();
