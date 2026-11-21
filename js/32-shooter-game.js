@@ -21,7 +21,7 @@ const SH_CFG = [
   { waves: { line: [1.5, 0], junk: [1.5, 0], sentinel: [1.6, 0], vee: [2, 0], sine: [2, 0], rocks: [1, 0], gunners: [2, 0], mines: [1.5, 0], column: [1.5, 0], brute: [1.5, 40], swarm: [2, 0], homers: [2, 30] },
     gap: [3.0, 1.8], spd: 1.2, fire: 1.1, hp: 2.3, bs: 285, boss: "taxman" },
   // 🏴‍☠️ level 4: two bosses (Captain Cutlass after the first stretch of waves, Admiral Dreadmaw after the second)
-  { waves: { line: [1, 0], junk: [1.5, 0], sentinel: [1.6, 0], vee: [2, 0], sine: [1.5, 0], rocks: [1, 0], gunners: [2, 0], mines: [1.5, 0], column: [1.5, 0], brute: [1.6, 0], swarm: [2, 0], homers: [2, 0] },
+  { waves: { skiff: [1.6, 0], raider: [1.6, 0], line: [1, 0], junk: [1.5, 0], sentinel: [1.6, 0], vee: [2, 0], sine: [1.5, 0], rocks: [1, 0], gunners: [2, 0], mines: [1.5, 0], column: [1.5, 0], brute: [1.6, 0], swarm: [2, 0], homers: [2, 0] },
     gap: [2.6, 1.8], spd: 1.25, fire: 1.2, hp: 2.6, bs: 300, bosses: ["cutlass", "dreadmaw"] },
 ];
 // enemy base stats (HP × the level's hp factor; ✨ stardust × 1 / 1.5 / 2 by level)
@@ -31,9 +31,10 @@ const SH_EN = {
   homer: { hp: 2, r: 15, dust: 2 }, tiny: { hp: 1, r: 11, dust: 1 }, carrier: { hp: 4, r: 24, dust: 3 },
   rock: { hp: 4, r: 24, dust: 1 }, tmissile: { hp: 2, r: 12, dust: 0 },
   junk: { hp: 2, r: 17, dust: 1 }, sentinel: { hp: 6, r: 22, dust: 4 },
+  skiff: { hp: 6, r: 26, dust: 3 }, raider: { hp: 3, r: 22, dust: 2 }, hook: { hp: 1, r: 13, dust: 0 },
 };
 // ⭐ score: points for every destroyed enemy (asteroids by size) and boss
-const SH_POINTS = { drone: 100, darter: 100, weaver: 150, gunner: 300, mine: 200, brute: 1000, homer: 200, tiny: 50, carrier: 250, tmissile: 100, junk: 120, sentinel: 400 };
+const SH_POINTS = { drone: 100, darter: 100, weaver: 150, gunner: 300, mine: 200, brute: 1000, homer: 200, tiny: 50, carrier: 250, tmissile: 100, junk: 120, sentinel: 400, skiff: 350, raider: 250, hook: 50 };
 const SH_BOSS_POINTS = { crab: 5000, hive: 10000, taxman: 20000, cutlass: 15000, dreadmaw: 30000 };
 const shPoints = (e) => e.type === "rock" ? Math.round(e.size * 3 / 10) * 10 : SH_POINTS[e.type] || 0;
 // 🎁 special weapons (ammo × the Special ammo upgrade)
@@ -149,6 +150,12 @@ const SH_WAVES = {
     const n = R.lv === 3 ? 2 : 1;
     for (let i = 0; i < n; i++) shAdd("sentinel", SHW + 50, i ? SHH - 120 : 120, { vx: -170 * s, stopX: SHW - 70 - i * 80, wait: i * 0.9, shots: 0 });
   },
+  // 🏴‍☠️ cannon skiffs: a pair (top and bottom) that stops and lobs arcing cannonballs, then sails away
+  skiff(R, s) {
+    [90, SHH - 70].forEach((y, i) => shAdd("skiff", SHW + 60 + i * 50, y, { vx: -150 * s, stopX: shRand(640, 800), volleys: 0, fireT: 0.8 + i * 0.6 }));
+  },
+  // 🪝 grapple raider: lines up with you and throws a hook on a chain (2 throws)
+  raider(R, s) { shAdd("raider", SHW + 50, shRand(100, SHH - 100), { vx: -260 * s, stopX: shRand(780, 860), throws: 0, st: 0 }); },
   homers(R, s) { for (let i = 0; i < 3; i++) shAdd("homer", SHW + 40 + i * 60, shRand(60, SHH - 60), { vx: -200 * s, ang: Math.PI }); },
 };
 function shSpawnWave(R) {
@@ -501,10 +508,15 @@ function shUpdate(dt) {
     if (shKeys.ArrowLeft || shKeys.KeyA) mx--; if (shKeys.ArrowRight || shKeys.KeyD) mx++;
     if (shKeys.ArrowUp || shKeys.KeyW) my--; if (shKeys.ArrowDown || shKeys.KeyS) my++;
     const len = Math.hypot(mx, my) || 1;
-    P.x += mx / len * st.speed * dt; P.y += my / len * st.speed * dt;
+    const slow = P.pull && P.pull.t > 0 ? 0.4 : 1;
+    P.x += mx / len * st.speed * slow * dt; P.y += my / len * st.speed * slow * dt;
+    if (P.pull && P.pull.t > 0) {
+      P.pull.t -= dt; const o = P.pull.o;
+      if (o && !o.dead) { P.x += Math.sign(o.x - P.x) * 140 * dt; P.y += shClamp(o.y - P.y, -90 * dt, 90 * dt); }
+    }
     // 📱 drag: follow the finger, a little faster than the ship's own speed
     if (P.tdx || P.tdy) {
-      const d = Math.hypot(P.tdx, P.tdy), step = Math.min(d, st.speed * 1.8 * dt);
+      const d = Math.hypot(P.tdx, P.tdy), step = Math.min(d, st.speed * 1.8 * slow * dt);
       P.x += P.tdx / d * step; P.y += P.tdy / d * step; P.tdx -= P.tdx / d * step; P.tdy -= P.tdy / d * step;
       if (d - step < 0.5) P.tdx = P.tdy = 0;
     }
@@ -547,7 +559,11 @@ function shUpdate(dt) {
     shEnemyStep(R, e, dt);
     if (e.x < -90 || e.x > SHW + 400 || e.y < -120 || e.y > SHH + 120) { e.dead = true; e.gone = true; continue; }
     if (R.phase !== "dead" && shDist2(e.x, e.y, P.x, P.y) < (e.r + st.hit) ** 2) {
-      if (shHurt(R)) { if (e.type === "brute") e.hp -= 6; else shHitEnemy(e, 99); }
+      const hit = shHurt(R);
+      if (hit && e.type === "hook") {   // 🪝 caught: pulled towards the raider and slowed for a second (a shield block just knocks it away)
+        if (hit === true && e.owner && !e.owner.dead) P.pull = { t: 1, o: e.owner };
+        e.dead = true; e.gone = true; shFx(e.x, e.y, 8, "#ffd34d", 120, 3);
+      } else if (hit) { if (e.type === "brute") e.hp -= 6; else shHitEnemy(e, 99); }
     }
   }
 
@@ -701,6 +717,49 @@ function shEnemyStep(R, e, dt) {
       if (e.st >= cycle) { e.st = 0; e.fired = false; if (++e.shots >= 3) e.leaving = true; }
       break;
     }
+    case "skiff": {
+      if (e.leaving) { e.x += 200 * dt; if (e.x > SHW + 90) { e.dead = true; e.gone = true; } break; }
+      if (!e.parked) { e.x += e.vx * dt; e.y = e.y0 + Math.sin(e.t * 1.5) * 6; if (e.x <= e.stopX) e.parked = true; break; }
+      e.y = e.y0 + Math.sin(e.t * 1.5) * 6;
+      if ((e.fireT -= dt) <= 0) {
+        // a volley of 3 cannonballs that fly in an arc and come down around your ship
+        const mx = e.x - 26, my = e.y - 18, g = 300;
+        [1.3, 1.65, 2.0].forEach(T => {
+          const tx = P.x + shRand(-40, 40), ty = P.y + shRand(-30, 30);
+          R.eb.push({ x: mx, y: my, vx: (tx - mx) / T, vy: (ty - my - 0.5 * g * T * T) / T, g, r: 10, kind: "ebBig" });
+        });
+        shFx(mx, my, 6, "#cfcfcf", 80, 4);
+        e.fireT = 2.4 / fire;
+        if (++e.volleys >= 3) { e.leaving = true; }
+      }
+      break;
+    }
+    case "raider": {
+      if (e.leaving) { e.x += 260 * dt; if (e.x > SHW + 80) { e.dead = true; e.gone = true; } break; }
+      if (!e.parked) { e.x += e.vx * dt; if (e.x <= e.stopX) e.parked = true; break; }
+      if (e.hook && !e.hook.dead) break;                 // waits for its hook to come back
+      e.st += dt;
+      if (e.st < 0.8) e.y += shClamp(P.y - 8 - e.y, -220 * dt, 220 * dt);   // aim
+      else if (e.st < 1.25) e.flash = Math.floor(e.st * 14) % 2 ? 0.05 : 0;    // white flash: the hook is coming
+      else {
+        e.flash = 0; e.st = -0.6;
+        e.hook = shAdd("hook", e.x - 30, e.y + 8, { owner: e, vx: -640, hp: 1 });
+        if (++e.throws >= 2) e.lastThrow = true;
+      }
+      if (e.lastThrow && (!e.hook || e.hook.dead)) e.leaving = true;
+      break;
+    }
+    case "hook": {
+      const o = e.owner;
+      if (!e.back) { e.x += e.vx * dt; if (e.x < 40 || (o && o.x - e.x > 820)) e.back = true; }
+      else {
+        if (!o || o.dead) { e.dead = true; e.gone = true; break; }
+        const d = o.x - 30 - e.x; e.x += Math.min(d, 700 * dt); e.y += shClamp(o.y + 8 - e.y, -400 * dt, 400 * dt);
+        if (d < 6) { e.dead = true; e.gone = true; }
+      }
+      if (o && o.dead && !e.back) e.back = true;
+      break;
+    }
     case "carrier": e.x += e.vx * dt; if (e.fromTop) e.y += 60 * dt; else e.y = e.y0 + Math.sin(e.t * 2) * 30; break;
     case "rock": e.x += e.vx * dt; e.y += e.vy * dt; e.rot += e.spin * dt; break;
   }
@@ -725,7 +784,7 @@ function shDrawImg(g, name, x, y, w, alpha = 1) {
 // painted enemies: [picture, width on screen] (the height follows the picture)
 const SH_EN_PIC = { weaver: ["enemy-spinner", 50], drone: ["enemy-saucer", 58], darter: ["enemy-darter", 62], gunner: ["enemy-gunpod", 64],
   mine: ["enemy-mine", 46], homer: ["enemy-wasp", 58], tiny: ["enemy-swarm", 32],
-  brute: ["enemy-gunship", 116], junk: ["enemy-junkbot", 54], sentinel: ["enemy-sentinel", 66], carrier: ["enemy-supply", 72], tmissile: ["enemy-tmissile", 44] };
+  brute: ["enemy-gunship", 116], skiff: ["enemy-skiff", 84], raider: ["enemy-raider", 66], hook: ["enemy-hook", 40], junk: ["enemy-junkbot", 54], sentinel: ["enemy-sentinel", 66], carrier: ["enemy-supply", 72], tmissile: ["enemy-tmissile", 44] };
 function shDrawImgRot(g, name, x, y, w, rot) {
   const im = shImg(name); if (!im.complete || !im.naturalWidth) return false;
   const h = w * im.naturalHeight / im.naturalWidth;
@@ -810,6 +869,10 @@ function shDraw() {
     }
   }
   // 👾 enemies
+  for (const e of R.en) if (e.type === "hook" && e.owner && !e.owner.dead) {   // 🪝 the chain
+    g.save(); g.strokeStyle = "#3a3d4a"; g.lineWidth = 5; g.setLineDash([7, 4]); g.beginPath(); g.moveTo(e.x + 16, e.y); g.lineTo(e.owner.x - 26, e.owner.y + 8); g.stroke();
+    g.strokeStyle = "#8a8fa3"; g.lineWidth = 2; g.stroke(); g.restore();
+  }
   for (const e of R.en) {
     const rot = e.type === "weaver" || e.type === "rock" || e.type === "mine" ? e.rot : (e.type === "homer" || e.type === "tmissile" || (e.type === "tiny" && e.home)) ? e.ang - Math.PI : 0;
     // painted pictures for asteroids and spinners (drawn shapes until the picture has loaded)
