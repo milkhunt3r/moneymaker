@@ -520,6 +520,11 @@ Object.assign(ES, {
   "Fly a spaceship through 3 levels of enemy waves and defeat a boss at the end of each one.": "Pilota una nave por 3 niveles de oleadas enemigas y derrota a un jefe al final de cada uno.",
   "📱 Turn your phone sideways for a bigger screen.": "📱 Gira el móvil para ver la pantalla más grande.", "Turn your phone sideways for a bigger screen.": "Gira el móvil para ver la pantalla más grande.",
   "Drag anywhere to fly": "Arrastra para volar", "Shield button": "Botón del escudo", "Special weapon button": "Botón del arma especial", "Pause button": "Botón de pausa",
+  "Move: arrows or WASD · ⏸️ Pause: P or Esc": "Moverse: flechas o WASD · ⏸️ Pausa: P o Esc", "Q": "Q", "E": "E",
+  "Press a key…": "Pulsa una tecla…", "Default keys": "Teclas por defecto", "Right Shift": "Shift derecho", "Right Ctrl": "Ctrl derecho", "Enter": "Intro", "Backspace": "Retroceso", "Caps Lock": "Bloq Mayús",
+  "That key is used to move, shoot or pause. Pick another one.": "Esa tecla se usa para moverse, disparar o pausar. Elige otra.",
+  "That key is already used for the shield. Pick another one.": "Esa tecla ya se usa para el escudo. Elige otra.",
+  "That key is already used for the special weapon. Pick another one.": "Esa tecla ya se usa para el arma especial. Elige otra.",
   "/ WASD": "/ WASD", "Shift / K": "Shift / K", "X / L": "X / L", "P / Esc": "P / Esc", "Move": "Moverse", "Shoot": "Disparar", "Auto-fire on": "Disparo automático", "Space": "Espacio",
   "about 5 min": "unos 5 min", "about 6–7 min": "unos 6–7 min",
   // achievements
@@ -538,8 +543,8 @@ Object.assign(ES, {
   "Supply ships": "Naves de suministros",
   "A side-scrolling space shooter. It opens when you build the 🚀 Space Mission Center (🔬 Science) and stays open for good, even after a prestige. Fly your ship through 3 levels of enemy waves; each level ends with a boss. Beating a level opens the next one. Levels are free to play, but if you lose all your lives, the level starts over from the beginning.":
     "Un matamarcianos de desplazamiento lateral. Se abre al construir el 🚀 Centro de misiones espaciales (🔬 Ciencia) y queda abierto para siempre, incluso tras un prestigio. Pilota tu nave por 3 niveles de oleadas enemigas; cada nivel termina con un jefe. Superar un nivel abre el siguiente. Jugar los niveles es gratis, pero si pierdes todas tus vidas, el nivel empieza de nuevo desde el principio.",
-  "Move with the arrows or WASD, 🛡️ shield with Shift or K, 🚀 special weapon with X or L, ⏸️ pause with P or Esc. Auto-fire is on by default (turn it off in the hangar to shoot with Space). 📱 On a phone, drag anywhere on the screen to fly and tap the buttons for the shield and special weapon.":
-    "Muévete con las flechas o WASD, 🛡️ escudo con Shift o K, 🚀 arma especial con X o L, ⏸️ pausa con P o Esc. El disparo automático está activado por defecto (desactívalo en el hangar para disparar con la barra espaciadora). 📱 En el móvil, arrastra el dedo por la pantalla para volar y toca los botones del escudo y del arma especial.",
+  "Move with the arrows or WASD, 🛡️ shield with Shift or K, 🚀 special weapon with X or L, ⏸️ pause with P or Esc. You can change the shield and special weapon keys in the hangar. Auto-fire is on by default (turn it off in the hangar to shoot with Space). 📱 On a phone, drag anywhere on the screen to fly and tap the buttons for the shield and special weapon.":
+    "Muévete con las flechas o WASD, 🛡️ escudo con Shift o K, 🚀 arma especial con X o L, ⏸️ pausa con P o Esc. Puedes cambiar las teclas del escudo y del arma especial en el hangar. El disparo automático está activado por defecto (desactívalo en el hangar para disparar con la barra espaciadora). 📱 En el móvil, arrastra el dedo por la pantalla para volar y toca los botones del escudo y del arma especial.",
   "Art Gallery: copy paintings and sell them or keep them · ⛏️ Gold Mine Dig: dig for ore (needs a gold mine) · 🚀 Nebula Strike: space shooter (needs the Space Mission Center)":
     "Galería de arte: copia cuadros y véndelos o guárdalos · ⛏️ Excavación en la mina de oro: excava en busca de mineral (necesita una mina de oro) · 🚀 Nebula Strike: matamarcianos espacial (necesita el Centro de misiones espaciales)",
 });
@@ -602,6 +607,7 @@ rx(String.raw`(Sparrow|Dart|Bulwark|Sovereign): (Damage|Fire rate|Hull armour|Sh
 // patch notes
 H("🚀 New mini-game: <b>Nebula Strike</b>! A side-scrolling space shooter that opens when you build the 🚀 Space Mission Center. Fight through 3 levels of enemy waves and beat the <b>Scrap Crab</b>, the <b>Hive Queen</b> and <b>The Taxman</b>. Time your 🛡️ shield, grab special weapons from supply ships and collect ✨ stardust to buy 4 ships and their upgrades.",
   "🚀 Nuevo minijuego: ¡<b>Nebula Strike</b>! Un matamarcianos de desplazamiento lateral que se abre al construir el 🚀 Centro de misiones espaciales. Abre paso por 3 niveles de oleadas enemigas y derrota al <b>Cangrejo Chatarra</b>, a la <b>Reina de la Colmena</b> y a <b>El Recaudador</b>. Usa el 🛡️ escudo en el momento justo, consigue armas especiales de las naves de suministros y recoge ✨ polvo estelar para comprar 4 naves y sus mejoras.");
+ES["⌨️ Nebula Strike: you can change the keys for the 🛡️ shield and 🚀 special weapon in the hangar."] = "⌨️ Nebula Strike: puedes cambiar las teclas del 🛡️ escudo y del 🚀 arma especial en el hangar.";
 H("🚀 Nebula Strike: the pause screen now shows the controls, and the 💠 nova spread is stronger (a tighter fan of bullets that go through enemies).", "🚀 Nebula Strike: la pantalla de pausa ahora muestra los controles y el 💠 abanico nova es más fuerte (un abanico más cerrado de balas que atraviesan a los enemigos).");
 H("🏆 New <b>🚀 Nebula Strike</b> achievements section: 10 achievements.", "🏆 Nueva sección de logros <b>🚀 Nebula Strike</b>: 10 logros.");
 

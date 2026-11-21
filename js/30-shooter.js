@@ -23,6 +23,23 @@ SH.best = SH.best || {};           // fastest clear per level (seconds)
 SH.clears = SH.clears || {};       // clears per level
 for (const k of ["runs", "wins", "kills", "blocks", "earned", "perfect", "bossKills"]) SH[k] = SH[k] || 0;
 if (typeof SH.auto !== "boolean") SH.auto = true;   // 🔫 auto-fire (otherwise hold Space)
+// ⌨️ key bindings for the shield and the special weapon: null = the default keys, otherwise { code, label } picked in the hangar
+SH.bind = SH.bind || { shield: null, special: null };
+const SH_BIND_DEF = { shield: { codes: ["ShiftLeft", "ShiftRight", "KeyK"], label: "Shift / K" }, special: { codes: ["KeyX", "KeyL"], label: "X / L" } };
+// keys that can't be used: moving, pausing and menu keys
+const SH_BIND_BLOCK = new Set(["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "KeyA", "KeyD", "KeyW", "KeyS", "KeyP", "Escape", "Space", "KeyJ", "Tab", "MetaLeft", "MetaRight", "ContextMenu"]);
+const shBindCodes = (a) => (SH.bind[a] ? [SH.bind[a].code] : SH_BIND_DEF[a].codes);
+const shBindLabel = (a) => (SH.bind[a] ? SH.bind[a].label : SH_BIND_DEF[a].label);
+function shKeyLabel(e) {
+  const names = { Space: "Space", ShiftLeft: "Shift", ShiftRight: "Right Shift", ControlLeft: "Ctrl", ControlRight: "Right Ctrl", AltLeft: "Alt", AltRight: "Alt Gr",
+    Enter: "Enter", Backspace: "Backspace", CapsLock: "Caps Lock", Tab: "Tab" };
+  if (names[e.code]) return names[e.code];
+  if (/^Key[A-Z]$/.test(e.code)) return e.code.slice(3);
+  if (/^Digit\d$/.test(e.code)) return e.code.slice(5);
+  if (/^Numpad/.test(e.code)) return "Num " + e.code.slice(6);
+  return e.key && e.key.length === 1 ? e.key.toUpperCase() : e.code;
+}
+let shBinding = null;   // the action waiting for a key press in the hangar
 
 /* ----- 🛸 SHIPS -----
    speed: px / sec · hearts: lives · rate: shots / sec · dmg: damage per shot · hit: hitbox radius · cost: upgrade price factor */
@@ -85,8 +102,14 @@ function renderShooter() {
         Lose all your lives and the level starts over from the beginning.</p>
       <p class="muted">🛡️ <b>Shield:</b> every ${15 - shUp(ship, "shieldCd")} sec. It stays up ${(1.5 + shUp(ship, "shieldTime") * 0.1).toFixed(1)} sec and blocks the next hit, so time it well.
         📦 Shoot the glowing supply ships for special weapons: 🚀 homing missiles, ⚡ laser beam and 💠 nova spread.</p>
-      <div class="shKeys muted">⌨️ Move: arrows or WASD · 🛡️ Shield: Shift or K · 🚀 Special weapon: X or L · ⏸️ Pause: P or Esc<br>
+      <div class="shKeys muted">⌨️ Move: arrows or WASD · ⏸️ Pause: P or Esc<br>
         📱 Phone: drag anywhere on the screen to fly, and tap the buttons for the shield and special weapon.</div>
+      <div class="shBinds">${["shield", "special"].map(k => `<div class="shBind">
+          <span>${k === "shield" ? "🛡️ Shield" : "🚀 Special weapon"}</span>
+          <button class="btn small ${shBinding === k ? "waiting" : ""}" data-sh-bind="${k}">${shBinding === k ? "Press a key…" : `⌨️ ${shBindLabel(k)}`}</button>
+        </div>`).join("")}
+        ${SH.bind.shield || SH.bind.special ? `<button class="btn ghost small" data-sh-bind="reset">↺ Default keys</button>` : ""}
+      </div>
       <label class="shAuto"><input type="checkbox" data-sh="auto" ${SH.auto ? "checked" : ""}> 🔫 Auto-fire (turn it off to shoot by holding Space)</label>
       <div class="shDustBig">${shDustIco} Stardust: <b>${SH.dust.toLocaleString()}</b></div>
     </div>
@@ -155,6 +178,24 @@ $("shooterView").addEventListener("click", (e) => {
   const sel = t.closest("[data-sh-ship]"); if (sel && SH.owned.includes(sel.dataset.shShip)) { SH.ship = sel.dataset.shShip; save(); return renderShooter(); }
   const up = t.closest("[data-sh-up]"); if (up && !up.disabled) return shBuyUp(up.dataset.shUp);
 });
+// ⌨️ change a key: click the button, then press the new key (Esc cancels)
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-sh-bind]"); if (!b) return;
+  if (b.dataset.shBind === "reset") { SH.bind = { shield: null, special: null }; shBinding = null; save(); return renderShooter(); }
+  shBinding = shBinding === b.dataset.shBind ? null : b.dataset.shBind; renderShooter();
+});
+document.addEventListener("keydown", (e) => {
+  if (!shBinding) return;
+  if (state.view !== "games" || state.gamePage !== "shooter" || !$("modal").hidden) { shBinding = null; return; }
+  e.preventDefault(); e.stopPropagation();
+  if (e.repeat) return;
+  const a = shBinding, other = a === "shield" ? "special" : "shield";
+  if (e.code === "Escape") { shBinding = null; return renderShooter(); }
+  if (SH_BIND_BLOCK.has(e.code)) return showNotice("⌨️ That key is used to move, shoot or pause. Pick another one.");
+  if (shBindCodes(other).includes(e.code)) return showNotice(other === "shield" ? "⌨️ That key is already used for the shield. Pick another one." : "⌨️ That key is already used for the special weapon. Pick another one.");
+  SH.bind[a] = { code: e.code, label: shKeyLabel(e) };
+  shBinding = null; save(); renderShooter();
+}, true);
 $("shooterView").addEventListener("change", (e) => {
   if (e.target.matches("[data-sh=auto]")) { SH.auto = e.target.checked; save(); }
 });

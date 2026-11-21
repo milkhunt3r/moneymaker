@@ -1813,3 +1813,8 @@ p.guestWarn { font-size: 14px; background: rgba(255, 170, 0, 0.1); border: 1px s
   padding: 10px 12px; border-radius: 10px; background: rgba(255, 255, 255, 0.05); }
 .shPauseKeys b { display: inline-block; min-width: 150px; color: #ffd34d; }
 @media (max-width: 700px) { .shPauseKeys { grid-template-columns: 1fr; font-size: 12px; gap: 3px; } .shPauseKeys b { min-width: 90px; } }
+.shBinds { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px 16px; margin: 6px 0 8px; }
+.shBind { display: flex; align-items: center; gap: 8px; }
+.shBind .btn { min-width: 110px; }
+.shBind .btn.waiting { animation: shBlink 0.8s ease-in-out infinite; }
+@keyframes shBlink { 50% { opacity: 0.5; } }

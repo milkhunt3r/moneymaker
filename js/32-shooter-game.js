@@ -758,7 +758,7 @@ function shPause(on) {
       <button class="btn ghost" data-shp="quit">🏳️ Quit level</button></div>
       <div class="shPauseKeys">${shTouchUI
         ? `<span>👆 Drag anywhere to fly</span><span>🛡️ Shield button</span><span>🚀 Special weapon button</span><span>⏸️ Pause button</span>`
-        : `<span><b>⬆️⬇️⬅️➡️ / WASD</b> Move</span><span><b>Shift / K</b> 🛡️ Shield</span><span><b>X / L</b> 🚀 Special weapon</span>
+        : `<span><b>⬆️⬇️⬅️➡️ / WASD</b> Move</span><span><b>${shBindLabel("shield")}</b> 🛡️ Shield</span><span><b>${shBindLabel("special")}</b> 🚀 Special weapon</span>
            <span><b>${SH.auto ? "Auto-fire on" : "Space"}</b> 🔫 Shoot</span><span><b>P / Esc</b> ⏸️ Pause</span>`}</div>
       <p class="muted">If you quit, you keep the stardust you collected.</p></div>`;
   }
@@ -840,16 +840,17 @@ $("shooterView").addEventListener("click", (e) => {
   if (a === "again") { shR = null; shStart(lv); }
   if (a === "next") { shR = null; shStart(lv + 1); }
 });
-const SH_GAME_KEYS = new Set(["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "KeyA", "KeyD", "KeyW", "KeyS", "Space", "KeyJ", "ShiftLeft", "ShiftRight", "KeyK", "KeyX", "KeyL", "KeyP", "Escape"]);
+const SH_GAME_KEYS = new Set(["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "KeyA", "KeyD", "KeyW", "KeyS", "Space", "KeyJ", "KeyP", "Escape"]);
 document.addEventListener("keydown", (e) => {
-  if (!shR || !shVisible() || !SH_GAME_KEYS.has(e.code) || e.target.closest("input, textarea, select")) return;
+  const isShield = shBindCodes("shield").includes(e.code), isSpecial = shBindCodes("special").includes(e.code);
+  if (!shR || !shVisible() || !(SH_GAME_KEYS.has(e.code) || isShield || isSpecial) || e.target.closest("input, textarea, select")) return;
   e.preventDefault();
   if (e.code === "KeyP" || e.code === "Escape") { if (!e.repeat && !shR.end) shPause(!shR.paused); return; }
   if (shR.paused || shR.end) return;
   shKeys[e.code] = true;
   if (e.repeat) return;
-  if (e.code === "ShiftLeft" || e.code === "ShiftRight" || e.code === "KeyK") shUseShield(shR);
-  if (e.code === "KeyX" || e.code === "KeyL") shUseSpecial(shR);
+  if (isShield) shUseShield(shR);
+  if (isSpecial) shUseSpecial(shR);
 });
 document.addEventListener("keyup", (e) => { shKeys[e.code] = false; });
 document.addEventListener("visibilitychange", () => { if (document.hidden && shR && !shR.end) shPause(true); });
