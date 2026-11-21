@@ -985,9 +985,14 @@ function shDrawHud(g, R) {
   }
   // banners
   if (R.banner) {
-    const a = Math.min(1, R.banner.life * 2);
+    // boss warnings are see-through (the game keeps going behind them) and pulse gently
+    const a = Math.min(1, R.banner.life * 2) * (R.banner.warn ? 0.42 + 0.12 * Math.sin(R.t * 8) : 1);
     g.globalAlpha = a;
-    if (R.banner.warn) { g.fillStyle = "rgba(160,0,20,0.35)"; g.fillRect(0, SHH / 2 - 50, SHW, 100); }
+    if (R.banner.warn) {
+      const gr = g.createLinearGradient(0, SHH / 2 - 50, 0, SHH / 2 + 50);
+      gr.addColorStop(0, "rgba(160,0,20,0)"); gr.addColorStop(0.5, "rgba(160,0,20,0.25)"); gr.addColorStop(1, "rgba(160,0,20,0)");
+      g.fillStyle = gr; g.fillRect(0, SHH / 2 - 50, SHW, 100);
+    }
     shTextOut(g, R.banner.big, SHW / 2, SHH / 2 - 12, 44, R.banner.warn ? "#ff6b6b" : "#ffd34d");
     if (R.banner.small) shTextOut(g, R.banner.small, SHW / 2, SHH / 2 + 30, 24, "#fff");
     g.globalAlpha = 1;
