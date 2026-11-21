@@ -804,6 +804,14 @@ function shDrawImg(g, name, x, y, w, alpha = 1) {
 const SH_EN_PIC = { weaver: ["enemy-spinner", 50], drone: ["enemy-saucer", 58], darter: ["enemy-darter", 62], gunner: ["enemy-gunpod", 64],
   mine: ["enemy-mine", 46], homer: ["enemy-wasp", 58], tiny: ["enemy-swarm", 32],
   brute: ["enemy-gunship", 116], skiff: ["enemy-skiff", 84], raider: ["enemy-raider", 66], hook: ["enemy-hook", 40], junk: ["enemy-junkbot", 54], sentinel: ["enemy-sentinel", 66], carrier: ["enemy-supply", 72], tmissile: ["enemy-tmissile", 44] };
+// small painted icons (assets/icons/ico-sh-*.webp), loaded once; null until ready
+const SH_ICON = {};
+function shIcon(n) {
+  let im = SH_ICON[n];
+  if (!im) { im = SH_ICON[n] = new Image(); im.src = `assets/icons/ico-sh-${n}.webp`; }
+  return im.complete && im.naturalWidth ? im : null;
+}
+["dust", "pk-missile", "pk-laser", "pk-spread", "pk-heart", "btn-shield"].forEach(shIcon);
 function shDrawImgRot(g, name, x, y, w, rot) {
   const im = shImg(name); if (!im.complete || !im.naturalWidth) return false;
   const h = w * im.naturalHeight / im.naturalWidth;
@@ -848,8 +856,13 @@ function shDraw() {
 
   // 🎁 pick-ups
   for (const k of R.pk) {
-    const spr = shPickSprite(k.k);
-    shDrawSprite(g, spr, k.x, k.y, k.k === "dust" ? k.t * 3 : 0);
+    // painted pick-ups (drawn shapes until the pictures have loaded)
+    const pic = shIcon(k.k === "dust" ? "dust" : "pk-" + k.k), sz = k.k === "dust" ? 24 : 40;
+    if (pic) {
+      g.save(); g.translate(k.x, k.y); if (k.k === "dust") g.rotate(k.t * 3);
+      if (k.k !== "dust") { g.globalAlpha = 0.5 + 0.25 * Math.sin(k.t * 6); g.fillStyle = shRad(g, 0, 0, sz * 0.3, sz * 0.85, ["rgba(255,255,255,0.7)", "rgba(255,255,255,0)"]); g.fillRect(-sz, -sz, sz * 2, sz * 2); g.globalAlpha = 1; }
+      g.drawImage(pic, -sz / 2, -sz / 2, sz, sz); g.restore();
+    } else shDrawSprite(g, shPickSprite(k.k), k.x, k.y, k.k === "dust" ? k.t * 3 : 0);
   }
   // 👹 boss
   const b = R.boss;
@@ -958,13 +971,15 @@ function shDrawHud(g, R) {
   const ready = P.shieldCd <= 0, k = ready ? 1 : 1 - P.shieldCd / st.shieldCd;
   g.beginPath(); g.arc(x, 20, 14, 0, Math.PI * 2); g.fillStyle = P.shield > 0 ? "rgba(120,240,255,0.6)" : ready ? "rgba(80,200,255,0.35)" : "rgba(255,255,255,0.08)"; g.fill();
   g.beginPath(); g.arc(x, 20, 14, -Math.PI / 2, -Math.PI / 2 + k * Math.PI * 2); g.strokeStyle = ready ? "#8ff6ff" : "#5c7a99"; g.lineWidth = 3; g.stroke();
-  shTextOut(g, "🛡️", x, 21, 14);
+  { const pic = shIcon("btn-shield"); if (pic) { g.globalAlpha = ready || P.shield > 0 ? 1 : 0.5; g.drawImage(pic, x - 10, 11, 20, 20); g.globalAlpha = 1; } else shTextOut(g, "🛡️", x, 21, 14); }
   if (!ready) shTextOut(g, String(Math.ceil(P.shieldCd)), x + 26, 21, 15, "#b9d6ff");
   x += 52;
   // 🎁 special weapon
-  if (P.special) { shTextOut(g, `${SH_SPECIAL[P.special].icon} ×${P.ammo}`, x, 21, 17, "#fff", "left"); }
+  if (P.special) { const pic = shIcon("pk-" + P.special); if (pic) { g.drawImage(pic, x, 8, 26, 26); shTextOut(g, `×${P.ammo}`, x + 30, 21, 17, "#fff", "left"); } else shTextOut(g, `${SH_SPECIAL[P.special].icon} ×${P.ammo}`, x, 21, 17, "#fff", "left"); }
   // ✨ stardust
-  shTextOut(g, `✨ ${R.dust}`, SHW - 70, 21, 17, "#ffe66b", "right");
+  shTextOut(g, `${R.dust}`, SHW - 70, 21, 17, "#ffe66b", "right");
+  { g.font = "800 17px system-ui, sans-serif"; const w = g.measureText(String(R.dust)).width, pic = shIcon("dust");
+    if (pic) g.drawImage(pic, SHW - 70 - w - 24, 10, 20, 20); else shTextOut(g, "✨", SHW - 70 - w - 4, 21, 17, "#ffe66b", "right"); }
   shTextOut(g, `⭐ ${R.score.toLocaleString()}`, SHW - 150, 21, 17, "#fff", "right");
   // progress (waves) or boss health
   const bx = 360, bw = 300;
@@ -1116,8 +1131,8 @@ function shRenderPlay() {
         <canvas id="shCanvas" width="${SHW}" height="${SHH}"></canvas>
         <button class="shPauseBtn" data-shp="pause" aria-label="Pause">⏸️</button>
         <div class="shTouch ${shTouchUI ? "" : "off"}">
-          <button class="shTBtn sp" data-shp="special" aria-label="Special weapon">🚀</button>
-          <button class="shTBtn sh" data-shp="shield" aria-label="Shield">🛡️</button>
+          <button class="shTBtn sp" data-shp="special" aria-label="Special weapon">${ico("sh-btn-special")}</button>
+          <button class="shTBtn sh" data-shp="shield" aria-label="Shield">${ico("sh-btn-shield")}</button>
         </div>
         <div class="shOverlay" id="shOverlay" hidden></div>
       </div>

@@ -131,7 +131,7 @@ function renderShooter() {
   v.innerHTML = `<button class="btn ghost small gamesBack" data-games-back>← 🎮 Mini-games</button>
     <div class="card shIntro">
       <h2>🚀 Nebula Strike</h2>
-      <p>Fly through three sectors of space, shoot everything that moves and defeat the boss at the end of each level.
+      <p>Fly through four sectors of space, shoot everything that moves and defeat the boss at the end of each level.
         Lose all your lives and the level starts over from the beginning.</p>
       <p class="muted">🛡️ <b>Shield:</b> every ${15 - shUp(ship, "shieldCd")} sec. It stays up ${(1.5 + shUp(ship, "shieldTime") * 0.1).toFixed(1)} sec and blocks the next hit, so time it well.
         📦 Shoot the glowing supply ships for special weapons: 🚀 homing missiles, ⚡ laser beam and 💠 nova spread.</p>
@@ -143,7 +143,7 @@ function renderShooter() {
         </div>`).join("")}
         ${SH.bind.shield || SH.bind.special ? `<button class="btn ghost small" data-sh-bind="reset">↺ Default keys</button>` : ""}
       </div>
-      <label class="shAuto"><input type="checkbox" data-sh="auto" ${SH.auto ? "checked" : ""}> 🔫 Auto-fire (turn it off to shoot by holding Space)</label>
+      <label class="shAuto"><input type="checkbox" data-sh="auto" ${SH.auto ? "checked" : ""}> ${ico("sh-auto", "shAutoIco")} Auto-fire (turn it off to shoot by holding Space)</label>
       <div class="shDustBig">${shDustIco} Stardust: <b>${SH.dust.toLocaleString()}</b></div>
     </div>
     <div class="shLevels">${SH_LEVELS.map(L => {
@@ -183,7 +183,7 @@ function renderShooter() {
       <div class="mineUpGrid">${SH_UP_IDS.map(k => {
         const U = SH_UPS[k], l = shUp(ship, k), c = shUpCost(ship, k), ore = shUpOre(ship, k);
         return `<div class="mineUp ${c ? "" : "maxed"}">
-          <div class="mineUpHead"><span class="mineUpIcon">${U.icon}</span><b>${U.name}</b><span class="mineUpLv">Lv ${l}/${U.max}</span></div>
+          <div class="mineUpHead"><span class="mineUpIcon">${ico("sh-" + k, "mnUp")}</span><b>${U.name}</b><span class="mineUpLv">Lv ${l}/${U.max}</span></div>
           <div class="mineUpEff">Now: ${U.eff(l)}</div>
           ${c ? `<div class="mineUpEff next">Next: ${U.eff(l + 1)}</div>
             ${ore ? `<div class="mineUpCost">${Object.keys(ore).map(o => `<span class="${(shVault()[o] || 0) >= ore[o] ? "" : "short"}">${shOreTag(o, `${shVault()[o] || 0}/${ore[o]}`)}</span>`).join("")}</div>` : ""}

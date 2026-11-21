@@ -1875,3 +1875,9 @@ p.guestWarn { font-size: 14px; background: rgba(255, 170, 0, 0.1); border: 1px s
 .shChestShop.locked .shChestShopImg { filter: grayscale(1) brightness(0.6); }
 .shChestModal { text-align: center; width: min(520px, 86vw); margin: 0 auto; }
 .shChestModal h2 { margin: 0 0 6px; color: #ffd34d; }
+/* 🚀 Nebula Strike painted icons: stardust keeps its ✨ text (for translations) but shows the picture */
+.shDustIco { display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -0.2em; color: transparent; overflow: hidden;
+  background: url("../assets/icons/ico-sh-dust.webp") center / contain no-repeat; filter: none; }
+.ico.shAutoIco { width: 26px; height: 26px; margin: 0; }
+.shTBtn .ico { width: 40px; height: 40px; margin: 0; pointer-events: none; }
+@media (max-width: 700px) { .shTBtn .ico { width: 32px; height: 32px; } }

@@ -502,8 +502,8 @@ Object.assign(ES, {
   "Shield time": "Duración del escudo", "Special ammo": "Munición especial", "Stardust magnet": "Imán de polvo estelar",
   "normal damage": "daño normal", "normal fire rate": "cadencia normal", "no extra lives": "sin vidas extra", "normal special weapon ammo": "munición especial normal",
   "no magnet": "sin imán", "small pull range": "alcance pequeño", "medium pull range": "alcance medio", "large pull range": "alcance grande",
-  "Fly through three sectors of space, shoot everything that moves and defeat the boss at the end of each level. Lose all your lives and the level starts over from the beginning.":
-    "Vuela por tres sectores del espacio, dispara a todo lo que se mueva y derrota al jefe al final de cada nivel. Si pierdes todas tus vidas, el nivel empieza de nuevo desde el principio.",
+  "Fly through four sectors of space, shoot everything that moves and defeat the boss at the end of each level. Lose all your lives and the level starts over from the beginning.":
+    "Vuela por cuatro sectores del espacio, dispara a todo lo que se mueva y derrota al jefe al final de cada nivel. Si pierdes todas tus vidas, el nivel empieza de nuevo desde el principio.",
   "Move: arrows or WASD · 🛡️ Shield: Shift or K · 🚀 Special weapon: X or L · ⏸️ Pause: P or Esc":
     "Moverse: flechas o WASD · 🛡️ Escudo: Shift o K · 🚀 Arma especial: X o L · ⏸️ Pausa: P o Esc",
   "Phone: drag anywhere on the screen to fly, and tap the buttons for the shield and special weapon.":
