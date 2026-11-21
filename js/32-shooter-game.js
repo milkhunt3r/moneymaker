@@ -60,7 +60,7 @@ function shStart(lv) {
     planet: { x: SHW + 200, y: shRand(120, 420), r: Math.round(shRand(50, 90)), next: 40 } };
   shR.banner = { big: t(`Level ${lv}`), small: t(L.name), life: 3 };
   SH.runs++; save();
-  [st.img, L.img, `bg-level${lv}`, `bg-boss${lv}`, "rock-small", "rock-medium", "rock-big", "enemy-spinner", ...(lv === 3 ? ["boss-taxman-dmg"] : [])].forEach(shImg);
+  [st.img, L.img, `bg-level${lv}`, `bg-boss${lv}`, "rock-small", "rock-medium", "rock-big", ...Object.values(SH_EN_PIC).map(p => p[0]), ...(lv === 3 ? ["boss-taxman-dmg"] : [])].forEach(shImg);
   renderShooter(); shKick();
 }
 // 🏅 best score per level (any run: won, lost or quit)
@@ -601,9 +601,13 @@ function shDrawImg(g, name, x, y, w, alpha = 1) {
   g.globalAlpha = 1;
   return h;
 }
+// painted enemies: [picture, width on screen] (the height follows the picture)
+const SH_EN_PIC = { weaver: ["enemy-spinner", 50], drone: ["enemy-saucer", 58], darter: ["enemy-darter", 62], gunner: ["enemy-gunpod", 64],
+  mine: ["enemy-mine", 46], homer: ["enemy-wasp", 58], tiny: ["enemy-swarm", 32] };
 function shDrawImgRot(g, name, x, y, w, rot) {
   const im = shImg(name); if (!im.complete || !im.naturalWidth) return false;
-  g.save(); g.translate(x, y); if (rot) g.rotate(rot); g.drawImage(im, -w / 2, -w / 2, w, w); g.restore();
+  const h = w * im.naturalHeight / im.naturalWidth;
+  g.save(); g.translate(x, y); if (rot) g.rotate(rot); g.drawImage(im, -w / 2, -h / 2, w, h); g.restore();
   return true;
 }
 function shHeart(g, x, y, s, full) {
@@ -684,8 +688,8 @@ function shDraw() {
   for (const e of R.en) {
     const rot = e.type === "weaver" || e.type === "rock" || e.type === "mine" ? e.rot : (e.type === "homer" || e.type === "tmissile" || (e.type === "tiny" && e.home)) ? e.ang - Math.PI : 0;
     // painted pictures for asteroids and spinners (drawn shapes until the picture has loaded)
-    const pic = e.type === "rock" ? `rock-${e.tier || "medium"}` : e.type === "weaver" ? "enemy-spinner" : null;
-    const picW = e.type === "rock" ? e.size * 2.25 : 50;
+    const pic = e.type === "rock" ? `rock-${e.tier || "medium"}` : SH_EN_PIC[e.type] ? SH_EN_PIC[e.type][0] : null;
+    const picW = e.type === "rock" ? e.size * 2.25 : SH_EN_PIC[e.type] ? SH_EN_PIC[e.type][1] : 50;
     if (pic && shDrawImgRot(g, pic, e.x, e.y, picW, rot)) {
       if (e.flash > 0) { g.save(); g.globalCompositeOperation = "lighter"; g.globalAlpha = 0.5; shDrawImgRot(g, pic, e.x, e.y, picW, rot); g.restore(); }
     } else {
