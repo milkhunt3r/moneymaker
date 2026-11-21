@@ -238,7 +238,7 @@ const shDist2 = (ax, ay, bx, by) => (ax - bx) ** 2 + (ay - by) ** 2;
    circles: [x, y, radius] as parts of the picture width/height (from the centre)
    --------------------------------------------------------------------- */
 const SH_BOSS = {
-  crab:   { name: "Scrap Crab", img: "boss-crab", w: 300, ar: 516 / 800, hp: 240, hx: SHW - 170, dust: 60,
+  crab:   { name: "Scrap Crab", img: "boss-crab", w: 300, ar: 502 / 800, hp: 240, hx: SHW - 170, dust: 60,
     circles: [[0.13, 0.02, 0.21], [-0.33, -0.25, 0.1], [-0.33, 0.21, 0.1], [0.1, -0.42, 0.06], [0.26, -0.42, 0.06]] },
   hive:   { name: "Hive Queen", img: "boss-hive", w: 390, ar: 376 / 800, hp: 340, hx: SHW - 205, dust: 100,
     circles: [[-0.43, 0.06, 0.06], [-0.3, 0.12, 0.075], [-0.14, 0.17, 0.08], [0.03, 0.17, 0.085], [0.2, 0.16, 0.08], [0.36, 0.12, 0.065]] },
@@ -655,6 +655,16 @@ function shDraw() {
     if (h && (b.flash > 0 || b.warn && Math.floor(R.t * 10) % 2 || b.inv > 0 && Math.floor(R.t * 12) % 2)) {
       g.save(); g.globalCompositeOperation = "lighter"; g.globalAlpha = b.warn ? 0.45 : 0.35;
       shDrawImg(g, b.img, bx, by, b.w); g.restore();
+    }
+    // 🦀 the Scrap Crab's three jets flicker
+    if (h && b.k === "crab") {
+      g.save(); g.globalCompositeOperation = "lighter";
+      for (const dx of [-0.05, 0.15, 0.33]) {
+        const fx = bx + dx * b.w, fy = by + 0.42 * h, r = 14 + Math.random() * 6;
+        g.globalAlpha = 0.35 + Math.random() * 0.25; g.fillStyle = shRad(g, fx, fy, 1, r, ["rgba(255,230,140,0.9)", "rgba(255,120,40,0)"]);
+        g.beginPath(); g.arc(fx, fy, r, 0, Math.PI * 2); g.fill();
+      }
+      g.restore();
     }
     if (b.k === "taxman" && b.phase === 3 && Math.random() < 0.3) R.fx.push({ x: bx + shRand(-0.4, 0.4) * b.w, y: by - shRand(0, 0.3) * h, vx: -30, vy: -50, life: 0.9, max: 0.9, r: 8, c: "rgba(70,60,70,0.5)", smoke: true });
   }

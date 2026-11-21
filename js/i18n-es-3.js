@@ -539,6 +539,7 @@ Object.assign(ES, {
     "🪨 Nebula Strike: nuevos asteroides pintados a mano en tres tamaños (los grandes son más duros y dan más puntos) y un nuevo aspecto para los enemigos de cuchillas giratorias.",
   "🌌 Nebula Strike: new hand-painted backgrounds for all 3 levels, and each boss now has its own arena (the Scrap Crab's junkyard, the Hive Queen's nest and The Taxman's vault) that fades in when the boss arrives.":
     "🌌 Nebula Strike: nuevos fondos pintados a mano para los 3 niveles, y cada jefe tiene ahora su propia arena (el desguace del Cangrejo Chatarra, el nido de la Reina de la Colmena y la cámara acorazada de El Recaudador) que aparece cuando llega el jefe.",
+  "🦀 Nebula Strike: the Scrap Crab has a new look: it now flies on three rocket jets.": "🦀 Nebula Strike: el Cangrejo Chatarra tiene un nuevo aspecto: ahora vuela con tres propulsores.",
   "/ WASD": "/ WASD", "Shift / K": "Shift / K", "X / L": "X / L", "P / Esc": "P / Esc", "Move": "Moverse", "Shoot": "Disparar", "Auto-fire on": "Disparo automático", "Space": "Espacio",
   "about 5 min": "unos 5 min", "about 6–7 min": "unos 6–7 min",
   // achievements
