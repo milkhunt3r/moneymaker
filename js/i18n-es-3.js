@@ -514,7 +514,7 @@ Object.assign(ES, {
   "Paused": "En pausa", "Resume": "Continuar", "Quit level": "Abandonar el nivel", "If you quit, you keep the stardust you collected.": "Si abandonas, conservas el polvo estelar que has recogido.",
   "Your ship was destroyed": "Tu nave ha sido destruida", "Try again": "Reintentar", "Play again": "Jugar otra vez",
   "Enemies destroyed": "Enemigos destruidos", "Hits blocked": "Golpes bloqueados", "Lives lost": "Vidas perdidas",
-  "Cleared": "Superado", "Beat level 1 first": "Supera antes el nivel 1", "Beat level 2 first": "Supera antes el nivel 2", "Beat level 3": "Supera el nivel 3",
+  "Cleared": "Superado", "Beat level 1 first": "Supera antes el nivel 1", "Beat level 2 first": "Supera antes el nivel 2", "Beat level 3 first": "Supera antes el nivel 3", "Beat level 3": "Supera el nivel 3",
   "Build the 🚀 Space Mission Center (💰 Income → 🔬 Science)": "Construye el 🚀 Centro de misiones espaciales (💰 Ingresos → 🔬 Ciencia)",
   "Build the 🚀 Space Mission Center (💰 Income → 🔬 Science) first.": "Construye antes el 🚀 Centro de misiones espaciales (💰 Ingresos → 🔬 Ciencia).",
   "Fly a spaceship through 3 levels of enemy waves and defeat a boss at the end of each one.": "Pilota una nave por 3 niveles de oleadas enemigas y derrota a un jefe al final de cada uno.",
@@ -617,7 +617,7 @@ hrx(String.raw`<span>✨<\/span> Stardust: <b>([\d.,]+)<\/b>`, "<span>✨</span>
 hrx(String.raw`🔒 Beat level (\d) · <span>✨<\/span> ([\d.,]+)`, "🔒 Supera el nivel $1 · <span>✨</span> $2");
 hrx(String.raw`Buy · <span>✨<\/span> ([\d.,]+)`, "Comprar · <span>✨</span> $1");
 hrx(String.raw`⬆️ Upgrade · <span>✨<\/span> ([\d.,]+)`, "⬆️ Mejorar · <span>✨</span> $1");
-rx(String.raw`(\d) \/ 3 levels cleared · ✨ ([\d.,]+)( · 🚀 level in progress)?`, (m, n, d, p) => `${n} / 3 niveles superados · ✨ ${d}${p ? " · 🚀 nivel en curso" : ""}`);
+rx(String.raw`(\d) \/ (\d) levels cleared · ✨ ([\d.,]+)( · 🚀 level in progress)?`, (m, n, tot, d, p) => `${n} / ${tot} niveles superados · ✨ ${d}${p ? " · 🚀 nivel en curso" : ""}`);
 rx(String.raw`Runs: (\d+) · Levels won: (\d+) · Enemies destroyed: ([\d.,]+) · Hits blocked: (\d+) · Stardust earned: ([\d.,]+) · Money earned: (${NUM})`,
   "Partidas: $1 · Niveles ganados: $2 · Enemigos destruidos: $3 · Golpes bloqueados: $4 · Polvo estelar ganado: $5 · Dinero ganado: $6");
 rx(String.raw`You bought the (Sparrow|Dart|Bulwark|Sovereign)!`, "¡Has comprado la $1!");
