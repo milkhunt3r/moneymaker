@@ -68,6 +68,7 @@ function showSettings(fromMenu) {
       ${row("tips", "Show tips", `<span class="orSwitch ${state.tips.on ? "on" : ""}" id="orTips"></span>`)}
       ${row("tipsReset", "Show all tips again")}
       ${row("tutorial", "Replay the guided start")}
+      <div class="orRow orLegal">${typeof legalLinks === "function" ? legalLinks() : ""}</div>
       <button class="orRow off" data-or="bug" title="Coming soon">${orIcon("bug")}<span class="grow">Report a bug</span><span class="orSoon">Coming soon</span></button>
       <div class="orNote" id="orNote">${SETTINGS_NOTE}</div>
       <div class="orBtns">

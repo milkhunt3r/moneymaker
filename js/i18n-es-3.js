@@ -682,6 +682,10 @@ hrx(String.raw`🏴‍☠️ Buy another · <span>✨<\/span> ([\d.,]+)`, "🏴�
 Object.assign(ES, {
   "Before you play": "Antes de jugar", "Al continuar, confirmas que": "Al continuar, confirmas que", "By continuing, you confirm that:": "Al continuar, confirmas que:",
   "I have read and agree to the above.": "He leído y acepto lo anterior.",
+  "I have read and agree to the above and to the Terms of Use.": "He leído y acepto lo anterior y las Condiciones de uso.",
+  "Please also read our Terms of Use and Privacy Policy:": "Lee también nuestras Condiciones de uso y nuestra Política de privacidad:",
+  "Lee también nuestras Condiciones de uso y nuestra Política de privacidad": "Lee también nuestras Condiciones de uso y nuestra Política de privacidad",
+  "📄 Terms of Use": "📄 Condiciones de uso", "🔒 Privacy Policy": "🔒 Política de privacidad", "Terms of Use": "Condiciones de uso", "Privacy Policy": "Política de privacidad",
   "results in the game do not indicate future results in real gambling or on real financial markets, and nothing in the game constitutes financial or investment advice.":
     "los resultados en el juego no indican resultados futuros en juegos de azar reales ni en los mercados financieros reales, y nada de lo que aparece en el juego constituye asesoramiento financiero o de inversión.", "I confirm, continue": "Lo confirmo, continuar", "I am under 18": "Soy menor de 18 años",
   "We are sorry, but Empire of Coins is only available to players aged 18 and over.": "Lo sentimos, pero Empire of Coins solo está disponible para jugadores mayores de 18 años.",

@@ -6,10 +6,12 @@
    Bump AGE_VERSION when the text changes in a way players must accept again.
    Loaded before js/29-cloud.js so it runs before the guest sign-in prompt.
    ===================================================================== */
-const AGE_KEY = "eoc-age-ok", AGE_VERSION = 1;
+const AGE_KEY = "eoc-age-ok", AGE_VERSION = 2;   // 2: also accepts the Terms of Use
 function ageAccepted() {
   try { const v = JSON.parse(localStorage.getItem(AGE_KEY) || "null"); return !!(v && v.v >= AGE_VERSION); } catch (e) { return false; }
 }
+// 📄 the Terms of Use and Privacy Policy pages (open in a new tab, in the game's language)
+const legalLinks = () => `<a href="terms.html?lang=${LANG}" target="_blank" rel="noopener">📄 Terms of Use</a><a href="privacy.html?lang=${LANG}" target="_blank" rel="noopener">🔒 Privacy Policy</a>`;
 function ageNoticeHtml() {
   return `<div class="ageGate">
     <h2>🔞 Before you play</h2>
@@ -27,7 +29,9 @@ function ageNoticeHtml() {
         constitutes financial or investment advice.</li>
     </ul>
     <p class="muted">If gambling is causing problems for you or someone close to you, please contact a support service in your country.</p>
-    <label class="ageCheck"><input type="checkbox" id="ageAgree"> I have read and agree to the above.</label>
+    <p>Please also read our Terms of Use and Privacy Policy:</p>
+    <div class="ageLinks">${legalLinks()}</div>
+    <label class="ageCheck"><input type="checkbox" id="ageAgree"> I have read and agree to the above and to the Terms of Use.</label>
     <div class="cloudPick">
       <button class="btn big" id="ageYes" disabled>I confirm, continue</button>
       <button class="btn big ghost" id="ageNo">I am under 18</button>

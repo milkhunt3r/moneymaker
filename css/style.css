@@ -1890,3 +1890,6 @@ p.guestWarn { font-size: 14px; background: rgba(255, 170, 0, 0.1); border: 1px s
 .ageCheck input { width: 18px; height: 18px; }
 .ageGate .cloudPick { justify-content: center; }
 .ageNoMsg { text-align: center; color: #ff8a8a; font-weight: 700; }
+.ageLinks, .orLegal { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 4px 0 6px; }
+.ageLinks a, .orLegal a { color: #8fd0ff; font-weight: 700; text-decoration: none; padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(143, 208, 255, 0.4); background: rgba(143, 208, 255, 0.08); }
+.ageLinks a:hover, .orLegal a:hover { background: rgba(143, 208, 255, 0.2); }
