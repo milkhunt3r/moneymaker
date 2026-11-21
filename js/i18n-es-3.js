@@ -535,6 +535,8 @@ Object.assign(ES, {
     "⭐ Nebula Strike: cada enemigo y jefe destruido da ahora ⭐ puntos. Tu mejor puntuación de cada nivel aparece junto a su mejor tiempo.",
   "Score: every destroyed enemy gives points (100 for small ships, up to 1,000 for big gunships) and each boss gives a big bonus (Scrap Crab 5,000, Hive Queen 10,000, The Taxman 20,000). Your best score for each level is shown in the hangar.":
     "Puntuación: cada enemigo destruido da puntos (100 por las naves pequeñas, hasta 1.000 por las cañoneras grandes) y cada jefe da una gran bonificación (Cangrejo Chatarra 5.000, Reina de la Colmena 10.000, El Recaudador 20.000). Tu mejor puntuación de cada nivel aparece en el hangar.",
+  "🪨 Nebula Strike: new hand-painted asteroids in three sizes (bigger ones are tougher and worth more points) and a new look for the spinning blade enemies.":
+    "🪨 Nebula Strike: nuevos asteroides pintados a mano en tres tamaños (los grandes son más duros y dan más puntos) y un nuevo aspecto para los enemigos de cuchillas giratorias.",
   "/ WASD": "/ WASD", "Shift / K": "Shift / K", "X / L": "X / L", "P / Esc": "P / Esc", "Move": "Moverse", "Shoot": "Disparar", "Auto-fire on": "Disparo automático", "Space": "Espacio",
   "about 5 min": "unos 5 min", "about 6–7 min": "unos 6–7 min",
   // achievements

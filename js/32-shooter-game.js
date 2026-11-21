@@ -60,7 +60,7 @@ function shStart(lv) {
     planet: { x: SHW + 200, y: shRand(120, 420), r: Math.round(shRand(50, 90)), next: 40 } };
   shR.banner = { big: t(`Level ${lv}`), small: t(L.name), life: 3 };
   SH.runs++; save();
-  [st.img, L.img, ...(lv === 3 ? ["boss-taxman-dmg"] : [])].forEach(shImg);
+  [st.img, L.img, "rock-small", "rock-medium", "rock-big", "enemy-spinner", ...(lv === 3 ? ["boss-taxman-dmg"] : [])].forEach(shImg);
   renderShooter(); shKick();
 }
 // 🏅 best score per level (any run: won, lost or quit)
@@ -113,8 +113,10 @@ const SH_WAVES = {
   rocks(R, s) {
     const n = 3 + Math.floor(Math.random() * 3);
     for (let i = 0; i < n; i++) {
-      const size = Math.round(shRand(18, 34));
-      shAdd("rock", SHW + 40 + i * shRand(40, 90), shRand(50, SHH - 50), { vx: -shRand(90, 170) * s, vy: shRand(-25, 25), r: size * 0.85, hp: Math.round(size / 6) * R.cfg.hp, size, v: i % 4, spin: shRand(-1.5, 1.5) });
+      // 🪨 small, medium or big (painted pictures); bigger rocks are tougher and worth more
+      const tier = shPick(["small", "small", "small", "medium", "medium", "big"]);
+      const size = Math.round({ small: 18, medium: 25, big: 34 }[tier] + shRand(-1, 1));
+      shAdd("rock", SHW + 40 + i * shRand(40, 90), shRand(50, SHH - 50), { vx: -shRand(90, 170) * s, vy: shRand(-25, 25), r: size * 0.85, hp: Math.round(size / 6) * R.cfg.hp, size, tier, v: i % 4, spin: shRand(-1.5, 1.5) });
     }
   },
   mines(R, s) { for (let i = 0; i < 3 + (R.lv > 1 ? 1 : 0); i++) shAdd("mine", SHW + 40 + i * 70, shRand(70, SHH - 70), { vx: -75 * s }); },
@@ -599,6 +601,11 @@ function shDrawImg(g, name, x, y, w, alpha = 1) {
   g.globalAlpha = 1;
   return h;
 }
+function shDrawImgRot(g, name, x, y, w, rot) {
+  const im = shImg(name); if (!im.complete || !im.naturalWidth) return false;
+  g.save(); g.translate(x, y); if (rot) g.rotate(rot); g.drawImage(im, -w / 2, -w / 2, w, w); g.restore();
+  return true;
+}
 function shHeart(g, x, y, s, full) {
   g.beginPath(); g.moveTo(x, y + s * 0.8);
   g.bezierCurveTo(x - s * 1.2, y - s * 0.1, x - s * 0.7, y - s * 1.1, x, y - s * 0.4);
@@ -656,10 +663,17 @@ function shDraw() {
   }
   // 👾 enemies
   for (const e of R.en) {
-    const spr = e.type === "rock" ? shRock(e.size, e.v) : shEnemySprite(e.type);
     const rot = e.type === "weaver" || e.type === "rock" || e.type === "mine" ? e.rot : (e.type === "homer" || e.type === "tmissile" || (e.type === "tiny" && e.home)) ? e.ang - Math.PI : 0;
-    shDrawSprite(g, spr, e.x, e.y, rot);
-    if (e.flash > 0) { g.save(); g.globalCompositeOperation = "lighter"; g.globalAlpha = 0.6; shDrawSprite(g, spr, e.x, e.y, rot); g.restore(); }
+    // painted pictures for asteroids and spinners (drawn shapes until the picture has loaded)
+    const pic = e.type === "rock" ? `rock-${e.tier || "medium"}` : e.type === "weaver" ? "enemy-spinner" : null;
+    const picW = e.type === "rock" ? e.size * 2.25 : 50;
+    if (pic && shDrawImgRot(g, pic, e.x, e.y, picW, rot)) {
+      if (e.flash > 0) { g.save(); g.globalCompositeOperation = "lighter"; g.globalAlpha = 0.5; shDrawImgRot(g, pic, e.x, e.y, picW, rot); g.restore(); }
+    } else {
+      const spr = e.type === "rock" ? shRock(e.size, e.v) : shEnemySprite(e.type);
+      shDrawSprite(g, spr, e.x, e.y, rot);
+      if (e.flash > 0) { g.save(); g.globalCompositeOperation = "lighter"; g.globalAlpha = 0.6; shDrawSprite(g, spr, e.x, e.y, rot); g.restore(); }
+    }
     if (e.type === "mine" && Math.floor(e.t * 3) % 2) { g.fillStyle = "#ff4040"; g.beginPath(); g.arc(e.x, e.y, 3.5, 0, Math.PI * 2); g.fill(); }
     if (e.type === "carrier") { g.save(); g.globalCompositeOperation = "lighter"; g.globalAlpha = 0.25 + 0.15 * Math.sin(e.t * 6); g.fillStyle = "#5ef2ff"; g.beginPath(); g.arc(e.x, e.y, 34, 0, Math.PI * 2); g.fill(); g.restore(); }
   }
