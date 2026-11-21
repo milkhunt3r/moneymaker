@@ -870,7 +870,9 @@ function renderGames() {
   const page = state.gamePage;
   $("gamesHub").hidden = !!page; $("mineView").hidden = page !== "mine";
   const gv = $("geneView"); if (gv) gv.hidden = page !== "gene";
+  const sv = $("shooterView"); if (sv) sv.hidden = page !== "shooter";
   if (page === "mine") return renderMine();
+  if (page === "shooter" && typeof renderShooter === "function") return renderShooter();
   if (page === "gene" && typeof renderGene === "function") return renderGene();
   const art = state.art.unlocked, mine = mineUnlocked(), e = mineEnergy();
   $("gamesHub").innerHTML = `<h2 class="gamesTitle">🎮 Mini-games</h2>
@@ -895,6 +897,12 @@ function renderGames() {
         <div class="gameStatus">${G.unlocked ? `🧬 ${geneFound()} / ${GENE_TOTAL} species` : "🔒 Buy the 🧬 Genetics Laboratory (💰 Income → 🔬 Science)"}</div>
         <button class="btn" data-game="gene" ${G.unlocked ? "" : "disabled"}>▶ Play</button>
       </div>` : ""}
+      ${typeof SH !== "undefined" ? (() => { const on = shUnlocked(); return `<div class="card gameCard ${on ? "" : "locked"}">
+        <img class="gameIcon gameIconImg shGameIcon" src="assets/shooter/ship-sparrow.webp" alt=""><h3>Nebula Strike</h3>
+        <p class="muted">Fly a spaceship through 3 levels of enemy waves and defeat a boss at the end of each one.</p>
+        <div class="gameStatus">${on ? `🏁 ${SH.done} / 3 levels cleared · ✨ ${SH.dust.toLocaleString()}${typeof shR !== "undefined" && shR && !shR.end ? " · 🚀 level in progress" : ""}` : "🔒 Build the 🚀 Space Mission Center (💰 Income → 🔬 Science)"}</div>
+        <button class="btn" data-game="shooter" ${on ? "" : "disabled"}>${typeof shR !== "undefined" && shR && !shR.end ? "▶ Continue" : "▶ Play"}</button>
+      </div>`; })() : ""}
       <div class="card gameCard soon"><div class="gameIcon">❔</div><h3>More coming soon</h3>
         <p class="muted">New mini-games will unlock with other buildings.</p></div>
     </div>`;
@@ -913,7 +921,7 @@ document.addEventListener("click", (e) => { if (e.target.closest("[data-games-ba
 setInterval(() => {
   if (state.view !== "games") return;
   const before = M.energy; mineEnergy();
-  if (M.energy !== before) { save(); if (!M.run || !state.gamePage) renderGames(); }
+  if (M.energy !== before) { save(); if ((!M.run || !state.gamePage) && state.gamePage !== "shooter") renderGames(); }
   const r = $("mineRegen"); if (r && M.regenAt) r.textContent = clockMs(M.regenAt - Date.now());
 }, 1000);
 updateArtTab();

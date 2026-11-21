@@ -487,6 +487,121 @@ H("🚚 <b>Global Freight Co. shares</b>: up moves are now bigger than down move
 Object.assign(ES, { "Fix: after signing out, a guest game no longer replaces your account's cloud save when you sign in again (you choose which progress to keep), and signing in always lets you pick a Google account.":
   "Corrección: tras cerrar sesión, una partida de invitado ya no sustituye tu partida en la nube al volver a entrar (eliges qué progreso conservar), y al iniciar sesión siempre puedes elegir la cuenta de Google." });
 
+/* ===================== 🚀 NEBULA STRIKE (mini-game) ===================== */
+Object.assign(ES, {
+  "Nebula Strike": "Nebula Strike", "Sparrow": "Sparrow", "Dart": "Dart", "Bulwark": "Bulwark", "Sovereign": "Sovereign",
+  "Scrap Belt": "Cinturón de Chatarra", "Hive Nebula": "Nebulosa Colmena", "Crimson Fortress": "Fortaleza Carmesí",
+  "Scrap Crab": "Cangrejo Chatarra", "Hive Queen": "Reina de la Colmena", "The Taxman": "El Recaudador",
+  "Speed": "Velocidad", "Lives": "Vidas", "Firepower": "Potencia de fuego", "Hangar": "Hangar", "First clear": "Primera victoria",
+  "Stardust": "Polvo estelar", "stardust": "polvo estelar", "stardust.": "polvo estelar.", "Flying": "En vuelo", "Fly this ship": "Pilotar esta nave",
+  "Balanced starter ship with one steady gun.": "Nave inicial equilibrada con un cañón constante.",
+  "Very fast and small, with twin rapid-fire guns, but only 2 lives.": "Muy rápida y pequeña, con dos cañones de tiro rápido, pero solo 2 vidas.",
+  "A slow flying fortress with a heavy double cannon and 5 lives.": "Una fortaleza voladora lenta con un cañón doble pesado y 5 vidas.",
+  "The legendary golden ship: fast, 4 lives and an energy cannon with side bolts.": "La legendaria nave dorada: rápida, 4 vidas y un cañón de energía con disparos laterales.",
+  "Damage": "Daño", "Fire rate": "Cadencia de tiro", "Hull armour": "Blindaje del casco", "Shield recharge": "Recarga del escudo",
+  "Shield time": "Duración del escudo", "Special ammo": "Munición especial", "Stardust magnet": "Imán de polvo estelar",
+  "normal damage": "daño normal", "normal fire rate": "cadencia normal", "no extra lives": "sin vidas extra", "normal special weapon ammo": "munición especial normal",
+  "no magnet": "sin imán", "small pull range": "alcance pequeño", "medium pull range": "alcance medio", "large pull range": "alcance grande",
+  "Fly through three sectors of space, shoot everything that moves and defeat the boss at the end of each level. Lose all your lives and the level starts over from the beginning.":
+    "Vuela por tres sectores del espacio, dispara a todo lo que se mueva y derrota al jefe al final de cada nivel. Si pierdes todas tus vidas, el nivel empieza de nuevo desde el principio.",
+  "Move: arrows or WASD · 🛡️ Shield: Shift or K · 🚀 Special weapon: X or L · ⏸️ Pause: P or Esc":
+    "Moverse: flechas o WASD · 🛡️ Escudo: Shift o K · 🚀 Arma especial: X o L · ⏸️ Pausa: P o Esc",
+  "Phone: drag anywhere on the screen to fly, and tap the buttons for the shield and special weapon.":
+    "Móvil: arrastra el dedo por la pantalla para volar y toca los botones del escudo y del arma especial.",
+  "Auto-fire (turn it off to shoot by holding Space)": "Disparo automático (desactívalo para disparar manteniendo la barra espaciadora)",
+  "Pause": "Pausa", "Special weapon": "Arma especial", "Shield": "Escudo", "WARNING": "¡ATENCIÓN!", "BLOCKED!": "¡BLOQUEADO!", "+1 life": "+1 vida",
+  "Homing missiles": "Misiles teledirigidos", "Laser beam": "Rayo láser", "Nova spread": "Abanico nova",
+  "Paused": "En pausa", "Resume": "Continuar", "Quit level": "Abandonar el nivel", "If you quit, you keep the stardust you collected.": "Si abandonas, conservas el polvo estelar que has recogido.",
+  "Your ship was destroyed": "Tu nave ha sido destruida", "Try again": "Reintentar", "Play again": "Jugar otra vez",
+  "Enemies destroyed": "Enemigos destruidos", "Hits blocked": "Golpes bloqueados", "Lives lost": "Vidas perdidas",
+  "Cleared": "Superado", "Beat level 1 first": "Supera antes el nivel 1", "Beat level 2 first": "Supera antes el nivel 2", "Beat level 3": "Supera el nivel 3",
+  "Build the 🚀 Space Mission Center (💰 Income → 🔬 Science)": "Construye el 🚀 Centro de misiones espaciales (💰 Ingresos → 🔬 Ciencia)",
+  "Build the 🚀 Space Mission Center (💰 Income → 🔬 Science) first.": "Construye antes el 🚀 Centro de misiones espaciales (💰 Ingresos → 🔬 Ciencia).",
+  "Fly a spaceship through 3 levels of enemy waves and defeat a boss at the end of each one.": "Pilota una nave por 3 niveles de oleadas enemigas y derrota a un jefe al final de cada uno.",
+  "📱 Turn your phone sideways for a bigger screen.": "📱 Gira el móvil para ver la pantalla más grande.", "Turn your phone sideways for a bigger screen.": "Gira el móvil para ver la pantalla más grande.",
+  "about 5 min": "unos 5 min", "about 6–7 min": "unos 6–7 min",
+  // achievements
+  "Scrap metal": "Chatarra", "Hive buster": "Revienta colmenas", "Tax evasion": "Evasión fiscal", "Untouchable": "Intocable", "Perfect timing": "Sincronización perfecta",
+  "Space exterminator": "Exterminador espacial", "Veteran pilot": "Piloto veterano", "Full hangar": "Hangar completo", "Fully loaded": "A tope", "Stardust collector": "Coleccionista de polvo estelar",
+  "Beat the Scrap Crab in level 1 of Nebula Strike": "Derrota al Cangrejo Chatarra en el nivel 1 de Nebula Strike",
+  "Beat the Hive Queen in level 2 of Nebula Strike": "Derrota a la Reina de la Colmena en el nivel 2 de Nebula Strike",
+  "Beat The Taxman in level 3 of Nebula Strike": "Derrota a El Recaudador en el nivel 3 de Nebula Strike",
+  "Beat a Nebula Strike level without losing a life": "Supera un nivel de Nebula Strike sin perder ninguna vida",
+  "Block 50 hits with your shield": "Bloquea 50 golpes con tu escudo", "Destroy 1,000 enemies in Nebula Strike": "Destruye 1.000 enemigos en Nebula Strike",
+  "Win 10 Nebula Strike levels": "Gana 10 niveles de Nebula Strike", "Own all 4 Nebula Strike ships": "Ten las 4 naves de Nebula Strike",
+  "Max out every upgrade on one ship": "Lleva al máximo todas las mejoras de una nave", "Collect 5,000 stardust": "Recoge 5.000 de polvo estelar",
+  // wiki
+  "Difficulty": "Dificultad", "Length": "Duración", "Boss": "Jefe", "Later clears": "Siguientes victorias", "Ship": "Nave", "Gun": "Arma", "Free": "Gratis",
+  "The income reward uses the same base as the Gold Mine Dig (business income over the last minute).": "El premio en ingresos usa la misma base que la mina de oro (ingresos de negocios del último minuto).",
+  "Supply ships": "Naves de suministros",
+  "A side-scrolling space shooter. It opens when you build the 🚀 Space Mission Center (🔬 Science) and stays open for good, even after a prestige. Fly your ship through 3 levels of enemy waves; each level ends with a boss. Beating a level opens the next one. Levels are free to play, but if you lose all your lives, the level starts over from the beginning.":
+    "Un matamarcianos de desplazamiento lateral. Se abre al construir el 🚀 Centro de misiones espaciales (🔬 Ciencia) y queda abierto para siempre, incluso tras un prestigio. Pilota tu nave por 3 niveles de oleadas enemigas; cada nivel termina con un jefe. Superar un nivel abre el siguiente. Jugar los niveles es gratis, pero si pierdes todas tus vidas, el nivel empieza de nuevo desde el principio.",
+  "Move with the arrows or WASD, 🛡️ shield with Shift or K, 🚀 special weapon with X or L, ⏸️ pause with P or Esc. Auto-fire is on by default (turn it off in the hangar to shoot with Space). 📱 On a phone, drag anywhere on the screen to fly and tap the buttons for the shield and special weapon.":
+    "Muévete con las flechas o WASD, 🛡️ escudo con Shift o K, 🚀 arma especial con X o L, ⏸️ pausa con P o Esc. El disparo automático está activado por defecto (desactívalo en el hangar para disparar con la barra espaciadora). 📱 En el móvil, arrastra el dedo por la pantalla para volar y toca los botones del escudo y del arma especial.",
+  "Art Gallery: copy paintings and sell them or keep them · ⛏️ Gold Mine Dig: dig for ore (needs a gold mine) · 🚀 Nebula Strike: space shooter (needs the Space Mission Center)":
+    "Galería de arte: copia cuadros y véndelos o guárdalos · ⛏️ Excavación en la mina de oro: excava en busca de mineral (necesita una mina de oro) · 🚀 Nebula Strike: matamarcianos espacial (necesita el Centro de misiones espaciales)",
+});
+const shEsName = (n) => ES[n] || n;
+H("🛡️ <b>Shield:</b> every 15 sec. It stays up 1.5 sec and blocks the next hit, so time it well. 📦 Shoot the glowing supply ships for special weapons: 🚀 homing missiles, ⚡ laser beam and 💠 nova spread.",
+  "🛡️ <b>Escudo:</b> cada 15 s. Dura 1,5 s y bloquea el siguiente golpe, así que actívalo en el momento justo. 📦 Dispara a las naves de suministros brillantes para conseguir armas especiales: 🚀 misiles teledirigidos, ⚡ rayo láser y 💠 abanico nova.");
+hrx(String.raw`🛡️ <b>Shield:<\/b> every (\d+) sec\. It stays up ([\d.]+) sec and blocks the next hit, so time it well\. (📦 .+)`, (m, a, b, rest) =>
+  `🛡️ <b>Escudo:</b> cada ${a} s. Dura ${b.replace(".", ",")} s y bloquea el siguiente golpe, así que actívalo en el momento justo. 📦 Dispara a las naves de suministros brillantes para conseguir armas especiales: 🚀 misiles teledirigidos, ⚡ rayo láser y 💠 abanico nova.`);
+H("Every ship has its own upgrades. They are paid with <span>✨</span> stardust.", "Cada nave tiene sus propias mejoras. Se pagan con <span>✨</span> polvo estelar.");
+H("🛡️ <b>Shield:</b> usable every 15 sec. It stays up 1.5 sec and blocks the next hit (a shot, an enemy or a boss beam), then breaks. If nothing hits it in time, it's wasted.",
+  "🛡️ <b>Escudo:</b> se puede usar cada 15 s. Dura 1,5 s y bloquea el siguiente golpe (un disparo, un enemigo o el rayo de un jefe); después se rompe. Si nada lo golpea a tiempo, se desperdicia.");
+H("📦 <b>Supply ships</b> (glowing capsules) fly by every 20–28 sec. Shoot them for a special weapon or an extra life: 🚀 homing missiles (8 shots), ⚡ laser beam (3 shots, hits everything in a line and erases enemy shots) and 💠 nova spread (6 shots of 9 bullets). Picking up the same weapon adds ammo; a different one replaces it.",
+  "📦 Las <b>naves de suministros</b> (cápsulas brillantes) pasan cada 20–28 s. Dispárales para conseguir un arma especial o una vida extra: 🚀 misiles teledirigidos (8 disparos), ⚡ rayo láser (3 disparos; daña todo lo que hay en línea y borra los disparos enemigos) y 💠 abanico nova (6 disparos de 9 balas). Recoger la misma arma añade munición; una distinta la sustituye.");
+H("✨ <b>Stardust</b> drops from enemies and bosses and is paid for clearing a level (you keep what you collected even if you lose). It buys ships and upgrades in the 🛸 hangar. Every ship has its own upgrades.",
+  "✨ El <b>polvo estelar</b> lo sueltan los enemigos y los jefes, y se paga al superar un nivel (conservas lo recogido aunque pierdas). Con él compras naves y mejoras en el 🛸 hangar. Cada nave tiene sus propias mejoras.");
+// upgrade effects ("Now: …" / "Next: …" are handled by the rules in i18n-es-2.js)
+rx(String.raw`\+(\d+)% damage( at max)?`, (m, n, x) => `+${n}% de daño${x ? " al máximo" : ""}`);
+rx(String.raw`\+(\d+)% fire rate( at max)?`, (m, n, x) => `+${n}% de cadencia${x ? " al máximo" : ""}`);
+rx(String.raw`\+(\d) (?:life|lives)( at max)?`, (m, n, x) => `+${n} ${n === "1" ? "vida" : "vidas"}${x ? " al máximo" : ""}`);
+rx(String.raw`shield every (\d+) sec( at max)?`, (m, n, x) => `escudo cada ${n} s${x ? " al máximo" : ""}`);
+rx(String.raw`shield stays up ([\d.]+) sec( at max)?`, (m, n, x) => `el escudo dura ${n.replace(".", ",")} s${x ? " al máximo" : ""}`);
+rx(String.raw`\+(\d+)% special weapon ammo( at max)?`, (m, n, x) => `+${n}% de munición especial${x ? " al máximo" : ""}`);
+rx(String.raw`large pull range at max`, "alcance grande al máximo");
+// hangar and levels
+rx(String.raw`Level (\d): (Scrap Belt|Hive Nebula|Crimson Fortress)( · (\d+:\d\d))?`, (m, n, l, c, tm) => `Nivel ${n}: ${shEsName(l)}${tm ? " · " + tm : ""}`);
+rx(String.raw`(\d): (Scrap Belt|Hive Nebula|Crimson Fortress)`, (m, n, l) => `${n}: ${shEsName(l)}`);
+rx(String.raw`Upgrades for the (Sparrow|Dart|Bulwark|Sovereign)`, "Mejoras de la $1");
+rx(String.raw`(?:🟢 )?Easy · about 5 min · Boss`, "Fácil · unos 5 min · Jefe");
+rx(String.raw`(?:🟠 )?Medium · about 6–7 min · Boss`, "Media · unos 6–7 min · Jefe");
+rx(String.raw`(?:🔴 )?Hard · about 6–7 min · Boss`, "Difícil · unos 6–7 min · Jefe");
+Object.assign(ES, { "🟢 Easy": "🟢 Fácil", "🟠 Medium": "🟠 Media", "🔴 Hard": "🔴 Difícil", "Easy": "Fácil", "Medium": "Media", "Hard": "Difícil" });
+hrx(String.raw`First clear: 💰 <b>(${NUM})<\/b> \+ <span>✨<\/span> (\d+)`, "Primera victoria: 💰 <b>$1</b> + <span>✨</span> $2");
+hrx(String.raw`✅ Cleared(?: · Best time (\d+:\d\d))?<br>Play again: 💰 (${NUM}) \+ <span>✨<\/span> (\d+)`, (m, tm, a, d) =>
+  `✅ Superado${tm ? " · Mejor tiempo " + tm : ""}<br>Otra vez: 💰 ${a} + <span>✨</span> ${d}`);
+rx(String.raw`Cleared · Best time (\d+:\d\d)`, "Superado · Mejor tiempo $1");
+rx(String.raw`Play again: 💰 (${NUM}) \+`, "Otra vez: 💰 $1 +");
+hrx(String.raw`<span>✨<\/span> Stardust: <b>([\d.,]+)<\/b>`, "<span>✨</span> Polvo estelar: <b>$1</b>");
+hrx(String.raw`🔒 Beat level (\d) · <span>✨<\/span> ([\d.,]+)`, "🔒 Supera el nivel $1 · <span>✨</span> $2");
+hrx(String.raw`Buy · <span>✨<\/span> ([\d.,]+)`, "Comprar · <span>✨</span> $1");
+hrx(String.raw`⬆️ Upgrade · <span>✨<\/span> ([\d.,]+)`, "⬆️ Mejorar · <span>✨</span> $1");
+rx(String.raw`(\d) \/ 3 levels cleared · ✨ ([\d.,]+)( · 🚀 level in progress)?`, (m, n, d, p) => `${n} / 3 niveles superados · ✨ ${d}${p ? " · 🚀 nivel en curso" : ""}`);
+rx(String.raw`Runs: (\d+) · Levels won: (\d+) · Enemies destroyed: ([\d.,]+) · Hits blocked: (\d+) · Stardust earned: ([\d.,]+) · Money earned: (${NUM})`,
+  "Partidas: $1 · Niveles ganados: $2 · Enemigos destruidos: $3 · Golpes bloqueados: $4 · Polvo estelar ganado: $5 · Dinero ganado: $6");
+rx(String.raw`You bought the (Sparrow|Dart|Bulwark|Sovereign)!`, "¡Has comprado la $1!");
+// in game
+rx(String.raw`(Scrap Crab|Hive Queen|The Taxman) is coming!`, (m, n) => `¡Se acerca ${n === "The Taxman" ? "El Recaudador" : "la " + shEsName(n)}!`.replace("la Cangrejo", "el Cangrejo"));
+rx(String.raw`(?:⚠️ )?(Scrap Crab|Hive Queen|The Taxman) is getting angry!`, (m, n) => `⚠️ ¡${n === "The Taxman" ? "El Recaudador" : n === "Scrap Crab" ? "El Cangrejo Chatarra" : "La Reina de la Colmena"} se está enfadando!`);
+rx(String.raw`Level (\d) cleared!`, "¡Nivel $1 superado!");
+hrx(String.raw`<b>(Scrap Crab|Hive Queen|The Taxman)<\/b> was defeated in (\d+:\d\d)\.`, (m, n, tm) => `<b>${shEsName(n)}</b> ha sido derrotado en ${tm}.`);
+rx(String.raw`was defeated in (\d+:\d\d)\.`, "ha sido derrotado en $1.");
+hrx(String.raw`✨ <b>\+([\d.,]+)<\/b> stardust`, "✨ <b>+$1</b> de polvo estelar");
+rx(String.raw`First clear! Level (\d) is now open\.`, "¡Primera victoria! El nivel $1 ya está abierto.");
+rx(String.raw`First clear! You beat every level!`, "¡Primera victoria! ¡Has superado todos los niveles!");
+rx(String.raw`You made it (\d+)% of the way through level (\d)\. The level starts over from the beginning\.`, "Has llegado al $1% del nivel $2. El nivel empieza de nuevo desde el principio.");
+hrx(String.raw`✨ You keep the <b>([\d.,]+)<\/b> stardust you collected\. Spend it on upgrades in the hangar\.`, "✨ Conservas los <b>$1</b> de polvo estelar que has recogido. Gástalos en mejoras en el hangar.");
+rx(String.raw`(\d+) min of income \+ ✨ (\d+)`, "$1 min de ingresos + ✨ $2");
+rx(String.raw`([\d.,]+) \(after level (\d)\)`, "$1 (tras el nivel $2)");
+rx(String.raw`(Sparrow|Dart|Bulwark|Sovereign): (Damage|Fire rate|Hull armour|Shield recharge|Shield time|Special ammo|Stardust magnet) level (\d): (.+)!`, (m, s, u, l, e) => {
+  const v = esq(e); return `${s}: ${ES[u]} nivel ${l}: ${v == null ? e : v}!`; });
+// patch notes
+H("🚀 New mini-game: <b>Nebula Strike</b>! A side-scrolling space shooter that opens when you build the 🚀 Space Mission Center. Fight through 3 levels of enemy waves and beat the <b>Scrap Crab</b>, the <b>Hive Queen</b> and <b>The Taxman</b>. Time your 🛡️ shield, grab special weapons from supply ships and collect ✨ stardust to buy 4 ships and their upgrades.",
+  "🚀 Nuevo minijuego: ¡<b>Nebula Strike</b>! Un matamarcianos de desplazamiento lateral que se abre al construir el 🚀 Centro de misiones espaciales. Abre paso por 3 niveles de oleadas enemigas y derrota al <b>Cangrejo Chatarra</b>, a la <b>Reina de la Colmena</b> y a <b>El Recaudador</b>. Usa el 🛡️ escudo en el momento justo, consigue armas especiales de las naves de suministros y recoge ✨ polvo estelar para comprar 4 naves y sus mejoras.");
+H("🏆 New <b>🚀 Nebula Strike</b> achievements section: 10 achievements.", "🏆 Nueva sección de logros <b>🚀 Nebula Strike</b>: 10 logros.");
+
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
 ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {

@@ -8,6 +8,7 @@ const ACH_CATEGORIES = [
   { id: "income", name: "💰 Income" }, { id: "casino", name: "🎰 Casino" },
   { id: "invest", name: "📈 Investments" }, { id: "logistics", name: "🚢 Logistics" },
   { id: "art", name: "🖼️ Art Gallery" }, { id: "mine", name: "⛏️ Mining" },
+  { id: "shooter", name: "🚀 Nebula Strike" },
   // 🌌 secret: invisible (also not counted) until the 1st prestige
   { id: "secret", name: "🌌 Secrets", hidden: () => !((state.legacy && state.legacy.count) >= 1) },
   // 🧬 Gene Splicer: invisible (also not counted) until the 2nd prestige
@@ -221,6 +222,23 @@ const ACHIEVEMENTS = [
       { id: "geneElder",   icon: "🐲", name: "Dragon whisperer",   desc: "Discover the Elder dragon",        goal: 1,   get: () => GK("Elder dragon") },
       { id: "geneUnicorn", icon: "🦄", name: "One of a kind",      desc: "Discover the Unicorn",             goal: 1,   get: () => GK("Unicorn") },
     ].map(a => ({ ...a, cat: "genetics" }));
+  })(),
+  // 🚀 Nebula Strike (🎮 Mini-games). state.shooter is set up by js/30-shooter.js, so every check is guarded.
+  ...(() => {
+    const N = () => state.shooter || {}, shipUps = (id) => ((N().up || {})[id] || {});
+    const maxed = (id) => typeof SH_UPS === "object" && Object.keys(SH_UPS).every(k => (shipUps(id)[k] || 0) >= SH_UPS[k].max);
+    return [
+      { id: "shLv1",     icon: "🦀", name: "Scrap metal",         desc: "Beat the Scrap Crab in level 1 of Nebula Strike",     goal: 1, get: () => (N().done || 0) >= 1 ? 1 : 0 },
+      { id: "shLv2",     icon: "🐝", name: "Hive buster",         desc: "Beat the Hive Queen in level 2 of Nebula Strike",     goal: 1, get: () => (N().done || 0) >= 2 ? 1 : 0 },
+      { id: "shLv3",     icon: "👁️", name: "Tax evasion",         desc: "Beat The Taxman in level 3 of Nebula Strike",         goal: 1, get: () => (N().done || 0) >= 3 ? 1 : 0 },
+      { id: "shPerfect", icon: "✨", name: "Untouchable",         desc: "Beat a Nebula Strike level without losing a life",  goal: 1, get: () => N().perfect || 0 },
+      { id: "shBlock50", icon: "🛡️", name: "Perfect timing",      desc: "Block 50 hits with your shield",                    goal: 50, get: () => N().blocks || 0 },
+      { id: "shKill1k",  icon: "👾", name: "Space exterminator",  desc: "Destroy 1,000 enemies in Nebula Strike",            goal: 1000, get: () => N().kills || 0 },
+      { id: "shWins10",  icon: "🏁", name: "Veteran pilot",       desc: "Win 10 Nebula Strike levels",                       goal: 10, get: () => N().wins || 0 },
+      { id: "shFleet",   icon: "🛸", name: "Full hangar",         desc: "Own all 4 Nebula Strike ships",                     goal: 4, get: () => (N().owned || []).length },
+      { id: "shMaxShip", icon: "⬆️", name: "Fully loaded",        desc: "Max out every upgrade on one ship",                 goal: 1, get: () => (N().owned || []).some(maxed) ? 1 : 0 },
+      { id: "shDust5k",  icon: "🌟", name: "Stardust collector",  desc: "Collect 5,000 stardust",                            goal: 5000, get: () => N().dustAll || 0 },
+    ].map(a => ({ ...a, cat: "shooter" }));
   })(),
   { id: "satellite", cat: "logistics", icon: "🛰️", name: "Eye in the sky", desc: "Launch a satellite", goal: 1, get: () => state.science && state.science.satellite ? 1 : 0 },
   { id: "logi100s",   cat: "logistics", icon: "💎", name: "Shipping tycoon",  desc: "Earn 100 scoin from logistics",      goal: 100 * SC, get: () => logi.earned, money: true },

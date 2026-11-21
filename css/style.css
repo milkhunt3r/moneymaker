@@ -1742,3 +1742,70 @@ p.guestWarn { font-size: 14px; background: rgba(255, 170, 0, 0.1); border: 1px s
 .cloudPick #guestSignIn, .cloudPick #guestPlay { flex-direction: row; justify-content: center; align-items: center; }
 .geneNote.geneKnownWarn { color: #ffcf7a; background: rgba(255, 170, 0, 0.1); border: 1px solid rgba(255, 170, 0, 0.35); border-radius: 10px; padding: 6px 10px; display: inline-block; }
 .geneKnownWarn .sm, .geneKnownWarn img { vertical-align: middle; }
+
+/* 🚀 Nebula Strike (🎮 Mini-games) */
+.shGameIcon { width: 110px; }
+.shIntro { max-width: 760px; margin: 0 auto 14px; text-align: center; }
+.shIntro h2 { margin-top: 0; }
+.shKeys { font-size: 13px; line-height: 1.6; margin: 8px 0; }
+.shAuto { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; margin: 4px 0 8px; }
+.shDustBig { font-size: 20px; color: #ffe66b; }
+.shDustIco { filter: drop-shadow(0 0 4px rgba(255, 230, 107, 0.7)); }
+.shLevels { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 14px; }
+.shLevel { display: flex; flex-direction: column; gap: 6px; align-items: center; text-align: center; margin: 0; }
+.shLevel h3 { margin: 2px 0 0; }
+.shLevel.locked { opacity: 0.55; }
+.shLevel.locked .shBossPic img { filter: brightness(0.25) saturate(0); }
+.shLevel.done { border-color: rgba(120, 230, 140, 0.55); }
+.shBossPic { height: 120px; width: 100%; display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(ellipse at center, rgba(120, 70, 255, 0.35), rgba(0, 0, 0, 0) 70%); border-radius: 12px; }
+.shBossPic img { max-height: 112px; max-width: 92%; object-fit: contain; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.6)); }
+.shLvReward { font-size: 14px; line-height: 1.5; min-height: 42px; }
+.shLevel .btn { margin-top: auto; }
+.shHangar h3 { margin-top: 0; }
+.shShips { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.shShip { display: flex; flex-direction: column; gap: 5px; padding: 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 211, 77, 0.22); align-items: stretch; text-align: center; }
+.shShip.sel { border: 2px solid #ffd34d; background: rgba(255, 211, 77, 0.08); box-shadow: 0 0 18px rgba(255, 211, 77, 0.25); }
+.shShip.notOwned .shShipPic img { filter: brightness(0.55) saturate(0.6) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5)); }
+.shShipPic { height: 72px; display: flex; align-items: center; justify-content: center; }
+.shShipPic img { max-height: 66px; max-width: 90%; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5)); }
+.shShipDesc { font-size: 12.5px; min-height: 34px; }
+.shBar { display: grid; grid-template-columns: 76px 1fr; align-items: center; gap: 6px; font-size: 12px; text-align: left; }
+.shBar i { display: block; height: 7px; border-radius: 4px; background: rgba(255, 255, 255, 0.1); overflow: hidden; }
+.shBar i b { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, #ffb300, #ffe27a); }
+.shShip .btn { margin-top: 4px; }
+.shUpTitle { margin: 18px 0 2px; }
+.shStatsLine { text-align: center; }
+.shPlay { display: flex; justify-content: center; }
+.shStage { position: relative; width: 100%; max-width: min(960px, calc((100vh - 150px) * 16 / 9)); aspect-ratio: 16 / 9;
+  border-radius: 12px; overflow: hidden; border: 2px solid rgba(255, 211, 77, 0.45); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  touch-action: none; user-select: none; -webkit-user-select: none; }
+#shCanvas { width: 100%; height: 100%; display: block; touch-action: none; }
+.shPauseBtn { position: absolute; top: 4px; right: 6px; width: 34px; height: 32px; border: 0; border-radius: 8px; cursor: pointer;
+  background: rgba(255, 255, 255, 0.12); color: #fff; font-size: 16px; }
+.shTouch { position: absolute; right: 12px; bottom: 12px; display: flex; gap: 12px; }
+.shTouch.off { display: none; }
+.shTBtn { width: 64px; height: 64px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.5); font-size: 26px; cursor: pointer;
+  background: rgba(20, 10, 50, 0.45); color: #fff; touch-action: none; }
+.shTBtn.sh { border-color: rgba(120, 240, 255, 0.8); }
+.shTBtn:active { transform: scale(0.94); background: rgba(120, 240, 255, 0.3); }
+.shOverlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(8, 4, 24, 0.62); padding: 12px; }
+.shOverlay[hidden] { display: none; }
+.shPanel { background: linear-gradient(180deg, #2a1a4f, #171030); border: 2px solid rgba(255, 211, 77, 0.6); border-radius: 16px;
+  padding: 16px 22px; text-align: center; max-width: 520px; max-height: 100%; overflow: auto; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6); }
+.shPanel h2 { margin: 0 0 6px; }
+.shPanel.win h2 { color: #ffd34d; }
+.shPanel.lose h2 { color: #ff7a7a; }
+.shEndStats { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; font-size: 14px; margin: 6px 0; }
+.shEndReward { display: flex; justify-content: center; gap: 18px; font-size: 20px; color: #ffe66b; margin: 8px 0; }
+.shFirst { color: #9dff9d; font-weight: 700; }
+@media (max-width: 700px) {
+  .shPanel { padding: 10px 12px; font-size: 13px; }
+  .shPanel h2 { font-size: 18px; }
+  .shEndReward { font-size: 16px; }
+  .shTBtn { width: 54px; height: 54px; font-size: 22px; }
+}
+.shRotate { display: none; text-align: center; margin-top: 8px; }
+@media (orientation: portrait) and (max-width: 700px) { .shPlay { flex-direction: column; align-items: center; } .shRotate { display: block; } }
+@media (max-height: 520px) { .shStage { max-width: min(960px, calc((100dvh - 70px) * 16 / 9)); } }

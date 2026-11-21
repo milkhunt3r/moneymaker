@@ -369,7 +369,7 @@ hrx(String.raw`((?:\{i\})*)([^<{]+?) <span>(× \d+|\(\d+\/\d+\))<\/span>`, (m, i
 hrx(String.raw`<b>([^<]+)<\/b>: ([^<]+)`, (m, a, b) => `<b>${es(a)}</b>: ${es(b)}`);
 hrx(String.raw`((?:\{i\})*)([^<{]+?): <b>([^<]+)<\/b>`, (m, i, a, b) => `${i}${es(a)}: <b>${es(b)}</b>`);
 // achievement pop-up: "<b>🏆 Achievement unlocked!</b>{i} <b>Name</b>: desc<br><small>Click to close</small>"
-hrx(String.raw`<b>([^<]+)<\/b>((?:\{i\})*) <b>([^<]+)<\/b>: ([^<]+)<br><small>([^<]+)<\/small>`,
+hrx(String.raw`<b>([^<]+)<\/b>((?:\{i\})*[^<{]{0,8}?) <b>([^<]+)<\/b>: ([^<]+)<br><small>([^<]+)<\/small>`,
   (m, a, i, b, c, d) => `<b>${es(a)}</b>${i} <b>${es(b)}</b>: ${es(c)}<br><small>${es(d)}</small>`);
 
 // casino lobby and Hot Tables

@@ -24,7 +24,7 @@ function wikiGeneral() {
       ["🎰 Casino", "Move money into casino chips and play table games"],
       ["📈 Investing", "Real estate, ETFs, gold, Broker ETF and live crypto trading"],
       ["🚢 Logistics", "Trucks, oil tankers and cargo planes on contracts, with a world map"],
-      ["🎮 Mini-games", "🖼️ Art Gallery: copy paintings and sell them or keep them · ⛏️ Gold Mine Dig: dig for ore (needs a gold mine)"],
+      ["🎮 Mini-games", "🖼️ Art Gallery: copy paintings and sell them or keep them · ⛏️ Gold Mine Dig: dig for ore (needs a gold mine) · 🚀 Nebula Strike: space shooter (needs the Space Mission Center)"],
       ["🏆 Achievements", "Goals across the whole game"], ["🛍️ Shop", "Cosmetics: backgrounds and coins"], ["📖 Wiki", "This guide"]])}
     <h3>🧾 Taxes</h3>
     <p>Every second there is a 1 in ${Math.round(1 / TAX_CHANCE).toLocaleString()} chance of a tax inspection (and always after ${TAX_FORCED_AFTER / 60} minutes without one).
@@ -299,6 +299,24 @@ function wikiArt() {
     <h3>🏛️ Art Gallery business</h3>
     <p>With ${GALLERY_NEED} paintings in your collection you can buy the 🏛️ Art Gallery special business (💰 Income tab) for ${fmt(GALLERY_PRICE)}.
       It earns ${fmt(GALLERY_PER_PAINTING)} / sec for every painting in your collection, up to ${fmt(GALLERY_MAX)} / sec. Selling paintings lowers it.</p>
+    ${typeof SH_LEVELS === "object" ? `<h2>🚀 Nebula Strike</h2>
+    <p>A side-scrolling space shooter. It opens when you build the 🚀 Space Mission Center (🔬 Science) and stays open for good, even after a prestige.
+      Fly your ship through 3 levels of enemy waves; each level ends with a boss. Beating a level opens the next one. Levels are free to play,
+      but if you lose all your lives, the level starts over from the beginning.</p>
+    ${wt(["Level", "Difficulty", "Length", "Boss", "First clear", "Later clears"], SH_LEVELS.map(L =>
+      [`${L.n}: ${L.name}`, L.diff, L.time, L.boss, `${L.first} min of income + ✨ ${L.dustFirst}`, `${L.again} min of income + ✨ ${L.dustAgain}`]))}
+    <p class="muted">The income reward uses the same base as the Gold Mine Dig (business income over the last minute).</p>
+    <p>🛡️ <b>Shield:</b> usable every 15 sec. It stays up 1.5 sec and blocks the next hit (a shot, an enemy or a boss beam), then breaks. If nothing hits it in time, it's wasted.</p>
+    <p>📦 <b>Supply ships</b> (glowing capsules) fly by every 20–28 sec. Shoot them for a special weapon or an extra life:
+      🚀 homing missiles (8 shots), ⚡ laser beam (3 shots, hits everything in a line and erases enemy shots) and 💠 nova spread (6 shots of 9 bullets).
+      Picking up the same weapon adds ammo; a different one replaces it.</p>
+    <p>✨ <b>Stardust</b> drops from enemies and bosses and is paid for clearing a level (you keep what you collected even if you lose).
+      It buys ships and upgrades in the 🛸 hangar. Every ship has its own upgrades.</p>
+    ${wt(["Ship", "Price", "Speed", "Lives", "Gun"], SH_SHIP_IDS.map(id => { const s = SH_SHIPS[id];
+      return [s.name, s.price ? `✨ ${s.price.toLocaleString()}${s.needs ? ` (after level ${s.needs})` : ""}` : "Free", String(s.speed), String(s.hearts), s.desc]; }))}
+    ${wt(["Upgrade", "Levels", "Effect"], SH_UP_IDS.map(k => [SH_UPS[k].icon + " " + SH_UPS[k].name, String(SH_UPS[k].max), SH_UPS[k].eff(SH_UPS[k].max) + " at max"]))}
+    <p>⌨️ Move with the arrows or WASD, 🛡️ shield with Shift or K, 🚀 special weapon with X or L, ⏸️ pause with P or Esc. Auto-fire is on by default (turn it off in the hangar to shoot with Space).
+      📱 On a phone, drag anywhere on the screen to fly and tap the buttons for the shield and special weapon.</p>` : ""}
     ${typeof secrets2Open === "function" && secrets2Open() && typeof GENE_TOTAL === "number" ? `<h2>🌌🌌 🧬 Gene Splicer</h2>
     <p>Opens when you buy the 🧬 Genetics Laboratory (🔬 Science) and stays open for good, even after a prestige.
       You start with 5 DNA samples: 🧑 Human, 🐟 Fish, 🦎 Lizard, 🕷️ Spider and 🌱 Plant. Put two samples in the splicer (the same one twice works too):

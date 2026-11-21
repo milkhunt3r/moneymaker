@@ -85,6 +85,7 @@ function doPrestige(id) {
       up: state.mine.up, rescued: state.mine.rescued, fullBag: state.mine.fullBag, closeCall: state.mine.closeCall,
       lifts: state.mine.lifts, liftsUsed: state.mine.liftsUsed, chests: state.mine.chests, jackpots: state.mine.jackpots, vault: (state.mine.pending ? state.mine.pending.bag : []).reduce((v, k) => (v[k] = (v[k] || 0) + 1, v), { ...(state.mine.vault || {}) }) } : undefined,
     genetics: state.genetics,   // 🧬 Gene Splicer: everything stays (species, DNA, hints)
+    shooter: state.shooter,     // 🚀 Nebula Strike: levels, ships, upgrades and stardust stay
     taxHoliday: TAX_HOLIDAY,   // 🛡️ no tax inspections for the first 10 minutes
     recruitPlan: state.recruitPlan,   // 🧑‍💼 the Recruitment Agency's staffing plan (the building itself resets)
     // 🖼️ Art Gallery: stays unlocked and keeps its bought slots and all kept paintings
