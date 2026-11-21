@@ -603,7 +603,8 @@ function shDrawImg(g, name, x, y, w, alpha = 1) {
 }
 // painted enemies: [picture, width on screen] (the height follows the picture)
 const SH_EN_PIC = { weaver: ["enemy-spinner", 50], drone: ["enemy-saucer", 58], darter: ["enemy-darter", 62], gunner: ["enemy-gunpod", 64],
-  mine: ["enemy-mine", 46], homer: ["enemy-wasp", 58], tiny: ["enemy-swarm", 32] };
+  mine: ["enemy-mine", 46], homer: ["enemy-wasp", 58], tiny: ["enemy-swarm", 32],
+  brute: ["enemy-gunship", 116], carrier: ["enemy-supply", 72], tmissile: ["enemy-tmissile", 44] };
 function shDrawImgRot(g, name, x, y, w, rot) {
   const im = shImg(name); if (!im.complete || !im.naturalWidth) return false;
   const h = w * im.naturalHeight / im.naturalWidth;

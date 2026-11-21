@@ -53,7 +53,7 @@ const PATCH_NOTES = [
   { date: "21 November 2026", title: "Empire of Coins", items: [
     "🚀 New mini-game: <b>Nebula Strike</b>! A side-scrolling space shooter that opens when you build the 🚀 Space Mission Center. Fight through 3 levels of enemy waves and beat the <b>Scrap Crab</b>, the <b>Hive Queen</b> and <b>The Taxman</b>. Time your 🛡️ shield, grab special weapons from supply ships and collect ✨ stardust to buy 4 ships and their upgrades.",
     "🏆 New <b>🚀 Nebula Strike</b> achievements section: 10 achievements.",
-    "👾 Nebula Strike: new hand-painted enemies: saucer drones (with their pilots), darters, gun pods, space mines, wasp hunters and swarm bugs.",
+    "👾 Nebula Strike: new hand-painted enemies: saucer drones (with their pilots), darters, gun pods, space mines, wasp hunters, swarm bugs, armoured gunships, supply ships and The Taxman's missiles.",
     "🦀 Nebula Strike: the Scrap Crab has a new look: it now flies on three rocket jets.",
     "🌌 Nebula Strike: new hand-painted backgrounds for all 3 levels, and each boss now has its own arena (the Scrap Crab's junkyard, the Hive Queen's nest and The Taxman's vault) that fades in when the boss arrives.",
     "🪨 Nebula Strike: new hand-painted asteroids in three sizes (bigger ones are tougher and worth more points) and a new look for the spinning blade enemies.",
