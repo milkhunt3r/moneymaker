@@ -14,11 +14,11 @@ const shClamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 /* ----- per-level setup: waves [weight, from second], gap between waves (start → end), speed, enemy fire, enemy HP, bullet speed ----- */
 const SH_CFG = [
-  { waves: { line: [3, 0], vee: [2, 20], sine: [2, 35], rocks: [2, 0], gunners: [1.5, 50], mines: [1, 110] },
+  { waves: { line: [3, 0], junk: [2.5, 0], vee: [2, 20], sine: [2, 35], rocks: [2, 0], gunners: [1.5, 50], mines: [1, 110] },
     gap: [4.2, 2.8], spd: 1, fire: 0.6, hp: 1, bs: 210, boss: "crab" },
-  { waves: { line: [2, 0], vee: [2, 0], sine: [2, 0], rocks: [1.5, 0], gunners: [2, 0], mines: [1.5, 0], column: [1.5, 30], brute: [1, 60], swarm: [1, 90] },
+  { waves: { line: [2, 0], junk: [2, 0], sentinel: [1.2, 40], vee: [2, 0], sine: [2, 0], rocks: [1.5, 0], gunners: [2, 0], mines: [1.5, 0], column: [1.5, 30], brute: [1, 60], swarm: [1, 90] },
     gap: [3.6, 2.3], spd: 1.1, fire: 0.85, hp: 1.6, bs: 250, boss: "hive" },
-  { waves: { line: [1.5, 0], vee: [2, 0], sine: [2, 0], rocks: [1, 0], gunners: [2, 0], mines: [1.5, 0], column: [1.5, 0], brute: [1.5, 40], swarm: [2, 0], homers: [2, 30] },
+  { waves: { line: [1.5, 0], junk: [1.5, 0], sentinel: [1.6, 0], vee: [2, 0], sine: [2, 0], rocks: [1, 0], gunners: [2, 0], mines: [1.5, 0], column: [1.5, 0], brute: [1.5, 40], swarm: [2, 0], homers: [2, 30] },
     gap: [3.0, 1.8], spd: 1.2, fire: 1.1, hp: 2.3, bs: 285, boss: "taxman" },
 ];
 // enemy base stats (HP × the level's hp factor; ✨ stardust × 1 / 1.5 / 2 by level)
@@ -27,9 +27,10 @@ const SH_EN = {
   gunner: { hp: 5, r: 24, dust: 4 }, mine: { hp: 3, r: 16, dust: 2 }, brute: { hp: 28, r: 38, dust: 12 },
   homer: { hp: 2, r: 15, dust: 2 }, tiny: { hp: 1, r: 11, dust: 1 }, carrier: { hp: 4, r: 24, dust: 3 },
   rock: { hp: 4, r: 24, dust: 1 }, tmissile: { hp: 2, r: 12, dust: 0 },
+  junk: { hp: 2, r: 17, dust: 1 }, sentinel: { hp: 6, r: 22, dust: 4 },
 };
 // ⭐ score: points for every destroyed enemy (asteroids by size) and boss
-const SH_POINTS = { drone: 100, darter: 100, weaver: 150, gunner: 300, mine: 200, brute: 1000, homer: 200, tiny: 50, carrier: 250, tmissile: 100 };
+const SH_POINTS = { drone: 100, darter: 100, weaver: 150, gunner: 300, mine: 200, brute: 1000, homer: 200, tiny: 50, carrier: 250, tmissile: 100, junk: 120, sentinel: 400 };
 const SH_BOSS_POINTS = { crab: 5000, hive: 10000, taxman: 20000 };
 const shPoints = (e) => e.type === "rock" ? Math.round(e.size * 3 / 10) * 10 : SH_POINTS[e.type] || 0;
 // 🎁 special weapons (ammo × the Special ammo upgrade)
@@ -128,6 +129,16 @@ const SH_WAVES = {
   swarm(R, s) {
     const top = Math.random() < 0.5, y = top ? shRand(90, 200) : shRand(340, 450);
     for (let i = 0; i < 9; i++) shAdd("tiny", SHW + 30 + i * 34, y, { vx: -240 * s, amp: 60, ph: -i * 0.45, freq: 3.2 });
+  },
+  // 🤖 junk bots: drift in, and charge straight ahead when they line up with your ship
+  junk(R, s) {
+    const n = R.lv === 1 ? 2 + Math.floor(Math.random() * 2) : R.lv === 2 ? 3 : 4 + Math.floor(Math.random() * 2);
+    for (let i = 0; i < n; i++) shAdd("junk", SHW + 40 + i * 70, shRand(70, SHH - 70), { vx: -90 * s, ph: i * 1.3 });
+  },
+  // 🔴 laser sentinels: park on the right, show a warning line, then fire a beam across the screen (3 times)
+  sentinel(R, s) {
+    const n = R.lv === 3 ? 2 : 1;
+    for (let i = 0; i < n; i++) shAdd("sentinel", SHW + 50, i ? SHH - 120 : 120, { vx: -170 * s, stopX: SHW - 70 - i * 80, wait: i * 0.9, shots: 0 });
   },
   homers(R, s) { for (let i = 0; i < 3; i++) shAdd("homer", SHW + 40 + i * 60, shRand(60, SHH - 60), { vx: -200 * s, ang: Math.PI }); },
 };
@@ -503,6 +514,7 @@ function shUpdate(dt) {
   // ☄️ the Taxman's beams
   for (const bm of R.beams) {
     bm.t += dt;
+    if (bm.owner && bm.owner.dead) { bm.dead = true; continue; }   // destroying a sentinel stops its beam
     if (bm.t > bm.tele && bm.t < bm.tele + bm.on && !bm.done && P.x < bm.x0 && Math.abs(P.y - bm.y) < bm.w / 2 + st.hit * 0.6) {
       if (shHurt(R)) bm.done = true;   // one beam = one attack (a shield block uses it up too)
     }
@@ -580,6 +592,29 @@ function shEnemyStep(R, e, dt) {
         e.x += Math.cos(e.ang) * 150 * dt; e.y += Math.sin(e.ang) * 150 * dt;
       } else { e.x += e.vx * dt; e.y = e.y0 + e.amp * Math.sin(e.freq * e.t + e.ph); }
       break;
+    case "junk":
+      if (e.charge) { e.x -= 520 * R.cfg.spd * dt; break; }
+      if (e.windup != null) {   // eye flashes for half a second, then it charges
+        e.windup -= dt; e.flash = Math.floor(e.windup * 12) % 2 ? 0.05 : 0;
+        if (e.windup <= 0) { e.charge = true; e.flash = 0; }
+        break;
+      }
+      e.x += e.vx * dt; e.y = e.y0 + Math.sin(e.t * 2 + e.ph) * 10;
+      if (e.x < SHW - 40 && e.x > P.x + 120 && Math.abs(P.y - e.y) < 24) e.windup = 0.5;
+      break;
+    case "sentinel": {
+      if (e.leaving) { e.x += 220 * dt; if (e.x > SHW + 60) { e.dead = true; e.gone = true; } break; }
+      if (!e.parked) { e.x += e.vx * dt; if (e.x <= e.stopX) { e.parked = true; e.st = -e.wait; } break; }
+      e.st += dt;
+      const tele = R.lv === 3 ? 0.7 : 1.0, aim = 0.7, cycle = aim + tele + 0.7 + 0.3;
+      if (e.st < 0) break;
+      // the second sentinel of a pair aims just above or below you, so the two beams close you in
+      const ty = e.wait ? shClamp(P.y + (P.y < SHH / 2 ? 85 : -85), 60, SHH - 30) : P.y;
+      if (e.st < aim) e.y += shClamp(ty - e.y, -260 * dt, 260 * dt);
+      else if (!e.fired) { e.fired = true; R.beams.push({ x0: e.x - 30, y: e.y + 4, t: 0, tele, on: 0.7, w: 18, owner: e, small: true }); }
+      if (e.st >= cycle) { e.st = 0; e.fired = false; if (++e.shots >= 3) e.leaving = true; }
+      break;
+    }
     case "carrier": e.x += e.vx * dt; if (e.fromTop) e.y += 60 * dt; else e.y = e.y0 + Math.sin(e.t * 2) * 30; break;
     case "rock": e.x += e.vx * dt; e.y += e.vy * dt; e.rot += e.spin * dt; break;
   }
@@ -604,7 +639,7 @@ function shDrawImg(g, name, x, y, w, alpha = 1) {
 // painted enemies: [picture, width on screen] (the height follows the picture)
 const SH_EN_PIC = { weaver: ["enemy-spinner", 50], drone: ["enemy-saucer", 58], darter: ["enemy-darter", 62], gunner: ["enemy-gunpod", 64],
   mine: ["enemy-mine", 46], homer: ["enemy-wasp", 58], tiny: ["enemy-swarm", 32],
-  brute: ["enemy-gunship", 116], carrier: ["enemy-supply", 72], tmissile: ["enemy-tmissile", 44] };
+  brute: ["enemy-gunship", 116], junk: ["enemy-junkbot", 54], sentinel: ["enemy-sentinel", 66], carrier: ["enemy-supply", 72], tmissile: ["enemy-tmissile", 44] };
 function shDrawImgRot(g, name, x, y, w, rot) {
   const im = shImg(name); if (!im.complete || !im.naturalWidth) return false;
   const h = w * im.naturalHeight / im.naturalWidth;
@@ -681,7 +716,8 @@ function shDraw() {
       const k = Math.min(1, (bm.t - bm.tele) / 0.12), w = bm.w * k * (0.9 + Math.random() * 0.2);
       g.save(); g.globalCompositeOperation = "lighter";
       const gr = g.createLinearGradient(0, bm.y - w, 0, bm.y + w);
-      gr.addColorStop(0, "rgba(255,80,40,0)"); gr.addColorStop(0.35, "rgba(255,120,40,0.8)"); gr.addColorStop(0.5, "rgba(255,255,220,1)"); gr.addColorStop(0.65, "rgba(255,120,40,0.8)"); gr.addColorStop(1, "rgba(255,80,40,0)");
+      const c1 = bm.small ? "rgba(255,40,90," : "rgba(255,80,40,", c2 = bm.small ? "rgba(255,70,120," : "rgba(255,120,40,";
+      gr.addColorStop(0, c1 + "0)"); gr.addColorStop(0.35, c2 + "0.85)"); gr.addColorStop(0.5, "rgba(255,240,240,1)"); gr.addColorStop(0.65, c2 + "0.85)"); gr.addColorStop(1, c1 + "0)");
       g.fillStyle = gr; g.fillRect(0, bm.y - w, bm.x0, w * 2); g.restore();
     }
   }
