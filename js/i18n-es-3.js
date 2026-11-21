@@ -519,6 +519,8 @@ Object.assign(ES, {
   "Build the 🚀 Space Mission Center (💰 Income → 🔬 Science) first.": "Construye antes el 🚀 Centro de misiones espaciales (💰 Ingresos → 🔬 Ciencia).",
   "Fly a spaceship through 3 levels of enemy waves and defeat a boss at the end of each one.": "Pilota una nave por 3 niveles de oleadas enemigas y derrota a un jefe al final de cada uno.",
   "📱 Turn your phone sideways for a bigger screen.": "📱 Gira el móvil para ver la pantalla más grande.", "Turn your phone sideways for a bigger screen.": "Gira el móvil para ver la pantalla más grande.",
+  "Drag anywhere to fly": "Arrastra para volar", "Shield button": "Botón del escudo", "Special weapon button": "Botón del arma especial", "Pause button": "Botón de pausa",
+  "/ WASD": "/ WASD", "Shift / K": "Shift / K", "X / L": "X / L", "P / Esc": "P / Esc", "Move": "Moverse", "Shoot": "Disparar", "Auto-fire on": "Disparo automático", "Space": "Espacio",
   "about 5 min": "unos 5 min", "about 6–7 min": "unos 6–7 min",
   // achievements
   "Scrap metal": "Chatarra", "Hive buster": "Revienta colmenas", "Tax evasion": "Evasión fiscal", "Untouchable": "Intocable", "Perfect timing": "Sincronización perfecta",
@@ -549,8 +551,8 @@ hrx(String.raw`🛡️ <b>Shield:<\/b> every (\d+) sec\. It stays up ([\d.]+) se
 H("Every ship has its own upgrades. They are paid with <span>✨</span> stardust.", "Cada nave tiene sus propias mejoras. Se pagan con <span>✨</span> polvo estelar.");
 H("🛡️ <b>Shield:</b> usable every 15 sec. It stays up 1.5 sec and blocks the next hit (a shot, an enemy or a boss beam), then breaks. If nothing hits it in time, it's wasted.",
   "🛡️ <b>Escudo:</b> se puede usar cada 15 s. Dura 1,5 s y bloquea el siguiente golpe (un disparo, un enemigo o el rayo de un jefe); después se rompe. Si nada lo golpea a tiempo, se desperdicia.");
-H("📦 <b>Supply ships</b> (glowing capsules) fly by every 20–28 sec. Shoot them for a special weapon or an extra life: 🚀 homing missiles (8 shots), ⚡ laser beam (3 shots, hits everything in a line and erases enemy shots) and 💠 nova spread (6 shots of 9 bullets). Picking up the same weapon adds ammo; a different one replaces it.",
-  "📦 Las <b>naves de suministros</b> (cápsulas brillantes) pasan cada 20–28 s. Dispárales para conseguir un arma especial o una vida extra: 🚀 misiles teledirigidos (8 disparos), ⚡ rayo láser (3 disparos; daña todo lo que hay en línea y borra los disparos enemigos) y 💠 abanico nova (6 disparos de 9 balas). Recoger la misma arma añade munición; una distinta la sustituye.");
+H("📦 <b>Supply ships</b> (glowing capsules) fly by every 20–28 sec. Shoot them for a special weapon or an extra life: 🚀 homing missiles (8 shots), ⚡ laser beam (3 shots, hits everything in a line and erases enemy shots) and 💠 nova spread (6 shots of 9 bullets that go through enemies). Picking up the same weapon adds ammo; a different one replaces it.",
+  "📦 Las <b>naves de suministros</b> (cápsulas brillantes) pasan cada 20–28 s. Dispárales para conseguir un arma especial o una vida extra: 🚀 misiles teledirigidos (8 disparos), ⚡ rayo láser (3 disparos; daña todo lo que hay en línea y borra los disparos enemigos) y 💠 abanico nova (6 disparos de 9 balas que atraviesan a los enemigos). Recoger la misma arma añade munición; una distinta la sustituye.");
 H("✨ <b>Stardust</b> drops from enemies and bosses and is paid for clearing a level (you keep what you collected even if you lose). It buys ships and upgrades in the 🛸 hangar. Every ship has its own upgrades.",
   "✨ El <b>polvo estelar</b> lo sueltan los enemigos y los jefes, y se paga al superar un nivel (conservas lo recogido aunque pierdas). Con él compras naves y mejoras en el 🛸 hangar. Cada nave tiene sus propias mejoras.");
 // upgrade effects ("Now: …" / "Next: …" are handled by the rules in i18n-es-2.js)
@@ -600,6 +602,7 @@ rx(String.raw`(Sparrow|Dart|Bulwark|Sovereign): (Damage|Fire rate|Hull armour|Sh
 // patch notes
 H("🚀 New mini-game: <b>Nebula Strike</b>! A side-scrolling space shooter that opens when you build the 🚀 Space Mission Center. Fight through 3 levels of enemy waves and beat the <b>Scrap Crab</b>, the <b>Hive Queen</b> and <b>The Taxman</b>. Time your 🛡️ shield, grab special weapons from supply ships and collect ✨ stardust to buy 4 ships and their upgrades.",
   "🚀 Nuevo minijuego: ¡<b>Nebula Strike</b>! Un matamarcianos de desplazamiento lateral que se abre al construir el 🚀 Centro de misiones espaciales. Abre paso por 3 niveles de oleadas enemigas y derrota al <b>Cangrejo Chatarra</b>, a la <b>Reina de la Colmena</b> y a <b>El Recaudador</b>. Usa el 🛡️ escudo en el momento justo, consigue armas especiales de las naves de suministros y recoge ✨ polvo estelar para comprar 4 naves y sus mejoras.");
+H("🚀 Nebula Strike: the pause screen now shows the controls, and the 💠 nova spread is stronger (a tighter fan of bullets that go through enemies).", "🚀 Nebula Strike: la pantalla de pausa ahora muestra los controles y el 💠 abanico nova es más fuerte (un abanico más cerrado de balas que atraviesan a los enemigos).");
 H("🏆 New <b>🚀 Nebula Strike</b> achievements section: 10 achievements.", "🏆 Nueva sección de logros <b>🚀 Nebula Strike</b>: 10 logros.");
 
 /* ===================== generic fallbacks (keep these last) ===================== */

@@ -145,7 +145,8 @@ function shUseSpecial(R) {
   P.spCool = S.cd; P.ammo--;
   if (P.special === "missile") shPlayerShot(nx, P.y, 420, 0, 8 * m, "missile", 8);
   if (P.special === "laser") R.laser = 0.6;
-  if (P.special === "spread") for (let i = 0; i < 9; i++) { const a = -0.6 + i * 0.15; shPlayerShot(nx, P.y, Math.cos(a) * 620, Math.sin(a) * 620, 2 * m, "spread", 6); }
+  // 💠 nova spread: 9 bullets in a fan that pierce through enemies (each bullet hits every enemy once)
+  if (P.special === "spread") for (let i = 0; i < 9; i++) { const a = -0.28 + i * 0.07; shPlayerShot(nx, P.y, Math.cos(a) * 640, Math.sin(a) * 640, 5 * m, "spread", 7); R.pb[R.pb.length - 1].pierce = new Set(); }
   if (P.ammo <= 0) P.special = null;
 }
 function shUseShield(R) {
@@ -451,6 +452,7 @@ function shUpdate(dt) {
     if (s.x > SHW + 30 || s.y < -30 || s.y > SHH + 30 || s.x < -30) { s.dead = true; continue; }
     for (const e of R.en) {
       if (e.dead || shDist2(e.x, e.y, s.x, s.y) > (e.r + s.r) ** 2) continue;
+      if (s.pierce) { if (s.pierce.has(e)) continue; s.pierce.add(e); shHitEnemy(e, s.dmg); shFx(s.x, s.y, 3, "#ffb8f0", 90, 2); continue; }
       shHitEnemy(e, s.dmg); s.dead = true; shFx(s.x, s.y, 3, "#fff2a8", 90, 2); break;
     }
     if (!s.dead && b) for (const [cx, cy, cr] of bc) {
@@ -754,6 +756,10 @@ function shPause(on) {
       <p class="muted">Level ${R.lv}: ${R.L.name} · ${shClock(R.t)}</p>
       <div class="moneyRow" style="justify-content:center"><button class="btn big" data-shp="resume">▶ Resume</button>
       <button class="btn ghost" data-shp="quit">🏳️ Quit level</button></div>
+      <div class="shPauseKeys">${shTouchUI
+        ? `<span>👆 Drag anywhere to fly</span><span>🛡️ Shield button</span><span>🚀 Special weapon button</span><span>⏸️ Pause button</span>`
+        : `<span><b>⬆️⬇️⬅️➡️ / WASD</b> Move</span><span><b>Shift / K</b> 🛡️ Shield</span><span><b>X / L</b> 🚀 Special weapon</span>
+           <span><b>${SH.auto ? "Auto-fire on" : "Space"}</b> 🔫 Shoot</span><span><b>P / Esc</b> ⏸️ Pause</span>`}</div>
       <p class="muted">If you quit, you keep the stardust you collected.</p></div>`;
   }
   if (on) { shDraw(); save(); } else shKick();

@@ -308,7 +308,7 @@ function wikiArt() {
     <p class="muted">The income reward uses the same base as the Gold Mine Dig (business income over the last minute).</p>
     <p>🛡️ <b>Shield:</b> usable every 15 sec. It stays up 1.5 sec and blocks the next hit (a shot, an enemy or a boss beam), then breaks. If nothing hits it in time, it's wasted.</p>
     <p>📦 <b>Supply ships</b> (glowing capsules) fly by every 20–28 sec. Shoot them for a special weapon or an extra life:
-      🚀 homing missiles (8 shots), ⚡ laser beam (3 shots, hits everything in a line and erases enemy shots) and 💠 nova spread (6 shots of 9 bullets).
+      🚀 homing missiles (8 shots), ⚡ laser beam (3 shots, hits everything in a line and erases enemy shots) and 💠 nova spread (6 shots of 9 bullets that go through enemies).
       Picking up the same weapon adds ammo; a different one replaces it.</p>
     <p>✨ <b>Stardust</b> drops from enemies and bosses and is paid for clearing a level (you keep what you collected even if you lose).
       It buys ships and upgrades in the 🛸 hangar. Every ship has its own upgrades.</p>
