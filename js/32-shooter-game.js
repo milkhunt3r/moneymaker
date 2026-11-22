@@ -283,7 +283,7 @@ const SH_BOSS = {
     phases: [0.5], drift: true, noDrift: { skullbeam: 1 },
     circles: [[-0.41, 0.17, 0.07], [-0.26, 0.24, 0.075], [-0.09, 0.25, 0.08], [0.08, 0.25, 0.08], [0.25, 0.22, 0.075], [0.4, 0.2, 0.06], [-0.05, -0.15, 0.08]] },
   dreadmaw: { name: "Admiral Dreadmaw", img: "boss-dreadmaw", w: 460, ar: 398 / 800, hp: 2000, hx: SHW - 235, dust: 220,
-    phases: [0.66, 0.33], dmgImg: "boss-dreadmaw-dmg", drift: true, noDrift: { jaw: 1 },
+    phases: [0.66, 0.33], dmgImg: "boss-dreadmaw-dmg", drift: true, noDrift: { jaw: 1 }, retreat: true,   // retreats for a bullet-wall barrage before his last phase
     circles: [[-0.42, 0.14, 0.06], [-0.28, 0.17, 0.07], [-0.12, 0.18, 0.08], [0.02, 0.16, 0.09], [0.17, 0.18, 0.08], [0.32, 0.17, 0.07], [0.44, 0.12, 0.05], [-0.02, -0.2, 0.07]] },
 };
 function shBossMake(k) {
@@ -477,7 +477,9 @@ function shBossStep(R, b, dt) {
     b.phase = ph; b.inv = 1.0; R.shake = 0.5;
     if (b.def.dmgImg && ph === (b.def.phases || [0.5]).length + 1) { b.img = b.def.dmgImg; for (let i = 0; i < 6; i++) shBoom(b.x + shRand(-0.4, 0.4) * b.w, b.y + shRand(-0.3, 0.3) * shBossH(b), 30); }
     R.banner = { big: t("⚠️ " + b.def.name + " is getting angry!"), small: "", life: 2, warn: true };
+    if (b.def.retreat && ph === (b.def.phases || [0.5]).length + 1) { b.away = { stage: "out", t: 0, next: 0, n: 0 }; b.warn = false; R.beams = []; }
   }
+  if (b.away) return shBossAway(R, b, dt);
   if (b.k === "hive") shBossTrack(b, SHH / 2 + 10 + Math.sin(b.t * (b.phase === 1 ? 0.8 : 1.1)) * 120, 120, dt);
   if (b.def.drift && !b.def.noDrift[b.act]) shBossTrack(b, SHH / 2 + Math.sin(b.t * 0.45) * 70, 45, dt);
   b.at += dt;
@@ -486,6 +488,37 @@ function shBossStep(R, b, dt) {
     b.i = (b.i + 1) % seq.length; b.act = seq[b.i]; b.at = 0; b.fired = 0; b.mem = {}; b.warn = false;
   }
   SH_BOSS_ACT[b.k][b.act](b, dt, R);
+}
+/* 💀 Admiral Dreadmaw's barrage: before his last phase he sails off screen and sends walls of bullets.
+   "v" walls sweep in from the right (a column of shots with one gap), "h" walls drop from the top or rise from the bottom
+   (a row of shots with one gap). You can use the whole screen. Then he comes back for the final phase. */
+const SH_BARRAGE = [["v", 0], ["v", 1.6], ["h", 3.2], ["v", 4.9], ["h", 6.4], ["v", 7.8], ["h", 9.2], ["v", 10.4], ["h", 10.4], ["v", 12.2], ["h", 13.6], ["v", 13.6]];
+const SH_BARRAGE_END = 17;   // seconds after the first wall before he returns
+function shBarrageWall(R, kind, i) {
+  const gap = kind === "v" ? 92 : 104;
+  if (kind === "v") {
+    const gy = shRand(70, SHH - 70);
+    for (let y = 12; y < SHH; y += 22) if (Math.abs(y - gy) > gap / 2) R.eb.push({ x: SHW + 14, y, vx: -235, vy: 0, r: 6, kind: "acid" });
+  } else {
+    const gx = shRand(90, SHW - 160), down = i % 2 === 0, y0 = down ? -10 : SHH + 10;
+    for (let x = 14; x < SHW; x += 24) if (Math.abs(x - gx) > gap / 2) R.eb.push({ x, y: y0, vx: 0, vy: down ? 150 : -150, r: 6, kind: "acid" });
+  }
+}
+function shBossAway(R, b, dt) {
+  const A = b.away; A.t += dt;
+  if (A.stage === "out") {   // sails off to the right
+    b.x += 260 * dt; shBossTrack(b, SHH / 2, 60, dt);
+    if (b.x > SHW + b.w * 0.6) {
+      A.stage = "walls"; A.t = 0;
+      R.banner = { big: t("⚠️ Barrage incoming!"), small: t("Find the gaps!"), life: 2.5, warn: true };
+    }
+  } else if (A.stage === "walls") {
+    while (A.n < SH_BARRAGE.length && A.t >= 2.2 + SH_BARRAGE[A.n][1]) { shBarrageWall(R, SH_BARRAGE[A.n][0], A.n); A.n++; }
+    if (A.t >= 2.2 + SH_BARRAGE_END) { A.stage = "in"; R.banner = { big: t("⚠️ " + b.def.name + " is back!"), small: "", life: 2, warn: true }; }
+  } else {   // comes back for the final phase
+    b.x -= 200 * dt; shBossTrack(b, SHH / 2, 60, dt);
+    if (b.x <= b.def.hx) { b.x = b.def.hx; b.away = null; b.act = null; b.inv = 0.5; }
+  }
 }
 function shBossKilled(R, b) {
   R.phase = "dying"; R.dieT = 0; b.dead = true; R.eb = []; R.beams = [];
@@ -526,7 +559,7 @@ function shUpdate(dt) {
       P.x += P.tdx / d * step; P.y += P.tdy / d * step; P.tdx -= P.tdx / d * step; P.tdy -= P.tdy / d * step;
       if (d - step < 0.5) P.tdx = P.tdy = 0;
     }
-    const maxX = R.boss && !R.boss.dead ? Math.min(SHW * 0.7, R.boss.def.hx - R.boss.w * 0.5 - 40) : SHW * 0.7;
+    const maxX = R.boss && R.boss.away ? SHW - st.w * 0.45 : R.boss && !R.boss.dead ? Math.min(SHW * 0.7, R.boss.def.hx - R.boss.w * 0.5 - 40) : SHW * 0.7;   // the whole screen while the boss is away
     P.x = shClamp(P.x, st.w * 0.45, Math.max(st.w * 0.45, maxX)); P.y = shClamp(P.y, 48, SHH - 20);
     P.cool -= dt; P.spCool -= dt; P.inv -= dt;
     if (P.shield > 0) P.shield -= dt;
@@ -587,7 +620,7 @@ function shUpdate(dt) {
   }
 
   // 💥 player shots
-  const b = R.boss && !R.boss.dead && !R.boss.entering ? R.boss : null, bc = b ? shBossCircles(b) : [];
+  const b = R.boss && !R.boss.dead && !R.boss.entering && !R.boss.away ? R.boss : null, bc = b ? shBossCircles(b) : [];
   for (const s of R.pb) {
     if (s.kind === "missile") {
       let tgt = null, best = 1e9;

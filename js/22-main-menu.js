@@ -50,6 +50,9 @@ addEventListener("resize", fitBrand); fitBrand();
 
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
+  { date: "22 November 2026", title: "Empire of Coins", items: [
+    "💀 Nebula Strike: before his last phase, a damaged Admiral Dreadmaw now sails off screen and sends walls of bullets from the right, the top and the bottom. Use the whole screen and slip through the gaps before he returns!",
+  ] },
   { date: "21 November 2026", title: "Empire of Coins", items: [
     "🚀 New mini-game: <b>Nebula Strike</b>! A side-scrolling space shooter that opens when you build the 🚀 Space Mission Center. Fight through 3 levels of enemy waves and beat the <b>Scrap Crab</b>, the <b>Hive Queen</b> and <b>The Taxman</b>. Time your 🛡️ shield, grab special weapons from supply ships and collect ✨ stardust to buy 4 ships and their upgrades.",
     "🏆 New <b>🚀 Nebula Strike</b> achievements section: 10 achievements.",

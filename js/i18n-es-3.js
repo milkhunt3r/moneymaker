@@ -556,7 +556,10 @@ Object.assign(ES, {
   "Fly a spaceship through 4 levels of enemy waves and defeat the bosses waiting at the end.": "Pilota una nave por 4 niveles de oleadas enemigas y derrota a los jefes que esperan al final.",
   "Show on the Income page": "Mostrar en la página de Ingresos", "Name": "Nombre", "🐾 Pet": "🐾 Mascota", "The pet": "La mascota",
   "Best friends": "Mejores amigos", "Pet your pet 100 times": "Acaricia a tu mascota 100 veces", "Paw power": "Poder de patitas", "Let your pet tap the coin 10,000 times": "Deja que tu mascota pulse la moneda 10.000 veces",
-  "Skip": "Saltar", "Pirate chest": "Cofre pirata", "Beat Admiral Dreadmaw first": "Derrota antes al Almirante Fauces Negras", "Buy another": "Comprar otro", "Close": "Cerrar",
+  "Skip": "Saltar", "⚠️ Barrage incoming!": "⚠️ ¡Llega una andanada!", "Barrage incoming!": "¡Llega una andanada!", "Find the gaps!": "¡Busca los huecos!",
+  "⚠️ Admiral Dreadmaw is back!": "⚠️ ¡El Almirante Fauces Negras ha vuelto!",
+  "💀 Nebula Strike: before his last phase, a damaged Admiral Dreadmaw now sails off screen and sends walls of bullets from the right, the top and the bottom. Use the whole screen and slip through the gaps before he returns!":
+    "💀 Nebula Strike: antes de su última fase, el Almirante Fauces Negras, ya dañado, sale de la pantalla y lanza muros de balas desde la derecha, desde arriba y desde abajo. ¡Usa toda la pantalla y cuélate por los huecos antes de que vuelva!", "Pirate chest": "Cofre pirata", "Beat Admiral Dreadmaw first": "Derrota antes al Almirante Fauces Negras", "Buy another": "Comprar otro", "Close": "Cerrar",
   "The same loot box as level 4: 40–180 min of income by rarity or the rare pet.": "El mismo cofre del botín que en el nivel 4: de 40 a 180 min de ingresos según la rareza o la mascota rara.",
   "The same loot box as level 4: 40–180 min of income by rarity.": "El mismo cofre del botín que en el nivel 4: de 40 a 180 min de ingresos según la rareza.",
   "🏴‍☠️ Nebula Strike: after beating Admiral Dreadmaw, you can buy a <b>pirate chest</b> in the hangar for ✨ 10,000 stardust. Same prizes and odds as the level 4 loot box, pet included.":
