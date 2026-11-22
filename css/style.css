@@ -1913,3 +1913,11 @@ p.guestWarn { font-size: 14px; background: rgba(255, 170, 0, 0.1); border: 1px s
 .bugForm .cloudPick { justify-content: center; }
 .bugAlt { font-size: 13px; text-align: center; }
 .orArrow { opacity: 0.6; font-size: 20px; }
+/* ☕ support pop-up */
+.donateBox { text-align: left; max-width: 560px; margin: 0 auto; line-height: 1.5; }
+.donateBox h2 { text-align: center; margin-top: 0; }
+.donateBox ul { padding-left: 22px; }
+.donateBox li { margin: 5px 0; }
+.donateBox .cloudPick { justify-content: center; }
+.donateBox .cloudPick a.btn { text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+.donateBox > p.muted { text-align: center; }

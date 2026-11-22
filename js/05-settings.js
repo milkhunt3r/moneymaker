@@ -24,6 +24,7 @@ function settingsNote(text) {
 // ⚙️ The ornate settings panel (from the ⚙️ button and from Settings on the main menu).
 // Its rows run the same actions as the (hidden) #settingsMenu buttons.
 const OR_ICONS = {
+  cup: '<path d="M4 8h13v5a6 6 0 0 1-6 6H10a6 6 0 0 1-6-6V8z"/><path d="M17 10h1.5a2.5 2.5 0 0 1 0 5H17" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 2.5c0 1.5 1.5 1.5 1.5 3M12 2.5c0 1.5 1.5 1.5 1.5 3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
   save: '<path d="M4 3h12.5L21 7.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm3 2v5h9V5zm5 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>',
   download: '<path d="M11 3h2v10.2l3.6-3.6 1.4 1.4-6 6-6-6 1.4-1.4 3.6 3.6zM4 19h16v2H4z"/>',
   load: '<path d="M13 21h-2V10.8l-3.6 3.6L6 13l6-6 6 6-1.4 1.4-3.6-3.6zM4 3h16v2H4z"/>',
@@ -68,6 +69,7 @@ function showSettings(fromMenu) {
       ${row("tips", "Show tips", `<span class="orSwitch ${state.tips.on ? "on" : ""}" id="orTips"></span>`)}
       ${row("tipsReset", "Show all tips again")}
       ${row("tutorial", "Replay the guided start")}
+      <button class="orRow" data-or="donate">${orIcon("cup")}<span class="grow">Support the game</span><span class="orArrow">›</span></button>
       <div class="orRow orLegal">${typeof legalLinks === "function" ? legalLinks() : ""}</div>
       <button class="orRow" data-or="bug">${orIcon("bug")}<span class="grow">Report a bug</span><span class="orArrow">›</span></button>
       <div class="orNote" id="orNote">${SETTINGS_NOTE}</div>
@@ -81,7 +83,8 @@ function showSettings(fromMenu) {
 $("modalBox").addEventListener("click", (e) => {
   const b = e.target.closest("[data-or]"); if (!b) return;
   const what = b.dataset.or;
-  if (what === "bug") return showBugReport();   // 🐞 js/05b-bug-report.js
+  if (what === "bug") return showBugReport();
+  if (what === "donate") return showDonate();   // 🐞 js/05b-bug-report.js
   if (what === "menu" || what === "tutorial") hideModal();
   $("settingsMenu").querySelector(`[data-setting="${what}"]`).click();
   if (what === "tutorial" && settingsFromMenu) closeMenu();

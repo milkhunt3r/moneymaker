@@ -556,7 +556,9 @@ Object.assign(ES, {
   "Fly a spaceship through 4 levels of enemy waves and defeat the bosses waiting at the end.": "Pilota una nave por 4 niveles de oleadas enemigas y derrota a los jefes que esperan al final.",
   "Show on the Income page": "Mostrar en la página de Ingresos", "Name": "Nombre", "🐾 Pet": "🐾 Mascota", "The pet": "La mascota",
   "Best friends": "Mejores amigos", "Pet your pet 100 times": "Acaricia a tu mascota 100 veces", "Paw power": "Poder de patitas", "Let your pet tap the coin 10,000 times": "Deja que tu mascota pulse la moneda 10.000 veces",
-  "Skip": "Saltar", "Report a bug": "Informar de un error", "🐞 Report a bug": "🐞 Informar de un error",
+  "Skip": "Saltar", "Support the game": "Apoya el juego", "Donate": "Donar", "Maybe later": "Quizás más tarde", "☕ Open Ko-fi": "☕ Abrir Ko-fi", "Open Ko-fi": "Abrir Ko-fi",
+  "☕ Support Empire of Coins": "☕ Apoya Empire of Coins", "Support Empire of Coins": "Apoya Empire of Coins", "Thank you for playing! ❤️": "¡Gracias por jugar! ❤️", "Thank you for playing!": "¡Gracias por jugar!", "Support the game on Ko-fi": "Apoya el juego en Ko-fi",
+  "Payment is handled securely by Ko-fi with PayPal or Stripe. The game never sees your payment details.": "El pago lo gestiona de forma segura Ko-fi con PayPal o Stripe. El juego nunca ve tus datos de pago.", "Report a bug": "Informar de un error", "🐞 Report a bug": "🐞 Informar de un error",
   "What kind of problem?": "¿Qué tipo de problema?", "What are you playing on?": "¿En qué dispositivo juegas?", "📱 Phone": "📱 Móvil", "📲 Tablet": "📲 Tableta", "💻 PC or laptop": "💻 PC o portátil", "Phone": "Móvil", "Tablet": "Tableta", "PC or laptop": "PC o portátil", "What happened? What did you expect?": "¿Qué ha pasado? ¿Qué esperabas?",
   "Something doesn't work": "Algo no funciona", "Wrong numbers or rewards": "Números o premios incorrectos", "Display or layout problem": "Problema de visualización o de diseño",
   "Translation error": "Error de traducción", "Lost progress": "Progreso perdido", "Other": "Otro",
@@ -720,6 +722,12 @@ H("results in the game do not indicate future results in real gambling or on rea
 hrx(String.raw`Tell us what went wrong\. Your report goes to <b>([^<]+)<\/b>\.`, "Cuéntanos qué ha fallado. Tu informe se envía a <b>$1</b>.");
 hrx(String.raw`No email app\? Press <b>Copy report<\/b> and send it from your email to <b>([^<]+)<\/b>\.`, "¿No tienes aplicación de correo? Pulsa <b>Copiar informe</b> y envíalo desde tu correo a <b>$1</b>.");
 rx(String.raw`📋 Report copied\. Paste it into an email to (\S+)\.`, "📋 Informe copiado. Pégalo en un correo para $1.");
+H("Empire of Coins is made by one developer and is <b>free to play, with no ads and nothing to buy</b>. If you enjoy it, you can support its development with a small donation on Ko-fi.",
+  "Empire of Coins lo crea un único desarrollador y es <b>gratis, sin anuncios y sin nada que comprar</b>. Si te gusta, puedes apoyar su desarrollo con una pequeña donación en Ko-fi.");
+H("Donations are completely <b>voluntary</b> and go to the developer.", "Las donaciones son totalmente <b>voluntarias</b> y van al desarrollador.");
+H("They <b>don't give anything in the game</b>: no coins, chips or items. Every player stays on equal terms.", "<b>No dan nada en el juego</b>: ni monedas, ni fichas, ni objetos. Todos los jugadores siguen en igualdad de condiciones.");
+H("☕ You can now support Empire of Coins on Ko-fi: press <b>Donate</b> on the main menu or ⚙️ Settings → Support the game. Donations are completely voluntary and don't give anything in the game, so every player stays on equal terms. Thank you!",
+  "☕ Ya puedes apoyar Empire of Coins en Ko-fi: pulsa <b>Donar</b> en el menú principal o ⚙️ Ajustes → Apoya el juego. Las donaciones son totalmente voluntarias y no dan nada en el juego, así que todos los jugadores siguen en igualdad de condiciones. ¡Gracias!");
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
 ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {

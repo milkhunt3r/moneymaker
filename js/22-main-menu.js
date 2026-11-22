@@ -51,6 +51,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "22 November 2026", title: "Empire of Coins", items: [
+    "☕ You can now support Empire of Coins on Ko-fi: press <b>Donate</b> on the main menu or ⚙️ Settings → Support the game. Donations are completely voluntary and don't give anything in the game, so every player stays on equal terms. Thank you!",
     "🐞 <b>Report a bug</b> is now open in ⚙️ Settings: describe the problem and send it by email (or copy the report) to contact@empireofcoins.com.",
     "💀 Nebula Strike: before his last phase, a damaged Admiral Dreadmaw now sails off screen and sends walls of bullets from the right, the top and the bottom. Use the whole screen and slip through the gaps before he returns!",
   ] },
@@ -210,7 +211,7 @@ $("mainMenu").addEventListener("click", (e) => {
   if (what === "play") closeMenu();
   if (what === "settings") showSettings(true);
   if (what === "about") showAbout();
-  // "donate": does nothing for now
+  if (what === "donate") showDonate();
 });
 
 // 🌌 One-time pop-up after the 1st prestige: hidden unlocks that were never mentioned anywhere before

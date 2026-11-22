@@ -59,3 +59,27 @@ function showBugReport() {
   };
   $("bugBack").onclick = () => showSettings(typeof settingsFromMenu !== "undefined" && settingsFromMenu);
 }
+
+/* ☕ SUPPORT THE GAME (main menu → Donate, ⚙️ Settings → Support the game)
+   Opens the Ko-fi page in a new tab. Donations are voluntary and give nothing in the game (see the Terms of Use). */
+const KOFI_URL = "https://ko-fi.com/eoccgame";
+function showDonate() {
+  showModal(`<div class="donateBox">
+    <h2>☕ Support Empire of Coins</h2>
+    <p>Empire of Coins is made by one developer and is <b>free to play, with no ads and nothing to buy</b>. If you enjoy it,
+      you can support its development with a small donation on Ko-fi.</p>
+    <ul>
+      <li>Donations are completely <b>voluntary</b> and go to the developer.</li>
+      <li>They <b>don't give anything in the game</b>: no coins, chips or items. Every player stays on equal terms.</li>
+      <li>Payment is handled securely by Ko-fi with PayPal or Stripe. The game never sees your payment details.</li>
+    </ul>
+    <div class="cloudPick">
+      <button class="btn big" id="donateGo">☕ Open Ko-fi</button>
+      <button class="btn big ghost" id="donateClose">Maybe later</button>
+    </div>
+    <p class="muted">Thank you for playing! ❤️</p>
+  </div>`);
+  $("modalBox").classList.add("wide");
+  $("donateClose").onclick = () => hideModal();
+  $("donateGo").onclick = () => { window.open(KOFI_URL, "_blank", "noopener"); hideModal(); };
+}
