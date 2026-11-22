@@ -634,6 +634,7 @@ rx(String.raw`You bought the (Sparrow|Dart|Bulwark|Sovereign)!`, "¡Has comprado
 // in game
 const shEsBoss = (n) => ({ "Scrap Crab": "el Cangrejo Chatarra", "Hive Queen": "la Reina de la Colmena", "The Taxman": "El Recaudador", "Captain Cutlass": "el Capitán Sable", "Admiral Dreadmaw": "el Almirante Fauces Negras" })[n] || n;
 rx(String.raw`(Scrap Crab|Hive Queen|The Taxman|Captain Cutlass|Admiral Dreadmaw) is coming!`, (m, n) => `¡Se acerca ${shEsBoss(n)}!`);
+rx(String.raw`(?:⚠️ )?(Scrap Crab|Hive Queen|The Taxman|Captain Cutlass|Admiral Dreadmaw) is back!`, (m, n) => { const a = shEsBoss(n); return `⚠️ ¡${a[0].toUpperCase() + a.slice(1)} ha vuelto!`; });
 rx(String.raw`(?:⚠️ )?(Scrap Crab|Hive Queen|The Taxman|Captain Cutlass|Admiral Dreadmaw) is getting angry!`, (m, n) => { const a = shEsBoss(n); return `⚠️ ¡${a[0].toUpperCase() + a.slice(1)} se está enfadando!`; });
 rx(String.raw`Level (\d) cleared!`, "¡Nivel $1 superado!");
 hrx(String.raw`<b>(Scrap Crab|Hive Queen|The Taxman|Captain Cutlass|Admiral Dreadmaw)<\/b> was defeated in (\d+:\d\d)\.`, (m, n, tm) => `<b>${shEsName(n)}</b> ha sido derrotado en ${tm}.`);
