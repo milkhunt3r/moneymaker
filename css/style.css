@@ -1921,3 +1921,7 @@ p.guestWarn { font-size: 14px; background: rgba(255, 170, 0, 0.1); border: 1px s
 .donateBox .cloudPick { justify-content: center; }
 .donateBox .cloudPick a.btn { text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
 .donateBox > p.muted { text-align: center; }
+/* 🗺️ several vehicles on the same spot */
+.mapCount circle { fill: #ffd34d; stroke: #0b1426; stroke-width: 1.5; }
+.mapCount text { font: 800 7.5px system-ui, sans-serif; fill: #1a1030; pointer-events: none; }
+.mapTipHr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.15); margin: 4px 0; }

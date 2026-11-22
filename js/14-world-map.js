@@ -173,8 +173,17 @@ function renderMapCities(items) {
 let mapItemsNow = [];
 function renderMapVehicles() {
   if (!$("mapSvg")) renderMapBase();
-  mapItemsNow = mapItems();
-  renderMapCities(mapItemsNow);
+  const all = mapItems();
+  renderMapCities(all);
+  // vehicles on top of each other (same route, same moment) become one icon with a "×N" badge; the tip lists them all
+  mapItemsNow = [];
+  for (const i of all) {
+    const g = mapItemsNow.find(o => o.key === i.key && o.moving === i.moving && Math.abs(wrapX(o.x) - wrapX(i.x)) < 7 && Math.abs(o.y - i.y) < 7);
+    if (g) { g.group.push(i); continue; }
+    mapItemsNow.push({ ...i, group: [i] });
+  }
+  for (const g of mapItemsNow) if (g.group.length > 1)
+    g.tip = `<b>${fIco(g.key)}${g.group.length} vehicles here</b><br>` + g.group.slice(0, 6).map(i => i.tip).join("<hr class=\"mapTipHr\">") + (g.group.length > 6 ? `<br>… and ${g.group.length - 6} more` : "");
   // route lines of moving vehicles (drawn again one map-width left and right, for Pacific flights)
   $("mapRoutes").innerHTML = mapItemsNow.filter(i => i.moving).map(i => {
     const pts = i.pts.map(p => p.join(",")).join(" ");
@@ -185,7 +194,8 @@ function renderMapVehicles() {
     const ring = i.v.broken ? "#ff5252" : i.moving ? MAP_COLOR[i.key] : "#8a8fa8";
     return `<g class="mapIcon ${i.moving ? "" : "idle"}" data-mi="${n}" transform="translate(${x.toFixed(1)},${i.y.toFixed(1)})">
       <circle r="${r}" fill="#0b1426" stroke="${ring}" stroke-width="2"/>
-      <image href="assets/icons/ico-lg-${i.v.broken ? "repair" : FLEETS[i.key].pic}.webp" x="${-r * 0.8}" y="${-r * 0.8}" width="${r * 1.6}" height="${r * 1.6}"/></g>`;
+      <image href="assets/icons/ico-lg-${i.v.broken ? "repair" : FLEETS[i.key].pic}.webp" x="${-r * 0.8}" y="${-r * 0.8}" width="${r * 1.6}" height="${r * 1.6}"/>${i.group.length > 1
+        ? `<g class="mapCount" transform="translate(${r * 0.85},${-r * 0.85})"><circle r="6.5"/><text text-anchor="middle" dy="2.6">${i.group.length}</text></g>` : ""}</g>`;
   }).join("");
   $("mapCounts").innerHTML = ["truck", "tanker", "plane"].map(k => {
     const list = fleetList(k), moving = list.filter(v => v.contract).length;
