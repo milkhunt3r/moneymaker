@@ -1,0 +1,56 @@
+/* =====================================================================
+   🐞 REPORT A BUG (⚙️ Settings → Report a bug)
+   A short form; "Send by email" opens the player's email app with a ready report addressed to
+   BUG_EMAIL (Cloudflare Email Routing forwards it to the game's inbox). "Copy report" copies the same
+   text for players without an email app. Game details (version, page, browser, screen) are attached
+   only if the box is ticked; no save data or account details are included.
+   ===================================================================== */
+const BUG_EMAIL = "contact@empireofcoins.com";
+const BUG_KINDS = ["Something doesn't work", "Wrong numbers or rewards", "Display or layout problem", "Translation error", "Lost progress", "Other"];
+function bugGameInfo() {
+  const v = (document.querySelector('script[src*="01-core.js"]') || {}).src || "";
+  const page = state.view + (state.view === "games" && state.gamePage ? " / " + state.gamePage : "");
+  return [
+    `Game version: ${(v.match(/v=([\w]+)/) || [])[1] || "?"}`,
+    `Page: ${page}`,
+    `Language: ${typeof LANG === "string" ? LANG : "en"}`,
+    `Signed in: ${typeof cloud === "object" && cloud.user ? "yes" : "no (guest)"}`,
+    `Screen: ${innerWidth}×${innerHeight} (${isPhone() ? "phone" : "desktop"})`,
+    `Browser: ${navigator.userAgent}`,
+    `Time: ${new Date().toISOString()}`,
+  ].join("\n");
+}
+function bugReportText() {
+  const kind = $("bugKind").value, what = $("bugText").value.trim().slice(0, 1500);
+  return { subject: `[Bug] Empire of Coins: ${kind}`,
+    body: `What happened:\n${what || "(no description)"}\n\n` + ($("bugInfo").checked ? `--- Game details ---\n${bugGameInfo()}\n` : "") };
+}
+function showBugReport() {
+  showModal(`<div class="bugForm">
+    <h2>🐞 Report a bug</h2>
+    <p class="muted">Tell us what went wrong. Your report goes to <b>${BUG_EMAIL}</b>.</p>
+    <label>What kind of problem?<select id="bugKind">${BUG_KINDS.map(k => `<option value="${k}">${k}</option>`).join("")}</select></label>
+    <label>What happened? What did you expect?<textarea id="bugText" rows="6" maxlength="1500"
+      placeholder="For example: I won the level 4 boss but the loot box didn't open."></textarea></label>
+    <label class="bugCheck"><input type="checkbox" id="bugInfo" checked> Attach game details (version, page, browser and screen size). No save data or personal details are included.</label>
+    <div class="cloudPick">
+      <button class="btn big" id="bugSend">📧 Send by email</button>
+      <button class="btn big ghost" id="bugCopy">📋 Copy report</button>
+    </div>
+    <p class="muted bugAlt">No email app? Press <b>Copy report</b> and send it from your email to <b>${BUG_EMAIL}</b>.</p>
+    <button class="btn ghost small" id="bugBack">← Back to settings</button>
+  </div>`);
+  $("modalBox").classList.add("wide");
+  $("bugText").focus();
+  $("bugSend").onclick = () => {
+    const r = bugReportText();
+    location.href = `mailto:${BUG_EMAIL}?subject=${encodeURIComponent(r.subject)}&body=${encodeURIComponent(r.body)}`;
+    showNotice("📧 Opening your email app… If nothing opens, use Copy report.");
+  };
+  $("bugCopy").onclick = async () => {
+    const r = bugReportText(), text = `To: ${BUG_EMAIL}\nSubject: ${r.subject}\n\n${r.body}`;
+    try { await navigator.clipboard.writeText(text); showNotice("📋 Report copied. Paste it into an email to " + BUG_EMAIL + "."); }
+    catch (e) { $("bugText").value = text; $("bugText").select(); showNotice("📋 Select the text and copy it."); }
+  };
+  $("bugBack").onclick = () => showSettings(typeof settingsFromMenu !== "undefined" && settingsFromMenu);
+}

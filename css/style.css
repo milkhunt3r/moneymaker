@@ -1901,3 +1901,15 @@ p.guestWarn { font-size: 14px; background: rgba(255, 170, 0, 0.1); border: 1px s
   .cosmetic .preview[style*="background-image"] { height: auto; aspect-ratio: 4 / 3; max-height: 320px; background-size: cover; }
   .cosmetic .preview { height: 190px; }
 }
+/* 🐞 bug report form */
+.bugForm { text-align: left; max-width: 560px; margin: 0 auto; }
+.bugForm h2 { text-align: center; margin-top: 0; }
+.bugForm label { display: block; margin: 10px 0; font-weight: 700; }
+.bugForm select, .bugForm textarea { display: block; width: 100%; box-sizing: border-box; margin-top: 6px; padding: 8px 10px; border-radius: 10px;
+  border: 1px solid rgba(255, 211, 77, 0.4); background: rgba(0, 0, 0, 0.35); color: #fff; font: inherit; font-weight: 400; }
+.bugForm textarea { resize: vertical; min-height: 110px; }
+.bugForm .bugCheck { display: flex; gap: 8px; align-items: flex-start; font-weight: 400; font-size: 14px; }
+.bugForm .bugCheck input { margin-top: 3px; width: 16px; height: 16px; flex: none; }
+.bugForm .cloudPick { justify-content: center; }
+.bugAlt { font-size: 13px; text-align: center; }
+.orArrow { opacity: 0.6; font-size: 20px; }

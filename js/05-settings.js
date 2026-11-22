@@ -69,7 +69,7 @@ function showSettings(fromMenu) {
       ${row("tipsReset", "Show all tips again")}
       ${row("tutorial", "Replay the guided start")}
       <div class="orRow orLegal">${typeof legalLinks === "function" ? legalLinks() : ""}</div>
-      <button class="orRow off" data-or="bug" title="Coming soon">${orIcon("bug")}<span class="grow">Report a bug</span><span class="orSoon">Coming soon</span></button>
+      <button class="orRow" data-or="bug">${orIcon("bug")}<span class="grow">Report a bug</span><span class="orArrow">›</span></button>
       <div class="orNote" id="orNote">${SETTINGS_NOTE}</div>
       <div class="orBtns">
         ${fromMenu ? "" : `<button class="orBtn orBlue" data-or="menu"><span>${orIcon("menu")}Main menu</span></button>`}
@@ -81,7 +81,7 @@ function showSettings(fromMenu) {
 $("modalBox").addEventListener("click", (e) => {
   const b = e.target.closest("[data-or]"); if (!b) return;
   const what = b.dataset.or;
-  if (what === "bug") return;   // 🐞 not active yet
+  if (what === "bug") return showBugReport();   // 🐞 js/05b-bug-report.js
   if (what === "menu" || what === "tutorial") hideModal();
   $("settingsMenu").querySelector(`[data-setting="${what}"]`).click();
   if (what === "tutorial" && settingsFromMenu) closeMenu();

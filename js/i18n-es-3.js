@@ -556,7 +556,17 @@ Object.assign(ES, {
   "Fly a spaceship through 4 levels of enemy waves and defeat the bosses waiting at the end.": "Pilota una nave por 4 niveles de oleadas enemigas y derrota a los jefes que esperan al final.",
   "Show on the Income page": "Mostrar en la página de Ingresos", "Name": "Nombre", "🐾 Pet": "🐾 Mascota", "The pet": "La mascota",
   "Best friends": "Mejores amigos", "Pet your pet 100 times": "Acaricia a tu mascota 100 veces", "Paw power": "Poder de patitas", "Let your pet tap the coin 10,000 times": "Deja que tu mascota pulse la moneda 10.000 veces",
-  "Skip": "Saltar", "⚠️ Barrage incoming!": "⚠️ ¡Llega una andanada!", "Barrage incoming!": "¡Llega una andanada!", "Find the gaps!": "¡Busca los huecos!",
+  "Skip": "Saltar", "Report a bug": "Informar de un error", "🐞 Report a bug": "🐞 Informar de un error",
+  "What kind of problem?": "¿Qué tipo de problema?", "What happened? What did you expect?": "¿Qué ha pasado? ¿Qué esperabas?",
+  "Something doesn't work": "Algo no funciona", "Wrong numbers or rewards": "Números o premios incorrectos", "Display or layout problem": "Problema de visualización o de diseño",
+  "Translation error": "Error de traducción", "Lost progress": "Progreso perdido", "Other": "Otro",
+  "📧 Send by email": "📧 Enviar por correo", "Send by email": "Enviar por correo", "Copy report": "Copiar informe", "Back to settings": "Volver a ajustes",
+  "Report copied. Paste it into an email to contact@empireofcoins.com.": "Informe copiado. Pégalo en un correo para contact@empireofcoins.com.", "📋 Copy report": "📋 Copiar informe", "← Back to settings": "← Volver a ajustes",
+  "For example: I won the level 4 boss but the loot box didn't open.": "Por ejemplo: gané al jefe del nivel 4 pero el cofre del botín no se abrió.",
+  "Attach game details (version, page, browser and screen size). No save data or personal details are included.": "Adjuntar datos del juego (versión, página, navegador y tamaño de pantalla). No se incluyen datos de la partida ni datos personales.",
+  "📧 Opening your email app… If nothing opens, use Copy report.": "📧 Abriendo tu aplicación de correo… Si no se abre nada, usa Copiar informe.",
+  "📋 Select the text and copy it.": "📋 Selecciona el texto y cópialo.",
+  "🐞 <b>Report a bug</b> is now open in ⚙️ Settings: describe the problem and send it by email (or copy the report) to contact@empireofcoins.com.": "🐞 <b>Informar de un error</b> ya está disponible en ⚙️ Ajustes: describe el problema y envíalo por correo (o copia el informe) a contact@empireofcoins.com.", "⚠️ Barrage incoming!": "⚠️ ¡Llega una andanada!", "Barrage incoming!": "¡Llega una andanada!", "Find the gaps!": "¡Busca los huecos!",
   "⚠️ Admiral Dreadmaw is back!": "⚠️ ¡El Almirante Fauces Negras ha vuelto!",
   "💀 Nebula Strike: before his last phase, a damaged Admiral Dreadmaw now sails off screen and sends walls of bullets from the right, the top and the bottom. Use the whole screen and slip through the gaps before he returns!":
     "💀 Nebula Strike: antes de su última fase, el Almirante Fauces Negras, ya dañado, sale de la pantalla y lanza muros de balas desde la derecha, desde arriba y desde abajo. ¡Usa toda la pantalla y cuélate por los huecos antes de que vuelva!", "Pirate chest": "Cofre pirata", "Beat Admiral Dreadmaw first": "Derrota antes al Almirante Fauces Negras", "Buy another": "Comprar otro", "Close": "Cerrar",
@@ -707,6 +717,9 @@ H("the game does <b>not</b> offer real-money gambling or real investing. Market 
   "el juego <b>no</b> ofrece juegos de azar con dinero real ni inversiones reales. Los precios de mercado que se muestran en el juego pueden basarse en datos reales del mercado, pero todas las operaciones son simuladas;");
 H("results in the game do not indicate future results in real gambling or on real financial markets, and nothing in the game constitutes financial or investment advice.",
   "los resultados en el juego no indican resultados futuros en juegos de azar reales ni en los mercados financieros reales, y nada de lo que aparece en el juego constituye asesoramiento financiero o de inversión.");
+hrx(String.raw`Tell us what went wrong\. Your report goes to <b>([^<]+)<\/b>\.`, "Cuéntanos qué ha fallado. Tu informe se envía a <b>$1</b>.");
+hrx(String.raw`No email app\? Press <b>Copy report<\/b> and send it from your email to <b>([^<]+)<\/b>\.`, "¿No tienes aplicación de correo? Pulsa <b>Copiar informe</b> y envíalo desde tu correo a <b>$1</b>.");
+rx(String.raw`📋 Report copied\. Paste it into an email to (\S+)\.`, "📋 Informe copiado. Pégalo en un correo para $1.");
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
 ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {
