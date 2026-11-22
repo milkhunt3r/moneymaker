@@ -6,6 +6,10 @@
    only if the box is ticked; no save data or account details are included.
    ===================================================================== */
 const BUG_EMAIL = "contact@empireofcoins.com";
+const BUG_DEVICES = ["Phone", "Tablet", "PC or laptop"];
+// best guess for the device list (the player can change it)
+const bugGuessDevice = () => /iPad|Tablet/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent)) ? "Tablet"
+  : isPhone() || /Mobi|Android|iPhone/i.test(navigator.userAgent) ? "Phone" : "PC or laptop";
 const BUG_KINDS = ["Something doesn't work", "Wrong numbers or rewards", "Display or layout problem", "Translation error", "Lost progress", "Other"];
 function bugGameInfo() {
   const v = (document.querySelector('script[src*="01-core.js"]') || {}).src || "";
@@ -21,14 +25,15 @@ function bugGameInfo() {
   ].join("\n");
 }
 function bugReportText() {
-  const kind = $("bugKind").value, what = $("bugText").value.trim().slice(0, 1500);
+  const kind = $("bugKind").value, device = $("bugDevice").value, what = $("bugText").value.trim().slice(0, 1500);
   return { subject: `[Bug] Empire of Coins: ${kind}`,
-    body: `What happened:\n${what || "(no description)"}\n\n` + ($("bugInfo").checked ? `--- Game details ---\n${bugGameInfo()}\n` : "") };
+    body: `Device: ${device}\n\nWhat happened:\n${what || "(no description)"}\n\n` + ($("bugInfo").checked ? `--- Game details ---\n${bugGameInfo()}\n` : "") };
 }
 function showBugReport() {
   showModal(`<div class="bugForm">
     <h2>🐞 Report a bug</h2>
     <p class="muted">Tell us what went wrong. Your report goes to <b>${BUG_EMAIL}</b>.</p>
+    <label>What are you playing on?<select id="bugDevice">${BUG_DEVICES.map(d => `<option value="${d}" ${d === bugGuessDevice() ? "selected" : ""}>${d === "Phone" ? "📱" : d === "Tablet" ? "📲" : "💻"} ${d}</option>`).join("")}</select></label>
     <label>What kind of problem?<select id="bugKind">${BUG_KINDS.map(k => `<option value="${k}">${k}</option>`).join("")}</select></label>
     <label>What happened? What did you expect?<textarea id="bugText" rows="6" maxlength="1500"
       placeholder="For example: I won the level 4 boss but the loot box didn't open."></textarea></label>

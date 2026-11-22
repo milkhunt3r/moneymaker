@@ -557,7 +557,7 @@ Object.assign(ES, {
   "Show on the Income page": "Mostrar en la página de Ingresos", "Name": "Nombre", "🐾 Pet": "🐾 Mascota", "The pet": "La mascota",
   "Best friends": "Mejores amigos", "Pet your pet 100 times": "Acaricia a tu mascota 100 veces", "Paw power": "Poder de patitas", "Let your pet tap the coin 10,000 times": "Deja que tu mascota pulse la moneda 10.000 veces",
   "Skip": "Saltar", "Report a bug": "Informar de un error", "🐞 Report a bug": "🐞 Informar de un error",
-  "What kind of problem?": "¿Qué tipo de problema?", "What happened? What did you expect?": "¿Qué ha pasado? ¿Qué esperabas?",
+  "What kind of problem?": "¿Qué tipo de problema?", "What are you playing on?": "¿En qué dispositivo juegas?", "📱 Phone": "📱 Móvil", "📲 Tablet": "📲 Tableta", "💻 PC or laptop": "💻 PC o portátil", "Phone": "Móvil", "Tablet": "Tableta", "PC or laptop": "PC o portátil", "What happened? What did you expect?": "¿Qué ha pasado? ¿Qué esperabas?",
   "Something doesn't work": "Algo no funciona", "Wrong numbers or rewards": "Números o premios incorrectos", "Display or layout problem": "Problema de visualización o de diseño",
   "Translation error": "Error de traducción", "Lost progress": "Progreso perdido", "Other": "Otro",
   "📧 Send by email": "📧 Enviar por correo", "Send by email": "Enviar por correo", "Copy report": "Copiar informe", "Back to settings": "Volver a ajustes",
