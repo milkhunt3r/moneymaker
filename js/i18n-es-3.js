@@ -730,6 +730,8 @@ H("☕ You can now support Empire of Coins on Ko-fi: press <b>Donate</b> on the 
   "☕ Ya puedes apoyar Empire of Coins en Ko-fi: pulsa <b>Donar</b> en el menú principal o ⚙️ Ajustes → Apoya el juego. Las donaciones son totalmente voluntarias y no dan nada en el juego, así que todos los jugadores siguen en igualdad de condiciones. ¡Gracias!");
 hrx(String.raw`(<b>(?:[^<]|<img[^>]*>)*?)(\d+) vehicles here<\/b>`, "$1$2 vehículos aquí</b>");
 rx(String.raw`… and (\d+) more`, "… y $1 más");
+rx(String.raw`(\d+) vehicles here`, "$1 vehículos aquí");
+rx(String.raw`(\d+)% · ([\dh :m]+) left`, "$1% · quedan $2");
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
 ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {
