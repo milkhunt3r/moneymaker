@@ -1893,3 +1893,11 @@ p.guestWarn { font-size: 14px; background: rgba(255, 170, 0, 0.1); border: 1px s
 .ageLinks, .orLegal { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 4px 0 6px; }
 .ageLinks a, .orLegal a { color: #8fd0ff; font-weight: 700; text-decoration: none; padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(143, 208, 255, 0.4); background: rgba(143, 208, 255, 0.08); }
 .ageLinks a:hover, .orLegal a:hover { background: rgba(143, 208, 255, 0.2); }
+/* 🛍️ shop / reward previews: card fans are sized by height so they never spill over the text,
+   and backgrounds show the whole picture (4:3) on narrow screens instead of a thin cropped strip */
+.cosmetic .preview { overflow: hidden; }
+.cardsPreview img { width: auto !important; height: 80% !important; max-width: 34%; object-fit: contain; }
+@media (max-width: 700px) {
+  .cosmetic .preview[style*="background-image"] { height: auto; aspect-ratio: 4 / 3; max-height: 320px; background-size: cover; }
+  .cosmetic .preview { height: 190px; }
+}
