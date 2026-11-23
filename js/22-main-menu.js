@@ -56,6 +56,7 @@ const PATCH_NOTES = [
     "📦 Your ships come back with alien goods. Trade routes and trading alien goods are coming in the next updates. Ships keep flying while the game is closed, and a prestige never resets your alien friends.",
     "🏆 New <b>🪐 Space</b> achievements section: 5 achievements.",
     "🚚 Gift trips to alien races give Logistics XP (6 XP per minute of the trip). Exploring gives none.",
+    "🆘 Space: alien races sometimes have an emergency while you play. Send 20 🔬 scientists within 30 minutes for extra friendship, or they lose friendship with you. Exploring now takes 10 scientists.",
   ] },
   { date: "23 November 2026", title: "Empire of Coins", items: [
     "🗺️ New Nebula Strike level 5: <b>Pirates' Lost Treasure</b>! Opens after you beat level 4. There's no boss: survive for 5 minutes as the pirates' graveyard gets busier and busier. Watch out for 🦈 sea sharks, powder monkeys with big cannonballs and skull asteroids, and fly around the cursed rocks and broken masts: they can't be destroyed. Survive to win a pirate loot box.",

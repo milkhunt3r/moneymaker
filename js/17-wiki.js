@@ -248,6 +248,7 @@ function wikiLogistics() {
       Their favourite kind gives +${SP_FAV_PTS} friendship, the other +${SP_PTS}. A request changes every 24 hours, or ask for something else every 4 hours.
       Paintings you give away count as sold. Only one gift per race can be on its way at a time.</p>
     <p>🚚 <b>Logistics XP:</b> every gift trip gives ${LOGI_XP_RATE.ship} XP per minute of the round trip when the ship gets home. Exploring gives no XP.</p>
+    <p>🆘 <b>Alien emergencies:</b> while you play, a race you know may suddenly need help. Send ${SP_SOS_SCI} 🔬 scientists within 30 minutes for +${SP_SOS_WIN} friendship; if nobody comes, they lose ${SP_SOS_LOSE} friendship with you. Exploring takes ${SP_EXPLORE_SCI} scientists.</p>
     <p><b>3. Alien goods:</b> your ship comes back with the race's own goods (more at higher friendship, plus a thank-you shipment at every new level). Trading them comes in a later update.</p>
     ${wt(["Race", "Lives", "Favourite", "Also likes", "Sends back", "Each way"], Object.entries(SP_RACES).map(([k, R]) =>
       [SP.races[k].found ? `${R.emoji} ${R.name}` : "❓ Unknown", SP.races[k].found ? R.title : "?", SP.races[k].found ? spKindName(R.wants[0]) : "?", SP.races[k].found ? spKindName(R.wants[1]) : "?",

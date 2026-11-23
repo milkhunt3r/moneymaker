@@ -38,6 +38,15 @@ const SP_LEVELS = [
 ];
 const SP_KINDS = { money: "💰 Money", ore: "⛏️ Ore", dna: "🧬 DNA samples", art: "🖼️ Paintings", dust: "✨ Stardust" };
 const SP_FAV_PTS = 200, SP_PTS = 120, SP_REQ_LIFE = 24 * 3600e3, SP_REROLL = 4 * 3600e3;
+const SP_EXPLORE_SCI = 10;   // 🔬 scientists on board an exploring ship (they stay out there)
+// 🆘 alien emergency: only starts while you play; send scientists in time for friendship, or lose some
+const SP_SOS_SCI = 20, SP_SOS_TIME = 30 * 60e3, SP_SOS_WIN = 300, SP_SOS_LOSE = 200, SP_SOS_GAP = [40, 80];   // gap in minutes of play
+const SP_SOS = {
+  rock: "A quake is splitting their home asteroid apart!", bank: "Their central vault computer crashed and nobody can count anything!",
+  stardust: "A solar storm is blowing their starlight jars away!", bio: "A strange blight is spreading through their jungle world!",
+  art: "Their colour crystals went grey and they can't paint anymore!", pirate: "Their flagship reactor is overheating!",
+};
+const spSci2 = () => { try { return typeof sciPool === "function" ? sciPool() : 0; } catch (e) { return 0; } };
 const SP_ORE_TIERS = [null, ["coal", "copper", "silver"], ["copper", "silver", "gold"], ["silver", "gold", "diamond"], ["gold", "diamond", "ruby"], ["diamond", "ruby"]];
 const SP_ORE_BASE = { coal: 20, copper: 15, silver: 10, gold: 6, diamond: 4, ruby: 2 };
 
@@ -111,7 +120,8 @@ function spLaunch(k, kind, cargo) {
   save(); renderSpace();
 }
 function spExplore(k) {
-  if (isPaused() || !spFree() || SP.races[k].found || !spVisible(k) || spTripTo(k)) return;
+  if (isPaused() || !spFree() || SP.races[k].found || !spVisible(k) || spTripTo(k) || spSci2() < SP_EXPLORE_SCI) return;
+  spendScientists(SP_EXPLORE_SCI);
   spLaunch(k, "explore");
   showNotice(`🚀 A ship is on its way to explore an unknown system (${SP_RACES[k].min} min there, ${SP_RACES[k].min} min back).`);
 }
@@ -208,7 +218,7 @@ function spMapHtml() {
     const img = r.found ? `sys-${k}` : "sys-unknown";
     const lbl = r.found ? `${R.name}<small>${SP_LEVELS[L].icon} ${SP_LEVELS[L].name}</small>` : vis ? `Unknown signal<small>❓ Explore</small>` : `<small>🔒 Uncharted</small>`;
     return `<button class="spNode ${r.found ? "found" : vis ? "fog" : "hidden"} ${spSel === k ? "sel" : ""}" data-sp="${k}" style="left:${R.pos[0]}%;top:${R.pos[1]}%">
-      <img src="assets/space/${img}.webp" alt=""><span class="spLbl">${lbl}</span>${r.found && r.req && spFree() && !spTripTo(k) && spCanPay(r.req) ? `<i class="spPing">🎁</i>` : ""}</button>`; }).join("");
+      <img src="assets/space/${img}.webp" alt=""><span class="spLbl">${lbl}</span>${SP.sos && SP.sos.k === k ? `<i class="spSosPin">🆘</i>` : ""}${r.found && r.req && spFree() && !spTripTo(k) && spCanPay(r.req) ? `<i class="spPing">🎁</i>` : ""}</button>`; }).join("");
   const far = Object.entries(SP_FAR).map(([k, p]) => `<div class="spNode far" style="left:${p[0]}%;top:${p[1]}%"><img src="assets/space/sys-unknown.webp" alt=""><span class="spLbl"><small>🔭 Out of range</small></span></div>`).join("");
   const ships = SP.trips.map(tr => { const s = spShipPos(tr, now);
     return `<img class="spShip" data-trip="${tr.id}" src="assets/space/ship-explorer.webp" alt="" style="left:${s.x}%;top:${s.y}%;transform:translate(-50%,-50%) rotate(${s.ang}deg)${Math.abs(s.ang) > 90 ? " scaleY(-1)" : ""}">`; }).join("");
@@ -238,7 +248,8 @@ function spPanelHtml() {
   if (!spVisible(spSel)) return `<h3>🔒 Uncharted system</h3><p>Your scanners can't find this system yet. Become <b>Acquainted</b> with ${SP.races[R.via].found ? `the <b>${SP_RACES[R.via].name}</b>` : "a nearby race"} and they will tell you where it is.</p>`;
   if (!r.found) return `<h3>❓ Unknown signal</h3>
     <p>Something is out there. Send a ship to explore it: <b>${R.min} min</b> there and <b>${R.min} min</b> back.</p>
-    ${trip ? spTripLine(trip) : `<button class="btn big" data-spx="explore" ${spFree() ? "" : "disabled"}>🚀 Explore</button>${spFree() ? "" : `<div class="muted">All your ships are busy.</div>`}`}`;
+    ${trip ? spTripLine(trip) : `<button class="btn big" data-spx="explore" ${spFree() && spSci2() >= SP_EXPLORE_SCI ? "" : "disabled"}>🚀 Explore · 🔬 ${SP_EXPLORE_SCI} scientists</button>
+      ${!spFree() ? `<div class="muted">All your ships are busy.</div>` : spSci2() < SP_EXPLORE_SCI ? `<div class="muted">You need ${SP_EXPLORE_SCI} scientists (you have ${spSci2()}).</div>` : ""}`}`;
   const next = SP_LEVELS[L + 1], pct = next ? Math.min(100, (r.pts - SP_LEVELS[L].pts) / (next.pts - SP_LEVELS[L].pts) * 100) : 100;
   const q = r.req, can = q && spCanPay(q);
   const rerollLeft = (r.rerollAt || 0) - Date.now();
@@ -265,20 +276,77 @@ function spGoodsHtml() {
 // 🎒 everything you can give (and the alien goods you got), refreshed every second
 function spResHtml() {
   const it = (ic, n, tip) => `<span class="spRes" title="${tip}">${ic} <b>${n}</b></span>`;
-  const out = [it("💰", fmt(state.money), "Money")];
-  if (spKindOpen.ore()) ORE_KEYS.forEach(o => out.push(it(oreIcon(o), (state.mine.vault || {})[o] || 0, ORES[o].name)));
-  if (spKindOpen.dna()) out.push(it("🧬", Object.values(state.genetics.dna || {}).reduce((a, b) => a + b, 0), "DNA samples"));
-  if (spKindOpen.art()) out.push(it("🖼️", (state.art.items || []).length, "Paintings"));
-  if (spKindOpen.dust()) out.push(it("✨", (state.shooter.dust || 0).toLocaleString(), "Stardust"));
+  const earth = [it("🔬", spSci2().toLocaleString(), "Scientists")];
+  if (spKindOpen.ore()) ORE_KEYS.forEach(o => earth.push(it(oreIcon(o), (state.mine.vault || {})[o] || 0, ORES[o].name)));
+  if (spKindOpen.dna()) earth.push(it("🧬", Object.values(state.genetics.dna || {}).reduce((a, b) => a + b, 0), "DNA samples"));
+  if (spKindOpen.art()) earth.push(it("🖼️", (state.art.items || []).length, "Paintings"));
+  if (spKindOpen.dust()) earth.push(it("✨", (state.shooter.dust || 0).toLocaleString(), "Stardust"));
   const goods = Object.keys(SP_GOODS).filter(g => SP.goods[g]);
-  return out.join("") + (goods.length ? `<span class="spResSep"></span>${goods.map(g => it(SP_GOODS[g].emoji, SP.goods[g].toLocaleString(), SP_GOODS[g].name)).join("")}` : "");
+  return `<div class="spResRow"><span class="spResLbl">Money:</span>${it("💰", fmt(state.money), "Money")}</div>
+    <div class="spResRow"><span class="spResLbl">Earth resources:</span>${earth.join("")}</div>
+    <div class="spResRow"><span class="spResLbl">Space resources (from aliens):</span>${goods.length ? goods.map(g => it(SP_GOODS[g].emoji, SP.goods[g].toLocaleString(), SP_GOODS[g].name)).join("") : `<span class="muted">none yet</span>`}</div>`;
+}
+/* ----- 🆘 alien emergency ----- */
+const spSosOn = () => !!SP.sos;
+function spSosStart() {
+  const found = Object.keys(SP_RACES).filter(k => SP.races[k].found);
+  if (!found.length) return;
+  const k = found[Math.floor(Math.random() * found.length)];
+  SP.sos = { k, until: Date.now() + SP_SOS_TIME };
+  showAlert(`🆘 The ${SP_RACES[k].name} need help!`, `${SP_SOS[k]} Send ${SP_SOS_SCI} 🔬 scientists within 30 minutes (🚢 Logistics → 🌌 Space).`);
+  save(); spRefreshWarn(); if (spShown()) renderSpace();
+}
+function spSosHelp() {
+  const e = SP.sos;
+  if (!e || isPaused() || spSci2() < SP_SOS_SCI) return;
+  spendScientists(SP_SOS_SCI);
+  const r = SP.races[e.k], before = spLevel(e.k);
+  r.pts += SP_SOS_WIN; SP.sos = null; SP.stats.sosWon = (SP.stats.sosWon || 0) + 1;
+  SP.nextSos = Date.now() + spSosGap();
+  const after = spLevel(e.k);
+  showNotice(`🆘 Your scientists saved the day! The ${SP_RACES[e.k].name} are grateful: +${SP_SOS_WIN} friendship.`);
+  if (after > before) showNotice(`${SP_LEVELS[after].icon} The <b>${SP_RACES[e.k].name}</b> are now <b>${SP_LEVELS[after].name}</b>!`);
+  updateCounter(); save(); spRefreshWarn(); if (spShown()) renderSpace();
+}
+const spSosGap = () => (SP_SOS_GAP[0] + Math.random() * (SP_SOS_GAP[1] - SP_SOS_GAP[0])) * 60e3;
+// every second: count down, fail when time runs out (also while the game was closed), and maybe start one (only while you play)
+let spPlayMs = 0;
+function spSosTick() {
+  const now = Date.now();
+  if (SP.sos && now >= SP.sos.until) {
+    const k = SP.sos.k, r = SP.races[k];
+    r.pts = Math.max(0, r.pts - SP_SOS_LOSE); SP.sos = null; SP.stats.sosLost = (SP.stats.sosLost || 0) + 1;
+    showAlert(`💔 Too late for the ${SP_RACES[k].name}`, `Nobody came to help. They lost ${SP_SOS_LOSE} friendship with you.`);
+    SP.playLeft = spSosGap(); save(); spRefreshWarn(); if (spShown()) renderSpace();
+    return;
+  }
+  if (SP.sos || document.hidden || isPaused() || !spSci().space) return;
+  if (!Object.values(SP.races).some(r => r.found)) return;
+  if (SP.playLeft == null) SP.playLeft = spSosGap();
+  SP.playLeft -= 1000;   // minutes of play, not real time
+  if (SP.playLeft <= 0) { SP.playLeft = null; spSosStart(); }
+}
+function spSosHtml() {
+  const e = SP.sos; if (!e) return "";
+  const R = SP_RACES[e.k], can = spSci2() >= SP_SOS_SCI;
+  return `<div class="card spSos"><div><h3>🆘 The ${R.name} need help!</h3><p>${SP_SOS[e.k]}</p>
+    <p>Send <b>${SP_SOS_SCI} 🔬 scientists</b> before the time runs out: <b>+${SP_SOS_WIN}</b> friendship. If nobody comes, they lose <b>${SP_SOS_LOSE}</b> friendship with you.</p></div>
+    <div class="spSosSide"><div class="spSosTime">⏱️ <b data-spt="${e.until}">${spClock(e.until - Date.now())}</b></div>
+      <button class="btn big dangerBtn" data-spx="sos" ${can ? "" : "disabled"}>🔬 Send ${SP_SOS_SCI} scientists</button>
+      ${can ? "" : `<div class="muted">You have ${spSci2()} scientists.</div>`}</div></div>`;
+}
+// ❗ red warnings: on the 🚢 Logistics tab (see refreshUnlocks) and on the 🌌 Space page button
+function spRefreshWarn() {
+  const sb = document.querySelector('[data-logipage="space"]');
+  if (sb) { const html = (spOpen() ? "" : '<img class="ico lockS" src="assets/icons/ico-lock.webp" alt="">') + "🌌 Space" + (SP.sos ? ' <span class="tabWarn" title="Alien emergency">!</span>' : "");
+    if (sb.innerHTML !== html) sb.innerHTML = html; }
 }
 function renderSpace() {
   const box = $("spaceView");
   if (!box || !spShown()) return;
   if (!spOpen()) { box.innerHTML = `<div class="card" style="text-align:center"><h2>🔒 🌌 Space</h2><p>Explore the galaxy, meet alien races and trade with them.</p>
     <p><b>Opens when you build the 🚀 Space Mission Center</b> (💰 Income → 🔬 Science).</p></div>`; return; }
-  box.innerHTML = `<div class="card spResBar" id="spResBar">${spResHtml()}</div><div class="card spMapCard"><div class="row"><h2 style="margin:0">🌌 Star map</h2><span class="muted">🚀 ${spFree()} of ${spShips()} ship${spShips() === 1 ? "" : "s"} free</span></div>${spMapHtml()}</div>
+  box.innerHTML = `${spSosHtml()}<div class="card spResBar" id="spResBar">${spResHtml()}</div><div class="card spMapCard"><div class="row"><h2 style="margin:0">🌌 Star map</h2><span class="muted">🚀 ${spFree()} of ${spShips()} ship${spShips() === 1 ? "" : "s"} free</span></div>${spMapHtml()}</div>
     <div class="card spPanel">${spPanelHtml()}</div><div class="card">${spGoodsHtml()}</div>`;
 }
 // every second: move the ships and count down (no full rebuild)
@@ -364,6 +432,7 @@ document.addEventListener("click", (e) => {
   const x = e.target.closest("[data-spx]");
   if (!x || isPaused()) return;
   if (x.dataset.spx === "explore") spExplore(spSel);
+  if (x.dataset.spx === "sos") spSosHelp();
   if (x.dataset.spx === "gift") spOpenGift(spSel);
   if (x.dataset.spx === "reroll") {
     const r = SP.races[spSel];
@@ -378,8 +447,7 @@ function spApplyPage() {
   $("logisticsView").classList.toggle("spaceMode", space);
   $("spaceView").hidden = !space;
   document.querySelectorAll("[data-logipage]").forEach(b => b.classList.toggle("active", b.dataset.logipage === (space ? "space" : "earth")));
-  const sb = document.querySelector('[data-logipage="space"]');
-  if (sb) { const html = (spOpen() ? "" : '<img class="ico lockS" src="assets/icons/ico-lock.webp" alt="">') + "🌌 Space"; if (sb.innerHTML !== html) sb.innerHTML = html; }
+  spRefreshWarn();
   if (space) renderSpace();
 }
 (function spSetup() {
@@ -399,6 +467,6 @@ const spShowViewOrig = showView;
 showView = function (v) { spShowViewOrig(v); if (v === "logistics") spApplyPage(); };
 setInterval(() => {
   if (spSci().space && !SP.unlocked) { SP.unlocked = true; save(); showNotice("🌌 New in 🚢 Logistics: <b>Space</b>! Explore the galaxy and meet alien races."); spApplyPage(); }
-  spProcess(); spAnimate();
+  spProcess(); spSosTick(); spAnimate();
 }, 1000);
 spProcess();

@@ -1980,3 +1980,14 @@ body.phone .spNode { width: 17%; } body.phone .spNode.sol { width: 19%; } body.p
 .spRes .oreIcon { width: 20px; height: 20px; }
 .spResSep { width: 1px; align-self: stretch; background: rgba(255,255,255,0.18); }
 body.phone .spResBar { font-size: 13px; gap: 4px 10px; }
+.spResBar { display: grid; gap: 6px; }
+.spResRow { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; }
+.spResLbl { font-weight: 700; color: #cfd3ff; min-width: 0; margin-right: 2px; }
+.spSos { display: flex; gap: 16px; align-items: center; justify-content: space-between; border: 2px solid #ff4d4d !important;
+  background: linear-gradient(135deg, rgba(120, 20, 30, 0.55), rgba(40, 10, 20, 0.7)) !important; animation: spSosGlow 1.6s ease-in-out infinite; }
+.spSos h3 { margin: 0 0 4px; color: #ff9a9a; } .spSos p { margin: 4px 0; }
+.spSosSide { text-align: center; flex: none; }
+.spSosTime { font-size: 22px; margin-bottom: 6px; }
+.spSosPin { position: absolute; top: -2%; left: 6%; font-style: normal; font-size: 18px; animation: spBob 0.9s ease-in-out infinite; }
+@keyframes spSosGlow { 50% { box-shadow: 0 0 22px rgba(255, 77, 77, 0.55); } }
+body.phone .spSos { flex-direction: column; align-items: stretch; }

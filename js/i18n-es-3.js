@@ -859,6 +859,38 @@ rx(String.raw`(\S+) (${SP_RX_LV})`, (m, ic, l) => `${ic} ${spL(l)}`);
 hrx(String.raw`🚚 <b>Logistics XP:<\/b> every gift trip gives (\d+) XP per minute of the round trip when the ship gets home\. Exploring gives no XP\.`,
   "🚚 <b>XP de logística:</b> cada viaje con un regalo da $1 XP por minuto de ida y vuelta cuando la nave llega a casa. Explorar no da XP.");
 ES["🚚 Gift trips to alien races give Logistics XP (6 XP per minute of the trip). Exploring gives none."] = "🚚 Los viajes con regalos a razas alienígenas dan XP de logística (6 XP por minuto de viaje). Explorar no da XP.";
+// 🆘 alien emergency, resources bar, exploring cost
+const SP_ES_SOS = {
+  "A quake is splitting their home asteroid apart!": "¡Un terremoto está partiendo en dos su asteroide natal!",
+  "Their central vault computer crashed and nobody can count anything!": "¡El ordenador de su cámara central se ha colgado y nadie puede contar nada!",
+  "A solar storm is blowing their starlight jars away!": "¡Una tormenta solar se está llevando sus tarros de luz estelar!",
+  "A strange blight is spreading through their jungle world!": "¡Una plaga extraña se extiende por su mundo selvático!",
+  "Their colour crystals went grey and they can't paint anymore!": "¡Sus cristales de color se han vuelto grises y ya no pueden pintar!",
+  "Their flagship reactor is overheating!": "¡El reactor de su buque insignia se está sobrecalentando!",
+};
+Object.assign(ES, SP_ES_SOS, { "Money": "Dinero", "Earth resources": "Recursos de la Tierra", "Scientists": "Científicos", "Space resources (from aliens)": "Recursos espaciales (de los alienígenas)",
+  "none yet": "ninguno todavía", "Alien emergency": "Emergencia alienígena", "An alien race needs help: see 🚢 Logistics → 🌌 Space": "Una raza alienígena necesita ayuda: mira 🚢 Logística → 🌌 Espacio" });
+const spSosEs = (x) => SP_ES_SOS[x] || x;
+rx(String.raw`Explore · 🔬 (\d+) scientists`, "Explorar · 🔬 $1 científicos");
+rx(String.raw`You need (\d+) scientists \(you have (\d+)\)\.`, "Necesitas $1 científicos (tienes $2).");
+rx(String.raw`You have (\d+) scientists\.`, "Tienes $1 científicos.");
+rx(String.raw`Send (\d+) scientists`, "Enviar $1 científicos");
+rx(String.raw`The (${SP_RX_NAME}) need help!`, (m, n) => `¡Los ${spN(n)} necesitan ayuda!`);
+rx(String.raw`(.+!) Send (\d+) 🔬 scientists within 30 minutes \(🚢 Logistics → 🌌 Space\)\.`, (m, x, n) => `${spSosEs(x)} Envía ${n} 🔬 científicos en 30 minutos (🚢 Logística → 🌌 Espacio).`);
+hrx(String.raw`<b>🆘 The (${SP_RX_NAME}) need help!<\/b>(.+!) Send (\d+) 🔬 scientists within 30 minutes \(🚢 Logistics → 🌌 Space\)\.<br><small>.+<\/small>`, (m, n, x, k) =>
+  `<b>🆘 ¡Los ${spN(n)} necesitan ayuda!</b>${spSosEs(x)} Envía ${k} 🔬 científicos en 30 minutos (🚢 Logística → 🌌 Espacio).<br><small>Haz clic para cerrar</small>`);
+hrx(String.raw`Send <b>(\d+) 🔬 scientists<\/b> before the time runs out: <b>\+(\d+)<\/b> friendship\. If nobody comes, they lose <b>(\d+)<\/b> friendship with you\.`,
+  "Envía <b>$1 🔬 científicos</b> antes de que se acabe el tiempo: <b>+$2</b> de amistad. Si nadie acude, perderán <b>$3</b> de amistad contigo.");
+rx(String.raw`Too late for the (${SP_RX_NAME})`, (m, n) => `Demasiado tarde para los ${spN(n)}`);
+rx(String.raw`Nobody came to help\. They lost (\d+) friendship with you\.`, "Nadie acudió a ayudar. Han perdido $1 de amistad contigo.");
+hrx(String.raw`<b>💔 Too late for the (${SP_RX_NAME})<\/b>Nobody came to help\. They lost (\d+) friendship with you\.<br><small>.+<\/small>`, (m, n, x) =>
+  `<b>💔 Demasiado tarde para los ${spN(n)}</b>Nadie acudió a ayudar. Han perdido ${x} de amistad contigo.<br><small>Haz clic para cerrar</small>`);
+rx(String.raw`Your scientists saved the day! The (${SP_RX_NAME}) are grateful: \+(\d+) friendship\.`, (m, n, x) => `¡Tus científicos han salvado el día! Los ${spN(n)} te lo agradecen: +${x} de amistad.`);
+rx(String.raw`The <b>(${SP_RX_NAME})</b> are now <b>(${SP_RX_LV})</b>!`, (m, n, l) => `¡Los <b>${spN(n)}</b> ya son <b>${spL(l)}</b>!`);
+H("🆘 <b>Alien emergencies:</b> while you play, a race you know may suddenly need help. Send 20 🔬 scientists within 30 minutes for +300 friendship; if nobody comes, they lose 200 friendship with you. Exploring takes 10 scientists.",
+  "🆘 <b>Emergencias alienígenas:</b> mientras juegas, una raza que conoces puede necesitar ayuda de repente. Envía 20 🔬 científicos en 30 minutos para ganar +300 de amistad; si nadie acude, perderán 200 de amistad contigo. Explorar cuesta 10 científicos.");
+ES["🆘 Space: alien races sometimes have an emergency while you play. Send 20 🔬 scientists within 30 minutes for extra friendship, or they lose friendship with you. Exploring now takes 10 scientists."] =
+  "🆘 Espacio: a veces las razas alienígenas tienen una emergencia mientras juegas. Envía 20 🔬 científicos en 30 minutos para ganar amistad extra; si no, perderán amistad contigo. Explorar ahora cuesta 10 científicos.";
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
