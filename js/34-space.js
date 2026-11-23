@@ -26,12 +26,44 @@ const SP_RACES = {
   pirate:   { name: "Void Corsairs", title: "Space pirates", emoji: "🦹", pos: [88, 56], min: 18, via: "bank", wants: ["money", "dust"], good: "chart",
               bio: "A rowdy pirate clan from a cursed red star. Pay them well and they might even call you friend." },
 };
-// 🔭 out of range for now (a later update)
-const SP_FAR = { mystic: [13, 13], machine: [87, 13], ancient: [70, 82] };
+// 🔮 the 3 network races only want other races' goods (wants: "g:<good>"). Mystics and Machines are revealed by a Friendly neighbour;
+//    the Ancients only listen once 3 races trust you (💛 Trusted). They ask for a mix of goods ("mix").
+Object.assign(SP_RACES, {
+  mystic:  { name: "Oracles of Vael", title: "Mystics", emoji: "🔮", pos: [13, 18], min: 25, via: "bio", viaLv: 3, wants: ["g:crystal", "g:pearl"], good: "shard",
+             bio: "Ancient seers who read the future in crystals and sound. They only trade in things touched by other worlds." },
+  machine: { name: "Cogitarium", title: "Machines", emoji: "🤖", pos: [87, 18], min: 30, via: "pirate", viaLv: 3, wants: ["g:vgold", "g:core"], good: "nano",
+             bio: "A planet-sized thinking machine with millions of little helpers. It wants rare materials to build an even bigger brain." },
+  ancient: { name: "First Ones", title: "Ancients", emoji: "👑", pos: [70, 82], min: 40, viaTrusted: 3, mix: true, wants: ["g:chart", "g:silk", "g:shard", "g:nano"], good: "relic",
+             bio: "The oldest beings in the galaxy, sleeping in their golden ruins. Only the most trusted traders may visit them." },
+});
+const SP_FAR = {};
 const SP_GOODS = {
   crystal: { name: "Star Crystals", emoji: "💠" }, vgold: { name: "Void Gold", emoji: "🪙" }, core: { name: "Nebula Cores", emoji: "🔮" },
   silk: { name: "Living Silk", emoji: "🧵" }, pearl: { name: "Echo Pearls", emoji: "🫧" }, chart: { name: "Pirate Charts", emoji: "🗺️" },
+  shard: { name: "Time Shards", emoji: "⏳" }, nano: { name: "Nano Parts", emoji: "⚙️" }, relic: { name: "Ancient Relics", emoji: "🏺" },
 };
+// 🏅 alliance bonuses: [at 💛 Trusted, at 💖 Allies] (only while you keep that level). Used through alienBonus() in js/01-core.js.
+const SP_BONUS = {
+  rock:     { key: "ore",     val: [0.05, 0.1],  text: (v) => `+${v * 100}% ore value in the ⛏️ Gold Mine Dig` },
+  bank:     { key: "income",  val: [0.02, 0.05], text: (v) => `+${v * 100}% income (businesses, special businesses and clicks)` },
+  stardust: { key: "dust",    val: [0.1, 0.25],  text: (v) => `+${v * 100}% stardust in 🚀 Nebula Strike` },
+  bio:      { key: "contract", val: [0.03, 0.06], text: (v) => `+${v * 100}% pay on every 🌍 Earth logistics contract` },
+  art:      { key: "art",     val: [0.1, 0.25],  text: (v) => `+${v * 100}% 🏛️ Art Gallery income` },
+  pirate:   { key: "mission", val: [0.05, 0.1],  text: (v) => `+${v * 100}% space mission rewards, and pirates leave your ships alone` },
+  mystic:   { key: "route",   val: [0.1, 0.2],   text: (v) => `Trade routes ${v * 100}% faster` },
+  machine:  { key: "ship",    val: [0, 1],       text: (v, i) => i ? "+1 spaceship" : "Gift and exploring trips 15% faster" },
+  ancient:  { key: "market",  val: [0.1, 0.25],  text: (v) => `+${v * 100}% on every 🏪 Market price` },
+};
+function spAllyBonus(key) {
+  let b = 0;
+  for (const [k, B] of Object.entries(SP_BONUS)) {
+    const L = spLevel(k);
+    if (key === "giftSpeed" && k === "machine" && L >= 4) b += 0.15;
+    if (B.key !== key || L < 4) continue;
+    b += B.val[L >= 5 ? 1 : 0];
+  }
+  return b;
+}
 const SP_LEVELS = [
   { name: "Unknown", pts: 0, icon: "❔" }, { name: "Contacted", pts: 0, icon: "🤝" }, { name: "Acquainted", pts: 300, icon: "🙂" },
   { name: "Friendly", pts: 1000, icon: "😊" }, { name: "Trusted", pts: 2500, icon: "💛" }, { name: "Allies", pts: 5000, icon: "💖" },
@@ -64,13 +96,16 @@ let spSel = SP.sel || "sol";
 const spSci = () => state.science || {};
 // 🚀 ship slots come from the space buildings
 const SP_SLOTS = [["space", 1, "🚀 Space Mission Center"], ["station", 1, "🛸 Orbital Space Station"], ["moon", 2, "🌕 Moon Base"], ["mars", 2, "🔴 Mars Base"]];
-const spShips = () => SP_SLOTS.reduce((a, [k, n]) => a + (spSci()[k] ? n : 0), 0);
+const spShips = () => { const n = SP_SLOTS.reduce((a, [k, n]) => a + (spSci()[k] ? n : 0), 0); return n ? n + spAllyBonus("ship") : 0; };
 const spFree = () => Math.max(0, spShips() - SP.trips.length);
 const spRouteOf = (k) => SP.trips.find(tr => tr.to === k && tr.k === "route");
-const spRouteMs = (k) => spMs(k) * SP_ROUTE_SPEED[Math.max(SP_ROUTE_LV, spLevel(k))];
+const spRouteMs = (k) => spMs(k) * SP_ROUTE_SPEED[Math.max(SP_ROUTE_LV, spLevel(k))] * (1 - spAllyBonus("route"));
 const spOpen = () => !!(SP.unlocked || spSci().space);
 const spLevel = (k) => { const r = SP.races[k]; if (!r.found) return 0; let L = 1; SP_LEVELS.forEach((l, i) => { if (i >= 2 && r.pts >= l.pts) L = i; }); return L; };
-const spVisible = (k) => !SP_RACES[k].via || spLevel(SP_RACES[k].via) >= 2;
+const spTrustedCount = () => Object.keys(SP_RACES).filter(k => spLevel(k) >= 4).length;
+const spVisible = (k) => { const R = SP_RACES[k];
+  if (R.viaTrusted) return spTrustedCount() >= R.viaTrusted;
+  return !R.via || spLevel(R.via) >= (R.viaLv || 2); };
 const spTripTo = (k, kind) => SP.trips.find(tr => tr.to === k && (!kind || tr.k === kind));
 const spMs = (k) => SP_RACES[k].min * 60e3;   // one way
 const spClock = (ms) => { const s = Math.max(0, Math.ceil(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60);
@@ -85,14 +120,23 @@ const spKindOpen = {
   art: () => !!(state.art && state.art.unlocked),
   dust: () => !!(state.shooter && state.shooter.unlocked),
 };
-const spKindName = (kind) => kind === "dna" && !spKindOpen.dna() ? "❓ Something you haven't discovered yet" : SP_KINDS[kind];
+const spKindName = (kind) => kind.startsWith("g:") ? `${SP_GOODS[kind.slice(2)].emoji} ${SP_GOODS[kind.slice(2)].name}`
+  : kind === "dna" && !spKindOpen.dna() ? "❓ Something you haven't discovered yet" : SP_KINDS[kind];
+const spOpenKind = (w) => w.startsWith("g:") || spKindOpen[w]();
 function spRound(n) { if (n < 100) return Math.round(n); const p = Math.pow(10, Math.floor(Math.log10(n)) - 1); return Math.round(n / p) * p; }
 function spMakeReq(k, skip) {
   const R = SP_RACES[k], L = Math.max(1, spLevel(k));
-  let opts = R.wants.filter(w => spKindOpen[w]() && w !== skip);
-  if (!opts.length) opts = R.wants.filter(w => spKindOpen[w]());
+  if (R.mix) {   // 👑 a mix of 2 goods
+    const two = R.wants.slice().sort(() => Math.random() - 0.5).slice(0, 2), q = { kind: "goods", fav: true, until: Date.now() + SP_REQ_LIFE, goods: {} };
+    two.forEach(w => { q.goods[w.slice(2)] = 10 + 6 * L; });
+    SP.races[k].req = spSpecial(k, q); return;
+  }
+  let opts = R.wants.filter(w => spOpenKind(w) && w !== skip);
+  if (!opts.length) opts = R.wants.filter(w => spOpenKind(w));
   if (!opts.length) opts = ["money"];
-  const kind = opts.length > 1 ? (Math.random() < 0.65 ? opts[0] : opts[1]) : opts[0];
+  const pick = opts.length > 1 ? (Math.random() < 0.65 ? opts[0] : opts[1]) : opts[0];
+  if (pick.startsWith("g:")) { SP.races[k].req = spSpecial(k, { kind: "goods", fav: pick === R.wants[0], until: Date.now() + SP_REQ_LIFE, goods: { [pick.slice(2)]: 12 + 8 * L } }); return; }
+  const kind = pick;
   const q = { kind, fav: kind === R.wants[0], until: Date.now() + SP_REQ_LIFE };
   if (kind === "money") q.amount = Math.max(1e6, spRound(mineBase() * 60 * (20 + 10 * L)));   // 30–70 minutes of business income
   if (kind === "dust") q.amount = 600 + 300 * L;
@@ -102,12 +146,25 @@ function spMakeReq(k, skip) {
     const tier = SP_ORE_TIERS[L].slice().sort(() => Math.random() - 0.5).slice(0, 2);
     q.ore = {}; tier.forEach(o => { q.ore[o] = Math.max(1, Math.round(SP_ORE_BASE[o] * (1 + 0.25 * (L - 1)) * (0.8 + Math.random() * 0.4))); });
   }
-  SP.races[k].req = q;
+  SP.races[k].req = spSpecial(k, q);
 }
+// ⭐ special request (event): 15% of new requests ask for 50% more within 12 hours, for 2.5× friendship and extra goods.
+//    Let it run out and the race is offended (−100 friendship).
+const SP_SPECIAL = { chance: 0.15, life: 12 * 3600e3, mult: 1.5, pts: 2.5, offend: 100 };
+function spSpecial(k, q) {
+  if (!SP.races[k].gifts || Math.random() >= SP_SPECIAL.chance) return q;
+  q.special = true; q.until = Date.now() + SP_SPECIAL.life;
+  if (q.amount && q.kind !== "dna" && q.kind !== "art") q.amount = spRound(q.amount * SP_SPECIAL.mult);
+  if (q.kind === "dna") q.amount += 4; if (q.kind === "art") q.amount += 2;
+  for (const m of [q.ore, q.goods]) if (m) for (const o in m) m[o] = Math.ceil(m[o] * SP_SPECIAL.mult);
+  return q;
+}
+const spReqPts = (q) => Math.round((q.fav ? SP_FAV_PTS : SP_PTS) * (q.special ? SP_SPECIAL.pts : 1));
 const spReqText = (q) => q.kind === "money" ? `💰 <b>${fmt(q.amount)}</b>`
   : q.kind === "dust" ? `✨ <b>${q.amount.toLocaleString()}</b> stardust`
   : q.kind === "dna" ? `🧬 <b>${q.amount}</b> DNA samples (you choose which)`
   : q.kind === "art" ? `🖼️ <b>${q.amount}</b> paintings (you choose which)`
+  : q.kind === "goods" ? Object.entries(q.goods).map(([g, n]) => `${SP_GOODS[g].emoji} <b>${n}</b> ${SP_GOODS[g].name}`).join(" + ")
   : Object.entries(q.ore).map(([o, n]) => `${typeof oreIcon === "function" ? oreIcon(o) : ""} <b>${n}</b> ${ORES[o].name}`).join(" + ");
 function spCanPay(q) {
   if (q.kind === "money") return state.money >= q.amount;
@@ -115,14 +172,76 @@ function spCanPay(q) {
   if (q.kind === "ore") return Object.entries(q.ore).every(([o, n]) => ((state.mine.vault || {})[o] || 0) >= n);
   if (q.kind === "dna") return Object.values(state.genetics.dna || {}).reduce((a, b) => a + b, 0) >= q.amount;
   if (q.kind === "art") return (state.art.items || []).length >= q.amount;
+  if (q.kind === "goods") return Object.entries(q.goods).every(([g, n]) => (SP.goods[g] || 0) >= n);
   return false;
 }
 const spReturnGoods = (L) => 2 + L;
 
+/* ----- ☄️ events on the way (rolled when a ship leaves; they happen halfway out) -----
+   ☄️ asteroid field: the trip takes longer · 🛸 lost ship: you rescue it (+100 friendship with a race you know, gifts and exploring only)
+   🏴‍☠️ pirates: pay a toll (10 min of income) or run for it (50%: they take the cargo). No pirates once the Void Corsairs are 💛 Trusted.
+   If you don't answer within a minute (or the game was closed), your captain runs for it. */
+const SP_EV = { rocks: 0.1, pirates: 0.08, lost: 0.06, routeMult: 0.5, toll: 10, answer: 60e3, delay: 0.3, rescue: 100 };
+function spRollEvent(tr) {
+  const m = tr.k === "route" ? SP_EV.routeMult : 1, x = Math.random(), at = tr.t0 + (tr.t1 - tr.t0) * (0.35 + Math.random() * 0.3);
+  if (x < SP_EV.rocks * m) return { type: "rocks", at };
+  if (x < (SP_EV.rocks + SP_EV.pirates) * m && tr.to !== "pirate" && spLevel("pirate") < 4) return { type: "pirates", at };
+  if (tr.k !== "route" && x > 1 - SP_EV.lost) return { type: "lost", at };
+  return null;
+}
+let spAsk = null;   // the pirate question on screen
+function spEventStep(tr, now, msgs = []) {
+  const e = tr.ev, R = SP_RACES[tr.to];
+  if (!e || e.done || now < e.at) return false;
+  if (e.type === "rocks") {
+    const d = Math.round((tr.t1 - tr.t0) * SP_EV.delay);
+    if (now < tr.t1) tr.t1 += d; tr.t2 += d; e.done = true;
+    msgs.push(`☄️ Your ship to the ${R.name} flew into an asteroid field: ${Math.round(d / 60e3)} min late.`);
+  } else if (e.type === "lost") {
+    const known = Object.keys(SP_RACES).filter(k => SP.races[k].found), k = known[Math.floor(Math.random() * known.length)];
+    e.done = true;
+    if (k) { SP.races[k].pts += SP_EV.rescue; SP.stats.rescues = (SP.stats.rescues || 0) + 1;
+      msgs.push(`🛸 Your ship found a lost ship of the ${SP_RACES[k].name} and towed it home: +${SP_EV.rescue} friendship.`); }
+  } else if (e.type === "pirates") {
+    const live = now - e.at < 5000 && !document.hidden && !isPaused() && $("modal").hidden && !spAsk;
+    if (!e.asked && live) { e.asked = now; spAskPirates(tr); return false; }
+    if (e.asked && now - e.asked < SP_EV.answer && spAsk && spAsk.id === tr.id) return false;   // still waiting for your answer
+    spPiratesRun(tr, msgs);
+  }
+  return true;
+}
+const spToll = () => Math.max(1e6, spRound(mineBase() * 60 * SP_EV.toll));
+function spAskPirates(tr) {
+  spAsk = { id: tr.id, toll: spToll() };
+  showModal(`<h2>🏴‍☠️ Pirates!</h2><p>Space pirates stopped your ship on its way to the <b>${SP_RACES[tr.to].name}</b>.</p>
+    <p>💰 Pay them <b>${fmt(spAsk.toll)}</b> to pass, or 🚀 run for it: a 50% chance they take your cargo${tr.k === "explore" ? " (exploring ships carry nothing worth taking)" : ""}.</p>
+    <div class="row" style="justify-content:center;gap:10px"><button class="btn big" data-spp="pay" ${state.money >= spAsk.toll ? "" : "disabled"}>💰 Pay ${fmt(spAsk.toll)}</button>
+    <button class="btn big dangerBtn" data-spp="run">🚀 Run for it</button></div><p class="muted">No answer in 1 minute: your captain runs for it.</p>`);
+}
+function spPiratesRun(tr, msgs) {
+  tr.ev.done = true; spAsk = null; if (!$("modal").hidden && $("modalBox").querySelector("[data-spp]")) hideModal();
+  const R = SP_RACES[tr.to];
+  if (tr.k !== "explore" && Math.random() < 0.5) { tr.lost = true; SP.stats.robbed = (SP.stats.robbed || 0) + 1;
+    msgs.push(`🏴‍☠️ Pirates caught your ship to the ${R.name} and took the cargo!`); }
+  else msgs.push(`🚀 Your ship to the ${R.name} escaped the pirates!`);
+}
+$("modal").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-spp]"); if (!b || !spAsk) return;
+  const tr = SP.trips.find(x => x.id === spAsk.id), msgs = [];
+  if (tr && b.dataset.spp === "pay" && state.money >= spAsk.toll) {
+    state.money -= spAsk.toll; tr.ev.done = true; SP.stats.tolls = (SP.stats.tolls || 0) + 1; spAsk = null; hideModal(); updateCounter();
+    msgs.push(`💰 You paid the pirates. Your ship flies on to the ${SP_RACES[tr.to].name}.`);
+  } else if (tr && b.dataset.spp === "run") spPiratesRun(tr, msgs);
+  else { spAsk = null; hideModal(); }
+  msgs.forEach(m => showNotice(m)); save(); if (spShown()) renderSpace();
+});
+
 /* ----- 🚀 trips ----- */
 function spLaunch(k, kind, cargo) {
-  const now = Date.now(), ms = spMs(k);
-  SP.trips.push({ id: SP.nextId++, k: kind, to: k, t0: now, t1: now + ms, t2: now + 2 * ms, cargo });
+  const now = Date.now(), ms = spMs(k) * (1 - spAllyBonus("giftSpeed"));
+  const tr = { id: SP.nextId++, k: kind, to: k, t0: now, t1: now + ms, t2: now + 2 * ms, cargo };
+  tr.ev = spRollEvent(tr);
+  SP.trips.push(tr);
   save(); renderSpace();
 }
 function spExplore(k) {
@@ -134,7 +253,8 @@ function spExplore(k) {
 function spRouteStart(k) {
   if (isPaused() || !spFree() || spLevel(k) < SP_ROUTE_LV || spRouteOf(k)) return;
   const now = Date.now(), ms = spRouteMs(k);
-  SP.trips.push({ id: SP.nextId++, k: "route", to: k, t0: now, t1: now + ms, t2: now + 2 * ms, got: 0, loops: 0 });
+  const tr = { id: SP.nextId++, k: "route", to: k, t0: now, t1: now + ms, t2: now + 2 * ms, got: 0, loops: 0 };
+  tr.ev = spRollEvent(tr); SP.trips.push(tr);
   SP.stats.routes = (SP.stats.routes || 0) + 1;
   showNotice(`🛣️ Trade route to the ${SP_RACES[k].name} is open! One ship now flies there and back for good.`);
   save(); renderSpace();
@@ -147,6 +267,7 @@ function spSendGift(k, pick) {
   if (q.kind === "money") state.money -= q.amount;
   if (q.kind === "dust") state.shooter.dust -= q.amount;
   if (q.kind === "ore") Object.entries(q.ore).forEach(([o, n]) => { state.mine.vault[o] -= n; });
+  if (q.kind === "goods") Object.entries(q.goods).forEach(([g, n]) => { SP.goods[g] -= n; });
   if (q.kind === "dna") {
     pick = pick && !Array.isArray(pick) ? pick : {};
     const tot = Object.values(pick).reduce((a, b) => a + b, 0);
@@ -164,7 +285,7 @@ function spSendGift(k, pick) {
     state.art.sold = (state.art.sold || 0) + q.amount; state.stats.artSold = (state.stats.artSold || 0) + q.amount;
   }
   r.req = null;
-  spLaunch(k, "gift", { kind: q.kind, fav: q.fav, text: what });
+  spLaunch(k, "gift", { kind: q.kind, fav: q.fav, pts: spReqPts(q), special: !!q.special, text: what });
   updateCounter();
   showNotice(`🎁 Gift on its way to the ${SP_RACES[k].name} (${SP_RACES[k].min} min).`);
   return true;
@@ -175,17 +296,19 @@ function spProcess() {
   let changed = false;
   for (const tr of SP.trips) {
     const R = SP_RACES[tr.to], r = SP.races[tr.to];
+    if (spEventStep(tr, now, msgs)) changed = true;
     if (tr.k === "route") {   // 🛣️ loops on its own (catches up on every trip made while the game was closed)
       if (!tr.arrived && now >= tr.t1) tr.arrived = true;
       let n = 0;
       while (now >= tr.t2 && n < 500) {
         n++; changed = true;
-        const got = SP_ROUTE_GOODS[Math.max(SP_ROUTE_LV, spLevel(tr.to))];
+        const got = tr.lost ? 0 : SP_ROUTE_GOODS[Math.max(SP_ROUTE_LV, spLevel(tr.to))];
         SP.goods[R.good] = (SP.goods[R.good] || 0) + got; SP.stats.goods += got; tr.got = (tr.got || 0) + got; tr.loops = (tr.loops || 0) + 1;
         SP.stats.routeTrips = (SP.stats.routeTrips || 0) + 1;
         if (typeof addLogiXp === "function") addLogiXp("ship", (tr.t2 - tr.t0) / 1000);
         if (tr.stop || SP.trips.length > spShips()) { tr.done = true; msgs.push(`🛣️ The trade route to the ${R.name} has stopped. Your ship is home.`); break; }
         const ms = spRouteMs(tr.to); tr.t0 = tr.t2; tr.t1 = tr.t0 + ms; tr.t2 = tr.t0 + 2 * ms; tr.arrived = now >= tr.t1;
+        tr.lost = false; tr.ev = spRollEvent(tr); spEventStep(tr, now);
       }
       continue;
     }
@@ -195,17 +318,21 @@ function spProcess() {
         r.found = true; r.foundAt = now; SP.stats.explored++;
         tr.goods = 3; spMakeReq(tr.to);
         msgs.push(`👽 First contact! Your ship met the <b>${R.name}</b> (${R.title}). See 🚢 Logistics → 🌌 Space.`);
+      } else if (tr.k === "gift" && tr.lost) {   // 🏴‍☠️ robbed on the way
+        spMakeReq(tr.to);
+        msgs.push(`🏴‍☠️ Pirates stole your gift for the ${R.name}. They will ask for something new.`);
       } else if (tr.k === "gift") {
-        const before = spLevel(tr.to);
-        r.pts += tr.cargo.fav ? SP_FAV_PTS : SP_PTS; r.gifts = (r.gifts || 0) + 1; SP.stats.gifts++;
+        const before = spLevel(tr.to), pts = tr.cargo.pts || (tr.cargo.fav ? SP_FAV_PTS : SP_PTS);
+        r.pts += pts; r.gifts = (r.gifts || 0) + 1; SP.stats.gifts++;
+        if (tr.cargo.special) SP.stats.specials = (SP.stats.specials || 0) + 1;
         const after = spLevel(tr.to);
-        tr.goods = spReturnGoods(after) + (after > before ? 5 * after : 0);
+        tr.goods = spReturnGoods(after) + (after > before ? 5 * after : 0) + (tr.cargo.special ? 5 * after : 0);
         spMakeReq(tr.to);
         if (after > before) msgs.push(`${SP_LEVELS[after].icon} The <b>${R.name}</b> are now <b>${SP_LEVELS[after].name}</b>! They load a thank-you gift on your ship.`);
-        else msgs.push(`🎁 The <b>${R.name}</b> loved your gift: +${tr.cargo.fav ? SP_FAV_PTS : SP_PTS} friendship.`);
+        else msgs.push(`🎁 The <b>${R.name}</b> loved your gift: +${pts} friendship.`);
         // a far system's location is shared once you are Acquainted
-        if (before < 2 && after >= 2) Object.entries(SP_RACES).filter(([, x]) => x.via === tr.to).forEach(([, x]) =>
-          msgs.push(`📡 The ${R.name} told you where to find a new system. Send a ship to explore it!`));
+        if (Object.entries(SP_RACES).some(([k2, x]) => !SP.races[k2].found && (x.via === tr.to && before < (x.viaLv || 2) && after >= (x.viaLv || 2) || x.viaTrusted && before < 4 && after >= 4 && spTrustedCount() === x.viaTrusted)))
+          msgs.push(`📡 The ${R.name} told you where to find a new system. Send a ship to explore it!`);
       }
     }
     if (tr.arrived && now >= tr.t2) {
@@ -219,7 +346,11 @@ function spProcess() {
   // 📜 requests change every 24 hours (not while a gift is on its way)
   for (const k of Object.keys(SP_RACES)) {
     const r = SP.races[k];
-    if (r.found && !spTripTo(k, "gift") && (!r.req || now > r.req.until)) { spMakeReq(k, r.req && r.req.kind); changed = true; }
+    if (r.found && !spTripTo(k, "gift") && (!r.req || now > r.req.until)) {
+      if (r.req && r.req.special) { r.pts = Math.max(0, r.pts - SP_SPECIAL.offend); SP.stats.offended = (SP.stats.offended || 0) + 1;
+        msgs.push(`😠 The ${SP_RACES[k].name} are offended: nobody brought their special request. −${SP_SPECIAL.offend} friendship.`); }
+      spMakeReq(k, r.req && r.req.kind); changed = true;
+    }
   }
   if (msgs.length > 3) showNotice(`🌌 Space: ${msgs.length} updates while you were away. See 🚢 Logistics → 🌌 Space.`);
   else msgs.forEach(m => showNotice(m));
@@ -259,22 +390,25 @@ function spTripLine(tr) {
   const R = SP_RACES[tr.to], now = Date.now();
   const what = tr.k === "explore" ? (SP.races[tr.to].found ? `Exploring: ${R.name}` : "Exploring an unknown system") : tr.k === "route" ? `🛣️ Trade route: ${R.name}` : `🎁 Gift for the ${R.name}`;
   const st = now < tr.t1 ? `arrives in <b data-spt="${tr.t1}">${spClock(tr.t1 - now)}</b>` : `coming home, back in <b data-spt="${tr.t2}">${spClock(tr.t2 - now)}</b>`;
-  return `<div class="spTrip">🚀 ${what} · ${st}</div>`;
+  return `<div class="spTrip">🚀 ${what} · ${st}${tr.lost ? " · 🏴‍☠️ cargo stolen" : ""}</div>`;
 }
 function spPanelHtml() {
   if (spSel === "sol") {
     const ships = spShips(), slots = SP_SLOTS.map(([k, n, name]) => {
       const has = !!spSci()[k], secret = k !== "space" && !has;
-      return `<li>${has ? "✅" : "🔒"} ${secret ? "A hidden building" : name}: <b>+${n}</b> ship${n > 1 ? "s" : ""}</li>`; }).join("");
+      return `<li>${has ? "✅" : "🔒"} ${secret ? "A hidden building" : name}: <b>+${n}</b> ship${n > 1 ? "s" : ""}</li>`; }).join("")
+      + (spAllyBonus("ship") ? `<li>✅ 🤖 Cogitarium (💖 Allies): <b>+1</b> ship</li>` : "");
     return `<h3>🌍 Home: the Solar System</h3>
       <p>Your spaceport. Pick a system on the map to explore it or send gifts. Ships keep flying while the game is closed.</p>
       <div class="spStats"><span>🚀 Ships: <b>${SP.trips.length} / ${ships}</b> busy</span><span>👽 Races met: <b>${Object.values(SP.races).filter(r => r.found).length} / ${Object.keys(SP_RACES).length}</b></span><span>🎁 Gifts delivered: <b>${SP.stats.gifts}</b></span></div>
       ${ships ? "" : `<p class="spWarn">⚠️ You have no ships right now. Build the 🚀 Space Mission Center (💰 Income → 🔬 Science) to get your first one back.</p>`}
       <ul class="spSlots">${slots}</ul>
+      ${spBonusList() ? `<h4>🏅 Your alliance bonuses</h4><ul class="spSlots">${spBonusList()}</ul>` : ""}
       ${SP.trips.length ? `<h4>Ships in flight</h4>${SP.trips.map(spTripLine).join("")}` : ""}`;
   }
   const R = SP_RACES[spSel], r = SP.races[spSel], L = spLevel(spSel), trip = spTripTo(spSel, r.found ? "gift" : null);
-  if (!spVisible(spSel)) return `<h3>🔒 Uncharted system</h3><p>Your scanners can't find this system yet. Become <b>Acquainted</b> with ${SP.races[R.via].found ? `the <b>${SP_RACES[R.via].name}</b>` : "a nearby race"} and they will tell you where it is.</p>`;
+  if (!spVisible(spSel)) return R.viaTrusted ? `<h3>🔒 Uncharted system</h3><p>Only the most trusted traders may visit this system. Become <b>💛 Trusted</b> with <b>${R.viaTrusted}</b> races (you have ${spTrustedCount()}).</p>`
+    : `<h3>🔒 Uncharted system</h3><p>Your scanners can't find this system yet. Become <b>${R.viaLv === 3 ? "😊 Friendly" : "Acquainted"}</b> with ${SP.races[R.via].found ? `the <b>${SP_RACES[R.via].name}</b>` : "a nearby race"} and they will tell you where it is.</p>`;
   if (!r.found) return `<h3>❓ Unknown signal</h3>
     <p>Something is out there. Send a ship to explore it: <b>${R.min} min</b> there and <b>${R.min} min</b> back.</p>
     ${trip ? spTripLine(trip) : `<button class="btn big" data-spx="explore" ${spFree() && spSci2() >= SP_EXPLORE_SCI ? "" : "disabled"}>🚀 Explore · 🔬 ${SP_EXPLORE_SCI} scientists</button>
@@ -286,16 +420,27 @@ function spPanelHtml() {
       <h3>${R.name} <span class="muted">· ${R.title}</span></h3><p class="spBio">${R.bio}</p></div></div>
     <div class="spFriend"><b>${SP_LEVELS[L].icon} ${SP_LEVELS[L].name}</b> <span class="muted">${next ? `${r.pts.toLocaleString()} / ${next.pts.toLocaleString()} friendship to ${next.name}` : `${r.pts.toLocaleString()} friendship · best friends!`}</span>
       <div class="xpBar"><div class="xpFill" style="width:${pct}%"></div></div></div>
-    <div class="spInfo"><div>❤️ <b>Favourite:</b> ${spKindName(R.wants[0])} <span class="muted">(+${SP_FAV_PTS} friendship)</span></div>
-      <div>👍 <b>Also likes:</b> ${spKindName(R.wants[1])} <span class="muted">(+${SP_PTS})</span></div>
+    <div class="spInfo">${R.mix ? `<div>❤️ <b>Wants a mix of:</b> ${R.wants.map(spKindName).join(", ")} <span class="muted">(+${SP_FAV_PTS} friendship)</span></div>`
+      : `<div>❤️ <b>Favourite:</b> ${spKindName(R.wants[0])} <span class="muted">(+${SP_FAV_PTS} friendship)</span></div>
+      <div>👍 <b>Also likes:</b> ${spKindName(R.wants[1])} <span class="muted">(+${SP_PTS})</span></div>`}
       <div>📦 <b>They send back:</b> ${spGood(R.good)} <span class="muted">(${spReturnGoods(L)} per gift, more when you level up)</span></div>
       <div>🛣️ <b>Distance:</b> ${R.min} min each way</div></div>
-    ${trip ? spTripLine(trip) : q ? `<div class="spReq"><div><b>📜 Their request:</b> ${spReqText(q)}</div>
-        <div class="muted">+${q.fav ? SP_FAV_PTS : SP_PTS} friendship${q.fav ? " (their favourite!)" : ""} · a new request in <span data-spt="${q.until}">${spClock(q.until - Date.now())}</span></div>
+    ${trip ? spTripLine(trip) : q ? `<div class="spReq ${q.special ? "special" : ""}">${q.special ? `<div class="spSpecial">⭐ Special request! Bring it in time for extra friendship and goods, or they will be offended (−${SP_SPECIAL.offend}).</div>` : ""}<div><b>📜 Their request:</b> ${spReqText(q)}</div>
+        <div class="muted">+${spReqPts(q)} friendship${q.fav ? " (their favourite!)" : ""} · ${q.special ? "time left" : "a new request in"} <span data-spt="${q.until}">${spClock(q.until - Date.now())}</span></div>
         <div class="spBtns"><button class="btn big" data-spx="gift" ${can && spFree() ? "" : "disabled"}>🎁 Send gift</button>
           <button class="btn ghost" data-spx="reroll" ${rerollLeft > 0 ? "disabled" : ""}>🔄 Ask for something else${rerollLeft > 0 ? ` (${spClock(rerollLeft)})` : ""}</button></div>
         ${!spFree() ? `<div class="muted">All your ships are busy.</div>` : !can ? `<div class="muted">You don't have enough for this gift yet.</div>` : ""}</div>` : ""}
-    ${spRouteHtml(spSel)}`;
+    ${spRouteHtml(spSel)}${spBonusHtml(spSel)}`;
+}
+function spBonusHtml(k) {
+  const B = SP_BONUS[k], L = spLevel(k);
+  return `<div class="spBonus"><b>🏅 Alliance bonus</b>
+    <div class="${L >= 4 ? "on" : ""}">${L >= 4 ? "✅" : "🔒"} 💛 Trusted: ${B.text(B.val[0], 0)}</div>
+    <div class="${L >= 5 ? "on" : ""}">${L >= 5 ? "✅" : "🔒"} 💖 Allies: ${B.text(B.val[1], 1)}${k === "machine" ? " (and trips stay 15% faster)" : ""}</div></div>`;
+}
+function spBonusList() {
+  return Object.keys(SP_BONUS).filter(k => spLevel(k) >= 4).map(k => { const B = SP_BONUS[k], i = spLevel(k) >= 5 ? 1 : 0;
+    return `<li>${SP_RACES[k].emoji} ${SP_RACES[k].name}: ${B.text(B.val[i], i)}${k === "machine" && i ? " · trips 15% faster" : ""}</li>`; }).join("");
 }
 function spRouteHtml(k) {
   const R = SP_RACES[k], L = spLevel(k), rt = spRouteOf(k);
@@ -312,7 +457,7 @@ function spGoodsHtml() {
   const have = Object.keys(SP_GOODS).filter(g => SP.goods[g]);
   return `<h3>📦 Alien goods</h3>${have.length ? `<div class="spGoods">${have.map(g => `<span>${spGood(g, SP.goods[g])}</span>`).join("")}</div>`
     : `<p class="muted">Nothing yet. Races send their goods back with your ships.</p>`}
-    <p class="muted">🏪 Sell them in 🌌 Space → Market. 🔜 Coming soon: trading them with other races.</p>`;
+    <p class="muted">🏪 Sell them in 🌌 Space → Market, or give them to the races that want them (🔮 the Mystics, 🤖 the Machines and 👑 the Ancients).</p>`;
 }
 // 🎒 everything you can give (and the alien goods you got), refreshed every second
 function spResHtml() {
@@ -391,7 +536,7 @@ function spMult(g, slot) {
   return Math.max(0.45, 1 + 0.3 * Math.sin(slot * 0.9 + i * 2.1) + 0.18 * Math.sin(slot * 0.37 + i * 5.3) + 0.24 * (noise - 0.5));
 }
 const spBase = (g) => mineBase() * 60 * SP_PRICE_MIN * SP_RACES[SP_GOOD_RACE[g]].min;
-const spPrice = (g, slot = spSlot()) => Math.max(1, Math.round(spBase(g) * spMult(g, slot)));
+const spPrice = (g, slot = spSlot()) => Math.max(1, Math.round(spBase(g) * spMult(g, slot) * (1 + spAllyBonus("market"))));
 let spQty = {};
 function spSell(g, all) {
   const have = SP.goods[g] || 0, n = all ? have : Math.min(have, Math.max(1, Math.floor(spQty[g] || 1)));

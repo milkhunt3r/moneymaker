@@ -242,14 +242,19 @@ function wikiLogistics() {
     ${typeof SP_RACES === "object" ? `<h2>🌌 Space</h2>
     <p>The second Logistics page. It opens when you build the 🚀 Space Mission Center: a star map with our Solar System in the middle and alien systems all around it.</p>
     <p><b>Ships:</b> 🚀 Space Mission Center 1 ship, and more from other space buildings (up to 6). Ships keep flying while the game is closed.</p>
-    <p><b>1. Explore:</b> send a ship to an unknown signal. It flies there and back (6–18 min each way) and meets the race that lives there.
+    <p><b>1. Explore:</b> send a ship to an unknown signal. It flies there and back (6–40 min each way) and meets the race that lives there.
       Three systems are reachable from the start; each of the others is revealed by its neighbour once you are <b>Acquainted</b>.</p>
+    <p>🔮 <b>Network races:</b> the Mystics and the Machines (found through a 😊 Friendly neighbour) and the Ancients (once 3 races trust you, 💛 Trusted) only want other races' goods.</p>
     <p><b>2. Gifts:</b> each race asks for one gift at a time: money, ore from your 🏦 vault, ${spKindOpen.dna() ? "DNA samples, " : ""}paintings or stardust.
       Their favourite kind gives +${SP_FAV_PTS} friendship, the other +${SP_PTS}. A request changes every 24 hours, or ask for something else every 4 hours.
       Paintings you give away count as sold. Only one gift per race can be on its way at a time.</p>
     <p>🚚 <b>Logistics XP:</b> every gift trip gives ${LOGI_XP_RATE.ship} XP per minute of the round trip when the ship gets home. Exploring gives no XP.</p>
     <p>🛣️ <b>Trade routes</b> (from 😊 Friendly): one ship flies to the race and back for good, bringing ${SP_ROUTE_GOODS[3]} goods every trip (${SP_ROUTE_GOODS[4]} at 💛 Trusted and ${SP_ROUTE_GOODS[5]} at 💖 Allies, with trips 15% and 30% faster). It keeps going while the game is closed and gives Logistics XP like a gift trip. Stop it any time: the ship comes home after its trip.</p>
     <p>🏪 <b>Market</b> (🌌 Space → Market): sell alien goods for money. A good is worth about ${SP_PRICE_MIN} × the race's distance (in minutes) minutes of your business income, and every price moves up or down every 30 minutes.</p>
+    <p>⭐ <b>Special requests:</b> sometimes a race asks for 50% more within 12 hours, for ${SP_SPECIAL.pts}× friendship and extra goods. Let it run out and they are offended (−${SP_SPECIAL.offend} friendship).</p>
+    <p>☄️ <b>On the way:</b> an asteroid field can make a trip ${SP_EV.delay * 100}% longer; your ship may rescue a lost alien ship (+${SP_EV.rescue} friendship); and pirates may stop it: pay a toll (${SP_EV.toll} min of income) or run for it (50% chance to lose the cargo). Pirates leave you alone once the Void Corsairs are 💛 Trusted.</p>
+    ${wt(["Race", "💛 Trusted", "💖 Allies"], Object.entries(SP_BONUS).map(([k, B]) => [SP.races[k].found ? `${SP_RACES[k].emoji} ${SP_RACES[k].name}` : "❓ Unknown", B.text(B.val[0], 0), B.text(B.val[1], 1)]))}
+    <p class="muted">🏅 Alliance bonuses last while you keep that friendship level.</p>
     <p>🆘 <b>Alien emergencies:</b> while you play, a race you know may suddenly need help. Send ${SP_SOS_SCI} 🔬 scientists within ${SP_SOS_TIME / 60e3} minutes for +${SP_SOS_WIN} friendship; if nobody comes, they lose ${SP_SOS_LOSE} friendship with you. Exploring takes ${SP_EXPLORE_SCI} scientists.</p>
     <p><b>3. Alien goods:</b> your ship comes back with the race's own goods (more at higher friendship, plus a thank-you shipment at every new level). Sell them at the 🏪 Market.</p>
     ${wt(["Race", "Lives", "Favourite", "Also likes", "Sends back", "Each way"], Object.entries(SP_RACES).map(([k, R]) =>

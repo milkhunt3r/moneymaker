@@ -60,6 +60,10 @@ const PATCH_NOTES = [
     "🛣️ Space: <b>trade routes</b>! Once you are 😊 Friendly with a race, give it a ship that flies back and forth for good and brings their goods home every trip (more and faster at Trusted and Allies).",
     "🏪 New <b>Market</b> page under 🌌 Space: sell your alien goods. Prices move every 30 minutes, and goods from far-away races are worth more.",
     "🏆 2 new 🪐 Space achievements: 🛣️ Open for business and 🏪 Galactic merchant.",
+    "🔮 Space: 3 new alien races far out on the star map: the Mystics, the Machines and the Ancients. They only want goods from other races, so build your trading network to reach them.",
+    "🏅 <b>Alliance bonuses</b>: become 💛 Trusted and 💖 Allies with a race for a permanent bonus (more income, ore value, stardust, faster trade routes, an extra spaceship and more).",
+    "☄️ Space events: special requests with a deadline, asteroid fields, lost alien ships to rescue, and pirates who want a toll.",
+    "🏆 2 new 🪐 Space achievements: 🌌 Galactic network and 👑 Friends forever.",
   ] },
   { date: "23 November 2026", title: "Empire of Coins", items: [
     "🗺️ New Nebula Strike level 5: <b>Pirates' Lost Treasure</b>! Opens after you beat level 4. There's no boss: survive for 5 minutes as the pirates' graveyard gets busier and busier. Watch out for 🦈 sea sharks, powder monkeys with big cannonballs and skull asteroids, and fly around the cursed rocks and broken masts: they can't be destroyed. Survive to win a pirate loot box.",

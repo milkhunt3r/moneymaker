@@ -2009,3 +2009,7 @@ body.phone .subTab.subSub { margin-left: 0; } body.phone .subTab.subSub::before 
 .spSpark { width: 110px; height: 28px; display: block; }
 .spSpark polyline { fill: none; stroke: #ffd34d; stroke-width: 2; vector-effect: non-scaling-stroke; }
 body.phone .spMkSell { white-space: normal; } body.phone .spSpark { width: 60px; }
+.spReq.special { border-color: #ffb347; background: rgba(255, 170, 60, 0.12); box-shadow: 0 0 14px rgba(255, 170, 60, 0.25); }
+.spSpecial { font-weight: 700; color: #ffc56b; margin-bottom: 6px; }
+.spBonus { margin-top: 12px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); display: grid; gap: 3px; }
+.spBonus div { color: #9a9ab5; } .spBonus div.on { color: #8ef0a0; font-weight: 600; }

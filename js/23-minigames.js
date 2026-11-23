@@ -107,7 +107,7 @@ const climbCost = (y) => { let c = 0; for (let r = 1; r <= y; r++) c += walkCost
 const liftPrice = () => Math.round(MINE_LIFT_SEC * mineBase());
 const lavaKeep = () => rescueKeep() * 0.6;   // 🌋 burned by lava: the emergency rescue saves less (30 / 39 / 48%)
 const sellMult = () => 1 + 0.1 * upLv("appraiser");
-const oreValue = (k, rush = false) => Math.round(ORES[k].sec * mineBase() * sellMult() * (1 + geneBonus("bug")) * (rush ? 2 : 1));   // 🕷️ +1% per bug species
+const oreValue = (k, rush = false) => Math.round(ORES[k].sec * mineBase() * sellMult() * (1 + geneBonus("bug") + alienBonus("ore")) * (rush ? 2 : 1));   // 🕷️ +1% per bug species
 function upCost(k) { const l = upLv(k); return l >= MINE_UPS[k].max ? null : MINE_UPS[k].costs[l]; }
 function canBuyUp(k) {
   const c = upCost(k); if (!c) return false;

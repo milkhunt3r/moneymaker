@@ -39,7 +39,7 @@ const MARS_PRICE = 2e11, MARS_SCI = 150, MARS_EVERY = 600, MARS_FAIL = 0.10, MAR
 const moonEvery = () => DEEP_EVERY - (sci().mars ? MARS_MOON_CUT : 0);
 const moonFail = () => DEEP_FAIL - (sci().mars ? MARS_MOON_FAIL_CUT : 0);
 const marsIco = (cls = "biz") => ico("sci-mars", cls);
-const spaceBonus = () => 1 + (sci().gene ? GENE_BONUS : 0) + geneBonus("myth");   // 🧬 +30% on 🚀 / 🌕 / 🔴 mission rewards, +1% per mythical species
+const spaceBonus = () => 1 + (sci().gene ? GENE_BONUS : 0) + geneBonus("myth") + alienBonus("mission");   // 🧬 +30% on 🚀 / 🌕 / 🔴 mission rewards, +1% per mythical species
 const sciPool = () => unis().reduce((a, u) => a + u.scientists, 0);
 function spendScientists(n) {
   while (n > 0) {

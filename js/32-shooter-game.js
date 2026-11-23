@@ -95,7 +95,7 @@ function shWin() {
   // 🏴‍☠️ the pirate level opens a loot box instead (rolled and paid right away, revealed when you open it)
   const loot = L.loot ? shLootRoll() : null;
   const lootMin = loot && loot.min ? Math.round(shRand(loot.min[0], loot.min[1])) : 0;
-  const money = loot ? (loot.k === "pet" ? 0 : Math.round(lootMin * 60 * mineBase())) : shReward(L, first), dust = first ? L.dustFirst : L.dustAgain;
+  const money = loot ? (loot.k === "pet" ? 0 : Math.round(lootMin * 60 * mineBase())) : shReward(L, first), dust = Math.round((first ? L.dustFirst : L.dustAgain) * (1 + alienBonus("dust")));
   if (loot) { SH.loots = (SH.loots || 0) + 1; if (loot.k === "pet") state.pet = { owned: true, pending: true, at: Date.now(), name: "Mochi", pets: 0, taps: 0 }; }   // pet pending: revealed when the chest is opened
   state.money += money; clickedThisSecond += money; SH.earned += money;   // counts as income (taxes)
   SH.dust += dust; SH.dustAll += dust; R.dust += dust;

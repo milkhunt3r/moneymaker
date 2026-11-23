@@ -15,7 +15,7 @@ const canPrestige = () => state.legacy.count < PRESTIGE_MAX && state.money >= pr
 const TAX_HOLIDAY = 600;     // seconds without tax inspections after every prestige
 const TYCOON_BONUS = 0.25;
 if (!state.legacy) state.legacy = { count: 0, tycoon: 0, empire: 0, vip: 0, history: [] };
-function legacyIncomeMult() { return 1 + TYCOON_BONUS * ((state.legacy && state.legacy.tycoon) || 0); }
+function legacyIncomeMult() { return (1 + TYCOON_BONUS * ((state.legacy && state.legacy.tycoon) || 0)) * (1 + alienBonus("income")); }   // 🧐 Aurumites alliance bonus too
 
 const PRESTIGE_CHOICES = [
   { id: "tycoon", icon: "💼", name: "Tycoon's Legacy", max: 1, text: "+25% income from businesses, special businesses and clicks, forever. From this reset on, every reset keeps your 🔬 Science buildings (not the satellite).",
