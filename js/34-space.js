@@ -360,32 +360,99 @@ function spProcess() {
 /* ----- 🖼️ page ----- */
 const spPageOn = () => state.logiPage === "space" || state.logiPage === "market";
 const spShown = () => state.view === "logistics" && spPageOn() && !$("logisticsView").hidden;
-function spShipPos(tr, now) {
-  const [x, y] = SP_RACES[tr.to].pos;
-  const out = now < tr.t1, p = out ? (now - tr.t0) / (tr.t1 - tr.t0) : Math.min(1, (now - tr.t1) / (tr.t2 - tr.t1));
-  const a = out ? [50, 50] : [x, y], b = out ? [x, y] : [50, 50];
-  const map = document.querySelector(".spMap"), asp = map && map.clientHeight ? map.clientWidth / map.clientHeight : 16 / 9;
-  const ang = Math.atan2(b[1] - a[1], (b[0] - a[0]) * asp) * 180 / Math.PI;
-  return { x: a[0] + (b[0] - a[0]) * Math.max(0, p), y: a[1] + (b[1] - a[1]) * Math.max(0, p), ang };
+// 🛰️ flight paths are gentle curves bending away from the middle; a ship flies from the edge of Home to the edge of the system
+const spAsp = () => { const m = document.querySelector(".spMap"); return m && m.clientHeight ? m.clientWidth / m.clientHeight : 16 / 9; };
+function spCurve(k) {
+  const [x, y] = SP_RACES[k].pos, A = [50, 50], dx = (x - 50) * 16, dy = (y - 50) * 9, len = Math.hypot(dx, dy) || 1;
+  const bend = 0.16 * len * (x < 50 ? 1 : -1), mx = (50 + x) / 2, my = (50 + y) / 2;
+  return { a: A, c: [mx + (-dy / len) * bend / 16, my + (dx / len) * bend / 9], b: [x, y] };
 }
+function spBez(C, t) {
+  const u = 1 - t, P = (i) => u * u * C.a[i] + 2 * u * t * C.c[i] + t * t * C.b[i], D = (i) => 2 * u * (C.c[i] - C.a[i]) + 2 * t * (C.b[i] - C.c[i]);
+  return { x: P(0), y: P(1), dx: D(0), dy: D(1) };
+}
+function spShipPos(tr, now) {
+  const out = now < tr.t1, p = Math.max(0, Math.min(1, out ? (now - tr.t0) / (tr.t1 - tr.t0) : (now - tr.t1) / (tr.t2 - tr.t1)));
+  const t = 0.07 + 0.86 * (out ? p : 1 - p), B = spBez(spCurve(tr.to), t);
+  let ang = Math.atan2(B.dy, B.dx * spAsp()) * 180 / Math.PI; if (!out) ang += 180;
+  if (ang > 180) ang -= 360;
+  return { x: B.x, y: B.y, ang, op: Math.max(0.15, Math.min(1, p / 0.05, (1 - p) / 0.05)) };
+}
+const spShipCss = (s) => `left:${s.x}%;top:${s.y}%;opacity:${s.op};transform:translate(-50%,-50%) rotate(${s.ang}deg)${Math.abs(s.ang) > 90 ? " scaleY(-1)" : ""}`;
 function spMapHtml() {
-  const now = Date.now();
-  const lines = Object.entries(SP_RACES).filter(([k]) => spVisible(k)).map(([k, R]) => {
-    const busy = spTripTo(k);
-    return `<line x1="80" y1="45" x2="${R.pos[0] * 1.6}" y2="${R.pos[1] * 0.9}" class="${spRouteOf(k) ? "route" : busy ? "busy" : SP.races[k].found ? "known" : ""}"/>`; }).join("");
+  const now = Date.now(), V = (q) => `${(q[0] * 1.6).toFixed(2)} ${(q[1] * 0.9).toFixed(2)}`;
+  const lines = Object.entries(SP_RACES).filter(([k]) => spVisible(k)).map(([k]) => {
+    const C = spCurve(k), d = `M${V(C.a)} Q${V(C.c)} ${V(C.b)}`, cls = spRouteOf(k) ? "route" : spTripTo(k) ? "busy" : SP.races[k].found ? "known" : "";
+    return (cls === "route" || cls === "busy" ? `<path d="${d}" class="glow ${cls}"/>` : "") + `<path d="${d}" class="${cls}"/>`; }).join("");
   const nodes = Object.entries(SP_RACES).map(([k, R]) => {
     const r = SP.races[k], vis = spVisible(k), L = spLevel(k);
     const img = r.found ? `sys-${k}` : "sys-unknown";
     const lbl = r.found ? `${R.name}<small>${SP_LEVELS[L].icon} ${SP_LEVELS[L].name}</small>` : vis ? `Unknown signal<small>❓ Explore</small>` : `<small>🔒 Uncharted</small>`;
     return `<button class="spNode ${r.found ? "found" : vis ? "fog" : "hidden"} ${spSel === k ? "sel" : ""}" data-sp="${k}" style="left:${R.pos[0]}%;top:${R.pos[1]}%">
-      <img src="assets/space/${img}.webp" alt=""><span class="spLbl">${lbl}</span>${SP.sos && SP.sos.k === k ? `<i class="spSosPin">🆘</i>` : ""}${r.found && r.req && spFree() && !spTripTo(k, "gift") && spCanPay(r.req) ? `<i class="spPing">🎁</i>` : ""}</button>`; }).join("");
-  const far = Object.entries(SP_FAR).map(([k, p]) => `<div class="spNode far" style="left:${p[0]}%;top:${p[1]}%"><img src="assets/space/sys-unknown.webp" alt=""><span class="spLbl"><small>🔭 Out of range</small></span></div>`).join("");
-  const ships = SP.trips.map(tr => { const s = spShipPos(tr, now);
-    return `<img class="spShip" data-trip="${tr.id}" src="assets/space/ship-explorer.webp" alt="" style="left:${s.x}%;top:${s.y}%;transform:translate(-50%,-50%) rotate(${s.ang}deg)${Math.abs(s.ang) > 90 ? " scaleY(-1)" : ""}">`; }).join("");
-  return `<div class="spMap"><svg viewBox="0 0 160 90" preserveAspectRatio="none">${lines}</svg>${far}
-    <button class="spNode sol ${spSel === "sol" ? "sel" : ""}" data-sp="sol" style="left:50%;top:50%"><img src="assets/space/sys-sol.webp" alt=""><span class="spLbl">Home<small>🌍 Solar System</small></span></button>
-    ${nodes}${ships}</div>`;
+      <img src="assets/space/${img}.webp" alt="" draggable="false"><span class="spLbl">${lbl}</span>${SP.sos && SP.sos.k === k ? `<i class="spSosPin">🆘</i>` : ""}${r.found && r.req && spFree() && !spTripTo(k, "gift") && spCanPay(r.req) ? `<i class="spPing">🎁</i>` : ""}</button>`; }).join("");
+  const ships = SP.trips.map(tr => `<img class="spShip ${tr.k}" data-trip="${tr.id}" src="assets/space/ship-explorer.webp" alt="" draggable="false" style="${spShipCss(spShipPos(tr, now))}">`).join("");
+  return `<div class="spMap" id="spMap"><div class="spWorld" id="spWorld"><svg viewBox="0 0 160 90" preserveAspectRatio="none">${lines}</svg>
+    <button class="spNode sol ${spSel === "sol" ? "sel" : ""}" data-sp="sol" style="left:50%;top:50%"><span class="spHalo"></span><img src="assets/space/sys-sol.webp" alt="" draggable="false"><span class="spLbl">Home<small>🌍 Solar System</small></span></button>
+    ${nodes}${ships}</div>
+    <div class="spZoom"><button data-spz="in" title="Zoom in">+</button><button data-spz="out" title="Zoom out">−</button><button data-spz="reset" title="Whole map">⤢</button></div></div>`;
 }
+/* ----- 🔍 zoom and pan: buttons, mouse wheel, drag, and two-finger pinch on phones ----- */
+const spZ = { z: 1, x: 0, y: 0 }, SP_ZMAX = 3;
+function spZoomApply() {
+  const m = $("spMap"), w = $("spWorld"); if (!m || !w) return;
+  const W = m.clientWidth, H = m.clientHeight;
+  spZ.z = Math.max(1, Math.min(SP_ZMAX, spZ.z));
+  spZ.x = Math.min(0, Math.max(W * (1 - spZ.z), spZ.x)); spZ.y = Math.min(0, Math.max(H * (1 - spZ.z), spZ.y));
+  w.style.transform = `translate(${spZ.x}px, ${spZ.y}px) scale(${spZ.z})`;
+  w.style.setProperty("--iz", 1 / Math.sqrt(spZ.z));
+  m.classList.toggle("zoomed", spZ.z > 1.01);
+}
+function spZoomAt(f, cx, cy) {   // cx, cy: point in the map (px) that stays put
+  const z2 = Math.max(1, Math.min(SP_ZMAX, spZ.z * f)), k = z2 / spZ.z;
+  spZ.x = cx - (cx - spZ.x) * k; spZ.y = cy - (cy - spZ.y) * k; spZ.z = z2; spZoomApply();
+}
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-spz]"); if (!b) return;
+  const m = $("spMap"); if (!m) return;
+  if (b.dataset.spz === "reset") { spZ.z = 1; spZ.x = 0; spZ.y = 0; spZoomApply(); return; }
+  spZoomAt(b.dataset.spz === "in" ? 1.5 : 1 / 1.5, m.clientWidth / 2, m.clientHeight / 2);
+});
+document.addEventListener("wheel", (e) => {
+  const m = e.target.closest && e.target.closest("#spMap"); if (!m) return;
+  e.preventDefault();
+  const r = m.getBoundingClientRect();
+  spZoomAt(e.deltaY < 0 ? 1.2 : 1 / 1.2, e.clientX - r.left, e.clientY - r.top);
+}, { passive: false });
+let spDrag = null; const spPtrs = new Map();
+document.addEventListener("pointerdown", (e) => {
+  const m = e.target.closest && e.target.closest("#spMap"); if (!m || e.target.closest(".spZoom")) return;
+  spPtrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  spDrag = { x: e.clientX, y: e.clientY, ox: spZ.x, oy: spZ.y, moved: false, pinch: spPtrs.size === 2 ? { d: spPinchD(), z: spZ.z } : null };
+});
+const spPinchD = () => { const [a, b] = [...spPtrs.values()]; return a && b ? Math.hypot(a.x - b.x, a.y - b.y) : 0; };
+document.addEventListener("pointermove", (e) => {
+  if (!spDrag || !spPtrs.has(e.pointerId)) return;
+  spPtrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  const m = $("spMap"); if (!m) return;
+  if (spDrag.pinch && spPtrs.size === 2) {
+    const r = m.getBoundingClientRect(), [a, b] = [...spPtrs.values()];
+    spZoomAt(spDrag.pinch.z * spPinchD() / spDrag.pinch.d / spZ.z, (a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top);
+    spDrag.moved = true; return;
+  }
+  const dx = e.clientX - spDrag.x, dy = e.clientY - spDrag.y;
+  if (!spDrag.moved && Math.hypot(dx, dy) < 6) return;
+  if (spZ.z <= 1.01) return;   // nothing to pan at full view
+  spDrag.moved = true; m.classList.add("dragging");
+  spZ.x = spDrag.ox + dx; spZ.y = spDrag.oy + dy; spZoomApply();
+});
+document.addEventListener("pointerup", (e) => {
+  spPtrs.delete(e.pointerId);
+  if (!spDrag) return;
+  if (spDrag.moved) { const stop = (ev) => { ev.stopPropagation(); ev.preventDefault(); }; document.addEventListener("click", stop, { capture: true, once: true }); setTimeout(() => document.removeEventListener("click", stop, { capture: true }), 50); }
+  if (!spPtrs.size) { spDrag = null; const m = $("spMap"); if (m) m.classList.remove("dragging"); }
+});
+document.addEventListener("pointercancel", (e) => { spPtrs.delete(e.pointerId); if (!spPtrs.size) spDrag = null; });
+window.addEventListener("resize", () => spZoomApply());
 function spTripLine(tr) {
   const R = SP_RACES[tr.to], now = Date.now();
   const what = tr.k === "explore" ? (SP.races[tr.to].found ? `Exploring: ${R.name}` : "Exploring an unknown system") : tr.k === "route" ? `🛣️ Trade route: ${R.name}` : `🎁 Gift for the ${R.name}`;
@@ -580,6 +647,7 @@ function renderSpace() {
   if (state.logiPage === "market") { box.innerHTML = spSosHtml() + spMarketHtml(); return; }
   box.innerHTML = `${spSosHtml()}<div class="card spResBar" id="spResBar">${spResHtml()}</div><div class="card spMapCard"><div class="row"><h2 style="margin:0">🌌 Star map</h2><span class="muted">🚀 ${spFree()} of ${spShips()} ship${spShips() === 1 ? "" : "s"} free</span></div>${spMapHtml()}</div>
     <div class="card spPanel">${spPanelHtml()}</div><div class="card">${spGoodsHtml()}</div>`;
+  spZoomApply();
 }
 // every second: move the ships and count down (no full rebuild)
 let spLastSlot = spSlot();
@@ -590,9 +658,7 @@ function spAnimate() {
   if (bar) { const h = spResHtml(); if (bar.dataset.h !== h) { bar.innerHTML = h; bar.dataset.h = h; } }
   for (const tr of SP.trips) {
     const el = document.querySelector(`.spShip[data-trip="${tr.id}"]`); if (!el) continue;
-    const s = spShipPos(tr, now);
-    el.style.left = s.x + "%"; el.style.top = s.y + "%";
-    el.style.transform = `translate(-50%,-50%) rotate(${s.ang}deg)${Math.abs(s.ang) > 90 ? " scaleY(-1)" : ""}`;
+    el.style.cssText = spShipCss(spShipPos(tr, now));
   }
   document.querySelectorAll("#spaceView [data-spt]").forEach(el => { el.textContent = spClock(Number(el.dataset.spt) - now); });
 }
