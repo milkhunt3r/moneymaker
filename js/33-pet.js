@@ -14,6 +14,7 @@ if (state.pet && state.pet.owned) {
 const petOwned = () => !!(state.pet && state.pet.owned);
 const PET_WAKE_BEFORE = 10;          // wakes up this many seconds before the drink is ready
 const PET_TAP_MS = 100;
+const PET_SLAP_MS = 650;             // one visible paw slap (the 10 clicks / sec keep running underneath)
 const PET_V = "2";                   // bump when a pet picture changes (browser cache)              // one tap every 0.1 s = 10 clicks / sec
 // where the feet are in each frame (part of the picture height), so every pose stands on the same line
 const PET_FOOT = { "idle-1": 0.982, "idle-2": 0.982, "tap-1": 0.985, "tap-2": 0.984, "drink-1": 0.982, "drink-2": 0.982, "happy-1": 0.98, "happy-2": 0.874,
@@ -84,10 +85,16 @@ function petTap() {
   state.money += v; clickedThisSecond += v;
   state.stats.clicks++; state.pet.taps++;
   updateCounter(); save();
-  const c = P_.layout.coin, coin = $("coin");
-  showPlus(c.left + c.width * (0.35 + Math.random() * 0.4), c.top + c.height * (0.15 + Math.random() * 0.3));
-  if (!coin.petSquish || coin.petSquish.playState === "finished")
-    coin.petSquish = coin.animate([{ scale: "1" }, { scale: "0.95" }, { scale: "1" }], { duration: 90 });
+  P_.tapSum = (P_.tapSum || 0) + v;   // shown all at once on the next visible slap
+}
+// one visible slap: the coin dips once and a single "+…" shows everything earned since the last slap
+function petSlap() {
+  const c = P_.layout.coin, coin = $("coin"), sum = P_.tapSum || 0; P_.tapSum = 0;
+  coin.animate([{ scale: "1" }, { scale: "0.93", offset: 0.35 }, { scale: "1" }], { duration: 320, easing: "ease-out" });
+  if (sum > 0) {
+    showPlus(c.left + c.width * (0.45 + Math.random() * 0.2), c.top + c.height * 0.2);
+    const el = plusPool[(plusNext + plusPool.length - 1) % plusPool.length]; if (el) el.textContent = "+" + fmt(sum);
+  }
 }
 function petPet() {
   if (!petOwned()) return;
@@ -140,8 +147,14 @@ function petStep(now) {
       P_.face = -1;
       P_.tapAcc += dt * 1000;
       while (P_.tapAcc >= PET_TAP_MS) { P_.tapAcc -= PET_TAP_MS; petTap(); P_.tapOn = true; }
-      const down = P_.tapAcc < PET_TAP_MS / 2;
-      petShow(down ? "tap-2" : "tap-1", true);
+      // a slow, smooth slap: paws up and a little lift (65%), then down onto the coin (35%)
+      P_.slapT = (P_.slapT || 0) + dt * 1000;
+      if (P_.slapT >= PET_SLAP_MS) P_.slapT -= PET_SLAP_MS;
+      const k = P_.slapT / PET_SLAP_MS, up = k < 0.65;
+      if (!up && !P_.slapped) { P_.slapped = true; petSlap(); }
+      if (up) P_.slapped = false;
+      const lift = up ? -Math.sin(k / 0.65 * Math.PI / 2) * P_.layout.s * 0.05 : 0;
+      petShow(up ? "tap-1" : "tap-2", true, lift);
       break;
     }
     case "sleep": {
