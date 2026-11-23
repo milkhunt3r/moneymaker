@@ -1991,3 +1991,21 @@ body.phone .spResBar { font-size: 13px; gap: 4px 10px; }
 .spSosPin { position: absolute; top: -2%; left: 6%; font-style: normal; font-size: 18px; animation: spBob 0.9s ease-in-out infinite; }
 @keyframes spSosGlow { 50% { box-shadow: 0 0 22px rgba(255, 77, 77, 0.55); } }
 body.phone .spSos { flex-direction: column; align-items: stretch; }
+.subTab.subSub { margin-left: 18px; padding: 9px 12px; font-size: 14px; position: relative; }
+.subTab.subSub::before { content: ""; position: absolute; left: -12px; top: -8px; width: 9px; height: 26px; border-left: 2px solid rgba(255,255,255,0.25); border-bottom: 2px solid rgba(255,255,255,0.25); border-bottom-left-radius: 6px; }
+body.phone .subTab.subSub { margin-left: 0; } body.phone .subTab.subSub::before { display: none; }
+.spMap line.route { stroke: rgba(255, 211, 77, 0.95); stroke-width: 0.6; stroke-dasharray: none; }
+.spRoute { margin-top: 12px; padding: 10px 12px; border-radius: 12px; background: rgba(120, 220, 255, 0.07); border: 1px solid rgba(120, 220, 255, 0.28); }
+.spRoute.on { background: rgba(255, 211, 77, 0.08); border-color: rgba(255, 211, 77, 0.45); }
+.spRoute.locked { opacity: 0.75; }
+.spMkWrap { overflow-x: auto; }
+.spMarket { width: 100%; border-collapse: collapse; margin: 8px 0; }
+.spMarket th { text-align: left; font-size: 13px; color: #b9b9d0; padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+.spMarket td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); vertical-align: middle; }
+.spMarket .up { color: #6ee07a; font-size: 12px; } .spMarket .down { color: #ff7b7b; font-size: 12px; }
+.spMkLocked td { opacity: 0.6; }
+.spMkSell { white-space: nowrap; text-align: right; }
+.spMkSell input { width: 70px; padding: 5px 6px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: #15132a; color: #fff; }
+.spSpark { width: 110px; height: 28px; display: block; }
+.spSpark polyline { fill: none; stroke: #ffd34d; stroke-width: 2; vector-effect: non-scaling-stroke; }
+body.phone .spMkSell { white-space: normal; } body.phone .spSpark { width: 60px; }

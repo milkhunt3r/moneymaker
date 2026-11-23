@@ -53,10 +53,13 @@ const PATCH_NOTES = [
   { date: "24 November 2026", title: "Empire of Coins", items: [
     "🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
     "👽 Send ships to explore unknown systems and meet 6 alien races. Each one has its own tastes: send them the gifts they ask for (money, ore, paintings, stardust and more) to grow your friendship from Contacted to Allies.",
-    "📦 Your ships come back with alien goods. Trade routes and trading alien goods are coming in the next updates. Ships keep flying while the game is closed, and a prestige never resets your alien friends.",
+    "📦 Your ships come back with alien goods. Ships keep flying while the game is closed, and a prestige never resets your alien friends.",
     "🏆 New <b>🪐 Space</b> achievements section: 5 achievements.",
     "🚚 Gift trips to alien races give Logistics XP (6 XP per minute of the trip). Exploring gives none.",
-    "🆘 Space: alien races sometimes have an emergency while you play. Send 20 🔬 scientists within 30 minutes for extra friendship, or they lose friendship with you. Exploring now takes 10 scientists.",
+    "🆘 Space: alien races sometimes have an emergency while you play. Send 20 🔬 scientists within 15 minutes for extra friendship, or they lose friendship with you. Exploring now takes 10 scientists.",
+    "🛣️ Space: <b>trade routes</b>! Once you are 😊 Friendly with a race, give it a ship that flies back and forth for good and brings their goods home every trip (more and faster at Trusted and Allies).",
+    "🏪 New <b>Market</b> page under 🌌 Space: sell your alien goods. Prices move every 30 minutes, and goods from far-away races are worth more.",
+    "🏆 2 new 🪐 Space achievements: 🛣️ Open for business and 🏪 Galactic merchant.",
   ] },
   { date: "23 November 2026", title: "Empire of Coins", items: [
     "🗺️ New Nebula Strike level 5: <b>Pirates' Lost Treasure</b>! Opens after you beat level 4. There's no boss: survive for 5 minutes as the pirates' graveyard gets busier and busier. Watch out for 🦈 sea sharks, powder monkeys with big cannonballs and skull asteroids, and fly around the cursed rocks and broken masts: they can't be destroyed. Survive to win a pirate loot box.",

@@ -257,6 +257,8 @@ const ACHIEVEMENTS = [
       { id: "spFriend",  icon: "😊", name: "Friends among the stars", desc: "Become Friendly with an alien race",           goal: 1,  get: () => lv(1000) },
       { id: "spAlly",    icon: "💖", name: "Interstellar alliance",  desc: "Become Allies with an alien race",              goal: 1,  get: () => lv(5000) },
       { id: "spGifts50", icon: "🎁", name: "Generous empire",        desc: "Deliver 50 gifts to alien races",               goal: 50, get: () => (S().stats || {}).gifts || 0 },
+      { id: "spRoute1",  icon: "🛣️", name: "Open for business",      desc: "Open your first trade route",                   goal: 1,  get: () => (S().stats || {}).routes || 0 },
+      { id: "spSold1k",  icon: "🏪", name: "Galactic merchant",      desc: "Sell 1,000 alien goods at the market",          goal: 1000, get: () => (S().stats || {}).sold || 0 },
     ].map(a => ({ ...a, cat: "space" }));
   })(),
   { id: "satellite", cat: "logistics", icon: "🛰️", name: "Eye in the sky", desc: "Launch a satellite", goal: 1, get: () => state.science && state.science.satellite ? 1 : 0 },

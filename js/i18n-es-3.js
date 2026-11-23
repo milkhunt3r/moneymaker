@@ -876,9 +876,9 @@ rx(String.raw`You need (\d+) scientists \(you have (\d+)\)\.`, "Necesitas $1 cie
 rx(String.raw`You have (\d+) scientists\.`, "Tienes $1 científicos.");
 rx(String.raw`Send (\d+) scientists`, "Enviar $1 científicos");
 rx(String.raw`The (${SP_RX_NAME}) need help!`, (m, n) => `¡Los ${spN(n)} necesitan ayuda!`);
-rx(String.raw`(.+!) Send (\d+) 🔬 scientists within 30 minutes \(🚢 Logistics → 🌌 Space\)\.`, (m, x, n) => `${spSosEs(x)} Envía ${n} 🔬 científicos en 30 minutos (🚢 Logística → 🌌 Espacio).`);
-hrx(String.raw`<b>🆘 The (${SP_RX_NAME}) need help!<\/b>(.+!) Send (\d+) 🔬 scientists within 30 minutes \(🚢 Logistics → 🌌 Space\)\.<br><small>.+<\/small>`, (m, n, x, k) =>
-  `<b>🆘 ¡Los ${spN(n)} necesitan ayuda!</b>${spSosEs(x)} Envía ${k} 🔬 científicos en 30 minutos (🚢 Logística → 🌌 Espacio).<br><small>Haz clic para cerrar</small>`);
+rx(String.raw`(.+!) Send (\d+) 🔬 scientists within (\d+) minutes \(🚢 Logistics → 🌌 Space\)\.`, (m, x, n, t) => `${spSosEs(x)} Envía ${n} 🔬 científicos en ${t} minutos (🚢 Logística → 🌌 Espacio).`);
+hrx(String.raw`<b>🆘 The (${SP_RX_NAME}) need help!<\/b>(.+!) Send (\d+) 🔬 scientists within (\d+) minutes \(🚢 Logistics → 🌌 Space\)\.<br><small>.+<\/small>`, (m, n, x, k, tm) =>
+  `<b>🆘 ¡Los ${spN(n)} necesitan ayuda!</b>${spSosEs(x)} Envía ${k} 🔬 científicos en ${tm} minutos (🚢 Logística → 🌌 Espacio).<br><small>Haz clic para cerrar</small>`);
 hrx(String.raw`Send <b>(\d+) 🔬 scientists<\/b> before the time runs out: <b>\+(\d+)<\/b> friendship\. If nobody comes, they lose <b>(\d+)<\/b> friendship with you\.`,
   "Envía <b>$1 🔬 científicos</b> antes de que se acabe el tiempo: <b>+$2</b> de amistad. Si nadie acude, perderán <b>$3</b> de amistad contigo.");
 rx(String.raw`Too late for the (${SP_RX_NAME})`, (m, n) => `Demasiado tarde para los ${spN(n)}`);
@@ -887,17 +887,52 @@ hrx(String.raw`<b>💔 Too late for the (${SP_RX_NAME})<\/b>Nobody came to help\
   `<b>💔 Demasiado tarde para los ${spN(n)}</b>Nadie acudió a ayudar. Han perdido ${x} de amistad contigo.<br><small>Haz clic para cerrar</small>`);
 rx(String.raw`Your scientists saved the day! The (${SP_RX_NAME}) are grateful: \+(\d+) friendship\.`, (m, n, x) => `¡Tus científicos han salvado el día! Los ${spN(n)} te lo agradecen: +${x} de amistad.`);
 rx(String.raw`The <b>(${SP_RX_NAME})</b> are now <b>(${SP_RX_LV})</b>!`, (m, n, l) => `¡Los <b>${spN(n)}</b> ya son <b>${spL(l)}</b>!`);
-H("🆘 <b>Alien emergencies:</b> while you play, a race you know may suddenly need help. Send 20 🔬 scientists within 30 minutes for +300 friendship; if nobody comes, they lose 200 friendship with you. Exploring takes 10 scientists.",
-  "🆘 <b>Emergencias alienígenas:</b> mientras juegas, una raza que conoces puede necesitar ayuda de repente. Envía 20 🔬 científicos en 30 minutos para ganar +300 de amistad; si nadie acude, perderán 200 de amistad contigo. Explorar cuesta 10 científicos.");
-ES["🆘 Space: alien races sometimes have an emergency while you play. Send 20 🔬 scientists within 30 minutes for extra friendship, or they lose friendship with you. Exploring now takes 10 scientists."] =
-  "🆘 Espacio: a veces las razas alienígenas tienen una emergencia mientras juegas. Envía 20 🔬 científicos en 30 minutos para ganar amistad extra; si no, perderán amistad contigo. Explorar ahora cuesta 10 científicos.";
+H("🆘 <b>Alien emergencies:</b> while you play, a race you know may suddenly need help. Send 20 🔬 scientists within 15 minutes for +300 friendship; if nobody comes, they lose 200 friendship with you. Exploring takes 10 scientists.",
+  "🆘 <b>Emergencias alienígenas:</b> mientras juegas, una raza que conoces puede necesitar ayuda de repente. Envía 20 🔬 científicos en 15 minutos para ganar +300 de amistad; si nadie acude, perderán 200 de amistad contigo. Explorar cuesta 10 científicos.");
+ES["🆘 Space: alien races sometimes have an emergency while you play. Send 20 🔬 scientists within 15 minutes for extra friendship, or they lose friendship with you. Exploring now takes 10 scientists."] =
+  "🆘 Espacio: a veces las razas alienígenas tienen una emergencia mientras juegas. Envía 20 🔬 científicos en 15 minutos para ganar amistad extra; si no, perderán amistad contigo. Explorar ahora cuesta 10 científicos.";
+// 🛣️ trade routes and 🏪 market
+Object.assign(ES, { "Market": "Mercado", "Trade route": "Ruta comercial", "Open trade route": "Abrir ruta comercial", "Stop the route": "Parar la ruta", "Keep it running": "Mantenerla activa",
+  "Stops when the ship gets home.": "Se para cuando la nave llegue a casa.", "More goods and faster trips at 💛 Trusted and 💖 Allies.": "Más bienes y viajes más rápidos en 💛 De confianza y 💖 Aliada.",
+  "Alien market": "Mercado alienígena", "Good": "Bien", "You have": "Tienes", "Price each": "Precio por unidad", "Last 6 hours": "Últimas 6 horas", "Sell": "Vender",
+  "Unknown goods": "Bienes desconocidos", "Meet more alien races to trade their goods.": "Conoce más razas alienígenas para comerciar con sus bienes.", "Sold": "Vendidos", "Earned": "Ganado",
+  "Sell the goods your ships bring home. Prices move every 30 minutes: sell when they are high. The further away a race lives, the more its goods are worth.":
+    "Vende los bienes que traen tus naves. Los precios cambian cada 30 minutos: vende cuando estén altos. Cuanto más lejos viva una raza, más valen sus bienes.",
+  "Sell them in 🌌 Space → Market. 🔜 Coming soon: trading them with other races.": "Véndelos en 🌌 Espacio → Mercado. 🔜 Próximamente: intercambiarlos con otras razas.",
+  "Open for business": "Abierto al comercio", "Open your first trade route": "Abre tu primera ruta comercial", "Galactic merchant": "Mercader galáctico",
+  "Sell 1,000 alien goods at the market": "Vende 1.000 bienes alienígenas en el mercado",
+});
+hrx(String.raw`🛣️ <b>Trade route:<\/b> opens when you are <b>😊 Friendly<\/b> with the (${SP_RX_NAME})\.`, (m, n) => `🛣️ <b>Ruta comercial:</b> se abre cuando tu amistad con los ${spN(n)} sea <b>😊 Amistosa</b>.`);
+hrx(String.raw`🛣️ <b>Trade route:<\/b> one ship flies to the (${SP_RX_NAME}) and back <b>for good<\/b>, bringing (\S+) <b>(\d+)<\/b> (${SP_RX_GOOD}) every trip \((\d+) min round trip\)\. It keeps going while the game is closed\.`, (m, n, e, x, g, t) =>
+  `🛣️ <b>Ruta comercial:</b> una nave va y vuelve de los ${spN(n)} <b>para siempre</b> y trae ${e} <b>${x}</b> ${spG(g)} en cada viaje (${t} min ida y vuelta). Sigue funcionando con el juego cerrado.`);
+hrx(String.raw`🛣️ <b>Trade route open<\/b> · (\S+) <b>(\d+)<\/b> (${SP_RX_GOOD}) every trip \((\d+) min round trip\)`, (m, e, x, g, t) => `🛣️ <b>Ruta comercial abierta</b> · ${e} <b>${x}</b> ${spG(g)} en cada viaje (${t} min ida y vuelta)`);
+hrx(String.raw`🚀 🛣️ Trade route: (${SP_RX_NAME}) · (arrives in|coming home, back in) <b>(.+)<\/b>`, (m, n, w, c) => `🚀 🛣️ Ruta comercial: ${spN(n)} · ${w === "arrives in" ? "llega en" : "vuelve a casa, de vuelta en"} <b>${c}</b>`);
+rx(String.raw`Trips so far: (\d+) · goods brought home: ([\d.,]+)`, "Viajes hasta ahora: $1 · bienes traídos: $2");
+rx(String.raw`Trade route to the (${SP_RX_NAME}) is open! One ship now flies there and back for good\.`, (m, n) => `¡Ruta comercial con los ${spN(n)} abierta! Ahora una nave va y vuelve para siempre.`);
+rx(String.raw`The trade route to the (${SP_RX_NAME}) has stopped\. Your ship is home\.`, (m, n) => `La ruta comercial con los ${spN(n)} se ha parado. Tu nave está en casa.`);
+hrx(String.raw`⏱️ Prices change in <b>(.+)<\/b>`, "⏱️ Los precios cambian en <b>$1</b>");
+rx(String.raw`from the (${SP_RX_NAME})`, (m, n) => `de los ${spN(n)}`);
+rx(String.raw`Sell all \((.+)\)`, "Vender todo ($1)"); ES["Sell all"] = "Vender todo";
+rx(String.raw`Sold (\S+) (\d+) (${SP_RX_GOOD}) for (.+)\.`, (m, e, n, g, x) => `Has vendido ${e} ${n} ${spG(g)} por ${x}.`);
+hrx(String.raw`📦 Sold: <b>([\d.,]+)<\/b>`, "📦 Vendidos: <b>$1</b>"); hrx(String.raw`💰 Earned: <b>(.+)<\/b>`, "💰 Ganado: <b>$1</b>");
+hrx(String.raw`🛣️ <b>Trade routes<\/b> \(from 😊 Friendly\): one ship flies to the race and back for good, bringing (\d+) goods every trip \((\d+) at 💛 Trusted and (\d+) at 💖 Allies, with trips 15% and 30% faster\)\. It keeps going while the game is closed and gives Logistics XP like a gift trip\. Stop it any time: the ship comes home after its trip\.`,
+  "🛣️ <b>Rutas comerciales</b> (desde 😊 Amistosa): una nave va y vuelve de la raza para siempre y trae $1 bienes en cada viaje ($2 en 💛 De confianza y $3 en 💖 Aliada, con viajes un 15 % y un 30 % más rápidos). Sigue funcionando con el juego cerrado y da XP de logística como un viaje con regalo. Puedes pararla cuando quieras: la nave vuelve a casa tras su viaje.");
+hrx(String.raw`🏪 <b>Market<\/b> \(🌌 Space → Market\): sell alien goods for money\. A good is worth about ([\d.]+) × the race's distance \(in minutes\) minutes of your business income, and every price moves up or down every 30 minutes\.`,
+  (m, x) => `🏪 <b>Mercado</b> (🌌 Espacio → Mercado): vende bienes alienígenas por dinero. Un bien vale unos ${x.replace(".", ",")} × la distancia de la raza (en minutos) minutos de los ingresos de tus negocios, y cada precio sube o baja cada 30 minutos.`);
+H("<b>3. Alien goods:</b> your ship comes back with the race's own goods (more at higher friendship, plus a thank-you shipment at every new level). Sell them at the 🏪 Market.",
+  "<b>3. Bienes alienígenas:</b> tu nave vuelve con los bienes propios de la raza (más cuanto mayor sea la amistad, y un envío de agradecimiento en cada nivel nuevo). Véndelos en el 🏪 Mercado.");
+H("🛣️ Space: <b>trade routes</b>! Once you are 😊 Friendly with a race, give it a ship that flies back and forth for good and brings their goods home every trip (more and faster at Trusted and Allies).",
+  "🛣️ Espacio: ¡<b>rutas comerciales</b>! Cuando tu amistad con una raza sea 😊 Amistosa, dale una nave que vaya y vuelva para siempre y traiga sus bienes en cada viaje (más y más rápido en De confianza y Aliada).");
+H("🏪 New <b>Market</b> page under 🌌 Space: sell your alien goods. Prices move every 30 minutes, and goods from far-away races are worth more.",
+  "🏪 Nueva página <b>Mercado</b> en 🌌 Espacio: vende tus bienes alienígenas. Los precios cambian cada 30 minutos, y los bienes de razas lejanas valen más.");
+ES["🏆 2 new 🪐 Space achievements: 🛣️ Open for business and 🏪 Galactic merchant."] = "🏆 2 logros nuevos de 🪐 Espacio: 🛣️ Abierto al comercio y 🏪 Mercader galáctico.";
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
 ES["👽 Send ships to explore unknown systems and meet 6 alien races. Each one has its own tastes: send them the gifts they ask for (money, ore, paintings, stardust and more) to grow your friendship from Contacted to Allies."] =
   "👽 Envía naves a explorar sistemas desconocidos y conoce a 6 razas alienígenas. Cada una tiene sus gustos: mándales los regalos que piden (dinero, mineral, cuadros, polvo estelar y más) para que vuestra amistad pase de Contactada a Aliada.";
-ES["📦 Your ships come back with alien goods. Trade routes and trading alien goods are coming in the next updates. Ships keep flying while the game is closed, and a prestige never resets your alien friends."] =
-  "📦 Tus naves vuelven con bienes alienígenas. Las rutas comerciales y el comercio de bienes alienígenas llegarán en las próximas actualizaciones. Las naves siguen volando con el juego cerrado, y un prestigio nunca reinicia a tus amigos alienígenas.";
+ES["📦 Your ships come back with alien goods. Ships keep flying while the game is closed, and a prestige never resets your alien friends."] =
+  "📦 Tus naves vuelven con bienes alienígenas. Las naves siguen volando con el juego cerrado, y un prestigio nunca reinicia a tus amigos alienígenas.";
 
 /* 🛰️ satellite card */
 Object.assign(ES, { "Satellite": "Satélite", "in orbit": "en órbita", "Max 1 · works on its own, no agent needed · permanent bonuses": "Máx. 1 · funciona solo, sin agente · bonificaciones permanentes",
