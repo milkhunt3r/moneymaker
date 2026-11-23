@@ -347,11 +347,23 @@ function grantRewards() {   // checked with the achievements; a reward, once ear
     if (state.view === "achievements") renderAchievements();
   }
 }
+// 🔎 filters: item type (coin / cards / background) and unlocked / locked
+const REWARD_TYPES = [["all", "All"], ["coin", "🪙 Coins"], ["cards", "🃏 Cards"], ["background", "🖼️ Backgrounds"]];
+const REWARD_STATES = [["all", "All"], ["got", "✅ Unlocked"], ["locked", "🔒 Locked"]];
 function renderRewards() {
+  const ty = state.rewardType || "all", st = state.rewardState || "all";
+  const chips = (list, cur, key) => list.map(([id, name]) => `<button class="achCat ${cur === id ? "active" : ""}" data-rw${key}="${id}">${name}</button>`).join("");
+  const cols = COLLECTIONS.filter(c => c.reward && !(c.hidden && c.hidden())).filter(col => {
+    const items = COSMETICS.filter(c => c.collection === col.id), got = items.every(c => state.cosmetics.owned[c.id]);
+    return (ty === "all" || items.some(c => c.slot === ty)) && (st === "all" || (st === "got") === got);
+  });
   $("rewardList").innerHTML = `<div class="card"><h2 style="margin:0 0 4px">${ico("ui-rewards", "h")}Rewards</h2>
-      <div class="muted">Finish the achievements a collection needs to unlock it. Then turn its items on or off here any time.</div></div>` +
-    COLLECTIONS.filter(c => c.reward && !(c.hidden && c.hidden())).map(col => {
-      const p = rewardProgress(col), items = COSMETICS.filter(c => c.collection === col.id), got = items.every(c => state.cosmetics.owned[c.id]);
+      <div class="muted">Finish the achievements a collection needs to unlock it. Then turn its items on or off here any time.</div>
+      <div class="achCats rwFilters">${chips(REWARD_TYPES, ty, "t")}</div><div class="achCats rwFilters">${chips(REWARD_STATES, st, "s")}</div></div>` +
+    (cols.length ? "" : `<div class="card muted" style="text-align:center">Nothing matches these filters.</div>`) +
+    cols.map(col => {
+      const p = rewardProgress(col), all = COSMETICS.filter(c => c.collection === col.id), got = all.every(c => state.cosmetics.owned[c.id]);
+      const items = ty === "all" ? all : all.filter(c => c.slot === ty);
       return `<div class="card rewardCard ${got ? "got" : ""}">
         <div class="row"><h2 style="margin:0">${got ? "" : ico("lock", "lockS")}${colTitle(col)}</h2><span class="muted">${got ? "✅ Unlocked" : `${p.done} / ${p.total}`}</span></div>
         <div class="muted">${col.reward.text}</div>

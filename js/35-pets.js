@@ -11,7 +11,7 @@ function renderPetPage() {
       <div class="petHero"><img class="petHeroPic" src="assets/pet/pet-portrait.webp" alt="">
         <div class="petHeroInfo"><h2 style="margin:0">🐾 ${petCleanName(P.name) || "Mochi"}</h2>
           <div class="muted">Your baby dragon-moth${since ? ` · together since ${since}` : ""}</div>
-          <div class="petStats"><span>❤️ Petted: <b>${(P.pets || 0).toLocaleString()}</b></span><span>👆 Coin taps: <b>${(P.taps || 0).toLocaleString()}</b></span></div></div></div>
+          <div class="petStats"><span>❤️ Petted: <b>${(P.pets || 0).toLocaleString()}</b></span><span>👆 Coin taps: <b>${(P.taps || 0).toLocaleString()}</b></span><span>⚡ Energy drinks: <b>${(P.drinks || 0).toLocaleString()}</b></span></div></div></div>
       <div class="orRow petSetRow"><span class="grow">Show on the 💰 Income page</span>
         <span class="orSwitch ${P.hidden ? "" : "on"}" data-pet="show" role="switch" tabindex="0"></span></div>
       <div class="orRow slider"><span class="grow">Name</span><input class="petNameInput" id="petName" maxlength="16" value="${petCleanName(P.name)}" aria-label="Pet name" data-noi18n></div>

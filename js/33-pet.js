@@ -80,6 +80,7 @@ function petWalkTo(x, then) { P_.tx = x; P_.next = then; petSet("walk"); }
 function petDrinkNow() {
   if (energyActive() || state.energyCooldown > 0 || state.money < ENERGY_PRICE || isPaused()) return false;
   state.money -= ENERGY_PRICE; state.energyLeft = ENERGY_SECONDS;
+  state.pet.drinks = (state.pet.drinks || 0) + 1;   // 🐾 shown on the Pet page
   state.stats.boostEnergy = (state.stats.boostEnergy || 0) + 1;
   updateCounter(); updateEnergy(); save();
   return true;

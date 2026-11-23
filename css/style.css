@@ -2048,3 +2048,4 @@ body.phone .spZoom button { width: 28px; height: 28px; font-size: 17px; border-r
 .petSlots { display: flex; gap: 10px; margin: 6px 0; }
 .petSlot { width: 64px; height: 64px; border-radius: 14px; display: grid; place-items: center; font-size: 26px; background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); }
 body.phone .petHero { flex-direction: column; text-align: center; }
+.rwFilters { margin-top: 10px; }

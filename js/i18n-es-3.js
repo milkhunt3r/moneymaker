@@ -1019,6 +1019,8 @@ H("🐾 The 🛍️ Shop is now the <b>🐾 Pet</b> page: see your pet, rename i
   "🐾 La 🛍️ Tienda ahora es la página <b>🐾 Mascota</b>: mira a tu mascota, cámbiale el nombre, ocúltala y consulta sus estadísticas. ¡Llegarán más mascotas!");
 ES["🎁 All cosmetic collections are now rewards in 🏆 Achievements → 🎁 Rewards: 🐕 Wow So Rich (💰 Multi-millionaire), ♟️ One Step Ahead (🤑 Beat the house), 👑 Royal (🏦 Friends in high places), 🐸 Make It Rain (💸 Money fountain, 🎩 Lobbyist and 🧙 Feeling magical) and 🦁 Emperor (🏰 Coin emperor). Items you already bought stay yours."] =
   "🎁 Todas las colecciones cosméticas son ahora recompensas en 🏆 Logros → 🎁 Recompensas: 🐕 Wow So Rich (💰 Multimillonario), ♟️ «Un paso por delante» (🤑 Ganarle a la banca), 👑 Realeza (🏦 Amigos en las altas esferas), 🐸 «Lluvia de billetes» (💸 Fuente de dinero, 🎩 Lobista y 🧙 Sensación mágica) y 🦁 Emperador (🏰 Emperador de las monedas). Los objetos que ya compraste siguen siendo tuyos.";
+Object.assign(ES, { "Energy drinks": "Bebidas energéticas", "Coins": "Monedas", "Cards": "Cartas", "Backgrounds": "Fondos", "Unlocked": "Desbloqueadas", "Locked": "Bloqueadas",
+  "Nothing matches these filters.": "Nada coincide con estos filtros." });
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

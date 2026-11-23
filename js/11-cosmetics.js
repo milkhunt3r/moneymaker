@@ -212,6 +212,8 @@ if ($("cosmetics")) $("cosmetics").addEventListener("click", (e) => {
 });
 // the same on/off switches on the Rewards page
 $("rewardList").addEventListener("click", (e) => {
+  const f = e.target.closest("[data-rwt], [data-rws]");
+  if (f) { if (f.dataset.rwt) state.rewardType = f.dataset.rwt; else state.rewardState = f.dataset.rws; save(); renderRewards(); return; }
   const tog = e.target.closest("[data-cosmetic-toggle]");
   if (!tog) return;
   const id = tog.dataset.cosmeticToggle;
