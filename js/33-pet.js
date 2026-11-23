@@ -18,11 +18,13 @@ if (state.pet && state.pet.pending) delete state.pet.pending;
 const petOwned = () => !!(state.pet && state.pet.owned && !state.pet.pending);
 const PET_WAKE_BEFORE = 10;          // wakes up this many seconds before the drink is ready
 const PET_TAP_MS = 100;
-const PET_SLAP_MS = 650;             // one visible paw slap (the 10 clicks / sec keep running underneath)
+const PET_SLAP_MS = 650;
+const PET_SLEEP_PET_MS = 1700;       // peek (0.4 s) → tail and wings wiggle (0.7 s) → content smile (0.6 s)             // one visible paw slap (the 10 clicks / sec keep running underneath)
 const PET_V = "2";                   // bump when a pet picture changes (browser cache)              // one tap every 0.1 s = 10 clicks / sec
 // where the feet are in each frame (part of the picture height), so every pose stands on the same line
 const PET_FOOT = { "idle-1": 0.982, "idle-2": 0.982, "tap-1": 0.985, "tap-2": 0.984, "drink-1": 0.982, "drink-2": 0.982, "happy-1": 0.98, "happy-2": 0.874,
-  "sleep-1": 0.869, "sleep-2": 0.868, "wake": 0.985, "walk-1": 0.909, "walk-2": 0.906, "walk-3": 0.909, "walk-4": 0.892 };
+  "sleep-1": 0.869, "sleep-2": 0.868, "wake": 0.985, "walk-1": 0.909, "walk-2": 0.906, "walk-3": 0.909, "walk-4": 0.892,
+  "sleep-pet-1": 0.868, "sleep-pet-2": 0.869, "sleep-pet-3": 0.868 };
 Object.keys(PET_FOOT).forEach(k => { const im = new Image(); im.src = `assets/pet/${k}.webp?v=${PET_V}`; });   // preload
 
 const P_ = { mode: "idle", x: -1, tx: 0, face: -1, t: 0, until: 0, frame: "", flip: false, next: null, raf: 0, last: 0,
@@ -107,6 +109,8 @@ function petPet() {
   state.pet.pets++; save();
   const s = P_.layout ? P_.layout.s : 150, y = P_.layout ? P_.layout.floor - s * 0.9 : 0;
   petFloat(P_.petStreak >= 5 ? "💖" : "❤️", "heart", P_.x + (Math.random() - 0.5) * s * 0.4, y);
+  // 😴 petted while asleep: it peeks with one eye, wiggles its tail and wings, then smiles and sleeps on
+  if (P_.mode === "sleep") P_.sleepPet = P_.sleepPet && now - P_.sleepPet < PET_SLEEP_PET_MS ? now - 400 : now;
   // tapping and sleeping go on (it just enjoys it); otherwise it shows how happy it is
   if (P_.mode === "idle" || P_.mode === "walk" || P_.mode === "happy") {
     if (P_.petStreak >= 5) { P_.petStreak = 0; P_.jump = 1; petSet("happy", 1300); }
@@ -165,8 +169,9 @@ function petStep(now) {
       break;
     }
     case "sleep": {
-      const breath = Math.sin(now / 700);
-      petShow(breath > 0 ? "sleep-2" : "sleep-1", P_.face < 0);
+      const breath = Math.sin(now / 700), pe = P_.sleepPet ? now - P_.sleepPet : Infinity;
+      if (pe < PET_SLEEP_PET_MS) petShow(pe < 400 ? "sleep-pet-1" : pe < 1100 ? (Math.floor((pe - 400) / 175) % 2 ? "sleep-pet-1" : "sleep-pet-2") : "sleep-pet-3", P_.face < 0);
+      else petShow(breath > 0 ? "sleep-2" : "sleep-1", P_.face < 0);
       petImg.style.transform = `${P_.face < 0 ? "scaleX(-1) " : ""}scale(${1 + breath * 0.015})`;
       if (now - P_.zAt > 1400) { P_.zAt = now; petFloat("z", "z", P_.x + (P_.face < 0 ? -1 : 1) * L.s * 0.25, L.floor - L.s * 0.55); }
       break;
