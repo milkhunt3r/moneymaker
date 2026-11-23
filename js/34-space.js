@@ -21,13 +21,13 @@ const SP_RACES = {
               bio: "Tiny shimmering beings who ride the solar winds and collect starlight in jars." },
   bio:      { name: "Vynari", title: "Bio-collectors", emoji: "🐙", pos: [12, 56], min: 14, via: "rock", wants: ["dna", "ore"], good: "silk",
               bio: "One giant jungle mind that wants to collect every form of life in the galaxy." },
-  art:      { name: "Lumerians", title: "Art lovers", emoji: "🧞", pos: [27, 86], min: 16, via: "stardust", wants: ["art", "dust"], good: "pearl",
+  art:      { name: "Lumerians", title: "Art lovers", emoji: "🧞", pos: [28, 84], min: 16, via: "stardust", wants: ["art", "dust"], good: "pearl",
               bio: "Dreamy artists who see colours we can't imagine. They would trade a moon for a good painting." },
   pirate:   { name: "Void Corsairs", title: "Space pirates", emoji: "🦹", pos: [88, 56], min: 18, via: "bank", wants: ["money", "dust"], good: "chart",
               bio: "A rowdy pirate clan from a cursed red star. Pay them well and they might even call you friend." },
 };
 // 🔭 out of range for now (a later update)
-const SP_FAR = { mystic: [13, 13], machine: [87, 13], ancient: [75, 88] };
+const SP_FAR = { mystic: [13, 13], machine: [87, 13], ancient: [70, 82] };
 const SP_GOODS = {
   crystal: { name: "Star Crystals", emoji: "💠" }, vgold: { name: "Void Gold", emoji: "🪙" }, core: { name: "Nebula Cores", emoji: "🔮" },
   silk: { name: "Living Silk", emoji: "🧵" }, pearl: { name: "Echo Pearls", emoji: "🫧" }, chart: { name: "Pirate Charts", emoji: "🗺️" },
@@ -261,18 +261,30 @@ function spGoodsHtml() {
     : `<p class="muted">Nothing yet. Races send their goods back with your ships.</p>`}
     <p class="muted">🔜 Coming soon: trade routes, selling alien goods, and trading them with other races.</p>`;
 }
+// 🎒 everything you can give (and the alien goods you got), refreshed every second
+function spResHtml() {
+  const it = (ic, n, tip) => `<span class="spRes" title="${tip}">${ic} <b>${n}</b></span>`;
+  const out = [it("💰", fmt(state.money), "Money")];
+  if (spKindOpen.ore()) ORE_KEYS.forEach(o => out.push(it(oreIcon(o), (state.mine.vault || {})[o] || 0, ORES[o].name)));
+  if (spKindOpen.dna()) out.push(it("🧬", Object.values(state.genetics.dna || {}).reduce((a, b) => a + b, 0), "DNA samples"));
+  if (spKindOpen.art()) out.push(it("🖼️", (state.art.items || []).length, "Paintings"));
+  if (spKindOpen.dust()) out.push(it("✨", (state.shooter.dust || 0).toLocaleString(), "Stardust"));
+  const goods = Object.keys(SP_GOODS).filter(g => SP.goods[g]);
+  return out.join("") + (goods.length ? `<span class="spResSep"></span>${goods.map(g => it(SP_GOODS[g].emoji, SP.goods[g].toLocaleString(), SP_GOODS[g].name)).join("")}` : "");
+}
 function renderSpace() {
   const box = $("spaceView");
   if (!box || !spShown()) return;
   if (!spOpen()) { box.innerHTML = `<div class="card" style="text-align:center"><h2>🔒 🌌 Space</h2><p>Explore the galaxy, meet alien races and trade with them.</p>
     <p><b>Opens when you build the 🚀 Space Mission Center</b> (💰 Income → 🔬 Science).</p></div>`; return; }
-  box.innerHTML = `<div class="card spMapCard"><div class="row"><h2 style="margin:0">🌌 Star map</h2><span class="muted">🚀 ${spFree()} of ${spShips()} ship${spShips() === 1 ? "" : "s"} free</span></div>${spMapHtml()}</div>
+  box.innerHTML = `<div class="card spResBar" id="spResBar">${spResHtml()}</div><div class="card spMapCard"><div class="row"><h2 style="margin:0">🌌 Star map</h2><span class="muted">🚀 ${spFree()} of ${spShips()} ship${spShips() === 1 ? "" : "s"} free</span></div>${spMapHtml()}</div>
     <div class="card spPanel">${spPanelHtml()}</div><div class="card">${spGoodsHtml()}</div>`;
 }
 // every second: move the ships and count down (no full rebuild)
 function spAnimate() {
   if (!spShown()) return;
-  const now = Date.now();
+  const now = Date.now(), bar = $("spResBar");
+  if (bar) { const h = spResHtml(); if (bar.dataset.h !== h) { bar.innerHTML = h; bar.dataset.h = h; } }
   for (const tr of SP.trips) {
     const el = document.querySelector(`.spShip[data-trip="${tr.id}"]`); if (!el) continue;
     const s = spShipPos(tr, now);

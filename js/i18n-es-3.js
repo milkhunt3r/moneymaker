@@ -864,6 +864,13 @@ ES["👽 Send ships to explore unknown systems and meet 6 alien races. Each one 
 ES["📦 Your ships come back with alien goods. Trade routes and trading alien goods are coming in the next updates. Ships keep flying while the game is closed, and a prestige never resets your alien friends."] =
   "📦 Tus naves vuelven con bienes alienígenas. Las rutas comerciales y el comercio de bienes alienígenas llegarán en las próximas actualizaciones. Las naves siguen volando con el juego cerrado, y un prestigio nunca reinicia a tus amigos alienígenas.";
 
+/* 🛰️ satellite card */
+Object.assign(ES, { "Satellite": "Satélite", "in orbit": "en órbita", "Max 1 · works on its own, no agent needed · permanent bonuses": "Máx. 1 · funciona solo, sin agente · bonificaciones permanentes",
+  "Cargo plane contracts pay +5%": "Los contratos de avión de carga pagan un +5 %", "Tanker contracts take 10% less time": "Los contratos de petrolero tardan un 10 % menos",
+  "Broken trucks repair themselves for free after 5 seconds": "Los camiones averiados se reparan solos y gratis a los 5 segundos" });
+rx(String.raw`Space missions fail 5% less often \((\d+)% instead of (\d+)%\)`, "Las misiones espaciales fallan un 5 % menos ($1 % en vez de $2 %)");
+rx(String.raw`Launch (.+)`, "Lanzar $1");
+
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
 ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {

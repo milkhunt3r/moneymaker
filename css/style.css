@@ -1975,3 +1975,8 @@ body.phone .spLbl { font-size: 10px; } body.phone .spLbl small { font-size: 9px;
 body.phone .spFace { font-size: 40px; width: 56px; height: 56px; }
 body.phone .spMap { aspect-ratio: 4 / 3.4; }
 body.phone .spNode { width: 17%; } body.phone .spNode.sol { width: 19%; } body.phone .spShip { width: 9%; }
+.spResBar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; padding: 10px 14px; font-size: 15px; }
+.spRes { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.spRes .oreIcon { width: 20px; height: 20px; }
+.spResSep { width: 1px; align-self: stretch; background: rgba(255,255,255,0.18); }
+body.phone .spResBar { font-size: 13px; gap: 4px 10px; }
