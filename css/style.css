@@ -188,7 +188,7 @@ body {
 .wikiTable tr:hover td { background: rgba(255,255,255,0.03); }
 .wikiCols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 700px) { .wikiCols { grid-template-columns: 1fr; } .wikiTable { font-size: 12px; } }
-#logisticsView { max-width: 900px; margin: 0 auto; padding: 20px; }
+#logisticsView { max-width: 1100px; margin: 0 auto; padding: 20px; }
 .tankerGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 12px; }
 @media (max-width: 860px) { .tankerGrid { grid-template-columns: 1fr; } }
 .tanker { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 12px; }
@@ -1927,12 +1927,8 @@ p.guestWarn { font-size: 14px; background: rgba(255, 170, 0, 0.1); border: 1px s
 .mapTipHr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.15); margin: 4px 0; }
 
 /* 🌌 Space logistics (js/34-space.js) */
-.logiTabs { display: flex; gap: 8px; margin-bottom: 14px; }
-.logiTab { flex: 1; padding: 12px; font-size: 17px; font-weight: 700; border-radius: 12px; border: 1px solid rgba(255,255,255,0.14);
-  background: rgba(36, 30, 64, 0.9); color: #e8e6ff; cursor: pointer; }
-.logiTab:hover { background: rgba(52, 44, 92, 0.95); }
-.logiTab.on { background: #ffd34d; color: #2b2200; border-color: #ffd34d; }
-#logisticsView.spaceMode > :not(#logiTabs):not(#spaceView):not(.debtBanner):not(#logiLocked) { display: none !important; }
+#logisticsView.spaceMode #logiMain > :not(#spaceView) { display: none !important; }
+#logiMain > .card:first-child, #logiMain > #spaceView > .card:first-child { margin-top: 0; }
 #spaceView[hidden] { display: none; }
 .spMap { position: relative; width: 100%; aspect-ratio: 16 / 9; margin-top: 10px; border-radius: 12px; overflow: hidden;
   background: #0b0c2a url("../assets/space/space-map-bg.webp") center / cover; box-shadow: inset 0 0 40px rgba(0,0,0,0.6); }

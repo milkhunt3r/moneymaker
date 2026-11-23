@@ -364,20 +364,20 @@ function spApplyPage() {
   const space = state.logiPage === "space";
   $("logisticsView").classList.toggle("spaceMode", space);
   $("spaceView").hidden = !space;
-  document.querySelectorAll("[data-logipage]").forEach(b => b.classList.toggle("on", b.dataset.logipage === (space ? "space" : "earth")));
+  document.querySelectorAll("[data-logipage]").forEach(b => b.classList.toggle("active", b.dataset.logipage === (space ? "space" : "earth")));
   const sb = document.querySelector('[data-logipage="space"]');
   if (sb) { const html = (spOpen() ? "" : '<img class="ico lockS" src="assets/icons/ico-lock.webp" alt="">') + "🌌 Space"; if (sb.innerHTML !== html) sb.innerHTML = html; }
   if (space) renderSpace();
 }
 (function spSetup() {
   const view = $("logisticsView");
-  if (!$("logiTabs")) {
-    const tabs = document.createElement("div");
-    tabs.id = "logiTabs"; tabs.className = "logiTabs";
-    tabs.innerHTML = `<button class="logiTab" data-logipage="earth">🌍 Earth</button><button class="logiTab" data-logipage="space">🌌 Space</button>`;
-    view.insertBefore(tabs, $("logiLevel"));
-    const sv = document.createElement("div"); sv.id = "spaceView"; sv.hidden = true;
-    view.insertBefore(sv, $("logiLevel"));
+  if (!$("logiTabs")) {   // left-side page menu (like Investing): everything after the lock card moves into the main column
+    const layout = document.createElement("div"); layout.className = "subLayout"; layout.id = "logiLayout";
+    layout.innerHTML = `<nav class="subNav" id="logiTabs"><button class="subTab" data-logipage="earth">🌍 Earth</button><button class="subTab" data-logipage="space">🌌 Space</button></nav><div class="subMain" id="logiMain"></div>`;
+    const main = layout.querySelector("#logiMain");
+    [...view.children].filter(el => !el.classList.contains("debtBanner") && el.id !== "logiLocked").forEach(el => main.appendChild(el));
+    const sv = document.createElement("div"); sv.id = "spaceView"; sv.hidden = true; main.appendChild(sv);
+    view.appendChild(layout);
   }
   spApplyPage();
 })();
