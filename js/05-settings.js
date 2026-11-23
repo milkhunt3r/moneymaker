@@ -57,8 +57,6 @@ function showSettings(fromMenu) {
   showModal(`<div class="orPanel">
       <div class="orRibbon"><span>Settings</span></div>
       <button class="orClose" data-modal="close" aria-label="Close">✕</button>
-      <div class="orSec">Game</div>
-      ${row("load", "Load progress file")}
       <div class="orSec">Display</div>
       <div class="orRow slider">${orIcon("bright")}<span class="grow">Background brightness</span><span class="orVal" id="orBrightVal">${bgBright()}%</span>
         <input type="range" class="orRange" id="orBright" min="20" max="100" step="5" value="${bgBright()}" style="--p:${(bgBright() - 20) / 0.8}%" aria-label="Background brightness"></div>
@@ -126,7 +124,6 @@ $("settingsMenu").addEventListener("click", (e) => {
     settingsNote("⬇️ Progress file downloaded.");
   }
 
-  if (what === "load") $("loadFile").click();
 
   if (what === "reset") {
     $("settingsMenu").hidden = true;
