@@ -56,7 +56,7 @@ function wikiGeneral() {
       When the game is closed (or the computer sleeps) for more than 5 minutes, you get <b>offline earnings</b> when you come back:
       up to 8 hours count, and businesses, special businesses, gold mines and rent pay 50%. Contracts on their way, free bet chips and VIP chips keep their timers running.
       Nothing random happens while you're away (no taxes, crashes, breakdowns or market moves), and Logistics agents only start new contracts while the game is open.</p>
-    <p>Art Gallery paintings are stored separately in the browser so a big collection never fills up the save; a downloaded backup includes them. If the browser ever refuses to save, a red warning appears at the bottom of the screen.</p>`;
+    <p>Art Gallery paintings are stored separately in the browser so a big collection never fills up the save. If the browser ever refuses to save, a red warning appears at the bottom of the screen.</p>`;
 }
 
 function wikiIncome() {

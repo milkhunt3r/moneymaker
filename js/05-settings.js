@@ -105,25 +105,8 @@ $("settingsMenu").addEventListener("click", (e) => {
   if (what === "tutorial") { state.tips.tutorial = 0; delete state.tips.energyBase; state.tips.on = true; tutClicks = 0; save(); $("tipsToggle").textContent = "💡 Show tips: ON"; $("settingsMenu").hidden = true; showView("income"); state.incomePage = "biz"; render(); return; }
   if (what === "save") {
     save(); flushSave();
-    settingsNote(saveFailedAt ? "❌ Could not save: browser storage is full. Download a backup instead." : "✅ Game saved!");
+    settingsNote(saveFailedAt ? "❌ Could not save: browser storage is full." : "✅ Game saved!");
   }
-
-  if (what === "download") {
-    save();
-    // the file backup also carries the painting pictures (they live outside the normal save)
-    const out = state.art && typeof artImgs !== "undefined"
-      ? { ...state, art: { ...state.art, items: state.art.items.map(it => ({ ...it, img: it.img || artImgs[it.id] })) } } : state;
-    const blob = new Blob([JSON.stringify(out, null, 2)], { type: "application/json" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "empire-of-coins-save-" + new Date().toISOString().slice(0, 10) + ".json";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-    settingsNote("⬇️ Progress file downloaded.");
-  }
-
 
   if (what === "reset") {
     $("settingsMenu").hidden = true;

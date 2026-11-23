@@ -33,7 +33,7 @@ Object.assign(ES, {
   "The game saves itself every 30 seconds and after every action.": "La partida se guarda sola cada 30 segundos y después de cada acción.",
   "Tips are on.": "Consejos activados.", "Tips are off.": "Consejos desactivados.", "All tips will show again.": "Todos los consejos volverán a aparecer.",
   "Game saved!": "¡Partida guardada!", "Progress file downloaded.": "Archivo de progreso descargado.",
-  "Could not save: browser storage is full. Download a backup instead.": "No se ha podido guardar: el almacenamiento del navegador está lleno. Descarga una copia de seguridad.",
+  "Could not save: browser storage is full.": "No se ha podido guardar: el almacenamiento del navegador está lleno.",
   "Reset game?": "¿Reiniciar la partida?", "Your ☁️ cloud save is not deleted: sign in again to get it back.": "Tu partida en la ☁️ nube no se borra: vuelve a iniciar sesión para recuperarla.",
   "Cancel": "Cancelar", "Yes, reset everything": "Sí, reiniciar todo", "OK": "Vale",
   // ----- about -----

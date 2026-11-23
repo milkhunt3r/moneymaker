@@ -105,8 +105,8 @@ Object.assign(ES, {
   "New players get a short guided start (click the coin, buy a business, hire staff). After that, a small tip appears the first time you meet something new, with a link to the matching Wiki page. ⚙️ Settings: turn tips on/off, show all tips again, or replay the guided start.":
     "Los jugadores nuevos tienen un breve inicio guiado (haz clic en la moneda, compra un negocio, contrata personal). Después aparece un pequeño consejo la primera vez que encuentras algo nuevo, con un enlace a la página correspondiente de la Wiki. ⚙️ Ajustes: activa o desactiva los consejos, vuelve a ver todos o repite el inicio guiado.",
   "Background and offline": "En segundo plano y sin conexión",
-  "Art Gallery paintings are stored separately in the browser so a big collection never fills up the save; a downloaded backup includes them. If the browser ever refuses to save, a red warning appears at the bottom of the screen.":
-    "Los cuadros de la Galería de arte se guardan aparte en el navegador para que una colección grande nunca llene la partida guardada; la copia de seguridad descargada los incluye. Si el navegador se niega a guardar, aparece un aviso rojo en la parte inferior de la pantalla.",
+  "Art Gallery paintings are stored separately in the browser so a big collection never fills up the save. If the browser ever refuses to save, a red warning appears at the bottom of the screen.":
+    "Los cuadros de la Galería de arte se guardan aparte en el navegador para que una colección grande nunca llene la partida guardada. Si el navegador se niega a guardar, aparece un aviso rojo en la parte inferior de la pantalla.",
   // 💰 income
   "Clicking": "Clics", "Every click on the coin gives 1 bcoin (up to 10 clicks per second). Boosters and Tycoon's Legacy increase it.":
     "Cada clic en la moneda da 1 bcoin (hasta 10 clics por segundo). Los potenciadores y el Legado del magnate lo aumentan.",
