@@ -128,7 +128,10 @@ function petStep(now) {
   // switch modes when the current one is free to change
   if (!timed && P_.mode !== "walk") {
     if (want === "tap" && P_.mode !== "tap") { if (Math.abs(P_.x - L.tapX) > 4) petWalkTo(L.tapX, "tap"); else petSet("tap"); }
-    else if (want === "sleep" && P_.mode !== "sleep") petSet("sleep");
+    else if (want === "sleep" && P_.mode !== "sleep") {   // 💤 walks a little away from the coin first, then curls up
+      const bed = Math.min(L.maxX, L.tapX + L.s * 0.9);
+      if (Math.abs(P_.x - bed) > 20) petWalkTo(bed, "sleep"); else petSet("sleep");
+    }
     else if (want !== "sleep" && P_.mode === "sleep") petSet("wake", 1700);
     else if (want === "drink" && P_.mode !== "drink" && P_.mode !== "drink2") petSet("drink", 1400);
     else if (P_.mode === "drink") { petDrinkNow(); petSet("drink2", 900); }
