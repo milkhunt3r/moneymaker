@@ -537,7 +537,7 @@ function spResHtml() {
   const goods = Object.keys(SP_GOODS).filter(g => SP.goods[g]);
   return `<div class="spResRow"><span class="spResLbl">Money:</span>${it("💰", fmt(state.money), "Money")}</div>
     <div class="spResRow"><span class="spResLbl">Earth resources:</span>${earth.join("")}</div>
-    <div class="spResRow"><span class="spResLbl">Space resources (from aliens):</span>${goods.length ? goods.map(g => it(SP_GOODS[g].emoji, SP.goods[g].toLocaleString(), SP_GOODS[g].name)).join("") : `<span class="muted">none yet</span>`}</div>`;
+    <div class="spResRow"><span class="spResLbl">Space resources:</span>${goods.length ? goods.map(g => it(SP_GOODS[g].emoji, SP.goods[g].toLocaleString(), SP_GOODS[g].name)).join("") : `<span class="muted">none yet</span>`}</div>`;
 }
 /* ----- 🆘 alien emergency ----- */
 const spSosOn = () => !!SP.sos;

@@ -9,7 +9,7 @@ const ACH_CATEGORIES = [
   { id: "invest", name: "📈 Investments" }, { id: "logistics", name: "🚢 Logistics" },
   { id: "art", name: "🖼️ Art Gallery" }, { id: "mine", name: "⛏️ Mining" },
   { id: "shooter", name: "🚀 Nebula Strike" },
-  { id: "space", name: "🪐 Space" },
+  { id: "space", name: "🪐 Space Logistics" },
   // 🌌 secret: invisible (also not counted) until the 1st prestige
   { id: "secret", name: "🌌 Secrets", hidden: () => !((state.legacy && state.legacy.count) >= 1) },
   // 🧬 Gene Splicer: invisible (also not counted) until the 2nd prestige

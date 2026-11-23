@@ -868,7 +868,7 @@ const SP_ES_SOS = {
   "Their colour crystals went grey and they can't paint anymore!": "¡Sus cristales de color se han vuelto grises y ya no pueden pintar!",
   "Their flagship reactor is overheating!": "¡El reactor de su buque insignia se está sobrecalentando!",
 };
-Object.assign(ES, SP_ES_SOS, { "Money": "Dinero", "Earth resources": "Recursos de la Tierra", "Scientists": "Científicos", "Space resources (from aliens)": "Recursos espaciales (de los alienígenas)",
+Object.assign(ES, SP_ES_SOS, { "Money": "Dinero", "Earth resources": "Recursos de la Tierra", "Scientists": "Científicos", "Space resources": "Recursos espaciales", "Space Logistics": "Logística espacial",
   "none yet": "ninguno todavía", "Alien emergency": "Emergencia alienígena", "An alien race needs help: see 🚢 Logistics → 🌌 Space": "Una raza alienígena necesita ayuda: mira 🚢 Logística → 🌌 Espacio" });
 const spSosEs = (x) => SP_ES_SOS[x] || x;
 rx(String.raw`Explore · 🔬 (\d+) scientists`, "Explorar · 🔬 $1 científicos");
