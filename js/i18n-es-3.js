@@ -987,6 +987,7 @@ H("🏅 <b>Alliance bonuses</b>: become 💛 Trusted and 💖 Allies with a race
   "🏅 <b>Bonificaciones de alianza</b>: llega a 💛 De confianza y 💖 Aliada con una raza para obtener una bonificación permanente (más ingresos, valor del mineral, polvo estelar, rutas comerciales más rápidas, una nave espacial extra y más).");
 ES["☄️ Space events: special requests with a deadline, asteroid fields, lost alien ships to rescue, and pirates who want a toll."] = "☄️ Eventos espaciales: peticiones especiales con plazo, campos de asteroides, naves alienígenas perdidas que rescatar y piratas que piden peaje.";
 ES["🏆 2 new 🪐 Space achievements: 🌌 Galactic network and 👑 Friends forever."] = "🏆 2 logros nuevos de 🪐 Espacio: 🌌 Red galáctica y 👑 Amigos para siempre.";
+Object.assign(ES, { "Zoom in": "Acercar", "Zoom out": "Alejar", "Whole map": "Mapa completo" });
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
