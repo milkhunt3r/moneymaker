@@ -11,7 +11,11 @@ if (state.pet && state.pet.owned) {
   state.pet.name = typeof state.pet.name === "string" && state.pet.name.trim() ? state.pet.name.slice(0, 16) : "Mochi";
   state.pet.pets = state.pet.pets || 0; state.pet.taps = state.pet.taps || 0;
 }
-const petOwned = () => !!(state.pet && state.pet.owned);
+// 🎁 a pet won in a loot box stays a secret (no pet, no achievement) until the chest is opened.
+// Nothing can still be opening after a reload, so a leftover "pending" is revealed at start-up.
+function petReveal() { if (state.pet && state.pet.pending) { delete state.pet.pending; save(); } }
+if (state.pet && state.pet.pending) delete state.pet.pending;
+const petOwned = () => !!(state.pet && state.pet.owned && !state.pet.pending);
 const PET_WAKE_BEFORE = 10;          // wakes up this many seconds before the drink is ready
 const PET_TAP_MS = 100;
 const PET_SLAP_MS = 650;             // one visible paw slap (the 10 clicks / sec keep running underneath)

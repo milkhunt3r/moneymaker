@@ -87,7 +87,7 @@ function shWin() {
   const loot = L.loot ? shLootRoll() : null;
   const lootMin = loot && loot.min ? Math.round(shRand(loot.min[0], loot.min[1])) : 0;
   const money = loot ? (loot.k === "pet" ? 0 : Math.round(lootMin * 60 * mineBase())) : shReward(L, first), dust = first ? L.dustFirst : L.dustAgain;
-  if (loot) { SH.loots = (SH.loots || 0) + 1; if (loot.k === "pet") state.pet = { owned: true, at: Date.now(), name: "Mochi", pets: 0, taps: 0 }; }
+  if (loot) { SH.loots = (SH.loots || 0) + 1; if (loot.k === "pet") state.pet = { owned: true, pending: true, at: Date.now(), name: "Mochi", pets: 0, taps: 0 }; }   // pet pending: revealed when the chest is opened
   state.money += money; clickedThisSecond += money; SH.earned += money;   // counts as income (taxes)
   SH.dust += dust; SH.dustAll += dust; R.dust += dust;
   if (first) SH.done = R.lv;
@@ -1154,7 +1154,7 @@ function shSpinReel(E) {
 function shReelDone(E) {
   if (!E || E.opened) return;
   if (E.anim) { E.anim.onfinish = null; E.anim.cancel(); }
-  E.reel = null; E.opened = true;
+  E.reel = null; E.opened = true; if (typeof petReveal === "function") petReveal();
   if (shR && shR.end === E) shShowEnd();
 }
 function shRenderPlay() {
@@ -1176,7 +1176,7 @@ function shRenderPlay() {
   shCanvas.width = SHW * k; shCanvas.height = SHH * k;
   shCtx = shCanvas.getContext("2d"); shCtx.setTransform(k, 0, 0, k, 0, 0);
   shBindTouch();
-  if (shR.end) { shDraw(); if (shR.end.reel) { shR.end.reel = null; shR.end.opened = true; } shShowEnd(); }
+  if (shR.end) { shDraw(); if (shR.end.reel) { shR.end.reel = null; shR.end.opened = true; if (typeof petReveal === "function") petReveal(); } shShowEnd(); }
   else if (shR.paused) { shR.paused = false; shPause(true); }
   else shKick();
 }
@@ -1257,7 +1257,7 @@ function shBuyChest() {
   const money = loot.k === "pet" ? 0 : Math.round(min * 60 * mineBase());
   state.money += money; clickedThisSecond += money; SH.earned += money;
   SH.loots = (SH.loots || 0) + 1; SH.chestsBought = (SH.chestsBought || 0) + 1;
-  if (loot.k === "pet") state.pet = { owned: true, at: Date.now(), name: "Mochi", pets: 0, taps: 0 };
+  if (loot.k === "pet") state.pet = { owned: true, pending: true, at: Date.now(), name: "Mochi", pets: 0, taps: 0 };   // pending: revealed when the chest is opened
   save(); updateCounter(); renderShooter();
   shChest = { k: loot.k, name: loot.name, min, money, stage: "closed" };
   shChestShow();
@@ -1292,7 +1292,7 @@ function shChestSpin() {
 function shChestDone() {
   const C = shChest; if (!C || C.stage === "done") return;
   if (C.anim) { C.anim.onfinish = null; C.anim.cancel(); }
-  clearTimeout(C.doneT); C.stage = "done"; shChestShow();
+  clearTimeout(C.doneT); C.stage = "done"; if (typeof petReveal === "function") petReveal(); shChestShow();
 }
 $("modalBox").addEventListener("click", (e) => {
   const b = e.target.closest("[data-shc]"); if (!b || !shChest) return;
