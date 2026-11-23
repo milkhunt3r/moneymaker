@@ -110,7 +110,8 @@ const spTripTo = (k, kind) => SP.trips.find(tr => tr.to === k && (!kind || tr.k 
 const spMs = (k) => SP_RACES[k].min * 60e3;   // one way
 const spClock = (ms) => { const s = Math.max(0, Math.ceil(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60);
   return h ? `${h}:${String(m).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}` : `${m}:${String(s % 60).padStart(2, "0")}`; };
-const spGood = (g, n) => `${SP_GOODS[g].emoji} ${n != null ? `<b>${n}</b> ` : ""}${SP_GOODS[g].name}`;
+const spGI = (g, cls = "spGi") => `<img class="${cls}" src="assets/space/good-${g}.webp" alt="${SP_GOODS[g].emoji}">`;   // painted good icon
+const spGood = (g, n) => `${spGI(g)} ${n != null ? `<b>${n}</b> ` : ""}${SP_GOODS[g].name}`;
 
 /* ----- 🎁 what can be asked for: only kinds you can already get somewhere ----- */
 const spKindOpen = {
@@ -120,7 +121,7 @@ const spKindOpen = {
   art: () => !!(state.art && state.art.unlocked),
   dust: () => !!(state.shooter && state.shooter.unlocked),
 };
-const spKindName = (kind) => kind.startsWith("g:") ? `${SP_GOODS[kind.slice(2)].emoji} ${SP_GOODS[kind.slice(2)].name}`
+const spKindName = (kind) => kind.startsWith("g:") ? `${spGI(kind.slice(2))} ${SP_GOODS[kind.slice(2)].name}`
   : kind === "dna" && !spKindOpen.dna() ? "❓ Something you haven't discovered yet" : SP_KINDS[kind];
 const spOpenKind = (w) => w.startsWith("g:") || spKindOpen[w]();
 function spRound(n) { if (n < 100) return Math.round(n); const p = Math.pow(10, Math.floor(Math.log10(n)) - 1); return Math.round(n / p) * p; }
@@ -164,7 +165,7 @@ const spReqText = (q) => q.kind === "money" ? `💰 <b>${fmt(q.amount)}</b>`
   : q.kind === "dust" ? `✨ <b>${q.amount.toLocaleString()}</b> stardust`
   : q.kind === "dna" ? `🧬 <b>${q.amount}</b> DNA samples (you choose which)`
   : q.kind === "art" ? `🖼️ <b>${q.amount}</b> paintings (you choose which)`
-  : q.kind === "goods" ? Object.entries(q.goods).map(([g, n]) => `${SP_GOODS[g].emoji} <b>${n}</b> ${SP_GOODS[g].name}`).join(" + ")
+  : q.kind === "goods" ? Object.entries(q.goods).map(([g, n]) => `${spGI(g)} <b>${n}</b> ${SP_GOODS[g].name}`).join(" + ")
   : Object.entries(q.ore).map(([o, n]) => `${typeof oreIcon === "function" ? oreIcon(o) : ""} <b>${n}</b> ${ORES[o].name}`).join(" + ");
 function spCanPay(q) {
   if (q.kind === "money") return state.money >= q.amount;
@@ -513,10 +514,10 @@ function spRouteHtml(k) {
   const R = SP_RACES[k], L = spLevel(k), rt = spRouteOf(k);
   if (L < SP_ROUTE_LV) return `<div class="spRoute locked">🛣️ <b>Trade route:</b> opens when you are <b>😊 Friendly</b> with the ${R.name}.</div>`;
   const goods = SP_ROUTE_GOODS[L], mins = Math.round(spRouteMs(k) * 2 / 60e3);
-  if (rt) return `<div class="spRoute on"><div>🛣️ <b>Trade route open</b> · ${SP_GOODS[R.good].emoji} <b>${goods}</b> ${SP_GOODS[R.good].name} every trip (${mins} min round trip)</div>
+  if (rt) return `<div class="spRoute on"><div>🛣️ <b>Trade route open</b> · ${spGI(R.good)} <b>${goods}</b> ${SP_GOODS[R.good].name} every trip (${mins} min round trip)</div>
     ${spTripLine(rt)}<div class="muted">Trips so far: ${rt.loops || 0} · goods brought home: ${(rt.got || 0).toLocaleString()}</div>
     <div class="spBtns">${rt.stop ? `<span class="muted">⏹️ Stops when the ship gets home.</span> <button class="btn ghost small" data-spx="rgo">▶ Keep it running</button>` : `<button class="btn ghost" data-spx="rstop">⏹️ Stop the route</button>`}</div></div>`;
-  return `<div class="spRoute"><div>🛣️ <b>Trade route:</b> one ship flies to the ${R.name} and back <b>for good</b>, bringing ${SP_GOODS[R.good].emoji} <b>${goods}</b> ${SP_GOODS[R.good].name} every trip (${mins} min round trip). It keeps going while the game is closed.</div>
+  return `<div class="spRoute"><div>🛣️ <b>Trade route:</b> one ship flies to the ${R.name} and back <b>for good</b>, bringing ${spGI(R.good)} <b>${goods}</b> ${SP_GOODS[R.good].name} every trip (${mins} min round trip). It keeps going while the game is closed.</div>
     <div class="muted">More goods and faster trips at 💛 Trusted and 💖 Allies.</div>
     <div class="spBtns"><button class="btn big" data-spx="route" ${spFree() ? "" : "disabled"}>🛣️ Open trade route</button></div>${spFree() ? "" : `<div class="muted">All your ships are busy.</div>`}</div>`;
 }
@@ -537,7 +538,7 @@ function spResHtml() {
   const goods = Object.keys(SP_GOODS).filter(g => SP.goods[g]);
   return `<div class="spResRow"><span class="spResLbl">Money:</span>${it("💰", fmt(state.money), "Money")}</div>
     <div class="spResRow"><span class="spResLbl">Earth resources:</span>${earth.join("")}</div>
-    <div class="spResRow"><span class="spResLbl">Space resources:</span>${goods.length ? goods.map(g => it(SP_GOODS[g].emoji, SP.goods[g].toLocaleString(), SP_GOODS[g].name)).join("") : `<span class="muted">none yet</span>`}</div>`;
+    <div class="spResRow"><span class="spResLbl">Space resources:</span>${goods.length ? goods.map(g => it(spGI(g), SP.goods[g].toLocaleString(), SP_GOODS[g].name)).join("") : `<span class="muted">none yet</span>`}</div>`;
 }
 /* ----- 🆘 alien emergency ----- */
 const spSosOn = () => !!SP.sos;
@@ -591,7 +592,7 @@ function spSosHtml() {
 // ❗ red warnings: on the 🚢 Logistics tab (see refreshUnlocks) and on the 🌌 Space page button
 function spRefreshWarn() {
   const sb = document.querySelector('[data-logipage="space"]');
-  if (sb) { const html = (spOpen() ? "" : '<img class="ico lockS" src="assets/icons/ico-lock.webp" alt="">') + "🌌 Space" + (SP.sos ? ' <span class="tabWarn" title="Alien emergency">!</span>' : "");
+  if (sb) { const html = (spOpen() ? "" : '<img class="ico lockS" src="assets/icons/ico-lock.webp" alt="">') + '<img class="ico" src="assets/icons/ico-lg-space.webp" alt="">Space' + (SP.sos ? ' <span class="tabWarn" title="Alien emergency">!</span>' : "");
     if (sb.innerHTML !== html) sb.innerHTML = html; }
 }
 /* ----- 🏪 MARKET: sell alien goods. Each good's price moves every 30 minutes (the same for everyone at the same time). ----- */
@@ -626,14 +627,14 @@ function spMarketHtml() {
     if (!known && !have) return `<tr class="spMkLocked"><td>❓ Unknown goods</td><td colspan="5" class="muted">Meet more alien races to trade their goods.</td></tr>`;
     const p = spPrice(g), prev = spPrice(g, spSlot() - 1), ch = (p - prev) / prev * 100;
     const q = Math.min(have, Math.max(1, Math.floor(spQty[g] || 1)));
-    return `<tr><td>${SP_GOODS[g].emoji} <b>${SP_GOODS[g].name}</b><div class="muted">from the ${R.name}</div></td><td><b>${have.toLocaleString()}</b></td>
+    return `<tr><td>${spGI(g)} <b>${SP_GOODS[g].name}</b><div class="muted">from the ${R.name}</div></td><td><b>${have.toLocaleString()}</b></td>
       <td><b>${fmt(p)}</b><div class="${ch >= 0 ? "up" : "down"}">${ch >= 0 ? "▲" : "▼"} ${Math.abs(ch).toFixed(0)}%</div></td><td>${spSpark(g)}</td>
       <td class="spMkSell"><input type="number" min="1" max="${have}" value="${q}" data-spq="${g}" ${have ? "" : "disabled"}>
         <button class="btn small" data-spx="sell" data-g="${g}" ${have ? "" : "disabled"}>Sell</button>
         <button class="btn ghost small" data-spx="sellall" data-g="${g}" ${have ? "" : "disabled"}>Sell all${have ? ` (${fmt(have * p)})` : ""}</button></td></tr>`;
   }).join("");
   return `<div class="card spResBar" id="spResBar">${spResHtml()}</div>
-    <div class="card"><div class="row"><h2 style="margin:0">🏪 Alien market</h2><span class="muted">⏱️ Prices change in <b data-spt="${next}">${spClock(next - Date.now())}</b></span></div>
+    <div class="card"><div class="row"><h2 style="margin:0"><img class="ico h" src="assets/icons/ico-lg-market.webp" alt="">Alien market</h2><span class="muted">⏱️ Prices change in <b data-spt="${next}">${spClock(next - Date.now())}</b></span></div>
     <p class="muted">Sell the goods your ships bring home. Prices move every 30 minutes: sell when they are high. The further away a race lives, the more its goods are worth.</p>
     <div class="spMkWrap"><table class="spMarket"><thead><tr><th>Good</th><th>You have</th><th>Price each</th><th>Last 6 hours</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
     <div class="spStats"><span>📦 Sold: <b>${(SP.stats.sold || 0).toLocaleString()}</b></span><span>💰 Earned: <b>${fmt(SP.stats.soldMoney || 0)}</b></span></div></div>`;
@@ -757,7 +758,7 @@ function spApplyPage() {
   const view = $("logisticsView");
   if (!$("logiTabs")) {   // left-side page menu (like Investing): everything after the lock card moves into the main column
     const layout = document.createElement("div"); layout.className = "subLayout"; layout.id = "logiLayout";
-    layout.innerHTML = `<nav class="subNav" id="logiTabs"><button class="subTab" data-logipage="earth">🌍 Earth</button><button class="subTab" data-logipage="space">🌌 Space</button><button class="subTab subSub" data-logipage="market">🏪 Market</button></nav><div class="subMain" id="logiMain"></div>`;
+    layout.innerHTML = `<nav class="subNav" id="logiTabs"><button class="subTab" data-logipage="earth"><img class="ico" src="assets/icons/ico-lg-earth.webp" alt="">Earth</button><button class="subTab" data-logipage="space"><img class="ico" src="assets/icons/ico-lg-space.webp" alt="">Space</button><button class="subTab subSub" data-logipage="market"><img class="ico" src="assets/icons/ico-lg-market.webp" alt="">Market</button></nav><div class="subMain" id="logiMain"></div>`;
     const main = layout.querySelector("#logiMain");
     [...view.children].filter(el => !el.classList.contains("debtBanner") && el.id !== "logiLocked").forEach(el => main.appendChild(el));
     const sv = document.createElement("div"); sv.id = "spaceView"; sv.hidden = true; main.appendChild(sv);

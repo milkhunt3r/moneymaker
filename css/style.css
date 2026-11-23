@@ -2036,3 +2036,6 @@ body.phone .spMkSell { white-space: normal; } body.phone .spSpark { width: 60px;
 body.phone .spNode { width: 14%; } body.phone .spNode.sol { width: 16%; } body.phone .spShip { width: 6.5%; }
 body.phone .spZoom { right: auto; left: 50%; top: 6px; bottom: auto; transform: translateX(-50%); flex-direction: row; gap: 4px; }
 body.phone .spZoom button { width: 28px; height: 28px; font-size: 17px; border-radius: 8px; }
+.spGi { width: 1.35em; height: 1.35em; vertical-align: -0.32em; object-fit: contain; }
+.spRes .spGi { width: 22px; height: 22px; }
+.spMarket td .spGi { width: 30px; height: 30px; vertical-align: middle; margin-right: 4px; }
