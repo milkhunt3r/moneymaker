@@ -98,7 +98,7 @@ if (logi.tankerAgent === undefined) logi.tankerAgent = false;
 /* ----- 🚚 LOGISTICS LEVEL: XP when a contract is delivered = contract minutes × fleet rate.
    Trucks 1 XP/min, tankers 3 XP/min, cargo planes 6 XP/min.
    Unlocks the Logistics agents: trucks at level 5, tankers at 25, planes at 50. ----- */
-const LOGI_XP_RATE = { truck: 1, tanker: 3, plane: 6 };
+const LOGI_XP_RATE = { truck: 1, tanker: 3, plane: 6, ship: 6 };   // ship: 🌌 Space gift (and later trade) trips, round trip; exploring gives none
 const AGENT_LEVEL = { truck: 5, tanker: 25, plane: 50 };
 // older saves: about 10 XP for every contract already delivered
 if (typeof state.logiXp !== "number") state.logiXp = (logi.contracts || 0) * 10;

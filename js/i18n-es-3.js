@@ -856,6 +856,9 @@ hrx(String.raw`<b>2\. Gifts:<\/b> each race asks for one gift at a time: money, 
 H("<b>3. Alien goods:</b> your ship comes back with the race's own goods (more at higher friendship, plus a thank-you shipment at every new level). Trading them comes in a later update.",
   "<b>3. Bienes alienígenas:</b> tu nave vuelve con los bienes propios de la raza (más cuanto mayor sea la amistad, y un envío de agradecimiento en cada nivel nuevo). Comerciar con ellos llegará en una próxima actualización.");
 rx(String.raw`(\S+) (${SP_RX_LV})`, (m, ic, l) => `${ic} ${spL(l)}`);
+hrx(String.raw`🚚 <b>Logistics XP:<\/b> every gift trip gives (\d+) XP per minute of the round trip when the ship gets home\. Exploring gives no XP\.`,
+  "🚚 <b>XP de logística:</b> cada viaje con un regalo da $1 XP por minuto de ida y vuelta cuando la nave llega a casa. Explorar no da XP.");
+ES["🚚 Gift trips to alien races give Logistics XP (6 XP per minute of the trip). Exploring gives none."] = "🚚 Los viajes con regalos a razas alienígenas dan XP de logística (6 XP por minuto de viaje). Explorar no da XP.";
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

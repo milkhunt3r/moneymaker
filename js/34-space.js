@@ -172,6 +172,7 @@ function spProcess() {
     }
     if (tr.arrived && now >= tr.t2) {
       tr.done = true; changed = true;
+      if (tr.k !== "explore" && typeof addLogiXp === "function") addLogiXp("ship", (tr.t2 - tr.t0) / 1000);   // 🚚 Logistics XP for gift trips
       if (tr.goods) { SP.goods[R.good] = (SP.goods[R.good] || 0) + tr.goods; SP.stats.goods += tr.goods; }
       msgs.push(`🚀 Your ship is back from the ${R.name}${tr.goods ? ` with ${SP_GOODS[R.good].emoji} ${tr.goods} ${SP_GOODS[R.good].name}` : ""}.`);
     }
