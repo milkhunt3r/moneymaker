@@ -1925,3 +1925,57 @@ p.guestWarn { font-size: 14px; background: rgba(255, 170, 0, 0.1); border: 1px s
 .mapCount circle { fill: #ffd34d; stroke: #0b1426; stroke-width: 1.5; }
 .mapCount text { font: 800 7.5px system-ui, sans-serif; fill: #1a1030; pointer-events: none; }
 .mapTipHr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.15); margin: 4px 0; }
+
+/* 🌌 Space logistics (js/34-space.js) */
+.logiTabs { display: flex; gap: 8px; margin-bottom: 14px; }
+.logiTab { flex: 1; padding: 12px; font-size: 17px; font-weight: 700; border-radius: 12px; border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(36, 30, 64, 0.9); color: #e8e6ff; cursor: pointer; }
+.logiTab:hover { background: rgba(52, 44, 92, 0.95); }
+.logiTab.on { background: #ffd34d; color: #2b2200; border-color: #ffd34d; }
+#logisticsView.spaceMode > :not(#logiTabs):not(#spaceView):not(.debtBanner):not(#logiLocked) { display: none !important; }
+#spaceView[hidden] { display: none; }
+.spMap { position: relative; width: 100%; aspect-ratio: 16 / 9; margin-top: 10px; border-radius: 12px; overflow: hidden;
+  background: #0b0c2a url("../assets/space/space-map-bg.webp") center / cover; box-shadow: inset 0 0 40px rgba(0,0,0,0.6); }
+.spMap svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.spMap line { stroke: rgba(140, 200, 255, 0.25); stroke-width: 0.35; stroke-dasharray: 1.2 1.2; }
+.spMap line.known { stroke: rgba(255, 211, 77, 0.45); }
+.spMap line.busy { stroke: rgba(120, 255, 230, 0.8); stroke-width: 0.5; }
+.spNode { position: absolute; width: 13%; transform: translate(-50%, -50%); background: none; border: none; padding: 0; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; color: #fff; }
+.spNode img { width: 100%; display: block; filter: drop-shadow(0 0 6px rgba(0,0,0,0.6)); transition: transform 0.2s; }
+.spNode:hover img { transform: scale(1.08); }
+.spNode.sol { width: 15%; }
+.spNode.fog img { opacity: 0.9; animation: spPulse 3s ease-in-out infinite; }
+.spNode.hidden img, .spNode.far img { opacity: 0.35; filter: grayscale(0.6); }
+.spNode.far { cursor: default; }
+.spNode.sel img { filter: drop-shadow(0 0 10px #ffd34d) drop-shadow(0 0 4px #ffd34d); }
+.spLbl { margin-top: -6px; font-size: 13px; font-weight: 700; line-height: 1.15; text-align: center; text-shadow: 0 1px 3px #000, 0 0 6px #000; white-space: nowrap; }
+.spLbl small { display: block; font-size: 11px; font-weight: 600; color: #cfd3ff; }
+.spPing { position: absolute; top: 0; right: 4%; font-style: normal; font-size: 16px; animation: spBob 1.4s ease-in-out infinite; }
+.spShip { position: absolute; width: 5.5%; pointer-events: none; transition: left 1s linear, top 1s linear; filter: drop-shadow(0 0 6px rgba(120,220,255,0.7)); z-index: 2; }
+@keyframes spPulse { 50% { transform: scale(1.06); opacity: 1; } }
+@keyframes spBob { 50% { transform: translateY(-4px); } }
+.spPanel h3 { margin: 0 0 6px; }
+.spStats { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 8px 0; }
+.spSlots { margin: 6px 0; padding-left: 20px; }
+.spWarn { color: #ffb36b; }
+.spTrip { padding: 8px 10px; margin: 6px 0; border-radius: 10px; background: rgba(120, 220, 255, 0.08); border: 1px solid rgba(120, 220, 255, 0.25); }
+.spRace { display: flex; gap: 14px; align-items: flex-start; }
+.spFace { font-size: 54px; line-height: 1; width: 72px; height: 72px; display: grid; place-items: center; border-radius: 16px; background: rgba(255,255,255,0.06); flex: none; }
+.spBio { margin: 2px 0 0; color: #c9c9da; }
+.spFriend { margin: 12px 0 8px; }
+.spInfo { display: grid; gap: 4px; margin: 8px 0; }
+.spReq { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(255, 211, 77, 0.08); border: 1px solid rgba(255, 211, 77, 0.3); }
+.spBtns { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 4px; }
+.spGoods { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 16px; }
+.spPickList { max-height: 50vh; overflow: auto; display: grid; gap: 4px; text-align: left; }
+.spPickRow { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; border-radius: 8px; background: rgba(255,255,255,0.04); }
+.spPickRow .geneImg.sm { width: 26px; height: 26px; vertical-align: middle; }
+.spArtGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; max-height: 50vh; overflow: auto; }
+.spArt { background: rgba(255,255,255,0.05); border: 2px solid transparent; border-radius: 10px; padding: 4px; cursor: pointer; color: #fff; }
+.spArt img { width: 100%; border-radius: 6px; display: block; }
+.spArt.on { border-color: #ffd34d; background: rgba(255, 211, 77, 0.15); }
+body.phone .spLbl { font-size: 10px; } body.phone .spLbl small { font-size: 9px; }
+body.phone .spFace { font-size: 40px; width: 56px; height: 56px; }
+body.phone .spMap { aspect-ratio: 4 / 3.4; }
+body.phone .spNode { width: 17%; } body.phone .spNode.sol { width: 19%; } body.phone .spShip { width: 9%; }

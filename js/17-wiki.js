@@ -238,7 +238,21 @@ function wikiLogistics() {
       Hover a vehicle or city for details. A glowing ring means a vehicle is on its way there.</p>
     <h3>Bonuses</h3>
     <ul><li>📦 Warehouses: +2% on truck contracts each (max 5).</li><li>⚓ Trading Port: +2.5% on tanker contracts and ${PORT_PER_TANKER} / sec per tanker.</li>
-      <li>🚢 Global Empire prestige: keep your fleet on resets; level 2 halves every contract's time.</li></ul>`;
+      <li>🚢 Global Empire prestige: keep your fleet on resets; level 2 halves every contract's time.</li></ul>
+    ${typeof SP_RACES === "object" ? `<h2>🌌 Space</h2>
+    <p>The second Logistics page. It opens when you build the 🚀 Space Mission Center: a star map with our Solar System in the middle and alien systems all around it.</p>
+    <p><b>Ships:</b> 🚀 Space Mission Center 1 ship, and more from other space buildings (up to 6). Ships keep flying while the game is closed.</p>
+    <p><b>1. Explore:</b> send a ship to an unknown signal. It flies there and back (6–18 min each way) and meets the race that lives there.
+      Three systems are reachable from the start; each of the others is revealed by its neighbour once you are <b>Acquainted</b>.</p>
+    <p><b>2. Gifts:</b> each race asks for one gift at a time: money, ore from your 🏦 vault, ${spKindOpen.dna() ? "DNA samples, " : ""}paintings or stardust.
+      Their favourite kind gives +${SP_FAV_PTS} friendship, the other +${SP_PTS}. A request changes every 24 hours, or ask for something else every 4 hours.
+      Paintings you give away count as sold. Only one gift per race can be on its way at a time.</p>
+    <p><b>3. Alien goods:</b> your ship comes back with the race's own goods (more at higher friendship, plus a thank-you shipment at every new level). Trading them comes in a later update.</p>
+    ${wt(["Race", "Lives", "Favourite", "Also likes", "Sends back", "Each way"], Object.entries(SP_RACES).map(([k, R]) =>
+      [SP.races[k].found ? `${R.emoji} ${R.name}` : "❓ Unknown", SP.races[k].found ? R.title : "?", SP.races[k].found ? spKindName(R.wants[0]) : "?", SP.races[k].found ? spKindName(R.wants[1]) : "?",
+        SP.races[k].found ? spGood(R.good) : "?", `${R.min} min`]))}
+    ${wt(["Friendship", "Needed"], SP_LEVELS.slice(1).map(l => [`${l.icon} ${l.name}`, l.pts ? l.pts.toLocaleString() : "First contact"]))}
+    <p>A prestige never resets the races, your friendship or your goods. Ships come from your buildings, so you get them back as you rebuild them (or keep them with Tycoon's Legacy).</p>` : ""}`;
 }
 
 function wikiAchievements() {

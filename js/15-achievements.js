@@ -9,6 +9,7 @@ const ACH_CATEGORIES = [
   { id: "invest", name: "📈 Investments" }, { id: "logistics", name: "🚢 Logistics" },
   { id: "art", name: "🖼️ Art Gallery" }, { id: "mine", name: "⛏️ Mining" },
   { id: "shooter", name: "🚀 Nebula Strike" },
+  { id: "space", name: "🪐 Space" },
   // 🌌 secret: invisible (also not counted) until the 1st prestige
   { id: "secret", name: "🌌 Secrets", hidden: () => !((state.legacy && state.legacy.count) >= 1) },
   // 🧬 Gene Splicer: invisible (also not counted) until the 2nd prestige
@@ -245,6 +246,18 @@ const ACHIEVEMENTS = [
       { id: "shMaxShip", icon: "⬆️", name: "Fully loaded",        desc: "Max out every upgrade on one ship",                 goal: 1, get: () => (N().owned || []).some(maxed) ? 1 : 0 },
       { id: "shDust5k",  icon: "🌟", name: "Stardust collector",  desc: "Collect 5,000 stardust",                            goal: 5000, get: () => N().dustAll || 0 },
     ].map(a => ({ ...a, cat: "shooter" }));
+  })(),
+  // 🪐 Space logistics (js/34-space.js loads later, so every check is guarded)
+  ...(() => {
+    const S = () => state.space || {}, races = () => Object.values(S().races || {});
+    const lv = (pts) => races().some(r => r.found && (r.pts || 0) >= pts) ? 1 : 0;
+    return [
+      { id: "spMeet1",   icon: "👽", name: "First contact",          desc: "Meet your first alien race",                    goal: 1,  get: () => races().filter(r => r.found).length },
+      { id: "spMeet6",   icon: "🔭", name: "Star cartographer",      desc: "Meet 6 alien races",                            goal: 6,  get: () => races().filter(r => r.found).length },
+      { id: "spFriend",  icon: "😊", name: "Friends among the stars", desc: "Become Friendly with an alien race",           goal: 1,  get: () => lv(1000) },
+      { id: "spAlly",    icon: "💖", name: "Interstellar alliance",  desc: "Become Allies with an alien race",              goal: 1,  get: () => lv(5000) },
+      { id: "spGifts50", icon: "🎁", name: "Generous empire",        desc: "Deliver 50 gifts to alien races",               goal: 50, get: () => (S().stats || {}).gifts || 0 },
+    ].map(a => ({ ...a, cat: "space" }));
   })(),
   { id: "satellite", cat: "logistics", icon: "🛰️", name: "Eye in the sky", desc: "Launch a satellite", goal: 1, get: () => state.science && state.science.satellite ? 1 : 0 },
   { id: "logi100s",   cat: "logistics", icon: "💎", name: "Shipping tycoon",  desc: "Earn 100 scoin from logistics",      goal: 100 * SC, get: () => logi.earned, money: true },

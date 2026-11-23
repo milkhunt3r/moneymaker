@@ -748,6 +748,122 @@ rx(String.raw`(?:💀 )?Very hard · 5 min · No boss`, "Muy difícil · 5 min �
 H("🗺️ <b>Level 5: Pirates' Lost Treasure</b> has no boss: survive for 5 minutes while it keeps getting busier. Watch out for 🦈 sea sharks, powder monkeys with big cannonballs, and cursed rocks and broken masts that can't be destroyed (your shots bounce off them, so fly around them). Survive to win the same pirate loot box.",
   "🗺️ <b>Nivel 5: El tesoro perdido de los piratas</b> no tiene jefe: sobrevive 5 minutos mientras la acción no deja de crecer. Cuidado con los 🦈 tiburones espaciales, los monos de pólvora con sus grandes balas de cañón y las rocas malditas y mástiles rotos que no se pueden destruir (tus disparos rebotan en ellos, así que esquívalos). Sobrevive para ganar el mismo cofre del botín pirata.");
 
+/* 🌌 Space logistics (js/34-space.js) */
+const SP_ES_NAME = { "Kragg": "Kragg", "Aurumites": "Aurumitas", "Glimmerkin": "Glimmerkin", "Vynari": "Vynari", "Lumerians": "Lumerianos", "Void Corsairs": "Corsarios del Vacío" };
+const SP_ES_GOOD = { "Star Crystals": "Cristales estelares", "Void Gold": "Oro del vacío", "Nebula Cores": "Núcleos de nebulosa", "Living Silk": "Seda viva", "Echo Pearls": "Perlas de eco", "Pirate Charts": "Cartas piratas" };
+const SP_ES_LV = { "Unknown": "Desconocida", "Contacted": "Contactada", "Acquainted": "Conocida", "Friendly": "Amistosa", "Trusted": "De confianza", "Allies": "Aliada" };
+const SP_ES_TITLE = { "Rock-eaters": "Comerrocas", "Bankers": "Banqueros", "Star-chasers": "Cazaestrellas", "Bio-collectors": "Biocoleccionistas", "Art lovers": "Amantes del arte", "Space pirates": "Piratas espaciales" };
+const spN = (n) => SP_ES_NAME[n] || n, spG = (g) => SP_ES_GOOD[g] || g, spL = (l) => SP_ES_LV[l] || l;
+const SP_RX_NAME = Object.keys(SP_ES_NAME).join("|"), SP_RX_GOOD = Object.keys(SP_ES_GOOD).join("|"), SP_RX_LV = Object.keys(SP_ES_LV).join("|");
+Object.assign(ES, SP_ES_NAME, SP_ES_GOOD, SP_ES_LV, SP_ES_TITLE, {
+  "Earth": "Tierra", "Space": "Espacio", "Star map": "Mapa estelar", "Home": "Hogar", "Solar System": "Sistema Solar", "Out of range": "Fuera de alcance",
+  "Unknown signal": "Señal desconocida", "Uncharted": "Sin cartografiar", "Explore": "Explorar", "Alien goods": "Bienes alienígenas",
+  "Coming soon: trade routes, selling alien goods, and trading them with other races.": "Próximamente: rutas comerciales, venta de bienes alienígenas e intercambio con otras razas.",
+  "Favourite": "Favorito", "Also likes": "También le gusta", "Their request": "Su petición", "They send back": "Te devuelven", "Distance": "Distancia",
+  "A hidden building": "Un edificio oculto", "ship": "nave", "ships": "naves", "Ships": "Naves", "busy": "ocupadas", "Races met": "Razas conocidas",
+  "Gifts delivered": "Regalos entregados", "Ships in flight": "Naves en vuelo", "Send gift": "Enviar regalo", "Ask for something else": "Pedir otra cosa",
+  "Send": "Enviar", "Money": "Dinero", "Ore": "Mineral", "Paintings": "Cuadros", "DNA samples": "Muestras de ADN", "Stardust": "Polvo estelar",
+  "Home: the Solar System": "Hogar: el Sistema Solar", "Uncharted system": "Sistema sin cartografiar", "Pick for me": "Elige por mí",
+  "Your spaceport. Pick a system on the map to explore it or send gifts. Ships keep flying while the game is closed.": "Tu puerto espacial. Elige un sistema en el mapa para explorarlo o enviar regalos. Las naves siguen volando con el juego cerrado.",
+  "Nothing yet. Races send their goods back with your ships.": "Nada todavía. Las razas devuelven sus bienes con tus naves.",
+  "Samples refill over time in the Gene Splicer.": "Las muestras se recargan con el tiempo en el Empalmador genético.",
+  "Paintings you give away leave your collection (they count as sold for 🏆 achievements).": "Los cuadros que regalas salen de tu colección (cuentan como vendidos para los 🏆 logros).",
+  "Explore the galaxy, meet alien races and trade with them.": "Explora la galaxia, conoce razas alienígenas y comercia con ellas.",
+  "You have no ships right now. Build the 🚀 Space Mission Center (💰 Income → 🔬 Science) to get your first one back.": "Ahora mismo no tienes naves. Construye el 🚀 Centro de Misiones Espaciales (💰 Ingresos → 🔬 Ciencia) para recuperar la primera.",
+  "All your ships are busy.": "Todas tus naves están ocupadas.", "You don't have enough for this gift yet.": "Todavía no tienes suficiente para este regalo.",
+  "Something you haven't discovered yet": "Algo que aún no has descubierto", "The gift couldn't be sent.": "No se ha podido enviar el regalo.",
+  "Race": "Raza", "Lives": "Vive", "Sends back": "Devuelve", "Each way": "Cada trayecto", "Friendship": "Amistad", "Needed": "Necesario",
+  // 🏆
+  "First contact": "Primer contacto", "Meet your first alien race": "Conoce tu primera raza alienígena", "Star cartographer": "Cartógrafo estelar",
+  "Meet 6 alien races": "Conoce 6 razas alienígenas", "Friends among the stars": "Amigos entre las estrellas", "Become Friendly with an alien race": "Logra una amistad Amistosa con una raza alienígena",
+  "Interstellar alliance": "Alianza interestelar", "Become Allies with an alien race": "Hazte Aliado de una raza alienígena", "Generous empire": "Imperio generoso",
+  "Deliver 50 gifts to alien races": "Entrega 50 regalos a razas alienígenas",
+  // bios
+  "Huge, slow stone beings who chew asteroids for breakfast. They respect heavy, honest gifts.": "Enormes y lentos seres de piedra que mastican asteroides para desayunar. Respetan los regalos pesados y sinceros.",
+  "Polite, gold-plated traders who count everything twice. Coins are the only language they fully trust.": "Comerciantes educados y bañados en oro que lo cuentan todo dos veces. Las monedas son el único idioma en el que confían del todo.",
+  "Tiny shimmering beings who ride the solar winds and collect starlight in jars.": "Diminutos seres relucientes que cabalgan los vientos solares y guardan luz de estrellas en tarros.",
+  "One giant jungle mind that wants to collect every form of life in the galaxy.": "Una gigantesca mente selvática que quiere coleccionar todas las formas de vida de la galaxia.",
+  "Dreamy artists who see colours we can't imagine. They would trade a moon for a good painting.": "Artistas soñadores que ven colores que no podemos imaginar. Cambiarían una luna por un buen cuadro.",
+  "A rowdy pirate clan from a cursed red star. Pay them well and they might even call you friend.": "Un clan pirata alborotador de una estrella roja maldita. Págales bien y puede que hasta te llamen amigo.",
+  "The second Logistics page. It opens when you build the 🚀 Space Mission Center: a star map with our Solar System in the middle and alien systems all around it.":
+    "La segunda página de Logística. Se abre al construir el 🚀 Centro de Misiones Espaciales: un mapa estelar con nuestro Sistema Solar en el centro y sistemas alienígenas a su alrededor.",
+  "A prestige never resets the races, your friendship or your goods. Ships come from your buildings, so you get them back as you rebuild them (or keep them with Tycoon's Legacy).":
+    "Un prestigio nunca reinicia las razas, tu amistad ni tus bienes. Las naves vienen de tus edificios, así que las recuperas al reconstruirlos (o las conservas con el Legado del magnate).",
+  "🏆 New <b>🪐 Space</b> achievements section: 5 achievements.": "🏆 Nueva sección de logros <b>🪐 Espacio</b>: 5 logros.",
+  "Space": "Espacio",
+});
+const spWord = (n, one, many) => plural(n, one, many);
+hrx(String.raw`(${SP_RX_NAME})<small>(\S+) (${SP_RX_LV})<\/small>`, (m, n, ic, l) => `${spN(n)}<small>${ic} ${spL(l)}</small>`);
+hrx(String.raw`Unknown signal<small>❓ Explore<\/small>`, "Señal desconocida<small>❓ Explorar</small>");
+hrx(String.raw`Home<small>🌍 Solar System<\/small>`, "Hogar<small>🌍 Sistema Solar</small>");
+rx(String.raw`(\d+) of (\d+) ships? free`, (m, a, b) => `${a} de ${b} ${plural(b, "nave libre", "naves libres")}`);
+hrx(String.raw`(\S+) <b>(\d+)<\/b> (${SP_RX_GOOD})`, (m, e, n, g) => `${e} <b>${n}</b> ${spG(g)}`);
+hrx(String.raw`(${SP_RX_NAME}) <span>· (.+)<\/span>`, (m, n, tl) => `${spN(n)} <span>· ${SP_ES_TITLE[tl] || tl}</span>`);
+hrx(String.raw`❤️ <b>Favourite:<\/b> (.+) <span>\(\+(\d+) friendship\)<\/span>`, (m, k, n) => `❤️ <b>Favorito:</b> ${ES[k.replace(/^\S+ /, "")] ? k.replace(/ .+$/, "") + " " + ES[k.replace(/^\S+ /, "")] : k} <span>(+${n} de amistad)</span>`);
+hrx(String.raw`👍 <b>Also likes:<\/b> (.+) <span>\(\+(\d+)\)<\/span>`, (m, k, n) => `👍 <b>También le gusta:</b> ${ES[k.replace(/^\S+ /, "")] ? k.replace(/ .+$/, "") + " " + ES[k.replace(/^\S+ /, "")] : k} <span>(+${n})</span>`);
+hrx(String.raw`📦 <b>They send back:<\/b> (\S+) (${SP_RX_GOOD}) <span>\((\d+) per gift, more when you level up\)<\/span>`, (m, e, g, n) => `📦 <b>Te devuelven:</b> ${e} ${spG(g)} <span>(${n} por regalo, más al subir de nivel)</span>`);
+hrx(String.raw`🛣️ <b>Distance:<\/b> (\d+) min each way`, "🛣️ <b>Distancia:</b> $1 min por trayecto");
+rx(String.raw`(\d+) min each way`, "$1 min por trayecto");
+rx(String.raw`\((\d+) per gift, more when you level up\)`, "($1 por regalo, más al subir de nivel)");
+hrx(String.raw`🔒 A hidden building: <b>\+(\d+)<\/b> ships?`, (m, n) => `🔒 Un edificio oculto: <b>+${n}</b> ${plural(n, "nave", "naves")}`);
+hrx(String.raw`(✅|🔒) (.+): <b>\+(\d+)<\/b> ships?`, (m, ok, b, n) => `${ok} ${ES[b.replace(/^\S+ /, "")] ? b.replace(/ .+$/, "") + " " + ES[b.replace(/^\S+ /, "")] : b}: <b>+${n}</b> ${plural(n, "nave", "naves")}`);
+hrx(String.raw`🚀 Ships: <b>(\d+) \/ (\d+)<\/b> busy`, "🚀 Naves: <b>$1 / $2</b> ocupadas");
+hrx(String.raw`👽 Races met: <b>(\d+) \/ (\d+)<\/b>`, "👽 Razas conocidas: <b>$1 / $2</b>");
+hrx(String.raw`🎁 Gifts delivered: <b>(\d+)<\/b>`, "🎁 Regalos entregados: <b>$1</b>");
+hrx(String.raw`(\+\d+) friendship( \(their favourite!\))? · a new request in <span>(.+)<\/span>`, (m, n, f, c) => `${n} de amistad${f ? " (¡su favorito!)" : ""} · nueva petición en <span>${c}</span>`);
+rx(String.raw`([\d.,]+) \/ ([\d.,]+) friendship to (${SP_RX_LV})`, (m, a, b, l) => `${a} / ${b} de amistad para ${spL(l)}`);
+rx(String.raw`([\d.,]+) friendship · best friends!`, "$1 de amistad · ¡mejores amigos!");
+hrx(String.raw`<b>📜 Their request:<\/b> (.+)`, (m, r) => `<b>📜 Su petición:</b> ${spReqEs(r)}`);
+hrx(String.raw`Send (.+)\?`, (m, r) => `¿Enviar ${spReqEs(r)}?`);
+function spReqEs(r) {
+  return r.replace(/<b>(\d+)<\/b> DNA samples \(you choose which\)/, "<b>$1</b> muestras de ADN (tú eliges cuáles)")
+    .replace(/<b>(\d+)<\/b> paintings \(you choose which\)/, "<b>$1</b> cuadros (tú eliges cuáles)")
+    .replace(/<b>([\d.,]+)<\/b> (stardust|polvo estelar)/, "<b>$1</b> de polvo estelar")
+    .replace(/<b>(\d+)<\/b> ([A-Za-zíáéóú]+)/g, (m, n, o) => `<b>${n}</b> ${ES[o] || o}`);
+}
+hrx(String.raw`🚀 (🎁 Gift for the|Exploring:) ?(${SP_RX_NAME})? ?· (arrives in|coming home, back in) <b>(.+)<\/b>`, (m, k, n, w, c) =>
+  `🚀 ${k.startsWith("🎁") ? `🎁 Regalo para los ${spN(n)}` : `Explorando: ${spN(n)}`} · ${w === "arrives in" ? "llega en" : "vuelve a casa, de vuelta en"} <b>${c}</b>`);
+hrx(String.raw`🚀 Exploring an unknown system · (arrives in|coming home, back in) <b>(.+)<\/b>`, (m, w, c) => `🚀 Explorando un sistema desconocido · ${w === "arrives in" ? "llega en" : "vuelve a casa, de vuelta en"} <b>${c}</b>`);
+hrx(String.raw`Something is out there\. Send a ship to explore it: <b>(\d+) min<\/b> there and <b>(\d+) min<\/b> back\.`, "Ahí fuera hay algo. Envía una nave a explorarlo: <b>$1 min</b> de ida y <b>$2 min</b> de vuelta.");
+hrx(String.raw`Your scanners can't find this system yet\. Become <b>Acquainted<\/b> with (a nearby race|the <b>(${SP_RX_NAME})<\/b>) and they will tell you where it is\.`, (m, w, n) =>
+  `Tus escáneres aún no encuentran este sistema. Logra el nivel <b>Conocida</b> con ${n ? `los <b>${spN(n)}</b>` : "una raza cercana"} y te dirán dónde está.`);
+rx(String.raw`Gift for the (${SP_RX_NAME})`, (m, n) => `Regalo para los ${spN(n)}`);
+rx(String.raw`Ask for something else \((.+)\)`, "Pedir otra cosa ($1)");
+hrx(String.raw`Choose <b>(\d+)<\/b> (DNA samples|paintings) to send: <b>(\d+) \/ (\d+)<\/b> chosen\.`, (m, n, w, a, b) => `Elige <b>${n}</b> ${w === "paintings" ? "cuadros" : "muestras de ADN"} para enviar: <b>${a} / ${b}</b> elegidos.`);
+rx(String.raw`Your ship flies (\d+) min there and (\d+) min back, and brings their goods home\.`, "Tu nave tarda $1 min en ir y $2 min en volver, y trae sus bienes a casa.");
+hrx(String.raw`<b>Opens when you build the 🚀 Space Mission Center<\/b> \(💰 Income → 🔬 Science\)\.`, "<b>Se abre al construir el 🚀 Centro de Misiones Espaciales</b> (💰 Ingresos → 🔬 Ciencia).");
+// notices
+rx(String.raw`Gift on its way to the (${SP_RX_NAME}) \((\d+) min\)\.`, (m, n, x) => `Regalo de camino a los ${spN(n)} (${x} min).`);
+rx(String.raw`A ship is on its way to explore an unknown system \((\d+) min there, (\d+) min back\)\.`, "Una nave va de camino a explorar un sistema desconocido ($1 min de ida, $2 de vuelta).");
+rx(String.raw`Your ship is back from the (${SP_RX_NAME})( with (\S+) (\d+) (${SP_RX_GOOD}))?\.`, (m, n, w, e, x, g) => `Tu nave ha vuelto de los ${spN(n)}${w ? ` con ${e} ${x} ${spG(g)}` : ""}.`);
+hrx(String.raw`First contact! Your ship met the <b>(${SP_RX_NAME})<\/b> \((.+)\)\. See 🚢 Logistics → 🌌 Space\.`, (m, n, tl) => `¡Primer contacto! Tu nave ha conocido a los <b>${spN(n)}</b> (${SP_ES_TITLE[tl] || tl}). Míralo en 🚢 Logística → 🌌 Espacio.`);
+hrx(String.raw`(\S+) The <b>(${SP_RX_NAME})<\/b> are now <b>(${SP_RX_LV})<\/b>! They load a thank-you gift on your ship\.`, (m, ic, n, l) => `${ic} ¡Los <b>${spN(n)}</b> ya son <b>${spL(l)}</b>! Cargan un regalo de agradecimiento en tu nave.`);
+hrx(String.raw`The <b>(${SP_RX_NAME})<\/b> loved your gift: \+(\d+) friendship\.`, (m, n, x) => `A los <b>${spN(n)}</b> les ha encantado tu regalo: +${x} de amistad.`);
+rx(String.raw`The (${SP_RX_NAME}) told you where to find a new system\. Send a ship to explore it!`, (m, n) => `Los ${spN(n)} te han dicho dónde encontrar un sistema nuevo. ¡Envía una nave a explorarlo!`);
+rx(String.raw`Space: (\d+) updates while you were away\. See 🚢 Logistics → 🌌 Space\.`, "Espacio: $1 novedades mientras no estabas. Míralo en 🚢 Logística → 🌌 Espacio.");
+H("New in 🚢 Logistics: <b>Space</b>! Explore the galaxy and meet alien races.", "Novedad en 🚢 Logística: ¡<b>Espacio</b>! Explora la galaxia y conoce razas alienígenas.");
+ES["New in 🚢 Logistics: <b>Space</b>! Explore the galaxy and meet alien races."] = "Novedad en 🚢 Logística: ¡<b>Espacio</b>! Explora la galaxia y conoce razas alienígenas.";
+rx(String.raw`First contact! Your ship met the <b>(${SP_RX_NAME})</b> \((.+)\)\. See 🚢 Logistics → 🌌 Space\.`, (m, n, tl) => `¡Primer contacto! Tu nave ha conocido a los <b>${spN(n)}</b> (${SP_ES_TITLE[tl] || tl}). Míralo en 🚢 Logística → 🌌 Espacio.`);
+rx(String.raw`The <b>(${SP_RX_NAME})</b> are now <b>(${SP_RX_LV})</b>! They load a thank-you gift on your ship\.`, (m, n, l) => `¡Los <b>${spN(n)}</b> ya son <b>${spL(l)}</b>! Cargan un regalo de agradecimiento en tu nave.`);
+rx(String.raw`The <b>(${SP_RX_NAME})</b> loved your gift: \+(\d+) friendship\.`, (m, n, x) => `A los <b>${spN(n)}</b> les ha encantado tu regalo: +${x} de amistad.`);
+// wiki
+H("<b>Ships:</b> 🚀 Space Mission Center 1 ship, and more from other space buildings (up to 6). Ships keep flying while the game is closed.",
+  "<b>Naves:</b> 🚀 Centro de Misiones Espaciales 1 nave, y más con otros edificios espaciales (hasta 6). Las naves siguen volando con el juego cerrado.");
+H("<b>1. Explore:</b> send a ship to an unknown signal. It flies there and back (6–18 min each way) and meets the race that lives there. Three systems are reachable from the start; each of the others is revealed by its neighbour once you are <b>Acquainted</b>.",
+  "<b>1. Explorar:</b> envía una nave a una señal desconocida. Va y vuelve (6–18 min por trayecto) y conoce a la raza que vive allí. Tres sistemas se pueden alcanzar desde el principio; cada uno de los demás te lo revela su vecino cuando llegas a <b>Conocida</b>.");
+hrx(String.raw`<b>2\. Gifts:<\/b> each race asks for one gift at a time: money, ore from your 🏦 vault, (DNA samples, )?paintings or stardust\. Their favourite kind gives \+(\d+) friendship, the other \+(\d+)\. A request changes every 24 hours, or ask for something else every 4 hours\. Paintings you give away count as sold\. Only one gift per race can be on its way at a time\.`,
+  (m, d, a, b) => `<b>2. Regalos:</b> cada raza pide un regalo cada vez: dinero, mineral de tu 🏦 cámara, ${d ? "muestras de ADN, " : ""}cuadros o polvo estelar. Su tipo favorito da +${a} de amistad; el otro, +${b}. Una petición cambia cada 24 horas, o puedes pedir otra cosa cada 4 horas. Los cuadros que regalas cuentan como vendidos. Solo puede haber un regalo por raza de camino a la vez.`);
+H("<b>3. Alien goods:</b> your ship comes back with the race's own goods (more at higher friendship, plus a thank-you shipment at every new level). Trading them comes in a later update.",
+  "<b>3. Bienes alienígenas:</b> tu nave vuelve con los bienes propios de la raza (más cuanto mayor sea la amistad, y un envío de agradecimiento en cada nivel nuevo). Comerciar con ellos llegará en una próxima actualización.");
+rx(String.raw`(\S+) (${SP_RX_LV})`, (m, ic, l) => `${ic} ${spL(l)}`);
+// 📰 patch note
+H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
+  "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
+ES["👽 Send ships to explore unknown systems and meet 6 alien races. Each one has its own tastes: send them the gifts they ask for (money, ore, paintings, stardust and more) to grow your friendship from Contacted to Allies."] =
+  "👽 Envía naves a explorar sistemas desconocidos y conoce a 6 razas alienígenas. Cada una tiene sus gustos: mándales los regalos que piden (dinero, mineral, cuadros, polvo estelar y más) para que vuestra amistad pase de Contactada a Aliada.";
+ES["📦 Your ships come back with alien goods. Trade routes and trading alien goods are coming in the next updates. Ships keep flying while the game is closed, and a prestige never resets your alien friends."] =
+  "📦 Tus naves vuelven con bienes alienígenas. Las rutas comerciales y el comercio de bienes alienígenas llegarán en las próximas actualizaciones. Las naves siguen volando con el juego cerrado, y un prestigio nunca reinicia a tus amigos alienígenas.";
+
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
 ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {
