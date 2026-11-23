@@ -899,7 +899,7 @@ function renderGames() {
       </div>` : ""}
       ${typeof SH !== "undefined" ? (() => { const on = shUnlocked(); return `<div class="card gameCard ${on ? "" : "locked"}">
         <img class="gameIcon gameIconImg shGameIcon" src="assets/icons/ico-sh-game.webp" alt=""><h3>Nebula Strike</h3>
-        <p class="muted">Fly a spaceship through 4 levels of enemy waves and defeat the bosses waiting at the end.</p>
+        <p class="muted">Fly a spaceship through 5 levels of enemy waves, defeat the bosses and survive the pirates' graveyard.</p>
         <div class="gameStatus">${on ? `🏁 ${SH.done} / ${SH_LEVELS.length} levels cleared · ✨ ${SH.dust.toLocaleString()}${typeof shR !== "undefined" && shR && !shR.end ? " · 🚀 level in progress" : ""}` : "🔒 Build the 🚀 Space Mission Center (💰 Income → 🔬 Science)"}</div>
         <button class="btn" data-game="shooter" ${on ? "" : "disabled"}>${typeof shR !== "undefined" && shR && !shR.end ? "▶ Continue" : "▶ Play"}</button>
       </div>`; })() : ""}

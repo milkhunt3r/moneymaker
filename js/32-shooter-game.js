@@ -23,7 +23,13 @@ const SH_CFG = [
   // 🏴‍☠️ level 4: two bosses (Captain Cutlass after the first stretch of waves, Admiral Dreadmaw after the second)
   { waves: { skiff: [1.6, 0], raider: [1.6, 0], line: [1, 0], junk: [1.5, 0], sentinel: [1.6, 0], vee: [2, 0], sine: [1.5, 0], rocks: [2.2, 0], gunners: [2, 0], mines: [2.5, 0], column: [1.5, 0], brute: [1.6, 0], swarm: [2, 0], homers: [2, 0] },
     gap: [3.2, 2.4], spd: 1.25, fire: 1.85, hp: 2.6, bs: 300, bosses: ["cutlass", "dreadmaw"],
-    minOnScreen: 4, filler: [1.6, 2.6] },   // never a quiet moment: a new wave comes early below 4 enemies, plus a steady drift of mines and asteroids
+    minOnScreen: 4, filler: [1.6, 2.6] },   // never a quiet moment: a new wave comes early below 4 enemies, plus a steady drift of mines and asteroids,
+  // 🗺️ level 5: survive 5 minutes, no boss. "ramp" sets how busy it gets over time:
+  // [from second, refill below N enemies, seconds between waves, seconds between single mines/rocks]
+  { waves: { shark: [1.6, 0], powder: [1.6, 0], skiff: [1.2, 0], raider: [1.2, 0], line: [1, 0], junk: [1.5, 0], sentinel: [1.4, 0], vee: [1.5, 0], sine: [1.2, 0],
+      rocks: [2.2, 0], gunners: [1.6, 0], mines: [2.5, 0], column: [1, 0], brute: [1.2, 0], swarm: [1.6, 0], homers: [1.6, 0] },
+    gap: [3.2, 3.2], spd: 1.25, fire: 1.85, hp: 2.6, bs: 300, survive: 300, filler: [1.6, 2.6], minOnScreen: 4, obstacles: true,
+    ramp: [[0, 4, 3.2, 2.2], [60, 5, 2.6, 1.8], [120, 7, 2.1, 1.4], [240, 8, 1.85, 1.25], [270, 9, 1.6, 1.0]] }
 ];
 // enemy base stats (HP × the level's hp factor; ✨ stardust × 1 / 1.5 / 2 by level)
 const SH_EN = {
@@ -32,10 +38,12 @@ const SH_EN = {
   homer: { hp: 2, r: 15, dust: 2 }, tiny: { hp: 1, r: 11, dust: 1 }, carrier: { hp: 4, r: 24, dust: 3 },
   rock: { hp: 4, r: 24, dust: 1 }, tmissile: { hp: 2, r: 12, dust: 0 },
   junk: { hp: 2, r: 17, dust: 1 }, sentinel: { hp: 6, r: 22, dust: 4 },
+  shark: { hp: 3, r: 18, dust: 2 }, powder: { hp: 5, r: 22, dust: 3 },
+  orock: { hp: 1e9, r: 40, dust: 0 }, mast: { hp: 1e9, r: 24, dust: 0 },   // 🪨 indestructible obstacles (dodge them)
   skiff: { hp: 6, r: 26, dust: 3 }, raider: { hp: 3, r: 22, dust: 2 }, hook: { hp: 1, r: 13, dust: 0 },
 };
 // ⭐ score: points for every destroyed enemy (asteroids by size) and boss
-const SH_POINTS = { drone: 100, darter: 100, weaver: 150, gunner: 300, mine: 200, brute: 1000, homer: 200, tiny: 50, carrier: 250, tmissile: 100, junk: 120, sentinel: 400, skiff: 350, raider: 250, hook: 50 };
+const SH_POINTS = { drone: 100, darter: 100, weaver: 150, gunner: 300, mine: 200, brute: 1000, homer: 200, tiny: 50, carrier: 250, tmissile: 100, junk: 120, sentinel: 400, skiff: 350, raider: 250, hook: 50, shark: 300, powder: 300 };
 const SH_BOSS_POINTS = { crab: 5000, hive: 10000, taxman: 20000, cutlass: 15000, dreadmaw: 30000 };
 const shPoints = (e) => e.type === "rock" ? Math.round(e.size * 3 / 10) * 10 : SH_POINTS[e.type] || 0;
 // 🎁 special weapons (ammo × the Special ammo upgrade)
@@ -45,7 +53,7 @@ const SH_SPECIAL = {
   spread:  { ammo: 6, icon: "💠", name: "Nova spread", cd: 0.35 },
 };
 
-const shBossList = (R) => R.cfg.bosses || [R.cfg.boss];
+const shBossList = (R) => R.cfg.bosses || (R.cfg.boss ? [R.cfg.boss] : []);
 function shStats() {
   const id = SH.ship, s = SH_SHIPS[id], u = (k) => shUp(id, k);
   return { id, speed: s.speed, hearts: s.hearts + u("hull"), dmg: s.dmg * (1 + 0.15 * u("dmg")), dmgMul: 1 + 0.15 * u("dmg"),
@@ -65,9 +73,10 @@ function shStart(lv) {
     nextWave: 3, nextCarrier: 16, segStart: 0, bossIdx: 0, kills: 0, dust: 0, score: 0, hits: 0, blocks: 0, shake: 0, banner: null, paused: false, end: null,
     stars: Array.from({ length: 90 }, (_, i) => ({ x: Math.random() * SHW, y: Math.random() * SHH, z: i % 3 })),
     planet: { x: SHW + 200, y: shRand(120, 420), r: Math.round(shRand(50, 90)), next: 40 } };
-  shR.banner = { big: t(`Level ${lv}`), small: t(L.name), life: 3 };
+  shR.banner = cfg.survive ? { big: t(`Level ${lv}`), small: t("Survive for 5 minutes!"), life: 3 } : { big: t(`Level ${lv}`), small: t(L.name), life: 3 };
   SH.runs++; save();
-  [st.img, L.img, `bg-level${lv}`, `bg-boss${lv}`, "rock-small", "rock-medium", "rock-big", ...Object.values(SH_EN_PIC).map(p => p[0]), ...(cfg.bosses || [cfg.boss]).flatMap(k => [SH_BOSS[k].img, SH_BOSS[k].dmgImg || SH_BOSS[k].img])].forEach(shImg);
+  [st.img, L.img, `bg-level${lv}`, ...(cfg.survive ? ["rock-skull", "obst-rock", "obst-mast"] : [`bg-boss${lv}`]), "rock-small", "rock-medium", "rock-big", ...Object.values(SH_EN_PIC).map(p => p[0]),
+    ...(cfg.bosses || (cfg.boss ? [cfg.boss] : [])).flatMap(k => [SH_BOSS[k].img, SH_BOSS[k].dmgImg || SH_BOSS[k].img])].forEach(shImg);
   renderShooter(); shKick();
 }
 // 🏅 best score per level (any run: won, lost or quit)
@@ -91,9 +100,9 @@ function shWin() {
   state.money += money; clickedThisSecond += money; SH.earned += money;   // counts as income (taxes)
   SH.dust += dust; SH.dustAll += dust; R.dust += dust;
   if (first) SH.done = R.lv;
-  SH.wins++; SH.bossKills++; SH.clears[R.lv] = (SH.clears[R.lv] || 0) + 1;
+  SH.wins++; if (!R.cfg.survive) SH.bossKills++; SH.clears[R.lv] = (SH.clears[R.lv] || 0) + 1;
   if (!R.hits) SH.perfect++;
-  if (!SH.best[R.lv] || R.t < SH.best[R.lv]) SH.best[R.lv] = Math.round(R.t);
+  if (!R.cfg.survive && (!SH.best[R.lv] || R.t < SH.best[R.lv])) SH.best[R.lv] = Math.round(R.t);
   shRecordScore(R);
   R.end = { win: true, first, money, bonus: dust, loot: loot && { k: loot.k, name: loot.name, min: lootMin }, opened: false };
   save(); updateCounter(); shShowEnd();
@@ -101,6 +110,7 @@ function shWin() {
 function shLose() {
   const R = shR;
   shRecordScore(R);
+  if (R.cfg.survive) { R.end = { win: false, pct: Math.min(99, Math.floor(Math.max(0, R.t - 2.5) / R.cfg.survive * 100)) }; save(); return shShowEnd(); }
   const n = shBossList(R).length, seg = R.L.len + 60;
   R.end = { win: false, pct: Math.min(99, Math.floor((R.bossIdx * seg + Math.min(seg, R.t - R.segStart)) / (n * seg) * 100)) };
   save(); shShowEnd();
@@ -131,6 +141,10 @@ const SH_WAVES = {
       shAdd("rock", SHW + 40 + i * shRand(40, 90), shRand(50, SHH - 50), { vx: -shRand(90, 170) * s, vy: shRand(-25, 25), r: size * 0.85, hp: Math.round(size / 6) * R.cfg.hp, size, tier, v: i % 4, spin: shRand(-1.5, 1.5) });
     }
   },
+  // 🦈 sea shark: always alone, very fast, swims in a big wave
+  shark(R, s) { shAdd("shark", SHW + 50, shRand(110, SHH - 110), { vx: -430 * s, amp: shRand(60, 110), ph: Math.random() * 6, freq: 3.2 }); },
+  // 🐒 powder monkey: parks on the right, dashes up and down and fires one big aimed cannonball
+  powder(R, s) { shAdd("powder", SHW + 50, shRand(80, SHH - 80), { vx: -240 * s, stopX: shRand(800, 880), vy: shPick([-260, 260]), stay: 9, fireT: 0.8 }); },
   rock1(R, s) {
     const tier = shPick(["small", "medium", "medium", "big", "big"]);
     const size = Math.round({ small: 18, medium: 25, big: 34 }[tier] + shRand(-1, 1));
@@ -164,6 +178,11 @@ const SH_WAVES = {
   raider(R, s) { shAdd("raider", SHW + 50, shRand(100, SHH - 100), { vx: -260 * s, stopX: shRand(780, 860), throws: 0, st: 0 }); },
   homers(R, s) { for (let i = 0; i < 3; i++) shAdd("homer", SHW + 40 + i * 60, shRand(60, SHH - 60), { vx: -200 * s, ang: Math.PI }); },
 };
+// 🪨 an indestructible obstacle drifting across (a cursed rock, or a long broken mast)
+function shSpawnObstacle(R) {
+  if (Math.random() < 0.4) shAdd("mast", SHW + 170, shRand(90, SHH - 90), { vx: -shRand(70, 95), solid: true, box: [138, 20], hp: 1e9 });
+  else shAdd("orock", SHW + 60, shRand(70, SHH - 70), { vx: -shRand(80, 120), vy: shRand(-12, 12), solid: true, r: 42, hp: 1e9, spin: shRand(-0.5, 0.5) });
+}
 function shSpawnWave(R) {
   const list = Object.entries(R.cfg.waves).filter(([, [, from]]) => R.t >= from);
   let sum = list.reduce((a, [, [w]]) => a + w, 0), r = Math.random() * sum;
@@ -238,7 +257,13 @@ function shKill(e) {
     for (let i = 0; i < n; i++) shDrop("dust", e.x + shRand(-10, 10), e.y + shRand(-10, 10), each);
   }
 }
+// 🪨 touching test: long obstacles (the broken mast) use a box, everything else a circle
+function shTouches(e, x, y, r) {
+  if (e.box) return Math.abs(x - e.x) < e.box[0] + r && Math.abs(y - e.y) < e.box[1] + r;
+  return shDist2(e.x, e.y, x, y) < (e.r + r) ** 2;
+}
 function shHitEnemy(e, dmg) {
+  if (e.solid) return;   // indestructible obstacles
   e.hp -= dmg; e.flash = 0.07;
   if (e.hp <= 0 && !e.dead) shKill(e);
 }
@@ -570,14 +595,26 @@ function shUpdate(dt) {
 
   // 🗺️ director
   if (R.phase === "intro" && R.t >= 2.5) R.phase = "waves";
+  if (R.phase === "waves" && R.cfg.survive) {   // 🗺️ survival: the ramp sets how busy it is; the timer ends the level
+    R.survT = R.t - 2.5;
+    const row = R.cfg.ramp.filter(r => R.survT >= r[0]).pop();
+    R.cfg.minOnScreen = row[1]; R.cfg.gap = [row[2], row[2]]; R.cfg.filler = [row[3], row[3] * 1.6];
+    if (R.t >= (R.nextObst || 8)) { shSpawnObstacle(R); R.nextObst = R.t + shRand(6, 9) * (R.survT > 180 ? 0.8 : 1); }
+    if (R.survT >= R.cfg.survive) {
+      R.phase = "survived"; R.dieT = 0; R.eb = []; R.beams = [];
+      R.en.forEach(e => { if (!e.dead) { e.dead = true; shBoom(e.x, e.y, Math.min(e.r, 40)); } });
+      R.banner = { big: t("🏴‍☠️ You survived!"), small: t("The treasure is yours!"), life: 3 };
+    }
+  }
+  if (R.phase === "survived" && (R.dieT += dt) >= 2.5 && !R.end) { R.phase = "won"; shWin(); }
   if (R.phase === "waves") {
-    const segT = R.t - R.segStart;   // time in this stretch of waves (level 4 has two, one before each boss)
+    const segT = R.cfg.survive ? 0 : R.t - R.segStart;   // time in this stretch of waves (level 4 has two, one before each boss)
     if (R.cfg.minOnScreen && R.t > 4 && R.t - (R.lastWaveAt || 0) > 0.8) {   // too few enemies left: bring the next wave now
-      const alive = R.en.reduce((a, e) => a + (!e.dead && e.x < SHW + 30 && e.type !== "hook" && e.type !== "carrier"), 0);
+      const alive = R.en.reduce((a, e) => a + (!e.dead && !e.solid && e.x < SHW + 30 && e.type !== "hook" && e.type !== "carrier"), 0);
       if (alive < R.cfg.minOnScreen) R.nextWave = R.t;
     }
     if (R.cfg.minOnScreen && R.t > 4 && R.t - (R.lastNudge || 0) > 0.5) {   // almost empty right now: drop in a mine or asteroid at the edge
-      const seen = R.en.reduce((a, e) => a + (!e.dead && e.x < SHW && e.type !== "hook"), 0);
+      const seen = R.en.reduce((a, e) => a + (!e.dead && !e.solid && e.x < SHW && e.type !== "hook"), 0);
       if (seen <= 2) { R.lastNudge = R.t; R.nextFill = 0; }
     }
     if (R.cfg.filler && R.t > 3 && R.t >= (R.nextFill || 0)) {   // 💣🪨 a single mine or asteroid drifting in
@@ -587,7 +624,7 @@ function shUpdate(dt) {
     }
     if (R.t >= R.nextWave) { shSpawnWave(R); R.lastWaveAt = R.t; const k = Math.min(1, segT / R.L.len); R.nextWave = R.t + (R.cfg.gap[0] + (R.cfg.gap[1] - R.cfg.gap[0]) * k) * shRand(0.85, 1.15); }
     if (R.t >= R.nextCarrier) { shAdd("carrier", SHW + 40, shRand(90, SHH - 90), { vx: -90 }); R.nextCarrier = R.t + shRand(20, 28); }
-    if (segT >= R.L.len) { R.phase = "warn"; R.warnT = 0; R.banner = { big: t("⚠️ WARNING"), small: t(SH_BOSS[shBossList(R)[R.bossIdx]].name + " is coming!"), life: 3.5, warn: true }; }
+    if (!R.cfg.survive && segT >= R.L.len) { R.phase = "warn"; R.warnT = 0; R.banner = { big: t("⚠️ WARNING"), small: t(SH_BOSS[shBossList(R)[R.bossIdx]].name + " is coming!"), life: 3.5, warn: true }; }
   }
   if (R.phase === "warn" && (R.warnT += dt) > 3.5) { R.phase = "boss"; R.boss = shBossMake(shBossList(R)[R.bossIdx]); R.bossT0 = R.t; }
   if (R.phase === "boss" && R.boss) shBossStep(R, R.boss, dt);
@@ -609,9 +646,10 @@ function shUpdate(dt) {
     if (e.dead) continue;
     e.t += dt; e.flash = Math.max(0, e.flash - dt);
     shEnemyStep(R, e, dt);
-    if (e.x < -90 || e.x > SHW + 400 || e.y < -120 || e.y > SHH + 120) { e.dead = true; e.gone = true; continue; }
-    if (R.phase !== "dead" && shDist2(e.x, e.y, P.x, P.y) < (e.r + st.hit) ** 2) {
+    if (e.x < -(e.box ? e.box[0] + 30 : 90) || e.x > SHW + 400 || e.y < -120 || e.y > SHH + 120) { e.dead = true; e.gone = true; continue; }
+    if (R.phase !== "dead" && shTouches(e, P.x, P.y, st.hit)) {
       const hit = shHurt(R);
+      if (e.solid) continue;   // obstacles stay where they are
       if (hit && e.type === "hook") {   // 🪝 caught: pulled towards the raider and slowed for a second (a shield block just knocks it away)
         if (hit === true && e.owner && !e.owner.dead) P.pull = { t: 1, o: e.owner };
         e.dead = true; e.gone = true; shFx(e.x, e.y, 8, "#ffd34d", 120, 3);
@@ -624,7 +662,7 @@ function shUpdate(dt) {
   for (const s of R.pb) {
     if (s.kind === "missile") {
       let tgt = null, best = 1e9;
-      for (const e of R.en) if (!e.dead && e.x > s.x - 40) { const d = shDist2(e.x, e.y, s.x, s.y); if (d < best) { best = d; tgt = e; } }
+      for (const e of R.en) if (!e.dead && !e.solid && e.x > s.x - 40) { const d = shDist2(e.x, e.y, s.x, s.y); if (d < best) { best = d; tgt = e; } }
       if (b && (!tgt || shDist2(b.x, b.y, s.x, s.y) < best)) tgt = { x: b.x, y: b.y };
       const a = Math.atan2(s.vy, s.vx), want = tgt ? Math.atan2(tgt.y - s.y, tgt.x - s.x) : 0;
       let da = ((want - a + Math.PI * 3) % (Math.PI * 2)) - Math.PI; da = shClamp(da, -5 * dt, 5 * dt);
@@ -635,7 +673,8 @@ function shUpdate(dt) {
     s.x += s.vx * dt; s.y += s.vy * dt;
     if (s.x > SHW + 30 || s.y < -30 || s.y > SHH + 30 || s.x < -30) { s.dead = true; continue; }
     for (const e of R.en) {
-      if (e.dead || shDist2(e.x, e.y, s.x, s.y) > (e.r + s.r) ** 2) continue;
+      if (e.dead || !shTouches(e, s.x, s.y, s.r)) continue;
+      if (e.solid) { s.dead = true; shFx(s.x, s.y, 4, "#cfd6e6", 110, 2); break; }   // 🪨 shots bounce off obstacles
       if (s.pierce) { if (s.pierce.has(e)) continue; s.pierce.add(e); shHitEnemy(e, s.dmg); shFx(s.x, s.y, 3, "#ffb8f0", 90, 2); continue; }
       shHitEnemy(e, s.dmg); s.dead = true; shFx(s.x, s.y, 3, "#fff2a8", 90, 2); break;
     }
@@ -812,6 +851,22 @@ function shEnemyStep(R, e, dt) {
       if (o && o.dead && !e.back) e.back = true;
       break;
     }
+    case "shark": e.x += e.vx * dt; e.y = e.y0 + e.amp * Math.sin(e.freq * e.t + e.ph); break;
+    case "powder": {
+      if (!e.parked) { e.x += e.vx * dt; if (e.x <= e.stopX) { e.parked = e.t; } break; }
+      if (e.t - e.parked > e.stay) { e.x += 260 * dt; break; }
+      e.y += e.vy * R.cfg.spd * dt;
+      if (e.y < 60) { e.y = 60; e.vy = Math.abs(e.vy); } if (e.y > SHH - 50) { e.y = SHH - 50; e.vy = -Math.abs(e.vy); }
+      if ((e.fireT -= dt) <= 0) {
+        e.fireT = 1.6 / fire;
+        const mx = e.x - 34, my = e.y - 2;
+        R.eb.push({ x: mx, y: my, vx: Math.cos(shAim(mx, my)) * bs * 0.9, vy: Math.sin(shAim(mx, my)) * bs * 0.9, r: 11, kind: "ebBig" });
+        shFx(mx, my, 6, "#cfcfcf", 80, 4);
+      }
+      break;
+    }
+    case "orock": e.x += e.vx * dt; e.y += e.vy * dt; e.rot += e.spin * dt; break;
+    case "mast": e.x += e.vx * dt; e.y = e.y0 + Math.sin(e.t * 0.8) * 10; break;
     case "carrier": e.x += e.vx * dt; if (e.fromTop) e.y += 60 * dt; else e.y = e.y0 + Math.sin(e.t * 2) * 30; break;
     case "rock": e.x += e.vx * dt; e.y += e.vy * dt; e.rot += e.spin * dt; break;
   }
@@ -836,7 +891,7 @@ function shDrawImg(g, name, x, y, w, alpha = 1) {
 // painted enemies: [picture, width on screen] (the height follows the picture)
 const SH_EN_PIC = { weaver: ["enemy-spinner", 50], drone: ["enemy-saucer", 58], darter: ["enemy-darter", 62], gunner: ["enemy-gunpod", 64],
   mine: ["enemy-mine", 46], homer: ["enemy-wasp", 58], tiny: ["enemy-swarm", 32],
-  brute: ["enemy-gunship", 116], skiff: ["enemy-skiff", 84], raider: ["enemy-raider", 66], hook: ["enemy-hook", 40], junk: ["enemy-junkbot", 54], sentinel: ["enemy-sentinel", 66], carrier: ["enemy-supply", 72], tmissile: ["enemy-tmissile", 44] };
+  brute: ["enemy-gunship", 116], shark: ["enemy-shark", 86], powder: ["enemy-powder", 72], orock: ["obst-rock", 100], mast: ["obst-mast", 300], skiff: ["enemy-skiff", 84], raider: ["enemy-raider", 66], hook: ["enemy-hook", 40], junk: ["enemy-junkbot", 54], sentinel: ["enemy-sentinel", 66], carrier: ["enemy-supply", 72], tmissile: ["enemy-tmissile", 44] };
 // small painted icons (assets/icons/ico-sh-*.webp), loaded once; null until ready
 const SH_ICON = {};
 function shIcon(n) {
@@ -939,9 +994,9 @@ function shDraw() {
     g.strokeStyle = "#8a8fa3"; g.lineWidth = 2; g.stroke(); g.restore();
   }
   for (const e of R.en) {
-    const rot = e.type === "weaver" || e.type === "rock" || e.type === "mine" ? e.rot : (e.type === "homer" || e.type === "tmissile" || (e.type === "tiny" && e.home)) ? e.ang - Math.PI : 0;
+    const rot = e.type === "weaver" || e.type === "rock" || e.type === "mine" || e.type === "orock" ? e.rot : (e.type === "homer" || e.type === "tmissile" || (e.type === "tiny" && e.home)) ? e.ang - Math.PI : 0;
     // painted pictures for asteroids and spinners (drawn shapes until the picture has loaded)
-    const pic = e.type === "rock" ? `rock-${e.tier || "medium"}` : SH_EN_PIC[e.type] ? SH_EN_PIC[e.type][0] : null;
+    const pic = e.type === "rock" ? (e.tier === "medium" && R.lv === 5 ? "rock-skull" : `rock-${e.tier || "medium"}`) : SH_EN_PIC[e.type] ? SH_EN_PIC[e.type][0] : null;
     const picW = e.type === "rock" ? e.size * 2.25 : SH_EN_PIC[e.type] ? SH_EN_PIC[e.type][1] : 50;
     if (pic && shDrawImgRot(g, pic, e.x, e.y, picW, rot)) {
       if (e.flash > 0) { g.save(); g.globalCompositeOperation = "lighter"; g.globalAlpha = 0.5; shDrawImgRot(g, pic, e.x, e.y, picW, rot); g.restore(); }
@@ -1022,6 +1077,13 @@ function shDrawHud(g, R) {
     g.fillStyle = b.phase === 1 ? "#ff4d6a" : b.phase === 2 ? "#ff8a2b" : "#ffd02e"; g.fillRect(bx, 13, bw * Math.max(0, b.hp / b.max), 14);
     g.strokeStyle = "#1a0f2e"; g.lineWidth = 2; g.strokeRect(bx, 13, bw, 14);
     shTextOut(g, t(b.def.name), bx + bw / 2, 20, 13);
+  } else if (R.cfg.survive) {   // ⏱️ survival timer: time left, with the chest at the end of the bar
+    const left = Math.max(0, R.cfg.survive - Math.max(0, R.t - 2.5)), k = 1 - left / R.cfg.survive;
+    g.fillStyle = "rgba(255,255,255,0.12)"; g.fillRect(bx, 15, bw, 10);
+    g.fillStyle = left < 30 ? "#ff8a3b" : "#ffd34d"; g.fillRect(bx, 15, bw * k, 10);
+    g.strokeStyle = "#1a0f2e"; g.lineWidth = 2; g.strokeRect(bx, 15, bw, 10);
+    shTextOut(g, `⏱️ ${shClock(Math.ceil(left))}`, bx - 8, 20, 14, "#fff", "right");
+    shTextOut(g, "💰", bx + bw + 14, 20, 16);
   } else if (!R.boss) {
     const k = Math.min(1, (R.t - R.segStart) / R.L.len);
     if (shBossList(R).length > 1) shTextOut(g, `${R.bossIdx + 1}/${shBossList(R).length}`, bx - 22, 20, 13, "#ffd34d");
@@ -1086,7 +1148,7 @@ function shShowEnd() {
   o.hidden = false;
   o.innerHTML = E.win
     ? `<div class="shPanel win"><h2>🏆 Level ${R.lv} cleared!</h2>
-        <p><b>${R.L.boss}</b> was defeated in ${shClock(R.t)}.</p>
+        ${R.cfg.survive ? `<p>You survived <b>${shClock(R.cfg.survive)}</b> in the pirates' graveyard!</p>` : `<p><b>${R.L.boss}</b> was defeated in ${shClock(R.t)}.</p>`}
         <div class="shScore">⭐ Score: <b>${R.score.toLocaleString()}</b>${R.newBest ? ` <span class="shNewBest">🏅 New best score!</span>` : ""}</div>
         <div class="shEndStats"><span>👾 Enemies destroyed: <b>${R.kills}</b></span><span>💔 Lives lost: <b>${R.hits}</b></span><span>🛡️ Hits blocked: <b>${R.blocks}</b></span></div>
         ${E.loot ? shLootHtml(E) : `<div class="shEndReward"><span>💰 <b>+${fmt(E.money)}</b></span><span>✨ <b>+${R.dust.toLocaleString()}</b> stardust</span></div>`}

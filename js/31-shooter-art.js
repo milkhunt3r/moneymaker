@@ -196,6 +196,7 @@ const SH_SKY = [
   { top: "#06150f", bottom: "#1a0f33", blobs: ["rgba(90,255,120,0.16)", "rgba(170,60,255,0.22)", "rgba(40,200,180,0.14)"], planet: ["#b0ff8a", "#2f7a3a"] },
   { top: "#1a0508", bottom: "#2a0a1e", blobs: ["rgba(255,60,60,0.2)", "rgba(255,170,40,0.14)", "rgba(160,30,120,0.2)"], planet: ["#ffd27a", "#8a1a1a"] },
   { top: "#04141c", bottom: "#0b2230", blobs: ["rgba(40,220,200,0.18)", "rgba(40,120,255,0.16)", "rgba(255,200,60,0.08)"], planet: ["#7affe9", "#1a6a6a"] },
+  { top: "#06101e", bottom: "#1a0c2c", blobs: ["rgba(40,220,200,0.16)", "rgba(170,60,255,0.2)", "rgba(255,200,60,0.08)"], planet: ["#ffd27a", "#3a1a5a"] },
 ];
 function shNebula(lv) {
   return shSprite("neb" + lv, 1920, 540, (g) => {

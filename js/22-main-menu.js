@@ -50,6 +50,10 @@ addEventListener("resize", fitBrand); fitBrand();
 
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
+  { date: "23 November 2026", title: "Empire of Coins", items: [
+    "🗺️ New Nebula Strike level 5: <b>Pirates' Lost Treasure</b>! Opens after you beat level 4. There's no boss: survive for 5 minutes as the pirates' graveyard gets busier and busier. Watch out for 🦈 sea sharks, powder monkeys with big cannonballs and skull asteroids, and fly around the cursed rocks and broken masts: they can't be destroyed. Survive to win a pirate loot box.",
+    "🏆 New Nebula Strike achievement: 🗺️ Survivor of the graveyard.",
+  ] },
   { date: "22 November 2026", title: "Empire of Coins", items: [
     "☕ You can now support Empire of Coins on Ko-fi: press <b>Donate</b> on the main menu or ⚙️ Settings → Support the game. Donations are completely voluntary and don't give anything in the game, so every player stays on equal terms. Thank you!",
     "🐞 <b>Report a bug</b> is now open in ⚙️ Settings: describe the problem and send it by email (or copy the report) to contact@empireofcoins.com.",

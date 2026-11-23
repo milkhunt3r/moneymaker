@@ -232,6 +232,7 @@ const ACHIEVEMENTS = [
       { id: "shLv2",     icon: "🐝", name: "Hive buster",         desc: "Beat the Hive Queen in level 2 of Nebula Strike",     goal: 1, get: () => (N().done || 0) >= 2 ? 1 : 0 },
       { id: "shLv3",     icon: "👁️", name: "Tax evasion",         desc: "Beat The Taxman in level 3 of Nebula Strike",         goal: 1, get: () => (N().done || 0) >= 3 ? 1 : 0 },
       { id: "shLv4",     icon: "🏴‍☠️", name: "Pirate's bane",       desc: "Beat Admiral Dreadmaw in level 4 of Nebula Strike", goal: 1, get: () => (N().done || 0) >= 4 ? 1 : 0 },
+      { id: "shLv5",     icon: "🗺️", name: "Survivor of the graveyard", desc: "Survive 5 minutes in level 5 of Nebula Strike", goal: 1, get: () => (N().done || 0) >= 5 ? 1 : 0 },
       { id: "shLoot10",  icon: "💰", name: "Treasure hunter",     desc: "Open 10 pirate loot boxes",                       goal: 10, get: () => N().loots || 0 },
       { id: "petLove",   icon: "💖", name: "Best friends",        desc: "Pet your pet 100 times",                          goal: 100, get: () => (state.pet && state.pet.pets) || 0 },
       { id: "petTaps",   icon: "🐾", name: "Paw power",           desc: "Let your pet tap the coin 10,000 times",          goal: 10000, get: () => (state.pet && state.pet.taps) || 0 },

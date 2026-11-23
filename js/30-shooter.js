@@ -93,6 +93,8 @@ const SH_LEVELS = [
   { n: 3, name: "Crimson Fortress", boss: "The Taxman", img: "boss-taxman",  diff: "🔴 Hard",   time: "about 6–7 min", len: 330, first: 120, again: 8, dustFirst: 400, dustAgain: 100 },
   // 🏴‍☠️ two bosses (len = each stretch of waves); every clear opens a pirate loot box instead of a fixed money reward
   { n: 4, name: "Pirate's Cove",    boss: "Admiral Dreadmaw", boss1: "Captain Cutlass", img: "boss-dreadmaw", diff: "💀 Very hard", time: "about 5 min", len: 120, loot: true, dustFirst: 600, dustAgain: 150 },
+  // 🗺️ survive 5 minutes (no boss); the same pirate loot box as level 4
+  { n: 5, name: "Pirates' Lost Treasure", boss: null, img: "level5-map", diff: "💀 Very hard", time: "5 min", len: 300, survive: true, loot: true, dustFirst: 800, dustAgain: 200 },
 ];
 /* ----- 🏴‍☠️ PIRATE LOOT BOX (level 4): minutes of income by rarity, or the pet -----
    Once you have the pet, its 5% goes to Epic (you can only have one pet). */
@@ -131,7 +133,7 @@ function renderShooter() {
   v.innerHTML = `<button class="btn ghost small gamesBack" data-games-back>← 🎮 Mini-games</button>
     <div class="card shIntro">
       <h2>🚀 Nebula Strike</h2>
-      <p>Fly through four sectors of space, shoot everything that moves and defeat the boss at the end of each level.
+      <p>Fly through five sectors of space, shoot everything that moves, defeat the bosses and survive the pirates' graveyard.
         Lose all your lives and the level starts over from the beginning.</p>
       <p class="muted">🛡️ <b>Shield:</b> every ${15 - shUp(ship, "shieldCd")} sec. It stays up ${(1.5 + shUp(ship, "shieldTime") * 0.1).toFixed(1)} sec and blocks the next hit, so time it well.
         📦 Shoot the glowing supply ships for special weapons: 🚀 homing missiles, ⚡ laser beam and 💠 nova spread.</p>
@@ -149,11 +151,11 @@ function renderShooter() {
     <div class="shLevels">${SH_LEVELS.map(L => {
       const open = SH.done >= L.n - 1, done = SH.done >= L.n;
       return `<div class="card shLevel ${open ? "" : "locked"} ${done ? "done" : ""}">
-        <div class="shBossPic"><img src="assets/shooter/${L.img}.webp" alt="${L.boss}"></div>
+        <div class="shBossPic"><img src="assets/shooter/${L.img}.webp" alt="${L.boss || L.name}"></div>
         <h3>Level ${L.n}: ${L.name}</h3>
-        <div class="muted">${L.diff} · ${L.time} · ${L.boss1 ? `Bosses: <b>${L.boss1}</b> and <b>${L.boss}</b>` : `Boss: <b>${L.boss}</b>`}</div>
+        <div class="muted">${L.diff} · ${L.time} · ${L.survive ? "No boss: <b>survive!</b>" : L.boss1 ? `Bosses: <b>${L.boss1}</b> and <b>${L.boss}</b>` : `Boss: <b>${L.boss}</b>`}</div>
         <div class="shLvReward">${L.loot
-          ? `🏴‍☠️ Every clear: a <b>pirate loot box</b> (40–180 min of income${shHasPet() ? "" : " or a rare pet"}) + ${shDustIco} ${done ? L.dustAgain : L.dustFirst}${done && SH.best[L.n] ? `<br>✅ Cleared · Best time ${shClock(SH.best[L.n])}` : ""}${SH.bestScore[L.n] ? `${done ? " · " : "<br>"}⭐ Best score ${SH.bestScore[L.n].toLocaleString()}` : ""}`
+          ? `🏴‍☠️ Every clear: a <b>pirate loot box</b> (40–180 min of income${shHasPet() ? "" : " or a rare pet"}) + ${shDustIco} ${done ? L.dustAgain : L.dustFirst}${done ? (SH.best[L.n] ? `<br>✅ Cleared · Best time ${shClock(SH.best[L.n])}` : "<br>✅ Cleared") : ""}${SH.bestScore[L.n] ? `${done ? " · " : "<br>"}⭐ Best score ${SH.bestScore[L.n].toLocaleString()}` : ""}`
           : done
           ? `✅ Cleared${SH.best[L.n] ? ` · Best time ${shClock(SH.best[L.n])}` : ""}${SH.bestScore[L.n] ? ` · ⭐ Best score ${SH.bestScore[L.n].toLocaleString()}` : ""}<br>Play again: 💰 ${fmt(shReward(L, false))} + ${shDustIco} ${L.dustAgain}`
           : `First clear: 💰 <b>${fmt(shReward(L, true))}</b> + ${shDustIco} ${L.dustFirst}${SH.bestScore[L.n] ? `<br>⭐ Best score ${SH.bestScore[L.n].toLocaleString()}` : ""}`}</div>

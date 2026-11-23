@@ -1751,7 +1751,7 @@ p.guestWarn { font-size: 14px; background: rgba(255, 170, 0, 0.1); border: 1px s
 .shAuto { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; margin: 4px 0 8px; }
 .shDustBig { font-size: 20px; color: #ffe66b; }
 .shDustIco { filter: drop-shadow(0 0 4px rgba(255, 230, 107, 0.7)); }
-.shLevels { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-bottom: 14px; }
+.shLevels { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 14px; margin-bottom: 14px; }
 .shLevel { display: flex; flex-direction: column; gap: 6px; align-items: center; text-align: center; margin: 0; }
 .shLevel h3 { margin: 2px 0 0; }
 .shLevel.locked { opacity: 0.55; }

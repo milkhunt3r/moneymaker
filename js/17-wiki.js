@@ -301,12 +301,13 @@ function wikiArt() {
       It earns ${fmt(GALLERY_PER_PAINTING)} / sec for every painting in your collection, up to ${fmt(GALLERY_MAX)} / sec. Selling paintings lowers it.</p>
     ${typeof SH_LEVELS === "object" ? `<h2>🚀 Nebula Strike</h2>
     <p>A side-scrolling space shooter. It opens when you build the 🚀 Space Mission Center (🔬 Science) and stays open for good, even after a prestige.
-      Fly your ship through 4 levels of enemy waves; each level ends with a boss (level 4 has two). Beating a level opens the next one. Levels are free to play,
+      Fly your ship through 5 levels of enemy waves; levels 1–4 end with a boss (level 4 has two), and in level 5 you must survive for 5 minutes. Beating a level opens the next one. Levels are free to play,
       but if you lose all your lives, the level starts over from the beginning.</p>
     ${wt(["Level", "Difficulty", "Length", "Boss", "First clear", "Later clears"], SH_LEVELS.map(L =>
-      [`${L.n}: ${L.name}`, L.diff, L.time, L.boss1 ? `${L.boss1} + ${L.boss}` : L.boss,
+      [`${L.n}: ${L.name}`, L.diff, L.time, L.survive ? t("None (survive 5 min)") : L.boss1 ? `${L.boss1} + ${L.boss}` : L.boss,
         L.loot ? `🏴‍☠️ Loot box + ✨ ${L.dustFirst}` : `${L.first} min of income + ✨ ${L.dustFirst}`, L.loot ? `🏴‍☠️ Loot box + ✨ ${L.dustAgain}` : `${L.again} min of income + ✨ ${L.dustAgain}`]))}
-    <p>🏴‍☠️ <b>Pirate loot box</b> (level 4, every clear): after Captain Cutlass, the waves continue for about 2 more minutes before Admiral Dreadmaw. Beat him to open a loot box (after your first win you can also buy one in the hangar for ✨ 10,000 stardust):</p>
+    <p>🏴‍☠️ <b>Pirate loot box</b> (levels 4 and 5, every clear): after Captain Cutlass, the waves continue for about 2 more minutes before Admiral Dreadmaw. Beat him to open a loot box (after your first win you can also buy one in the hangar for ✨ 10,000 stardust):</p>
+    <p>🗺️ <b>Level 5: Pirates' Lost Treasure</b> has no boss: survive for 5 minutes while it keeps getting busier. Watch out for 🦈 sea sharks, powder monkeys with big cannonballs, and cursed rocks and broken masts that can't be destroyed (your shots bounce off them, so fly around them). Survive to win the same pirate loot box.</p>
     ${wt(["Rarity", "Chance", "Prize"], shLootOdds().filter(T => T.p).map(T => [T.k === "pet" ? "🐾 Pet" : T.name, `${T.p}%`, T.k === "pet" ? "A pet that lives on your 💰 Income page (you can only have one; after that its chance goes to Epic)" : T.min[0] === T.min[1] ? `${T.min[0]} min of income` : `${T.min[0]}–${T.min[1]} min of income`]))}
     <p class="muted">The income reward uses the same base as the Gold Mine Dig (business income over the last minute).</p>
     <p>🛡️ <b>Shield:</b> usable every 15 sec. It stays up 1.5 sec and blocks the next hit (a shot, an enemy or a boss beam), then breaks. If nothing hits it in time, it's wasted.</p>

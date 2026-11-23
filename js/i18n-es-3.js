@@ -502,8 +502,8 @@ Object.assign(ES, {
   "Shield time": "Duración del escudo", "Special ammo": "Munición especial", "Stardust magnet": "Imán de polvo estelar",
   "normal damage": "daño normal", "normal fire rate": "cadencia normal", "no extra lives": "sin vidas extra", "normal special weapon ammo": "munición especial normal",
   "no magnet": "sin imán", "small pull range": "alcance pequeño", "medium pull range": "alcance medio", "large pull range": "alcance grande",
-  "Fly through four sectors of space, shoot everything that moves and defeat the boss at the end of each level. Lose all your lives and the level starts over from the beginning.":
-    "Vuela por cuatro sectores del espacio, dispara a todo lo que se mueva y derrota al jefe al final de cada nivel. Si pierdes todas tus vidas, el nivel empieza de nuevo desde el principio.",
+  "Fly through five sectors of space, shoot everything that moves, defeat the bosses and survive the pirates' graveyard. Lose all your lives and the level starts over from the beginning.":
+    "Vuela por cinco sectores del espacio, dispara a todo lo que se mueva, derrota a los jefes y sobrevive al cementerio pirata. Si pierdes todas tus vidas, el nivel empieza de nuevo desde el principio.",
   "Move: arrows or WASD · 🛡️ Shield: Shift or K · 🚀 Special weapon: X or L · ⏸️ Pause: P or Esc":
     "Moverse: flechas o WASD · 🛡️ Escudo: Shift o K · 🚀 Arma especial: X o L · ⏸️ Pausa: P o Esc",
   "Phone: drag anywhere on the screen to fly, and tap the buttons for the shield and special weapon.":
@@ -551,9 +551,9 @@ Object.assign(ES, {
   "Onwards!": "¡Adelante!", "The final boss is waiting further ahead…": "El jefe final te espera más adelante…",
   "Captain Cutlass + Admiral Dreadmaw": "Capitán Sable + Almirante Fauces Negras",
   "A pet that lives on your 💰 Income page (you can only have one; after that its chance goes to Epic)": "Una mascota que vive en tu página de 💰 Ingresos (solo puedes tener una; después, su probabilidad pasa a Épico)",
-  "A side-scrolling space shooter. It opens when you build the 🚀 Space Mission Center (🔬 Science) and stays open for good, even after a prestige. Fly your ship through 4 levels of enemy waves; each level ends with a boss (level 4 has two). Beating a level opens the next one. Levels are free to play, but if you lose all your lives, the level starts over from the beginning.":
-    "Un matamarcianos de desplazamiento lateral. Se abre al construir el 🚀 Centro de misiones espaciales (🔬 Ciencia) y queda abierto para siempre, incluso tras un prestigio. Pilota tu nave por 4 niveles de oleadas enemigas; cada nivel termina con un jefe (el nivel 4 tiene dos). Superar un nivel abre el siguiente. Jugar los niveles es gratis, pero si pierdes todas tus vidas, el nivel empieza de nuevo desde el principio.",
-  "Fly a spaceship through 4 levels of enemy waves and defeat the bosses waiting at the end.": "Pilota una nave por 4 niveles de oleadas enemigas y derrota a los jefes que esperan al final.",
+  "A side-scrolling space shooter. It opens when you build the 🚀 Space Mission Center (🔬 Science) and stays open for good, even after a prestige. Fly your ship through 5 levels of enemy waves; levels 1–4 end with a boss (level 4 has two), and in level 5 you must survive for 5 minutes. Beating a level opens the next one. Levels are free to play, but if you lose all your lives, the level starts over from the beginning.":
+    "Un matamarcianos de desplazamiento lateral. Se abre al construir el 🚀 Centro de misiones espaciales (🔬 Ciencia) y queda abierto para siempre, incluso tras un prestigio. Pilota tu nave por 5 niveles de oleadas enemigas; los niveles 1–4 terminan con un jefe (el nivel 4 tiene dos) y en el nivel 5 debes sobrevivir 5 minutos. Superar un nivel abre el siguiente. Jugar los niveles es gratis, pero si pierdes todas tus vidas, el nivel empieza de nuevo desde el principio.",
+  "Fly a spaceship through 5 levels of enemy waves, defeat the bosses and survive the pirates' graveyard.": "Pilota una nave por 5 niveles de oleadas enemigas, derrota a los jefes y sobrevive al cementerio pirata.",
   "Show on the Income page": "Mostrar en la página de Ingresos", "Name": "Nombre", "🐾 Pet": "🐾 Mascota", "The pet": "La mascota",
   "Best friends": "Mejores amigos", "Pet your pet 100 times": "Acaricia a tu mascota 100 veces", "Paw power": "Poder de patitas", "Let your pet tap the coin 10,000 times": "Deja que tu mascota pulse la moneda 10.000 veces",
   "Skip": "Saltar", "Support the game": "Apoya el juego", "Donate": "Donar", "Maybe later": "Quizás más tarde", "☕ Open Ko-fi": "☕ Abrir Ko-fi", "Open Ko-fi": "Abrir Ko-fi",
@@ -620,8 +620,8 @@ rx(String.raw`shield stays up ([\d.]+) sec( at max)?`, (m, n, x) => `el escudo d
 rx(String.raw`\+(\d+)% special weapon ammo( at max)?`, (m, n, x) => `+${n}% de munición especial${x ? " al máximo" : ""}`);
 rx(String.raw`large pull range at max`, "alcance grande al máximo");
 // hangar and levels
-rx(String.raw`Level (\d): (Scrap Belt|Hive Nebula|Crimson Fortress|Pirate's Cove)( · (\d+:\d\d))?`, (m, n, l, c, tm) => `Nivel ${n}: ${shEsName(l)}${tm ? " · " + tm : ""}`);
-rx(String.raw`(\d): (Scrap Belt|Hive Nebula|Crimson Fortress|Pirate's Cove)`, (m, n, l) => `${n}: ${shEsName(l)}`);
+rx(String.raw`Level (\d): (Scrap Belt|Hive Nebula|Crimson Fortress|Pirate's Cove|Pirates' Lost Treasure)( · (\d+:\d\d))?`, (m, n, l, c, tm) => `Nivel ${n}: ${shEsName(l)}${tm ? " · " + tm : ""}`);
+rx(String.raw`(\d): (Scrap Belt|Hive Nebula|Crimson Fortress|Pirate's Cove|Pirates' Lost Treasure)`, (m, n, l) => `${n}: ${shEsName(l)}`);
 rx(String.raw`Upgrades for the (Sparrow|Dart|Bulwark|Sovereign)`, "Mejoras de la $1");
 rx(String.raw`(?:🟢 )?Easy · about 5 min · Boss`, "Fácil · unos 5 min · Jefe");
 rx(String.raw`(?:🟠 )?Medium · about 6–7 min · Boss`, "Media · unos 6–7 min · Jefe");
@@ -634,6 +634,7 @@ hrx(String.raw`First clear: 💰 <b>(${NUM})<\/b> \+ <span>✨<\/span> (\d+)<br>
 rx(String.raw`(?:⭐ )?Best score ([\d.,]+)`, "⭐ Mejor puntuación $1");
 rx(String.raw`Cleared · Best time (\d+:\d\d) · ⭐ Best score ([\d.,]+)`, "Superado · Mejor tiempo $1 · ⭐ Mejor puntuación $2");
 rx(String.raw`Cleared · Best time (\d+:\d\d)`, "Superado · Mejor tiempo $1");
+rx(String.raw`Cleared · ⭐ Best score ([\d.,]+)`, "Superado · ⭐ Mejor puntuación $1");
 rx(String.raw`Play again: 💰 (${NUM}) \+`, "Otra vez: 💰 $1 +");
 hrx(String.raw`<span>✨<\/span> Stardust: <b>([\d.,]+)<\/b>`, "<span>✨</span> Polvo estelar: <b>$1</b>");
 hrx(String.raw`🔒 Beat level (\d) · <span>✨<\/span> ([\d.,]+)`, "🔒 Supera el nivel $1 · <span>✨</span> $2");
@@ -685,11 +686,11 @@ hrx(String.raw`⛏️ The top levels also need 💎 diamonds or 🔴 rubies from
 rx(String.raw`Lv (\d): ((?:💎|🔴) \d+)( · Lv (\d): ((?:💎|🔴) \d+))?`, (m, a, b, c, d, e) => `Nv ${a}: ${b}${c ? ` · Nv ${d}: ${e}` : ""}`);
 rx(String.raw`(?:💀 )?Very hard · about 5 min · Bosses`, "Muy difícil · unos 5 min · Jefes");
 hrx(String.raw`💀 Very hard · about 5 min · Bosses: <b>Captain Cutlass<\/b> and <b>Admiral Dreadmaw<\/b>`, "💀 Muy difícil · unos 5 min · Jefes: <b>Capitán Sable</b> y <b>Almirante Fauces Negras</b>");
-hrx(String.raw`🏴‍☠️ Every clear: a <b>pirate loot box<\/b> \(40–180 min of income( or a rare pet)?\) \+ <span>✨<\/span> (\d+)(?:<br>✅ Cleared · Best time (\d+:\d\d))?(?:(?: · |<br>)⭐ Best score ([\d.,]+))?`,
-  (m, pet, d, tm, sc) => `🏴‍☠️ Cada victoria: un <b>cofre del botín pirata</b> (40–180 min de ingresos${pet ? " o una mascota rara" : ""}) + <span>✨</span> ${d}${tm ? `<br>✅ Superado · Mejor tiempo ${tm}` : ""}${sc ? `${tm ? " · " : "<br>"}⭐ Mejor puntuación ${sc}` : ""}`);
+hrx(String.raw`🏴‍☠️ Every clear: a <b>pirate loot box<\/b> \(40–180 min of income( or a rare pet)?\) \+ <span>✨<\/span> (\d+)(<br>✅ Cleared(?: · Best time (\d+:\d\d))?)?(?:(?: · |<br>)⭐ Best score ([\d.,]+))?`,
+  (m, pet, d, cl, tm, sc) => `🏴‍☠️ Cada victoria: un <b>cofre del botín pirata</b> (40–180 min de ingresos${pet ? " o una mascota rara" : ""}) + <span>✨</span> ${d}${cl ? `<br>✅ Superado${tm ? " · Mejor tiempo " + tm : ""}` : ""}${sc ? `${cl ? " · " : "<br>"}⭐ Mejor puntuación ${sc}` : ""}`);
 H("<b>You found a pet!</b><br>Your new friend now lives on your 💰 Income page. It drinks the ⚡ energy drink and taps the coin for you!", "<b>¡Has encontrado una mascota!</b><br>Tu nuevo amigo ya vive en tu página de 💰 Ingresos. ¡Se bebe la ⚡ bebida energética y pulsa la moneda por ti!");
-H("🏴‍☠️ <b>Pirate loot box</b> (level 4, every clear): after Captain Cutlass, the waves continue for about 2 more minutes before Admiral Dreadmaw. Beat him to open a loot box (after your first win you can also buy one in the hangar for ✨ 10,000 stardust):",
-  "🏴‍☠️ <b>Cofre del botín pirata</b> (nivel 4, en cada victoria): tras el Capitán Sable, las oleadas siguen unos 2 minutos más antes del Almirante Fauces Negras. Derrótalo para abrir un cofre del botín (tras tu primera victoria también puedes comprar uno en el hangar por ✨ 10.000 de polvo estelar):");
+H("🏴‍☠️ <b>Pirate loot box</b> (levels 4 and 5, every clear): after Captain Cutlass, the waves continue for about 2 more minutes before Admiral Dreadmaw. Beat him to open a loot box (after your first win you can also buy one in the hangar for ✨ 10,000 stardust):",
+  "🏴‍☠️ <b>Cofre del botín pirata</b> (niveles 4 y 5, en cada victoria): tras el Capitán Sable, las oleadas siguen unos 2 minutos más antes del Almirante Fauces Negras. Derrótalo para abrir un cofre del botín (tras tu primera victoria también puedes comprar uno en el hangar por ✨ 10.000 de polvo estelar):");
 rx(String.raw`Loot box \+ ✨ (\d+)`, "Cofre del botín + ✨ $1");
 rx(String.raw`(\d+)–(\d+) min of income`, "$1–$2 min de ingresos");
 rx(String.raw`(\d+) min of income`, "$1 min de ingresos");
@@ -732,6 +733,21 @@ hrx(String.raw`(<b>(?:[^<]|<img[^>]*>)*?)(\d+) vehicles here<\/b>`, "$1$2 vehíc
 rx(String.raw`… and (\d+) more`, "… y $1 más");
 rx(String.raw`(\d+) vehicles here`, "$1 vehículos aquí");
 rx(String.raw`(\d+)% · ([\dh :m]+) left`, "$1% · quedan $2");
+/* 🗺️ Nebula Strike level 5 */
+Object.assign(ES, { "Survivor of the graveyard": "Superviviente del cementerio", "Survive 5 minutes in level 5 of Nebula Strike": "Sobrevive 5 minutos en el nivel 5 de Nebula Strike",
+  "🏆 New Nebula Strike achievement: 🗺️ Survivor of the graveyard.": "🏆 Nuevo logro de Nebula Strike: 🗺️ Superviviente del cementerio." });
+H("🗺️ New Nebula Strike level 5: <b>Pirates' Lost Treasure</b>! Opens after you beat level 4. There's no boss: survive for 5 minutes as the pirates' graveyard gets busier and busier. Watch out for 🦈 sea sharks, powder monkeys with big cannonballs and skull asteroids, and fly around the cursed rocks and broken masts: they can't be destroyed. Survive to win a pirate loot box.",
+  "🗺️ ¡Nuevo nivel 5 de Nebula Strike: <b>El tesoro perdido de los piratas</b>! Se abre al superar el nivel 4. No hay jefe: sobrevive 5 minutos mientras el cementerio pirata se llena cada vez más. Cuidado con los 🦈 tiburones espaciales, los monos de pólvora con sus grandes balas de cañón y los asteroides calavera, y esquiva las rocas malditas y los mástiles rotos: no se pueden destruir. Sobrevive para ganar un cofre del botín pirata.");
+Object.assign(ES, { "Pirates' Lost Treasure": "El tesoro perdido de los piratas", "💀 Very hard": "💀 Muy difícil", "5 min": "5 min",
+  "Survive for 5 minutes!": "¡Sobrevive 5 minutos!", "🏴‍☠️ You survived!": "🏴‍☠️ ¡Has sobrevivido!", "The treasure is yours!": "¡El tesoro es tuyo!",
+  "None (survive 5 min)": "Ninguno (sobrevive 5 min)", "You survived!": "¡Has sobrevivido!", "Beat level 4 first": "Supera antes el nivel 4", "survive!": "¡sobrevive!", "You survived": "Has sobrevivido", "in the pirates' graveyard!": "en el cementerio pirata!", "Cleared · ⭐ Best score": "Superado · ⭐ Mejor puntuación", "✅ Cleared": "✅ Superado" });
+H("No boss: <b>survive!</b>", "Sin jefe: <b>¡sobrevive!</b>");
+hrx(String.raw`You survived <b>(\d+:\d+)<\/b> in the pirates' graveyard!`, "¡Has sobrevivido <b>$1</b> en el cementerio pirata!");
+hrx(String.raw`💀 Very hard · 5 min · No boss: <b>survive!<\/b>`, "💀 Muy difícil · 5 min · Sin jefe: <b>¡sobrevive!</b>");
+rx(String.raw`(?:💀 )?Very hard · 5 min · No boss`, "Muy difícil · 5 min · Sin jefe");
+H("🗺️ <b>Level 5: Pirates' Lost Treasure</b> has no boss: survive for 5 minutes while it keeps getting busier. Watch out for 🦈 sea sharks, powder monkeys with big cannonballs, and cursed rocks and broken masts that can't be destroyed (your shots bounce off them, so fly around them). Survive to win the same pirate loot box.",
+  "🗺️ <b>Nivel 5: El tesoro perdido de los piratas</b> no tiene jefe: sobrevive 5 minutos mientras la acción no deja de crecer. Cuidado con los 🦈 tiburones espaciales, los monos de pólvora con sus grandes balas de cañón y las rocas malditas y mástiles rotos que no se pueden destruir (tus disparos rebotan en ellos, así que esquívalos). Sobrevive para ganar el mismo cofre del botín pirata.");
+
 /* ===================== generic fallbacks (keep these last) ===================== */
 // a message made of several sentences: each sentence on its own ("You lost 1000. Cashback +99.")
 ES_RX.push([/^(.+?[.!?)])\s+(\S.*)$/s, (s) => {
