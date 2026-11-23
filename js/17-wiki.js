@@ -4,7 +4,7 @@
 const WIKI_SECTIONS = [
   { id: "general", name: "⭐ General" }, { id: "income", name: "💰 Income" }, { id: "casino", name: "🎰 Casino" },
   { id: "investing", name: "📈 Investing" }, { id: "logistics", name: "🚢 Logistics" },
-  { id: "art", name: "🎮 Mini-games" }, { id: "achievements", name: "🏆 Achievements" }, { id: "shop", name: "🛍️ Shop" },
+  { id: "art", name: "🎮 Mini-games" }, { id: "achievements", name: "🏆 Achievements" }, { id: "pet", name: "🐾 Pet" },
 ];
 const wt = (head, rows) => `<table class="wikiTable"><thead><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr></thead>
   <tbody>${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
@@ -25,7 +25,7 @@ function wikiGeneral() {
       ["📈 Investing", "Real estate, ETFs, gold, Broker ETF and live crypto trading"],
       ["🚢 Logistics", "Trucks, oil tankers and cargo planes on contracts, with a world map"],
       ["🎮 Mini-games", "🖼️ Art Gallery: copy paintings and sell them or keep them · ⛏️ Gold Mine Dig: dig for ore (needs a gold mine) · 🚀 Nebula Strike: space shooter (needs the Space Mission Center)"],
-      ["🏆 Achievements", "Goals across the whole game"], ["🛍️ Shop", "Cosmetics: backgrounds and coins"], ["📖 Wiki", "This guide"]])}
+      ["🏆 Achievements", "Goals across the whole game"], ["🐾 Pet", "Your pet and how to find one"], ["📖 Wiki", "This guide"]])}
     <h3>🧾 Taxes</h3>
     <p>Every second there is a 1 in ${Math.round(1 / TAX_CHANCE).toLocaleString()} chance of a tax inspection (and always after ${TAX_FORCED_AFTER / 60} minutes without one).
       The bill is <b>${pctx(TAX_RATE)} of everything you earned in the last ${TAX_LOOKBACK / 60} minutes</b>. You have <b>${TAX_TIME_TO_PAY / 60} minutes</b> to pay it with the red button on 💰 Income, or the red banner at the top of any other tab (clicking it pays right there).
@@ -268,18 +268,19 @@ function wikiAchievements() {
   return `<h2>🏆 Achievements</h2>
     <p>${achShown().length} achievements in ${achCatsShown().length} categories. They are checked every second, kept forever (also through prestige) and shown with progress bars in the 🏆 tab.</p>
     <h3>🎁 Rewards</h3>
-    <p>Finishing every achievement of a category unlocks a cosmetic collection that can't be bought in the Shop. Turn it on in 🏆 Achievements → 🎁 Rewards.</p>
+    <p>Cosmetic collections (backgrounds, coins and 🃏 card decks) are unlocked by achievements. Turn them on in 🏆 Achievements → 🎁 Rewards. You can wear one item per slot, and wearing the coin and background of the same collection unlocks 🎨 "Dressed to impress".</p>
     ${wt(["Reward", "How to unlock"], COLLECTIONS.filter(c => c.reward && !(c.hidden && c.hidden())).map(c => [c.name, c.reward.text]))}
     ${achCatsShown().map(c => `<h3>${c.name}</h3>` + wt(["", "Achievement", "Goal", ""],
       achShown().filter(a => a.cat === c.id).map(a => [a.icon, `<b>${a.name}</b>`, a.desc, state.achievements[a.id] ? "✅" : ""]))).join("")}`;
 }
 
-function wikiShop() {
-  return `<h2>🛍️ Shop</h2>
-    <p>Cosmetics only: they change how the game looks, not how it plays. Each item belongs to a collection and a slot (background, coin or 🃏 cards, which changes the deck in every card game). You can wear one item per slot and switch any time in the Shop.</p>
-    ${wt(["Item", "Collection", "Slot", "Price", ""], COSMETICS.filter(c => { const col = COLLECTIONS.find(x => x.id === c.collection); return !(col && col.hidden && col.hidden()); }).map(c => [`<b>${c.name}</b><br><span class="muted">${c.desc}</span>`,
-      (COLLECTIONS.find(x => x.id === c.collection) || {}).name || "", c.slot, c.price ? fmt(c.price) : "🎁 Reward", state.cosmetics.owned[c.id] ? "✅ owned" : ""]))}
-    <p class="muted">Wearing the coin and background from the same collection unlocks the 🎨 "Dressed to impress" achievement.</p>`;
+function wikiPet() {
+  return `<h2>🐾 Pet</h2>
+    <p>A pet lives on your 💰 Income page and helps you. Find one in a 🏴‍☠️ pirate loot box (🎮 Mini-games → 🚀 Nebula Strike, levels 4 and 5, or the pirate chest in the hangar). More pets are coming.</p>
+    <ul><li>⚡ It buys the energy drink by itself when it's ready and you can afford it.</li>
+      <li>👆 While the drink is active, it taps the coin for you: 10 clicks per second, worth the same as yours (they count for 🏆 achievements).</li>
+      <li>😴 During the cooldown it sleeps, and wakes up 10 seconds before the next drink.</li>
+      <li>❤️ Click it to pet it. On the 🐾 Pet page you can rename it or hide it.</li></ul>`;
 }
 
 function wikiArt() {
@@ -366,7 +367,7 @@ function wikiArt() {
       or "🔒 later" when the rest need a sample you haven't found yet. Mutants never count, and hints only show real recipes.</p>
     <p>💡 <b>Hints:</b> spend ${GENE_HINT_SCI} scientists from your Universities to reveal one recipe you can make right now. The 📖 Codex shows every species you've found and how you made it.</p>` : ""}`;
 }
-const WIKI_RENDER = { art: wikiArt, general: wikiGeneral, income: wikiIncome, casino: wikiCasino, investing: wikiInvesting, logistics: wikiLogistics, achievements: wikiAchievements, shop: wikiShop };
+const WIKI_RENDER = { art: wikiArt, general: wikiGeneral, income: wikiIncome, casino: wikiCasino, investing: wikiInvesting, logistics: wikiLogistics, achievements: wikiAchievements, pet: wikiPet };
 function renderWiki() {
   const page = WIKI_RENDER[state.wikiPage] ? state.wikiPage : "general";
   $("wikiNav").innerHTML = WIKI_SECTIONS.map(s => `<button class="subTab ${s.id === page ? "active" : ""}" data-wiki="${s.id}">${s.name}</button>`).join("");

@@ -212,7 +212,7 @@ function petSettingsHtml() {
 }
 document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-pet=show]"); if (!b || !petOwned()) return;
-  state.pet.hidden = !state.pet.hidden; b.classList.toggle("on", !state.pet.hidden); save(); petSync();
+  state.pet.hidden = !state.pet.hidden; b.classList.toggle("on", !state.pet.hidden); save(); petSync();   // (🐾 Pet page)
 });
 document.addEventListener("change", (e) => {
   if (e.target.id !== "petName" || !petOwned()) return;

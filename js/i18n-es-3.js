@@ -988,6 +988,37 @@ H("🏅 <b>Alliance bonuses</b>: become 💛 Trusted and 💖 Allies with a race
 ES["☄️ Space events: special requests with a deadline, asteroid fields, lost alien ships to rescue, and pirates who want a toll."] = "☄️ Eventos espaciales: peticiones especiales con plazo, campos de asteroides, naves alienígenas perdidas que rescatar y piratas que piden peaje.";
 ES["🏆 2 new 🪐 Space achievements: 🌌 Galactic network and 👑 Friends forever."] = "🏆 2 logros nuevos de 🪐 Espacio: 🌌 Red galáctica y 👑 Amigos para siempre.";
 Object.assign(ES, { "Zoom in": "Acercar", "Zoom out": "Alejar", "Whole map": "Mapa completo" });
+// 🐾 Pet page and collections as rewards
+Object.assign(ES, { "Pet": "Mascota", "No pet yet": "Todavía no tienes mascota", "Pets live on your 💰 Income page, keep you company and help you out.": "Las mascotas viven en tu página de 💰 Ingresos, te hacen compañía y te ayudan.",
+  "More pets are coming": "Llegarán más mascotas", "New friends will join in future updates.": "Nuevos amigos se unirán en próximas actualizaciones.", "Mochi": "Mochi",
+  "Petted": "Caricias", "Coin taps": "Toques a la moneda", "Show on the 💰 Income page": "Mostrar en la página de 💰 Ingresos",
+  "Buys the energy drink by itself when it's ready and you can afford it.": "Compra la bebida energética por su cuenta cuando está lista y te la puedes permitir.",
+  "While the drink is active, it taps the coin for you: 10 clicks per second, worth the same as yours (they count for 🏆 achievements too).": "Mientras la bebida está activa, toca la moneda por ti: 10 clics por segundo, que valen lo mismo que los tuyos (también cuentan para los 🏆 logros).",
+  "While the drink cools down it walks off and sleeps, and wakes up 10 seconds before the next drink.": "Mientras la bebida se recarga, se aparta y duerme, y se despierta 10 segundos antes de la siguiente bebida.",
+  "Click it to pet it. Pet it 5 times in a row and it jumps for joy!": "Haz clic en ella para acariciarla. ¡Acaríciala 5 veces seguidas y saltará de alegría!",
+  "Unlock your first cosmetic item (🏆 Achievements → 🎁 Rewards)": "Desbloquea tu primer objeto cosmético (🏆 Logros → 🎁 Recompensas)",
+  "Unlock the whole 🦁 Emperor Collection and wear all 3 items at once (background, coin and cards)": "Desbloquea toda la 🦁 Colección Emperador y lleva sus 3 objetos a la vez (fondo, moneda y cartas)",
+  "Finish the achievements a collection needs to unlock it. Then turn its items on or off here any time.": "Completa los logros que pide una colección para desbloquearla. Después, activa o desactiva sus objetos aquí cuando quieras.",
+  "Unlock 💰 Multi-millionaire": "Desbloquea 💰 Multimillonario", "Unlock 🤑 Beat the house": "Desbloquea 🤑 Ganarle a la banca", "Unlock 🏦 Friends in high places": "Desbloquea 🏦 Amigos en las altas esferas",
+  "Unlock 💸 Money fountain, 🎩 Lobbyist and 🧙 Feeling magical": "Desbloquea 💸 Fuente de dinero, 🎩 Lobista y 🧙 Sensación mágica", "Unlock 🏰 Coin emperor": "Desbloquea 🏰 Emperador de las monedas",
+  "A pet lives on your 💰 Income page and helps you. Find one in a 🏴‍☠️ pirate loot box (🎮 Mini-games → 🚀 Nebula Strike, levels 4 and 5, or the pirate chest in the hangar). More pets are coming.":
+    "Una mascota vive en tu página de 💰 Ingresos y te ayuda. Encuentra una en un 🏴‍☠️ cofre del botín pirata (🎮 Minijuegos → 🚀 Nebula Strike, niveles 4 y 5, o el cofre pirata del hangar). Llegarán más mascotas.",
+  "It buys the energy drink by itself when it's ready and you can afford it.": "Compra la bebida energética por su cuenta cuando está lista y te la puedes permitir.",
+  "While the drink is active, it taps the coin for you: 10 clicks per second, worth the same as yours (they count for 🏆 achievements).": "Mientras la bebida está activa, toca la moneda por ti: 10 clics por segundo, que valen lo mismo que los tuyos (cuentan para los 🏆 logros).",
+  "During the cooldown it sleeps, and wakes up 10 seconds before the next drink.": "Mientras se recarga duerme, y se despierta 10 segundos antes de la siguiente bebida.",
+  "Click it to pet it. On the 🐾 Pet page you can rename it or hide it.": "Haz clic en ella para acariciarla. En la página 🐾 Mascota puedes cambiarle el nombre u ocultarla.",
+  "Your pet and how to find one": "Tu mascota y cómo encontrar una",
+  "Cosmetic collections (backgrounds, coins and 🃏 card decks) are unlocked by achievements. Turn them on in 🏆 Achievements → 🎁 Rewards. You can wear one item per slot, and wearing the coin and background of the same collection unlocks 🎨 \"Dressed to impress\".":
+    "Las colecciones cosméticas (fondos, monedas y barajas 🃏) se desbloquean con logros. Actívalas en 🏆 Logros → 🎁 Recompensas. Puedes llevar un objeto por hueco, y llevar la moneda y el fondo de la misma colección desbloquea 🎨 «Vestido para impresionar».",
+});
+rx(String.raw`Your baby dragon-moth( · together since (.+))?`, (m, a, d) => `Tu bebé dragón-polilla${a ? ` · juntos desde el ${d}` : ""}`);
+hrx(String.raw`🏴‍☠️ <b>How to find one:<\/b> open pirate loot boxes in 🎮 Mini-games → 🚀 Nebula Strike \(levels 4 and 5, or the pirate chest in the hangar\)\. Every box has a small chance to hold a pet\.`,
+  "🏴‍☠️ <b>Cómo encontrar una:</b> abre cofres del botín pirata en 🎮 Minijuegos → 🚀 Nebula Strike (niveles 4 y 5, o el cofre pirata del hangar). Cada cofre tiene una pequeña probabilidad de traer una mascota.");
+rx(String.raw`Turn (.+) (on|off)`, (m, n, o) => `${o === "on" ? "Activar" : "Desactivar"} ${ES[n] || n}`);
+H("🐾 The 🛍️ Shop is now the <b>🐾 Pet</b> page: see your pet, rename it, hide it, and check its stats. More pets are coming!",
+  "🐾 La 🛍️ Tienda ahora es la página <b>🐾 Mascota</b>: mira a tu mascota, cámbiale el nombre, ocúltala y consulta sus estadísticas. ¡Llegarán más mascotas!");
+ES["🎁 All cosmetic collections are now rewards in 🏆 Achievements → 🎁 Rewards: 🐕 Wow So Rich (💰 Multi-millionaire), ♟️ One Step Ahead (🤑 Beat the house), 👑 Royal (🏦 Friends in high places), 🐸 Make It Rain (💸 Money fountain, 🎩 Lobbyist and 🧙 Feeling magical) and 🦁 Emperor (🏰 Coin emperor). Items you already bought stay yours."] =
+  "🎁 Todas las colecciones cosméticas son ahora recompensas en 🏆 Logros → 🎁 Recompensas: 🐕 Wow So Rich (💰 Multimillonario), ♟️ «Un paso por delante» (🤑 Ganarle a la banca), 👑 Realeza (🏦 Amigos en las altas esferas), 🐸 «Lluvia de billetes» (💸 Fuente de dinero, 🎩 Lobista y 🧙 Sensación mágica) y 🦁 Emperador (🏰 Emperador de las monedas). Los objetos que ya compraste siguen siendo tuyos.";
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

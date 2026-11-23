@@ -3,12 +3,12 @@
    ===================================================================== */
 // slot: items in the same slot replace each other (only one background at a time)
 const COLLECTIONS = [
-  { id: "wow",   name: "🐕 Wow So Rich Collection" },
-  { id: "ahead", name: "♟️ One Step Ahead Collection" },
-  { id: "royal", name: "👑 Royal Collection" },
-  { id: "rain",  name: "🐸 Make It Rain Collection" },
-  { id: "emperor", name: "🦁 Emperor Collection" },
-  // 🎁 reward collections: not sold in the Shop, unlocked in Achievements → Rewards
+  // 🎁 every collection is a reward now (the Shop became the 🐾 Pet page), unlocked in 🏆 Achievements → 🎁 Rewards
+  { id: "wow",   name: "🐕 Wow So Rich Collection", reward: { ids: ["cash10s"], text: "Unlock 💰 Multi-millionaire" } },
+  { id: "ahead", name: "♟️ One Step Ahead Collection", reward: { ids: ["casinoUp"], text: "Unlock 🤑 Beat the house" } },
+  { id: "royal", name: "👑 Royal Collection", reward: { ids: ["petf10s"], text: "Unlock 🏦 Friends in high places" } },
+  { id: "rain",  name: "🐸 Make It Rain Collection", reward: { ids: ["inc10k", "boost-influence-10", "boost-pill-10"], text: "Unlock 💸 Money fountain, 🎩 Lobbyist and 🧙 Feeling magical" } },
+  { id: "emperor", name: "🦁 Emperor Collection", reward: { ids: ["cash10g"], text: "Unlock 🏰 Coin emperor" } },
   { id: "artist", name: "🎨 Artist Collection", reward: { cat: "art", text: "Unlock every 🖼️ Art Gallery achievement" } },
   { id: "bull", name: "🐂 Bull Run Collection", reward: { cat: "invest", text: "Unlock every 📈 Investments achievement" } },
   // a reward can also need a hand-picked list of achievements (ids)
@@ -120,6 +120,7 @@ const COSMETICS = [
   { id: "strongmanCoin", collection: "strongman", slot: "coin", name: "Strongman Coin", price: 0, desc: "Replaces the coin you click with the hippo strongman's hammered iron medallion.",
     preview: `<div class="preview"><img src="assets/strongman-coin.webp" alt="Strongman coin"></div>` },
 ];
+COSMETICS.forEach(c => { c.price = 0; });   // nothing is sold any more: items you already bought stay yours
 if (!state.cosmetics) state.cosmetics = { owned: {}, on: {} };
 
 // Turn an item on and turn off other items in the same slot
@@ -179,6 +180,7 @@ function cosmeticCard(c) {
         <div class="row">${action}</div></div></div>`;
 }
 function renderCosmetics() {
+  if (!$("cosmetics")) return;   // the old Shop page is gone
   const card = cosmeticCard;
   $("cosmetics").innerHTML = COLLECTIONS.filter(col => !col.reward).map(col => `
     <div class="card">
@@ -187,7 +189,7 @@ function renderCosmetics() {
     </div>`).join("");
 }
 
-$("cosmetics").addEventListener("click", (e) => {
+if ($("cosmetics")) $("cosmetics").addEventListener("click", (e) => {
   if (isPaused()) return;
   const buy = e.target.closest("[data-cosmetic-buy]");
   if (buy) {

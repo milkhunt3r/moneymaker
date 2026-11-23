@@ -44,8 +44,8 @@ const ACHIEVEMENTS = [
   { id: "tax10",      cat: "general", icon: "🧾", name: "Good citizen",       desc: "Pay 10 tax bills",                    goal: 10,   get: () => state.stats.taxPaid || 0 },
   { id: "tax100",     cat: "general", icon: "🧾", name: "Model taxpayer",     desc: "Pay 100 tax bills",                   goal: 100,  get: () => state.stats.taxPaid || 0 },
   { id: "tax1000",    cat: "general", icon: "🏛️", name: "Pillar of society",  desc: "Pay 250 tax bills",                   goal: 250, get: () => state.stats.taxPaid || 0 },
-  { id: "cosmetic1",  cat: "general", icon: "🛍️", name: "Treat yourself",     desc: "Buy your first cosmetic item in the Shop", goal: 1, get: () => COSMETICS.some(c => c.price > 0 && state.cosmetics.owned[c.id]) ? 1 : 0 },
-  { id: "emperor",    cat: "general", icon: "🦁", name: "Hail, Emperor!",     desc: "Buy the whole 🦁 Emperor Collection and wear all 3 items at once (background, coin and cards)", goal: 3,
+  { id: "cosmetic1",  cat: "general", icon: "🛍️", name: "Treat yourself",     desc: "Unlock your first cosmetic item (🏆 Achievements → 🎁 Rewards)", goal: 1, get: () => COSMETICS.some(c => state.cosmetics.owned[c.id]) ? 1 : 0 },
+  { id: "emperor",    cat: "general", icon: "🦁", name: "Hail, Emperor!",     desc: "Unlock the whole 🦁 Emperor Collection and wear all 3 items at once (background, coin and cards)", goal: 3,
     get: () => ["emperorBg", "emperorCoin", "emperorCards"].filter(id => state.cosmetics.owned[id] && state.cosmetics.on[id]).length },
   { id: "uni2",     cat: "secret", icon: "🎓", name: "Double degree", desc: "Own two Universities", goal: 2, get: () => state.science ? (state.science.uni ? 1 : 0) + (state.science.uni2 ? 1 : 0) : 0 },
   { id: "astro",    cat: "secret", icon: "🔭", name: "Stargazer", desc: "Build an Astronomy Research Center", goal: 1, get: () => state.science && state.science.astro ? 1 : 0 },
@@ -349,7 +349,7 @@ function grantRewards() {   // checked with the achievements; a reward, once ear
 }
 function renderRewards() {
   $("rewardList").innerHTML = `<div class="card"><h2 style="margin:0 0 4px">${ico("ui-rewards", "h")}Rewards</h2>
-      <div class="muted">Finish every achievement of a category to unlock its collection. Rewards can't be bought in the Shop.</div></div>` +
+      <div class="muted">Finish the achievements a collection needs to unlock it. Then turn its items on or off here any time.</div></div>` +
     COLLECTIONS.filter(c => c.reward && !(c.hidden && c.hidden())).map(col => {
       const p = rewardProgress(col), items = COSMETICS.filter(c => c.collection === col.id), got = items.every(c => state.cosmetics.owned[c.id]);
       return `<div class="card rewardCard ${got ? "got" : ""}">

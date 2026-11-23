@@ -153,7 +153,7 @@ body {
 }
 
 #incomeView { display: flex; }
-#incomeView[hidden], #casinoView[hidden], #investView[hidden], #shopView[hidden], #logisticsView[hidden], #wikiView[hidden], #artView[hidden] { display: none; }
+#incomeView[hidden], #casinoView[hidden], #investView[hidden], #petView[hidden], #logisticsView[hidden], #wikiView[hidden], #artView[hidden] { display: none; }
 #artView { max-width: 1100px; margin: 0 auto; padding: 20px; }
 #artStudio[hidden], #artCollection[hidden], #artOpen[hidden], #artLocked[hidden] { display: none; }
 .artBoards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 12px; }
@@ -215,7 +215,7 @@ body {
 .offer.express { border-color: #ffb300; background: rgba(255, 179, 0, 0.12); }
 .offer .exp { color: #ffb300; font-weight: 900; font-size: 11px; }
 .sea .port { position: absolute; top: 50%; transform: translateY(-50%); font-size: 14px; }
-#shopView { max-width: 900px; margin: 0 auto; padding: 20px; }
+#petView { max-width: 900px; margin: 0 auto; padding: 20px; }
 .cosmetics { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-top: 14px; }
 .cosmetic { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; overflow: hidden; }
 .cosmetic.on { border-color: #ffd34d; box-shadow: 0 0 16px rgba(255, 211, 77, 0.35); }
@@ -1385,7 +1385,7 @@ body.phone .subNav::-webkit-scrollbar { display: none; }
 body.phone .subTab { flex: 0 0 auto; white-space: nowrap; padding: 9px 12px; }
 /* wide tables scroll sideways inside their card instead of stretching the page */
 body.phone .wikiTable { display: block; overflow-x: auto; max-width: 100%; }
-body.phone #investView, body.phone #gamesView, body.phone #wikiView, body.phone #achievementsView, body.phone #shopView, body.phone #logisticsView { padding: 12px; }
+body.phone #investView, body.phone #gamesView, body.phone #wikiView, body.phone #achievementsView, body.phone #petView, body.phone #logisticsView { padding: 12px; }
 
 /* Performance: no blur, no endless glow animations (they repaint the screen 60 times a second) */
 body.phone *, body.phone *::before, body.phone *::after { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
@@ -2039,3 +2039,12 @@ body.phone .spZoom button { width: 28px; height: 28px; font-size: 17px; border-r
 .spGi { width: 1.35em; height: 1.35em; vertical-align: -0.32em; object-fit: contain; }
 .spRes .spGi { width: 22px; height: 22px; }
 .spMarket td .spGi { width: 30px; height: 30px; vertical-align: middle; margin-right: 4px; }
+/* 🐾 Pet page */
+.petHero { display: flex; gap: 18px; align-items: center; margin-bottom: 12px; }
+.petHeroPic { width: 120px; height: 120px; border-radius: 20px; background: radial-gradient(circle, rgba(255,140,220,0.25), rgba(120,60,200,0.15) 60%, transparent 75%); object-fit: contain; flex: none; }
+.petStats { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; font-size: 15px; }
+.petCard .orRow { margin: 8px 0; padding: 10px 14px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px; }
+.petDoes { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
+.petSlots { display: flex; gap: 10px; margin: 6px 0; }
+.petSlot { width: 64px; height: 64px; border-radius: 14px; display: grid; place-items: center; font-size: 26px; background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); }
+body.phone .petHero { flex-direction: column; text-align: center; }

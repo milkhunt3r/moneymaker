@@ -62,7 +62,6 @@ function showSettings(fromMenu) {
         <input type="range" class="orRange" id="orBright" min="20" max="100" step="5" value="${bgBright()}" style="--p:${(bgBright() - 20) / 0.8}%" aria-label="Background brightness"></div>
       <div class="orRow slider">${orIcon("lang")}<span class="grow">Language</span>
         <span class="orLang" data-noi18n><button data-lang="en">English</button><button data-lang="es">Español</button></span></div>
-      ${typeof petSettingsHtml === "function" ? petSettingsHtml() : ""}
       <div class="orSec">Help</div>
       ${row("tips", "Show tips", `<span class="orSwitch ${state.tips.on ? "on" : ""}" id="orTips"></span>`)}
       ${row("tipsReset", "Show all tips again")}

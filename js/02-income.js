@@ -381,7 +381,6 @@ function updateCounterNow() {
   $("casinoChips").textContent = fmt(state.casinoChips || 0);
   updateVipBar();
   $("investMoney").textContent = fmt(state.money);
-  $("shopMoney").textContent = fmt(state.money);
   $("logiMoney").textContent = fmt(state.money);
   updateAffordability();
 }
@@ -899,7 +898,9 @@ function showView(view) {
   $("incomeView").hidden = view !== "income";
   $("casinoView").hidden = view !== "casino";
   $("investView").hidden = view !== "invest";
-  $("shopView").hidden = view !== "shop";
+  if (view === "shop") view = state.view = "pet";   // the old Shop page became the 🐾 Pet page
+  $("petView").hidden = view !== "pet";
+  if (view === "pet" && typeof renderPetPage === "function") renderPetPage();
   $("logisticsView").hidden = view !== "logistics";
   $("achievementsView").hidden = view !== "achievements";
   $("wikiView").hidden = view !== "wiki";

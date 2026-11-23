@@ -51,6 +51,8 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "24 November 2026", title: "Empire of Coins", items: [
+    "🐾 The 🛍️ Shop is now the <b>🐾 Pet</b> page: see your pet, rename it, hide it, and check its stats. More pets are coming!",
+    "🎁 All cosmetic collections are now rewards in 🏆 Achievements → 🎁 Rewards: 🐕 Wow So Rich (💰 Multi-millionaire), ♟️ One Step Ahead (🤑 Beat the house), 👑 Royal (🏦 Friends in high places), 🐸 Make It Rain (💸 Money fountain, 🎩 Lobbyist and 🧙 Feeling magical) and 🦁 Emperor (🏰 Coin emperor). Items you already bought stay yours.",
     "🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
     "👽 Send ships to explore unknown systems and meet 6 alien races. Each one has its own tastes: send them the gifts they ask for (money, ore, paintings, stardust and more) to grow your friendship from Contacted to Allies.",
     "📦 Your ships come back with alien goods. Ships keep flying while the game is closed, and a prestige never resets your alien friends.",
