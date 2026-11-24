@@ -2073,3 +2073,12 @@ body.phone .spCardHead { flex-direction: column; text-align: center; }
 body.phone .spCardSys { right: 50%; top: 0; transform: translateX(50%); width: 240px; height: 240px; opacity: 0.28; -webkit-mask-image: none; mask-image: none; }
 body.phone .spPortrait { width: 110px; height: 110px; }
 .spHeadTxt { text-shadow: 0 1px 4px rgba(0,0,0,0.8); max-width: 640px; }
+/* 🎨 art: commission card and heatmap */
+.artCommCard { display: flex; gap: 12px; align-items: center; margin: 0 0 10px; padding: 10px 12px; border-radius: 12px; background: rgba(255, 211, 77, 0.08); border: 1px solid rgba(255, 211, 77, 0.4); }
+.artCommCard img { width: 120px; height: 90px; border-radius: 8px; flex: none; border: 2px solid #c9a227; }
+.artCommCard.on { border-color: #6ee07a; background: rgba(110, 224, 122, 0.1); }
+.artCommCard.done { opacity: 0.75; }
+.artCommCard.locked { opacity: 0.7; }
+.artHeat { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+.artHeat img { width: 200px; height: 150px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: #fff; flex: none; }
+body.phone .artCommCard, body.phone .artHeat { flex-direction: column; align-items: flex-start; }

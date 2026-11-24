@@ -306,12 +306,19 @@ function wikiArt() {
     <h2>${ico("artgallery", "biz")}Art Gallery</h2>
     <p>Copy a painting as closely as you can. The closer the match, the more your copy is worth. After you earn the 💵 Millionaire achievement (${fmt(1e6)} on hand), the gallery can be opened for <b>${fmt(ART_UNLOCK)}</b>.</p>
     <h3>Tiers</h3>
-    <p>🟡 Medium unlocks after you submit (sell or keep) ${ART_TIER_NEED.medium.count} Easy paintings; 🔴 Hard unlocks after ${ART_TIER_NEED.hard.count} Medium paintings.</p>
-    ${wt(["Tier", "Paintings", "Full value"], Object.values(ART_TIERS).map(t => [`${t.icon} ${t.name}`, t.desc, fmt(t.value)]))}
-    <p>Your copy is worth <b>match % × the full value</b>: an 80% copy of a Hard painting is worth ${fmt(ART_TIERS.hard.value * 0.8)}. A copy under <b>${ART_MIN_MATCH}%</b> can't be sold or kept: keep working on it or start a new one. There is no timer.</p>
+    <p>🟡 Normal unlocks after you submit (sell or keep) ${ART_TIER_NEED.hard.count} Easy paintings; 🏛️ Masterpiece unlocks after ${ART_TIER_NEED.master.count} Normal paintings.</p>
+    ${wt(["Tier", "Paintings", "Full value"], ART_TIER_LIST().map(k => ART_TIERS[k]).map(t => [`${t.icon} ${t.name}`, t.desc, fmt(t.value)]))}
+    <h3>🏛️ Masterpieces</h3>
+    <p>Simplified versions of famous old paintings (all old enough to be free for everyone to use), drawn in the game's 16 colours:</p>
+    ${wt(["Painting", "Artist", "Year"], ART_MASTERS.map(m => [`${m.emoji} ${m.name}`, m.artist, m.year]))}
+    <h3>📜 Daily commission</h3>
+    <p>Every 24 hours a collector asks for one specific painting (🟡 Normal, or a 🏛️ Masterpiece once they are open) and pays <b>×${ART_COMM_MULT}</b> its value. Press 🖌️ Paint it in the studio, then sell or keep a copy of at least ${ART_MIN_MATCH}% before the time runs out. One delivery per commission.</p>
+    <p>Your copy is worth <b>match % × the full value</b>: an 80% copy of a Normal painting is worth ${fmt(ART_TIERS.hard.value * 0.8)}. A copy under <b>${ART_MIN_MATCH}%</b> can't be sold or kept: keep working on it or start a new one. There is no timer.</p>
     <h3>Tools</h3>
     ${wt(["Tool", "What it does"], [["🖌️ Brush", "Paints with the selected color: round or square tip, 6 sizes from 1 px to 44 px"],
-      ["⬛ Square / ⚫ Circle / 🔺 Triangle", "Drag a box to draw a filled shape. Hold Shift for a perfect square or circle. Turn an oval or a triangle to any angle (180° = upside down) with the ↻ slider or the mouse wheel, while drawing it or right after"], ["🪣 Fill", "Fills an area of one color"], ["✋ Grab", "Drag the last shape you drew to move it; pick a color to recolor it (works until you draw or paint something else)"], ["🧽 Eraser", "Paints white"], ["↶ Undo / 🗑️ Clear", "Takes back the last step / starts over"]])}
+      ["⬛ Square / ⚫ Circle / 🔺 Triangle", "Drag a box to draw a filled shape. Hold Shift for a perfect square or circle. Turn an oval or a triangle to any angle (180° = upside down) with the ↻ slider or the mouse wheel, while drawing it or right after"], ["🪣 Fill", "Fills an area of one color"], ["➖ Line", "Drag to draw a straight line in the brush size and tip. Hold Shift for straight 45° angles"],
+      ["💧 Eyedropper", "Click the original (or your copy) to take that colour"], ["🪞 Mirror", "Turn it on and everything you paint is also painted on the other side, flipped left ↔ right"], ["✋ Grab", "Drag the last shape you drew to move it; pick a color to recolor it (works until you draw or paint something else)"], ["🧽 Eraser", "Paints white"], ["↶ Undo / 🗑️ Clear", "Takes back the last step / starts over"]])}
+    <p>🔥 After you submit, a <b>heatmap</b> shows in red where your copy doesn't match the original.</p>
     <h3>How the match is scored</h3>
     <p>Your copy is judged three ways: <b>🎨 Colors</b> (each part has the right color), <b>📐 Layout</b> (things are in the right places) and
       <b>🔷 Shapes found</b>: every separate shape in the original (each planet, star, sail, sun…) must appear in your copy in the same color, in about the same place and size.

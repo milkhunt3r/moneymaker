@@ -51,6 +51,10 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "24 November 2026", title: "Empire of Coins", items: [
+    "🎨 <b>Art Gallery update!</b> New tiers: 🟢 Easy (kid-style drawings), 🟡 Normal (detailed scenes) and the new 🏛️ <b>Masterpiece</b> tier: copy 10 famous paintings like The Starry Night, The Great Wave, Mona Lisa and The Scream (opens after 10 Normal paintings). The old 3-shape tier is retired.",
+    "🖌️ New drawing tools: ➖ Line, 💧 Eyedropper and 🪞 Mirror mode. After you submit, a 🔥 heatmap shows where your copy differs from the original.",
+    "📜 <b>Daily commission</b>: every day a collector asks for one specific painting and pays ×3. You have 24 hours to deliver it.",
+    "🏆 Art Gallery achievements now follow the new tiers (Easy, Normal and Masterpiece). Achievements you already have stay unlocked.",
     "🐾 The 🛍️ Shop is now the <b>🐾 Pet</b> page: see your pet, rename it, hide it, and check its stats. More pets are coming!",
     "🎁 All cosmetic collections are now rewards in 🏆 Achievements → 🎁 Rewards: 🐕 Wow So Rich (💰 Multi-millionaire), ♟️ One Step Ahead (🤑 Beat the house), 👑 Royal (🏦 Friends in high places), 🐸 Make It Rain (💸 Money fountain, 🎩 Lobbyist and 🧙 Feeling magical) and 🦁 Emperor (🏰 Coin emperor). Items you already bought stay yours.",
     "🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",

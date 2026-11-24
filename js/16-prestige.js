@@ -90,7 +90,7 @@ function doPrestige(id) {
     taxHoliday: TAX_HOLIDAY,   // 🛡️ no tax inspections for the first 10 minutes
     recruitPlan: state.recruitPlan,   // 🧑‍💼 the Recruitment Agency's staffing plan (the building itself resets)
     // 🖼️ Art Gallery: stays unlocked and keeps its bought slots and all kept paintings
-    art: state.art ? { unlocked: !!state.art.unlocked, slots: state.art.slots, slotBuys: state.art.slotBuys || 0, items: state.art.items || [], done: state.art.done, tier: state.art.tier || "easy", seed: 0, page: "studio", sold: state.art.sold || 0 } : undefined,
+    art: state.art ? { unlocked: !!state.art.unlocked, slots: state.art.slots, slotBuys: state.art.slotBuys || 0, items: state.art.items || [], done: state.art.done, tier: state.art.tier || "medium", seed: 0, page: "studio", sold: state.art.sold || 0 } : undefined,
     invest: { xp: inv.xp, properties: [], etf: 0, etfTimer: ETF_EVERY, etfHistory: [] },
     // all-time logistics counters are statistics: always kept
     logistics: { tankers: [], trucks: [], planes: [], earned: logi.earned, contracts: logi.contracts || 0 },

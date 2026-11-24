@@ -6,11 +6,15 @@
    ===================================================================== */
 const ART_SLOTS_MAX = 100;   // a collection can hold at most 100 paintings
 const ART_UNLOCK = 500000, ART_SLOTS_START = 10, ART_SLOTS_STEP = 10, ART_SLOT_PRICE = 500000, ART_SLOT_PRICE_STEP = 250000;
+// Tiers (Nov 2026): the old 3-shape tier is retired ("hidden": old copies in collections still show); the kid drawings became Easy,
+// the detailed scenes became Normal, and 🏛️ Masterpieces (js/18a-art-masters.js) are the new top tier. Keys stay the same for old saves.
 const ART_TIERS = {
-  easy:   { name: "Easy",   icon: "🟢", value: 1e6, desc: "3–4 simple shapes" },
-  medium: { name: "Medium", icon: "🟡", value: 1e7, desc: "Kid-style drawings: houses, flowers, trees, boats, cars, rockets, snowmen, rainbows, mushrooms, balloons, ice cream, castles, fish, butterflies" },
-  hard:   { name: "Hard",   icon: "🔴", value: 1e8, desc: "Detailed scenes with many colors: mountains, city, seaside, desert, winter, farm, underwater or space" },
+  easy:   { name: "Starter", icon: "⚪", value: 1e6, desc: "3–4 simple shapes", hidden: true },
+  medium: { name: "Easy",    icon: "🟢", value: 1e7, desc: "Kid-style drawings: houses, flowers, trees, boats, cars, rockets, snowmen, rainbows, mushrooms, balloons, ice cream, castles, fish, butterflies" },
+  hard:   { name: "Normal",  icon: "🟡", value: 1e8, desc: "Detailed scenes with many colors: mountains, city, seaside, desert, winter, farm, underwater or space" },
+  master: { name: "Masterpiece", icon: "🏛️", value: 1e9, desc: "10 famous paintings, simplified: The Starry Night, The Great Wave, Mona Lisa, The Scream and more" },
 };
+const ART_TIER_LIST = () => Object.keys(ART_TIERS).filter(k => !ART_TIERS[k].hidden);
 const ART_PAL = {
   white: "#ffffff", black: "#1b1b1b", gray: "#8d8d8d", red: "#e53935", orange: "#fb8c00", yellow: "#fdd835",
   lime: "#8bc34a", green: "#2e7d32", teal: "#00897b", sky: "#81d4fa", blue: "#1e88e5", navy: "#1a237e",
@@ -19,9 +23,9 @@ const ART_PAL = {
 const ART_W = 320, ART_H = 240;
 // Unlocks: the gallery opens after the 💵 Millionaire achievement (and costs ART_UNLOCK);
 // Medium needs 5 submitted Easy paintings, Hard needs 10 submitted Medium paintings (sold or kept)
-const ART_TIER_NEED = { medium: { tier: "easy", count: 5 }, hard: { tier: "medium", count: 10 } };
+const ART_TIER_NEED = { hard: { tier: "medium", count: 5 }, master: { tier: "hard", count: 10 } };
 const artGalleryReady = () => !!(state.achievements && state.achievements.cash1s);
-if (!state.art) state.art = { unlocked: false, slots: ART_SLOTS_START, slotBuys: 0, items: [], tier: "easy", seed: 0, page: "studio", sold: 0 };
+if (!state.art) state.art = { unlocked: false, slots: ART_SLOTS_START, slotBuys: 0, items: [], tier: "medium", seed: 0, page: "studio", sold: 0 };
 
 // Seeded random numbers, so a painting can be drawn again from its seed
 function artRng(seed) {
@@ -39,6 +43,7 @@ function paintArt(ctx, tier, seed) {
   const line = (c, w, pts) => { ctx.strokeStyle = c; ctx.lineWidth = w; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]); pts.slice(1).forEach(p => ctx.lineTo(p[0], p[1])); ctx.stroke(); };
   ctx.save();
   rect(P.white, 0, 0, ART_W, ART_H);
+  if (tier === "master") { ART_MASTERS[seed % ART_MASTERS.length].draw({ P, rect, circ, ell, poly, line }); ctx.restore(); return; }   // 🏛️ js/18a-art-masters.js
   if (tier === "easy") {
     // 3–4 big shapes in different colors, spread over the canvas
     const colors = ["red", "orange", "yellow", "green", "blue", "navy", "purple", "pink", "teal", "brown", "black", "lime"].sort(() => R() - 0.5);
@@ -411,7 +416,8 @@ let blankCanvas = null;
    then raised to "power" (higher = stricter). objTol: how far (in 4 px cells) a shape may be off. */
 window.ART_TOLERANCE = { easy:   { passes: 1, reach: 1, slack: 30, power: 1,   objTol: 10 },
                          medium: { passes: 1, reach: 1, slack: 30, power: 1.4, objTol: 7 },
-                         hard:   { passes: 1, reach: 1, slack: 50, power: 1.4, objTol: 6 } };
+                         hard:   { passes: 1, reach: 1, slack: 50, power: 1.4, objTol: 6 },
+                         master: { passes: 1, reach: 1, slack: 50, power: 1.3, objTol: 7 } };
 // 🔷 Shape count check: find each separate shape (same palette colour, connected) and see if the copy has a matching one
 const OBJ_CELL = 4;                       // work on 80 × 60 cells of 4 × 4 pixels
 const PAL_RGB = Object.values(ART_PAL).map(h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]);
@@ -499,14 +505,16 @@ function artScore(refCanvas, copyCanvas, tier = "medium") {
 
 /* ----- Drawing on the "Your copy" canvas: brush, fill bucket, eraser, undo, clear. Mouse and touch. ----- */
 const ART_TOOLS = [{ id: "brush", label: "🖌️ Brush" }, { id: "fill", label: "🪣 Fill" }, { id: "eraser", label: "🧽 Eraser" },
+  { id: "pick", label: "💧 Eyedropper", title: "Click either picture to take its colour" },
   { id: "move", label: "✋ Grab", title: "Drag to move the last shape you drew; pick a color to recolor it (until you draw or paint something else)" }];
 // shape tools: drag a box, the shape is filled with the selected color
 const ART_SHAPES = [{ id: "rect", label: "⬛ Square", title: "Drag to draw a filled rectangle (hold Shift for a perfect square)" },
   { id: "ellipse", label: "⚫ Circle", title: "Drag to draw a filled oval (hold Shift for a perfect circle)" },
-  { id: "tri", label: "🔺 Triangle", title: "Drag to draw a filled triangle; turn it with the ↻ slider or mouse wheel (180° = upside down)" }];
+  { id: "tri", label: "🔺 Triangle", title: "Drag to draw a filled triangle; turn it with the ↻ slider or mouse wheel (180° = upside down)" },
+  { id: "line", label: "➖ Line", title: "Drag to draw a straight line in the brush size (hold Shift for straight 45° angles)" }];
 const isShapeTool = (t) => ART_SHAPES.some(s => s.id === t);
 const ART_SIZES = [1, 2, 4, 10, 22, 44];
-const artUI = { tool: "brush", tip: "round", color: "black", size: 10, shapeStart: null, shapeBase: null, angles: { ellipse: 0, tri: 0 }, lastShape: null, undo: [], drawing: false, last: null, result: null };
+const artUI = { mirror: false, prevTool: "brush", tool: "brush", tip: "round", color: "black", size: 10, shapeStart: null, shapeBase: null, angles: { ellipse: 0, tri: 0 }, lastShape: null, undo: [], drawing: false, last: null, result: null };
 const drawCtx = () => $("artDraw").getContext("2d", { willReadFrequently: true });
 function artPushUndo() { const c = drawCtx(); artUI.undo.push(c.getImageData(0, 0, ART_W, ART_H)); if (artUI.undo.length > 25) artUI.undo.shift(); }
 function artClearCanvas() { const c = drawCtx(); c.fillStyle = "#ffffff"; c.fillRect(0, 0, ART_W, ART_H); }
@@ -535,7 +543,10 @@ function artFlood(x, y, hex) {
   }
   c.putImageData(img, 0, 0);
 }
-function artStroke(a, b) {
+// 🪞 Mirror mode: everything you paint is painted again, flipped left ↔ right
+function artMirrored(fn) { const c = drawCtx(); c.save(); c.translate(ART_W, 0); c.scale(-1, 1); fn(); c.restore(); }
+function artStroke(a, b) { artStroke1(a, b); if (artUI.mirror) artMirrored(() => artStroke1(a, b)); }
+function artStroke1(a, b) {
   const c = drawCtx();
   if (artUI.tip === "square") {   // square brush: stamp squares along the line
     c.fillStyle = artUI.tool === "eraser" ? "#ffffff" : ART_PAL[artUI.color];
@@ -557,8 +568,19 @@ function artStroke(a, b) {
 const turnable = (t) => t === "ellipse" || t === "tri";
 const ANGLE_MAX = { ellipse: 180, tri: 360 };
 function artShape(a, b, square) {
+  drawCtx().putImageData(artUI.shapeBase, 0, 0);   // live preview: redraw from the canvas as it was when the drag started
+  artShape1(a, b, square);
+  if (artUI.mirror) artMirrored(() => artShape1(a, b, square));
+}
+function artShape1(a, b, square) {
   const c = drawCtx();
-  c.putImageData(artUI.shapeBase, 0, 0);   // live preview: redraw from the canvas as it was when the drag started
+  if (artUI.tool === "line") {   // ➖ straight line in the brush size; Shift snaps to 45°
+    let e = b;
+    if (square) { const ang = Math.round(Math.atan2(b[1] - a[1], b[0] - a[0]) / (Math.PI / 4)) * Math.PI / 4, len = Math.hypot(b[0] - a[0], b[1] - a[1]); e = [a[0] + Math.cos(ang) * len, a[1] + Math.sin(ang) * len]; }
+    c.strokeStyle = ART_PAL[artUI.color]; c.lineWidth = artUI.size; c.lineCap = artUI.tip === "square" ? "square" : "round";
+    c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(e[0], e[1]); c.stroke();
+    return;
+  }
   let w = b[0] - a[0], h = b[1] - a[1];
   if (square) { const m = Math.max(Math.abs(w), Math.abs(h)); w = Math.sign(w || 1) * m; h = Math.sign(h || 1) * m; }
   const x0 = Math.min(a[0], a[0] + w), y0 = Math.min(a[1], a[1] + h), W = Math.abs(w), H = Math.abs(h);
@@ -577,8 +599,10 @@ function artShape(a, b, square) {
 function renderArtTools() {
   $("artPalette").innerHTML = Object.entries(ART_PAL).map(([k, hex]) =>
     `<button class="artColor ${artUI.color === k ? "on" : ""}" data-acolor="${k}" title="${k}" style="background:${hex}"></button>`).join("");
-  $("artToolBtns").innerHTML = ART_TOOLS.map(t => `<button class="seg ${artUI.tool === t.id ? "on" : ""}" data-atool="${t.id}" ${t.title ? `title="${t.title}"` : ""}>${t.label}</button>`).join("");
-  $("artDraw").style.cursor = artUI.tool === "move" ? (artUI.lastShape ? "grab" : "not-allowed") : "crosshair";
+  $("artToolBtns").innerHTML = ART_TOOLS.map(t => `<button class="seg ${artUI.tool === t.id ? "on" : ""}" data-atool="${t.id}" ${t.title ? `title="${t.title}"` : ""}>${t.label}</button>`).join("")
+    + `<button class="seg ${artUI.mirror ? "on" : ""}" data-amirror="1" title="Mirror mode: everything you paint is copied to the other side (left ↔ right)">🪞 Mirror</button>`;
+  $("artDraw").style.cursor = artUI.tool === "move" ? (artUI.lastShape ? "grab" : "not-allowed") : artUI.tool === "pick" ? "copy" : "crosshair";
+  $("artRef").style.cursor = artUI.tool === "pick" ? "copy" : "";
   $("artShapeBtns").innerHTML = ART_SHAPES.map(t => `<button class="seg ${artUI.tool === t.id ? "on" : ""}" data-atool="${t.id}" title="${t.title}">${t.label}</button>`).join("");
   $("artTips").innerHTML = [["round", "Round brush", "50%"], ["square", "Square brush", "1px"]].map(([id, title, r]) =>
     `<button class="seg ${artUI.tip === id ? "on" : ""}" data-atip="${id}" title="${title}"><span class="sizeDot" style="width:11px;height:11px;border-radius:${r}"></span></button>`).join("");
@@ -589,12 +613,15 @@ function renderArtTools() {
   }
   $("artSizes").innerHTML = ART_SIZES.map(s => `<button class="seg ${artUI.size === s ? "on" : ""}" data-asize="${s}" title="Brush size ${s} px">
     <span class="sizeDot" style="width:${Math.max(2, s / 2.2)}px;height:${Math.max(2, s / 2.2)}px;border-radius:${artUI.tip === "square" ? "1px" : "50%"}"></span></button>`).join("");
-  $("artTiers").innerHTML = Object.entries(ART_TIERS).map(([k, t]) => {
+  $("artTiers").innerHTML = ART_TIER_LIST().map(k => [k, ART_TIERS[k]]).map(([k, t]) => {
     if (artTierOpen(k)) return `<button class="seg ${state.art.tier === k ? "on" : ""}" data-atier="${k}">${t.icon} ${t.name} · ${fmt(t.value)}</button>`;
     const n = ART_TIER_NEED[k], have = state.art.done[n.tier] || 0;
     return `<button class="seg" disabled title="Submit (sell or keep) ${n.count} ${ART_TIERS[n.tier].name} paintings to unlock">🔒 ${t.name} · ${have}/${n.count} ${ART_TIERS[n.tier].name}</button>`;
   }).join("");
   const t = ART_TIERS[state.art.tier];
+  const M = state.art.tier === "master" ? ART_MASTERS[state.art.seed % ART_MASTERS.length] : null;
+  $("artRefLabel").textContent = M ? `Original · ${M.emoji} ${M.name} (${M.artist}, ${M.year})` : "Original";
+  renderArtComm();
   $("artTierInfo").textContent = `${t.icon} ${t.name}: ${t.desc}. You earn your match % of ${fmt(t.value)}: an 85% copy is worth ${fmt(t.value * 0.85)}. Under ${ART_MIN_MATCH}% it can't be sold or kept.`;
 }
 function artNewPainting(keepSeed) {
@@ -603,23 +630,26 @@ function artNewPainting(keepSeed) {
   paintArt(ref, state.art.tier, state.art.seed);
   artClearCanvas(); artUI.undo = []; artUI.result = null; artUI.lastShape = null;
   $("artResult").innerHTML = ""; $("artSubmit").disabled = false;
+  renderArtTools();
   save();
 }
 const ART_MIN_MATCH = 50;   // copies under 50% can't be sold or kept
 function artSubmit() {
   const score = artScore($("artRef"), $("artDraw"), state.art.tier);
-  const t = ART_TIERS[state.art.tier], value = Math.floor(t.value * score.total / 100);
+  const t = ART_TIERS[state.art.tier], comm = artCommActive(), value = Math.floor(t.value * score.total / 100) * (comm ? ART_COMM_MULT : 1);
   const thumb = document.createElement("canvas"); thumb.width = 160; thumb.height = 120;
   thumb.getContext("2d").drawImage($("artDraw"), 0, 0, 160, 120);
   const best = state.stats.artBest || (state.stats.artBest = {});
   best[state.art.tier] = Math.max(best[state.art.tier] || 0, score.total);
-  artUI.result = { tier: state.art.tier, seed: state.art.seed, score: score.total, colors: score.colors, shapes: score.shapes, value, img: thumb.toDataURL("image/jpeg", 0.7) };
+  artUI.result = { tier: state.art.tier, seed: state.art.seed, score: score.total, colors: score.colors, shapes: score.shapes, value, comm, img: thumb.toDataURL("image/jpeg", 0.7) };
+  const heat = artHeatHtml();
   $("artSubmit").disabled = true;
   if (score.total < ART_MIN_MATCH) {   // ❌ too far from the original: no sale, no collection
     $("artResult").innerHTML = `<div class="artResult">
       <div class="artScore" style="color:#ff8a8a">${score.total.toFixed(1)}%<small>match</small></div>
       <div><div>🎨 Colors <b>${(score.colors * 100).toFixed(0)}%</b> · 📐 Layout <b>${(score.shapes * 100).toFixed(0)}%</b> · 🔷 Shapes found <b>${score.found}/${score.count}</b></div>
         <div style="color:#ff8a8a"><b>Not close enough.</b> A copy needs at least ${ART_MIN_MATCH}% to be sold or kept, so this one isn't worth anything.</div>
+        ${heat}
         <div class="moneyRow" style="margin-top:8px">
           <button class="btn" id="artRetry">🖌️ Keep working on it</button>
           <button class="btn ghost" id="artSkip">🔄 New painting</button></div></div></div>`;
@@ -630,18 +660,66 @@ function artSubmit() {
     <div class="artScore">${score.total.toFixed(1)}%<small>match</small></div>
     <div><div>🎨 Colors <b>${(score.colors * 100).toFixed(0)}%</b> · 📐 Layout <b>${(score.shapes * 100).toFixed(0)}%</b> · 🔷 Shapes found <b>${score.found}/${score.count}</b></div>
       <div class="muted">${score.total >= 90 ? "Masterpiece! 🏆" : score.total >= 75 ? "Great copy! 👏" : score.total >= 50 ? "Not bad. 🙂" : "Keep practicing. 🖌️"}
-        Worth <b>${fmt(value)}</b> (${score.total.toFixed(1)}% of ${fmt(t.value)}).</div>
+        Worth <b>${fmt(value)}</b> (${score.total.toFixed(1)}% of ${fmt(t.value)}${comm ? `, 📜 commission ×${ART_COMM_MULT}` : ""}).</div>
+      ${heat}
       <div class="moneyRow" style="margin-top:8px">
         <button class="btn" id="artSell">💰 Sell for ${fmt(value)}</button>
         <button class="btn ghost" id="artKeep" ${full ? "disabled" : ""}>🖼️ Keep in collection (${state.art.items.length}/${state.art.slots})</button>
         ${full ? `<span class="muted">Collection full: buy more slots</span>` : ""}</div></div></div>`;
 }
+/* ----- 🔥 Heatmap: after submitting, red marks show where the copy doesn't match the original
+   (same 4 × 4 px colour cells the scorer uses; a cell counts as fine if its colour is within 1 cell of the right place) ----- */
+function artHeatHtml() {
+  const A = artLabels($("artRef")), B = artLabels($("artDraw")), { W, H } = A;
+  const c = document.createElement("canvas"); c.width = ART_W; c.height = ART_H;
+  const g = c.getContext("2d"); g.filter = "grayscale(1)"; g.globalAlpha = 0.4; g.drawImage($("artDraw"), 0, 0); g.globalAlpha = 1; g.filter = "none";   // grey copy, so the red marks stand out
+  const near = (L, x, y, col) => { for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < W && yy < H && L.lab[yy * W + xx] === col) return true; } return false; };
+  let bad = 0;
+  g.fillStyle = "rgba(255, 40, 40, 0.75)";
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const k = y * W + x;
+    if (!near(B, x, y, A.lab[k]) || !near(A, x, y, B.lab[k])) { g.fillRect(x * OBJ_CELL, y * OBJ_CELL, OBJ_CELL, OBJ_CELL); bad++; }
+  }
+  return `<div class="artHeat"><img src="${c.toDataURL()}" alt=""><div class="muted">🔥 <b>Where it differs:</b> red marks the parts that don't match the original (${Math.round(bad / (W * H) * 100)}% of the picture).</div></div>`;
+}
+/* ----- 📜 Daily commission: one specific painting (Normal, or a Masterpiece once they are open) that pays ×3.
+   24 hours to deliver it (sell or keep, at least 50%), once; then a new one comes when the 24 hours are over. ----- */
+const ART_COMM_MULT = 3, ART_COMM_TIME = 24 * 3600e3;
+function artCommCheck() {
+  const a = state.art, c = a.comm, now = Date.now();
+  if (c && now < c.until) return c;
+  const tiers = ["master", "hard"].filter(artTierOpen);
+  if (!tiers.length) { a.comm = null; return null; }
+  const tier = tiers.length > 1 && Math.random() < 0.5 ? "hard" : tiers[0];
+  a.comm = { tier, seed: 1 + secureRandomInt(2 ** 31 - 2), until: now + ART_COMM_TIME, done: false };
+  save(); return a.comm;
+}
+const artCommActive = () => { const c = state.art.comm; return !!(c && !c.done && Date.now() < c.until && state.art.tier === c.tier && state.art.seed === c.seed); };
+let artCommPic = {};
+function renderArtComm() {
+  const box = $("artComm"); if (!box) return;
+  const c = artCommCheck();
+  if (!c) { box.innerHTML = `<div class="artCommCard locked">📜 <b>Daily commission:</b> unlock 🟡 Normal paintings to get a daily commission (×${ART_COMM_MULT} value).</div>`; return; }
+  const key = c.tier + c.seed; if (!artCommPic[key]) artCommPic = { [key]: artCanvasOf(c.tier, c.seed, 160).toDataURL() };
+  const M = c.tier === "master" ? ART_MASTERS[c.seed % ART_MASTERS.length] : null, T = ART_TIERS[c.tier];
+  const what = M ? `${M.emoji} <b>${M.name}</b> (${M.artist})` : `this ${T.icon} <b>${T.name}</b> painting`;
+  box.innerHTML = `<div class="artCommCard ${c.done ? "done" : artCommActive() ? "on" : ""}"><img src="${artCommPic[key]}" alt="">
+    <div><b>📜 Daily commission</b>${c.done ? ` · ✅ Delivered!` : ""}
+      <div>${c.done ? `Thank you! A new commission in <b data-acommt="${c.until}">${clockLong(Math.ceil((c.until - Date.now()) / 1000))}</b>.`
+        : `A collector wants a copy of ${what} and pays <b>×${ART_COMM_MULT}</b>: up to ${fmt(T.value * ART_COMM_MULT)}. Time left: <b data-acommt="${c.until}">${clockLong(Math.ceil((c.until - Date.now()) / 1000))}</b>.`}</div>
+      ${c.done ? "" : artCommActive() ? `<div class="muted">🖌️ You're painting it now. Submit a copy of ${ART_MIN_MATCH}%+ to deliver it.</div>` : `<button class="btn small" data-acomm="1">🖌️ Paint it</button>`}</div></div>`;
+}
+setInterval(() => { document.querySelectorAll("[data-acommt]").forEach(el => { const left = Number(el.dataset.acommt) - Date.now(); if (left <= 0) { if (!$("artView").hidden && state.art.unlocked) renderArtComm(); } else el.textContent = clockLong(Math.ceil(left / 1000)); }); }, 1000);
 function artFinish(keep) {
   const r = artUI.result;
   if (!r || r.score < ART_MIN_MATCH) return;
   if (keep && state.art.items.length >= state.art.slots) return;
   const before = Object.keys(ART_TIERS).filter(artTierOpen);
   state.art.done[r.tier] = (state.art.done[r.tier] || 0) + 1;
+  if (r.comm && state.art.comm && !state.art.comm.done) {   // 📜 commission delivered
+    state.art.comm.done = true; state.stats.artComms = (state.stats.artComms || 0) + 1;
+    setTimeout(() => showNotice(`📜 Commission delivered! The collector paid ×${ART_COMM_MULT}: ${fmt(r.value)}.`), 300);
+  }
   Object.keys(ART_TIERS).filter(k => artTierOpen(k) && !before.includes(k))
     .forEach(k => setTimeout(() => showNotice(`🔓 ${ART_TIERS[k].icon} ${ART_TIERS[k].name} paintings are now unlocked in the Art studio!`), 1200));
   if (keep) {
@@ -690,7 +768,7 @@ if (!state.art.done) {
   state.art.done = { easy: has("medium") || has("hard") ? 5 : 0, medium: has("hard") ? 10 : 0, hard: 0 };
 }
 const artTierOpen = (k) => { const n = ART_TIER_NEED[k]; return !n || (state.art.done[n.tier] || 0) >= n.count; };
-if (!artTierOpen(state.art.tier)) state.art.tier = "easy";
+if (!ART_TIERS[state.art.tier] || ART_TIERS[state.art.tier].hidden || !artTierOpen(state.art.tier)) { state.art.tier = "medium"; state.art.seed = 0; }
 const artSlotPrice = () => ART_SLOT_PRICE + ART_SLOT_PRICE_STEP * (state.art.slotBuys || 0);
 function renderArtCollection() {
   const a = state.art;
@@ -726,7 +804,7 @@ function renderArt() {
   if (!open) {
     $("artLocked").innerHTML = `<h2>${ico("lock", "lockS")}${ico("artgallery", "biz")}Art Gallery</h2>
       <p>Copy paintings as closely as you can: the better the match, the more they're worth. Sell your copies right away or keep them in your collection.</p>
-      <p class="muted">🟢 Easy ${fmt(ART_TIERS.easy.value)} · 🟡 Medium ${fmt(ART_TIERS.medium.value)} · 🔴 Hard ${fmt(ART_TIERS.hard.value)} (you earn your match %; at least ${ART_MIN_MATCH}% to sell or keep)</p>
+      <p class="muted">🟢 Easy ${fmt(ART_TIERS.medium.value)} · 🟡 Normal ${fmt(ART_TIERS.hard.value)} · 🏛️ Masterpiece ${fmt(ART_TIERS.master.value)} (you earn your match %; at least ${ART_MIN_MATCH}% to sell or keep)</p>
       ${artGalleryReady()
         ? `<button class="btn big" id="artUnlock" ${state.money >= ART_UNLOCK ? "" : "disabled"}>🔓 Open the gallery for ${fmt(ART_UNLOCK)}</button>`
         : `<p><b>🔒 Unlocks with the 💵 Millionaire achievement:</b> have ${fmt(1e6)} on hand.</p>`}`;
@@ -754,9 +832,15 @@ $("artView").addEventListener("click", (e) => {
     if (artUI.tool === "eraser") artUI.tool = "brush";
     renderArtTools(); return;
   }
-  const tool = e.target.closest("[data-atool]"); if (tool) { artUI.tool = tool.dataset.atool; renderArtTools(); return; }
-  const size = e.target.closest("[data-asize]"); if (size) { artUI.size = Number(size.dataset.asize); if (isShapeTool(artUI.tool) || artUI.tool === "fill") artUI.tool = "brush"; renderArtTools(); return; }
-  const tip = e.target.closest("[data-atip]"); if (tip) { artUI.tip = tip.dataset.atip; if (isShapeTool(artUI.tool) || artUI.tool === "fill") artUI.tool = "brush"; renderArtTools(); return; }
+  if (e.target.closest("[data-amirror]")) { artUI.mirror = !artUI.mirror; renderArtTools(); return; }
+  if (e.target.closest("[data-acomm]")) {   // 📜 switch to the commissioned painting
+    const c = artCommCheck(); if (!c || c.done || !artTierOpen(c.tier)) return;
+    state.art.tier = c.tier; state.art.seed = c.seed; artNewPainting(true); return;
+  }
+  const tool = e.target.closest("[data-atool]"); if (tool) { if (tool.dataset.atool === "pick" && artUI.tool !== "pick") artUI.prevTool = artUI.tool; artUI.tool = tool.dataset.atool; renderArtTools(); return; }
+  const keepsTool = (t) => t === "line" || t === "brush" || t === "eraser";   // the ➖ line uses the brush size and tip too
+  const size = e.target.closest("[data-asize]"); if (size) { artUI.size = Number(size.dataset.asize); if (!keepsTool(artUI.tool)) artUI.tool = "brush"; renderArtTools(); return; }
+  const tip = e.target.closest("[data-atip]"); if (tip) { artUI.tip = tip.dataset.atip; if (!keepsTool(artUI.tool)) artUI.tool = "brush"; renderArtTools(); return; }
   const tier = e.target.closest("[data-atier]");
   if (tier && tier.dataset.atier !== state.art.tier && artTierOpen(tier.dataset.atier)) { state.art.tier = tier.dataset.atier; renderArtTools(); artNewPainting(false); return; }
   if (e.target.closest("#artUndo")) { artUI.lastShape = null; const u = artUI.undo.pop(); if (u) drawCtx().putImageData(u, 0, 0); return; }
@@ -787,10 +871,19 @@ $("artView").addEventListener("click", (e) => {
   }
 });
 const artCanvas = $("artDraw");
+// 💧 eyedropper: take the palette colour under the pointer (from the original or your copy), then go back to the last tool
+function artPickColor(canvas, e) {
+  const r = canvas.getBoundingClientRect(), x = Math.floor((e.clientX - r.left) / r.width * ART_W), y = Math.floor((e.clientY - r.top) / r.height * ART_H);
+  const d = canvas.getContext("2d").getImageData(Math.max(0, Math.min(ART_W - 1, x)), Math.max(0, Math.min(ART_H - 1, y)), 1, 1).data;
+  let best = 0, bd = 1e9; PAL_RGB.forEach((q, i) => { const dd = (q[0] - d[0]) ** 2 + (q[1] - d[1]) ** 2 + (q[2] - d[2]) ** 2; if (dd < bd) { bd = dd; best = i; } });
+  artUI.color = Object.keys(ART_PAL)[best]; artUI.tool = artUI.prevTool === "pick" ? "brush" : artUI.prevTool; renderArtTools();
+}
+$("artRef").addEventListener("pointerdown", (e) => { if (artUI.tool === "pick" && !isPaused()) { e.preventDefault(); artPickColor($("artRef"), e); } });
 artCanvas.addEventListener("pointerdown", (e) => {
   if (isPaused() || artUI.result) return;
   e.preventDefault();
   const p = artPos(e);
+  if (artUI.tool === "pick") { artPickColor(artCanvas, e); return; }
   if (artUI.tool === "move") {   // ✋ grab: drag the last shape somewhere else
     if (!artUI.lastShape) { showNotice("✋ Draw a shape first (⬛ Square, ⚫ Circle or 🔺 Triangle), then grab it to move it."); return; }
     artPushUndo();

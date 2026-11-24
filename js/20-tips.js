@@ -73,7 +73,7 @@ function tipTriggers() {
   if (logi.trucks.some(t => t.broken)) showTip("breakdown");
   if (logiLevel() >= AGENT_LEVEL.truck) showTip("agent");
   if (v === "art" && state.art && state.art.unlocked) showTip("art");
-  if (state.art && state.art.done && state.art.done.easy >= ART_TIER_NEED.medium.count) showTip("artTier");
+  if (state.art && state.art.done && (state.art.done.medium || 0) >= ART_TIER_NEED.hard.count) showTip("artTier");
   if (scienceOpen()) showTip("science");
   if (state.prestigeOffered) showTip("prestige");
   if (v === "achievements") showTip("achievements");

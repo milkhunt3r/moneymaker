@@ -1035,6 +1035,66 @@ hrx(String.raw`<b>Trade route:<\/b> one ship flies to the (${SP_RX_NAME}) and ba
   `<b>Ruta comercial:</b> una nave va y vuelve de los ${spN(n)} <b>para siempre</b> y trae ${e} <b>${x}</b> ${spG(g)} en cada viaje (${t} min ida y vuelta). Sigue funcionando con el juego cerrado.`);
 hrx(String.raw`<b>Trade route open<\/b> · (\S+) <b>(\d+)<\/b> (${SP_RX_GOOD}) every trip \((\d+) min round trip\)`, (m, e, x, g, t) => `<b>Ruta comercial abierta</b> · ${e} <b>${x}</b> ${spG(g)} en cada viaje (${t} min ida y vuelta)`);
 ES["Alliance bonus"] = "Bonificación de alianza";
+// 🎨 Art Gallery 2.0: tiers, masterpieces, new tools, heatmap, daily commission
+const ART_ES_TIER = { Easy: "Fácil", Normal: "Normal", Masterpiece: "Obra maestra", Starter: "Inicial" };
+const ART_ES_MASTER = { "The Starry Night": "La noche estrellada", "The Great Wave off Kanagawa": "La gran ola de Kanagawa", "Sunflowers": "Los girasoles", "The Scream": "El grito",
+  "Mona Lisa": "La Gioconda", "Girl with a Pearl Earring": "La joven de la perla", "Impression, Sunrise": "Impresión, sol naciente", "Red Fuji (Fine Wind, Clear Morning)": "Fuji rojo (Viento del sur, cielo despejado)",
+  "The Bedroom": "El dormitorio", "Poppy Field": "Campo de amapolas" };
+const ART_RX_MASTER = Object.keys(ART_ES_MASTER).map(k => k.replace(/[()]/g, "\\$&")).join("|");
+Object.assign(ES, ART_ES_MASTER, { "Normal": "Normal", "Masterpiece": "Obra maestra", "Eyedropper": "Cuentagotas", "Mirror": "Espejo", "Daily commission": "Encargo diario", "Paint it": "Pintarlo",
+  "Delivered!": "¡Entregado!", "Where it differs": "Dónde difiere", "Click either picture to take its colour": "Haz clic en cualquiera de los dos cuadros para coger su color",
+  "Mirror mode: everything you paint is copied to the other side (left ↔ right)": "Modo espejo: todo lo que pintas se copia al otro lado (izquierda ↔ derecha)",
+  "Drag to draw a straight line in the brush size (hold Shift for straight 45° angles)": "Arrastra para trazar una línea recta del tamaño del pincel (mantén Mayús para ángulos de 45°)",
+  "You're painting it now. Submit a copy of 50%+ to deliver it.": "Lo estás pintando ahora. Entrega una copia del 50 % o más para cumplirlo.",
+  "Apprentice: Normal": "Aprendiz: normal", "Skilled copyist: Normal": "Copista hábil: normal", "Master forger: Normal": "Maestro falsificador: normal",
+  "Apprentice: Masterpiece": "Aprendiz: obra maestra", "Skilled copyist: Masterpiece": "Copista hábil: obra maestra", "Master forger: Masterpiece": "Maestro falsificador: obra maestra",
+  "Submit a 50%+ match on a Normal painting": "Entrega una copia de un cuadro normal con un 50 %+ de parecido", "Submit a 75%+ match on a Normal painting": "Entrega una copia de un cuadro normal con un 75 %+ de parecido",
+  "Submit a 90%+ match on a Normal painting": "Entrega una copia de un cuadro normal con un 90 %+ de parecido",
+  "Submit a 50%+ match on a Masterpiece": "Entrega una copia de una obra maestra con un 50 %+ de parecido", "Submit a 75%+ match on a Masterpiece": "Entrega una copia de una obra maestra con un 75 %+ de parecido",
+  "Submit a 90%+ match on a Masterpiece": "Entrega una copia de una obra maestra con un 90 %+ de parecido",
+  "white": "blanco", "black": "negro", "gray": "gris", "red": "rojo", "orange": "naranja", "yellow": "amarillo", "lime": "lima", "green": "verde", "teal": "verde azulado", "sky": "celeste",
+  "blue": "azul", "navy": "azul marino", "purple": "morado", "pink": "rosa", "brown": "marrón", "beige": "beis",
+  "10 famous paintings, simplified: The Starry Night, The Great Wave, Mona Lisa, The Scream and more": "10 cuadros famosos, simplificados: La noche estrellada, La gran ola, La Gioconda, El grito y más",
+  "Painting": "Cuadro", "Artist": "Artista", "Year": "Año" });
+rx(String.raw`Brush size (\d+) px`, "Tamaño del pincel: $1 px");
+rx(String.raw`(Easy|Normal|Masterpiece) · (${NUM})`, (m, t, v) => `${ART_ES_TIER[t]} · ${v}`);
+rx(String.raw`(Easy|Normal|Masterpiece): (.+)\. You earn your match % of (${NUM}): an 85% copy is worth (${NUM})\. Under (\d+)% it can't be sold or kept\.`,
+  (m, t, d, v, w, u) => `${ART_ES_TIER[t]}: ${ES[d] || esq(d) || d}. Ganas tu % de parecido de ${v}: una copia al 85 % vale ${w}. Por debajo del ${u} % no se puede vender ni guardar.`);
+rx(String.raw`(Easy|Normal|Masterpiece) paintings are now unlocked in the Art studio!`, (m, t) => `¡Ya puedes pintar cuadros de nivel ${ART_ES_TIER[t].toLowerCase()} en el Estudio de arte!`);
+rx(String.raw`Original · (\S+) (${ART_RX_MASTER}) \((.+), (\d+)\)`, (m, e, n, a, y) => `Original · ${e} ${ART_ES_MASTER[n]} (${a}, ${y})`);
+hrx(String.raw`A collector wants a copy of (?:(\S+) <b>(${ART_RX_MASTER})<\/b> \((.+?)\)|this (\S+) <b>(Normal|Masterpiece)<\/b> painting) and pays <b>×(\d+)<\/b>: up to (${NUM})\. Time left: <b>(.+)<\/b>\.`,
+  (m, e, n, a, e2, t, x, v, c) => `Un coleccionista quiere una copia de ${n ? `${e} <b>${ART_ES_MASTER[n]}</b> (${a})` : `este cuadro ${e2} <b>${ART_ES_TIER[t].toLowerCase()}</b>`} y paga <b>×${x}</b>: hasta ${v}. Tiempo restante: <b>${c}</b>.`);
+hrx(String.raw`Thank you! A new commission in <b>(.+)<\/b>\.`, "¡Gracias! Nuevo encargo en <b>$1</b>.");
+hrx(String.raw`📜 <b>Daily commission:<\/b> unlock 🟡 Normal paintings to get a daily commission \(×(\d+) value\)\.`, "📜 <b>Encargo diario:</b> desbloquea los cuadros 🟡 normales para recibir un encargo diario (×$1 de valor).");
+hrx(String.raw`(.+) Worth <b>(${NUM})<\/b> \(([\d.,]+)% of (${NUM})(, 📜 commission ×(\d+))?\)\.`, (m, p, v, pc, f, c, x) => `${ES[p] || p} Valor <b>${v}</b> (${pc.replace(".", ",")} % de ${f}${c ? `, 📜 encargo ×${x}` : ""}).`);
+hrx(String.raw`🔥 <b>Where it differs:<\/b> red marks the parts that don't match the original \((\d+)% of the picture\)\.`, "🔥 <b>Dónde difiere:</b> el rojo marca las partes que no coinciden con el original ($1 % del cuadro).");
+rx(String.raw`Commission delivered! The collector paid ×(\d+): (${NUM})\.`, "¡Encargo entregado! El coleccionista ha pagado ×$1: $2.");
+rx(String.raw`Keep in collection \((\d+)\/(\d+)\)`, "Guardar en la colección ($1/$2)");
+rx(String.raw`(Easy|Normal|Masterpiece) painting`, (m, t) => `Cuadro ${ART_ES_TIER[t].toLowerCase()}`);
+rx(String.raw`Easy (${NUM}) · 🟡 Normal (${NUM}) · 🏛️ Masterpiece (${NUM}) \(you earn your match %; at least (\d+)% to sell or keep\)`,
+  (m, a, b, c, u) => `Fácil ${a} · 🟡 Normal ${b} · 🏛️ Obra maestra ${c} (ganas tu % de parecido; al menos el ${u} % para vender o guardar)`);
+hrx(String.raw`🟡 Normal unlocks after you submit \(sell or keep\) (\d+) Easy paintings; 🏛️ Masterpiece unlocks after (\d+) Normal paintings\.`, "🟡 Normal se desbloquea al entregar (vender o guardar) $1 cuadros fáciles; 🏛️ Obra maestra, tras $2 cuadros normales.");
+H("Simplified versions of famous old paintings (all old enough to be free for everyone to use), drawn in the game's 16 colours:", "Versiones simplificadas de cuadros antiguos famosos (todos tan antiguos que cualquiera puede usarlos), dibujadas con los 16 colores del juego:");
+hrx(String.raw`Every 24 hours a collector asks for one specific painting \(🟡 Normal, or a 🏛️ Masterpiece once they are open\) and pays <b>×(\d+)<\/b> its value\. Press 🖌️ Paint it in the studio, then sell or keep a copy of at least (\d+)% before the time runs out\. One delivery per commission\.`,
+  "Cada 24 horas un coleccionista pide un cuadro concreto (🟡 normal, o una 🏛️ obra maestra cuando estén abiertas) y paga <b>×$1</b> su valor. Pulsa 🖌️ Pintarlo en el estudio y después vende o guarda una copia de al menos el $2 % antes de que se acabe el tiempo. Una entrega por encargo.");
+hrx(String.raw`Your copy is worth <b>match % × the full value<\/b>: an 80% copy of a Normal painting is worth (${NUM})\. A copy under <b>(\d+)%<\/b> can't be sold or kept: keep working on it or start a new one\. There is no timer\.`,
+  "Tu copia vale <b>% de parecido × el valor completo</b>: una copia al 80 % de un cuadro normal vale $1. Una copia por debajo del <b>$2 %</b> no se puede vender ni guardar: sigue trabajando en ella o empieza otra. No hay límite de tiempo.");
+ES["Drag to draw a straight line in the brush size and tip. Hold Shift for straight 45° angles"] = "Arrastra para trazar una línea recta con el tamaño y la punta del pincel. Mantén Mayús para ángulos de 45°";
+ES["Click the original (or your copy) to take that colour"] = "Haz clic en el original (o en tu copia) para coger ese color";
+ES["Turn it on and everything you paint is also painted on the other side, flipped left ↔ right"] = "Actívalo y todo lo que pintes se pinta también al otro lado, volteado izquierda ↔ derecha";
+hrx(String.raw`🔥 After you submit, a <b>heatmap<\/b> shows in red where your copy doesn't match the original\.`, "🔥 Al entregar, un <b>mapa de calor</b> muestra en rojo dónde tu copia no coincide con el original.");
+ES["Line"] = "Línea";
+H("🎨 <b>Art Gallery update!</b> New tiers: 🟢 Easy (kid-style drawings), 🟡 Normal (detailed scenes) and the new 🏛️ <b>Masterpiece</b> tier: copy 10 famous paintings like The Starry Night, The Great Wave, Mona Lisa and The Scream (opens after 10 Normal paintings). The old 3-shape tier is retired.",
+  "🎨 <b>¡Novedades en la Galería de arte!</b> Nuevos niveles: 🟢 Fácil (dibujos infantiles), 🟡 Normal (escenas detalladas) y el nuevo nivel 🏛️ <b>Obra maestra</b>: copia 10 cuadros famosos como La noche estrellada, La gran ola, La Gioconda y El grito (se abre tras 10 cuadros normales). El antiguo nivel de 3 formas se retira.");
+ES["🖌️ New drawing tools: ➖ Line, 💧 Eyedropper and 🪞 Mirror mode. After you submit, a 🔥 heatmap shows where your copy differs from the original."] =
+  "🖌️ Nuevas herramientas de dibujo: ➖ Línea, 💧 Cuentagotas y 🪞 Modo espejo. Al entregar, un 🔥 mapa de calor muestra dónde tu copia difiere del original.";
+H("📜 <b>Daily commission</b>: every day a collector asks for one specific painting and pays ×3. You have 24 hours to deliver it.", "📜 <b>Encargo diario</b>: cada día un coleccionista pide un cuadro concreto y paga ×3. Tienes 24 horas para entregarlo.");
+ES["🏆 Art Gallery achievements now follow the new tiers (Easy, Normal and Masterpiece). Achievements you already have stay unlocked."] =
+  "🏆 Los logros de la Galería de arte siguen ahora los nuevos niveles (Fácil, Normal y Obra maestra). Los logros que ya tienes siguen desbloqueados.";
+Object.assign(ES, { "Masterpieces": "Obras maestras", "Vincent van Gogh": "Vincent van Gogh", "Katsushika Hokusai": "Katsushika Hokusai", "Edvard Munch": "Edvard Munch",
+  "Leonardo da Vinci": "Leonardo da Vinci", "Johannes Vermeer": "Johannes Vermeer", "Claude Monet": "Claude Monet",
+  "Simplified versions of famous old paintings (all old enough to be free for everyone to use), drawn in the game's 16 colours": "Versiones simplificadas de cuadros antiguos famosos (todos tan antiguos que cualquiera puede usarlos), dibujadas con los 16 colores del juego" });
+rx(String.raw`Normal unlocks after you submit \(sell or keep\) (\d+) Easy paintings; 🏛️ Masterpiece unlocks after (\d+) Normal paintings\.`, "Normal se desbloquea al entregar (vender o guardar) $1 cuadros fáciles; 🏛️ Obra maestra, tras $2 cuadros normales.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
