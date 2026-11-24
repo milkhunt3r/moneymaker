@@ -905,6 +905,9 @@ function showView(view) {
   $("logisticsView").hidden = view !== "logistics";
   $("achievementsView").hidden = view !== "achievements";
   $("wikiView").hidden = view !== "wiki";
+  if ($("profileView")) $("profileView").hidden = view !== "profile";
+  if (view === "profile" && typeof renderProfile === "function") renderProfile();
+  if ($("profileBtn")) $("profileBtn").classList.toggle("on", view === "profile");
   // 🎮 Mini-games: the hub, or one game page (state.gamePage: null = hub, "art", "mine")
   const gp = view === "games" ? (state.gamePage || null) : undefined;
   $("gamesView").hidden = view !== "games" || gp === "art";

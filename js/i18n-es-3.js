@@ -1159,6 +1159,30 @@ rx(String.raw`You need (.+) to buy (\d+) (${SP_RX_GOOD})\.`, (m, x, n, g) => `Ne
 ES["🏪 Alien market: once you are 💖 Allies with a race, you can also buy its goods there (handy for gifts to other races). Buying always costs more than selling."] =
   "🏪 Mercado alienígena: cuando seas 💖 Aliada de una raza, también podrás comprar allí sus bienes (útil para regalos a otras razas). Comprar siempre cuesta más que vender.";
 ES["Active trade route"] = "Ruta comercial activa";
+// 👤 player profile
+Object.assign(ES, { "Profile": "Perfil", "Your profile": "Tu perfil", "Visible to other players": "Visible para otros jugadores", "Loading…": "Cargando…",
+  "Nickname": "Apodo", "Your nickname": "Tu apodo", "Create profile": "Crear perfil", "Avatar": "Avatar", "Save": "Guardar",
+  "Sign-in isn't available right now.": "Ahora mismo no se puede iniciar sesión.",
+  "3–16 characters: letters, numbers, spaces and _ . - · Every nickname is unique. Rude names aren't allowed.": "De 3 a 16 caracteres: letras, números, espacios y _ . - · Cada apodo es único. No se permiten nombres groseros.",
+  "Pick one of your achievement badges. Unlock more achievements to get more avatars.": "Elige una de tus insignias de logros. Desbloquea más logros para tener más avatares.",
+  "Choose a nickname and an avatar to create your profile.": "Elige un apodo y un avatar para crear tu perfil.",
+  "Your nickname needs at least 3 characters.": "Tu apodo necesita al menos 3 caracteres.", "Your nickname can have at most 16 characters.": "Tu apodo puede tener como máximo 16 caracteres.",
+  "Use only letters, numbers, spaces and _ . -": "Usa solo letras, números, espacios y _ . -",
+  "That nickname isn't allowed. Please choose a friendly one.": "Ese apodo no está permitido. Elige uno amable, por favor.",
+  "That nickname is already taken. Try another one.": "Ese apodo ya está cogido. Prueba con otro.",
+  "Profiles aren't switched on yet. Please try again later.": "Los perfiles todavía no están activados. Inténtalo más tarde.",
+  "Something went wrong. Please try again.": "Algo ha salido mal. Inténtalo de nuevo.",
+  "Your profile couldn't be loaded. Check your connection and try again.": "No se ha podido cargar tu perfil. Comprueba tu conexión e inténtalo de nuevo.",
+  "Nickname saved.": "Apodo guardado.", "Unlock achievements with a badge picture to choose an avatar.": "Desbloquea logros con insignia para elegir un avatar." });
+H("Sign in with Google to create your player profile. Other players will see your <b>nickname</b>, your <b>avatar</b>, your <b>achievements</b> and your <b>prestige count</b>.",
+  "Inicia sesión con Google para crear tu perfil de jugador. Otros jugadores verán tu <b>apodo</b>, tu <b>avatar</b>, tus <b>logros</b> y tu <b>número de prestigios</b>.");
+hrx(String.raw`🏆 <b>(\d+\/\d+)<\/b> achievements`, "🏆 <b>$1</b> logros");
+hrx(String.raw`⭐ Prestige <b>(\d+)<\/b>`, "⭐ Prestigio <b>$1</b>");
+rx(String.raw`Show all (\d+)`, "Mostrar los $1");
+H("👤 <b>Player profiles!</b> Click the round 👤 button next to ⚙️ Settings, sign in with Google and choose a nickname and an avatar (one of your achievement badges). Other players will see your nickname, avatar, achievements and prestige count.",
+  "👤 <b>¡Perfiles de jugador!</b> Pulsa el botón redondo 👤 junto a ⚙️ Ajustes, inicia sesión con Google y elige un apodo y un avatar (una de tus insignias de logros). Otros jugadores verán tu apodo, tu avatar, tus logros y tu número de prestigios.");
+H("👤 <b>Profile</b> (the round button next to ⚙️): once signed in, choose a nickname and an avatar (one of your achievement badges). Other players see your nickname, avatar, achievements and prestige count. Nicknames are unique, and rude ones aren't allowed.",
+  "👤 <b>Perfil</b> (el botón redondo junto a ⚙️): con la sesión iniciada, elige un apodo y un avatar (una de tus insignias de logros). Otros jugadores ven tu apodo, tu avatar, tus logros y tu número de prestigios. Los apodos son únicos y no se permiten los groseros.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
