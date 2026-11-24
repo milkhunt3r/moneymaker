@@ -204,7 +204,7 @@ function cloudRowsHtml() {
     `<div class="guestWarn">⚠️ Playing as a guest: ${GUEST_WARN}</div>`;
   const st = cloud.status === "error" ? "⚠️ Last upload failed" : cloud.lastAt ? `Saved ${whenText(cloud.lastAt)}` : "…";
   return `<div class="orRow cloudInfo">${icon}<span class="grow"><b data-noi18n>${escapeHtml(cloud.user.email || "Google account")}</b><small id="cloudSt">${st}</small></span></div>` +
-    `<div class="cloudBtns"><button data-cloud="now">Save now</button><button data-cloud="out">Sign out</button><button data-cloud="del" class="danger">Delete account</button></div>`;
+    `<div class="cloudBtns"><button data-cloud="out">Sign out</button><button data-cloud="del" class="danger">Delete account</button></div>`;
 }
 const escapeHtml = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 function updateCloudUi() {

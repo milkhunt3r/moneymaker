@@ -106,6 +106,12 @@ $("settingsMenu").addEventListener("click", (e) => {
   if (what === "save") {
     save(); flushSave();
     settingsNote(saveFailedAt ? "❌ Could not save: browser storage is full." : "✅ Game saved!");
+    // ☁️ signed in: also upload to the cloud now (js/29-cloud.js)
+    if (typeof cloud === "object" && cloud.user && typeof cloudUpload === "function") {
+      if (cloud.conflict) { cloudSync(); return; }
+      cloud.dirty = true;
+      cloudUpload().then(ok => { if (!cloud.conflict) settingsNote(ok ? "✅ Game saved, also in the ☁️ cloud!" : "✅ Saved on this device. ❌ The cloud save failed."); });
+    }
   }
 
   if (what === "reset") {

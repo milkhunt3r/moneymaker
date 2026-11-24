@@ -1229,6 +1229,7 @@ H("👥 <b>Friends</b> (👤 Profile → 👥 Friends): find players by nickname
   "👥 <b>Amigos</b> (👤 Perfil → 👥 Amigos): busca jugadores por su apodo o por su código de amigo de 8 caracteres (el tuyo está en tu perfil), envía solicitudes de amistad y acepta o rechaza las que recibas. 🟢 significa que ese amigo está jugando ahora mismo. Pulsa en un amigo para ver su avatar, sus logros, sus prestigios y sus mascotas.");
 Object.assign(ES, { "You finished the game!": "¡Has terminado el juego!", "That was your 4th and final prestige. No more resets are possible.": "Ese ha sido tu 4.º y último prestigio. Ya no se puede reiniciar más.",
   "You can keep playing as long as you like: collect the remaining achievements and enjoy your empire!": "Puedes seguir jugando todo lo que quieras: consigue los logros que te faltan y disfruta de tu imperio.", "Keep playing": "Seguir jugando" });
+Object.assign(ES, { "Game saved, also in the ☁️ cloud!": "¡Partida guardada, también en la ☁️ nube!", "Saved on this device. ❌ The cloud save failed.": "Guardada en este dispositivo. ❌ Ha fallado el guardado en la nube." });
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
