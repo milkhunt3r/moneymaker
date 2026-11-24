@@ -1,12 +1,13 @@
 /* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
-   👤 PLAYER PROFILE: nickname, avatar (one of your achievement badges), achievements and prestige count.
+   👤 PLAYER PROFILE: nickname, avatar (the emblem of one of your 🎁 reward collections), achievements and prestige count.
    · Opened with the round 👤 button next to ⚙️ Settings.
    · Needs a Google sign-in (☁️ js/29-cloud.js): the profile is stored in Supabase table public.profiles
      (see docs/supabase-profiles.sql). Every signed-in player can see every profile; only you can change yours.
    · Nicknames: 3–16 letters, numbers, spaces, _ . -; unique (ignoring case); rude or reserved names are refused
      here AND by the database (same word lists).
    · Achievements and prestige count are uploaded by themselves when they change.
+   · The ☁️ Account rows (sign in / save now / sign out / delete account) live here too, not in ⚙️ Settings.
    ===================================================================== */
 const PROF_CACHE = "eoc-profile";
 const prof = { row: null, user: null, loading: false, err: "", msg: "", busy: false, showAll: false };
@@ -42,8 +43,11 @@ function profNickError(n) {
 
 /* ----- 🏆 what other players see ----- */
 const profStats = () => ({ ach_done: achDone(), ach_total: achShown().length, prestige: (state.legacy && state.legacy.count) || 0 });
-const profAvatarIds = () => ACHIEVEMENTS.filter(a => ACH_PICS.has(a.id) && state.achievements[a.id]).map(a => a.id);
-const profAvatarImg = (id, cls = "") => id && ACH_PICS.has(id) ? `<img class="${cls}" src="assets/ach/${id}.webp" alt="">` : `<span class="${cls} profNoAv">👤</span>`;
+// avatars: the emblems of the 🎁 reward collections you have unlocked (assets/col/<id>.webp)
+const profColOpen = (col) => COSMETICS.some(c => c.collection === col.id && state.cosmetics.owned[c.id]) || (() => { const p = rewardProgress(col); return p.total > 0 && p.done >= p.total; })();
+const profAvatarIds = () => COLLECTIONS.filter(c => c.reward && COL_EMBLEMS.has(c.id) && !(c.hidden && c.hidden()) && profColOpen(c)).map(c => c.id);
+const profAvName = (id) => { const c = COLLECTIONS.find(x => x.id === id); return c ? c.name.replace(/^\S+\s/, "") : ""; };
+const profAvatarImg = (id, cls = "") => id && COL_EMBLEMS.has(id) ? `<img class="${cls}" src="assets/col/${id}.webp" alt="">` : `<span class="${cls} profNoAv">👤</span>`;
 const profSignedIn = () => typeof cloud === "object" && !!cloud.user && !!cloud.sb;
 
 async function profLoad() {
@@ -84,7 +88,7 @@ async function profSaveNick(raw) {
   prof.busy = false; profUi();
 }
 async function profSetAvatar(id) {
-  if (!ACH_PICS.has(id) || !state.achievements[id]) return;
+  if (!profAvatarIds().includes(id)) return;
   if (!prof.row) { prof.pendingAvatar = id; return renderProfile(); }
   const old = prof.row.avatar;
   prof.row.avatar = id; profCache(); profUi();
@@ -117,7 +121,9 @@ function renderProfile() {
     box.innerHTML = `<div class="card profWrap"><h2 style="margin-top:0">👤 Your profile</h2>
       <p>Sign in with Google to create your player profile. Other players will see your <b>nickname</b>, your <b>avatar</b>, your <b>achievements</b> and your <b>prestige count</b>.</p>
       <button class="btn big" data-prof="signin"><span class="gIcon">G</span>Sign in with Google</button>
-      ${typeof cloud === "object" && !cloud.sb ? `<p class="muted">${cloud.status === "loading" ? "Connecting…" : "Sign-in isn't available right now."}</p>` : ""}</div>`;
+      ${typeof cloud === "object" && !cloud.sb ? `<p class="muted">${cloud.status === "loading" ? "Connecting…" : "Sign-in isn't available right now."}</p>` : ""}
+      <p class="muted">Signing in also keeps a ☁️ cloud copy of your progress, so you can play on other devices.</p>
+      <div class="guestWarn">⚠️ Playing as a guest: ${GUEST_WARN}</div></div>`;
     return;
   }
   if (prof.user !== cloud.user.id && !prof.loading) { prof.row = null; profLoad(); }
@@ -136,11 +142,12 @@ function renderProfile() {
       ${prof.err ? `<div class="profErr">❌ ${prof.err === "load" ? "Your profile couldn't be loaded. Check your connection and try again." : prof.err}</div>` : ""}
       ${prof.msg ? `<div class="profOk">${prof.msg}</div>` : ""}</div>
     <div class="card profWrap"><h3 style="margin-top:0">🖼️ Avatar</h3>
-      <p class="muted">Pick one of your achievement badges. Unlock more achievements to get more avatars.</p>
-      ${ids.length ? `<div class="profAvGrid">${shown.map(id => { const a = ACHIEVEMENTS.find(x => x.id === id);
-        return `<button class="profAvPick ${id === cur ? "on" : ""}" data-prof-av="${id}" title="${escapeHtml(a.name)}">${profAvatarImg(id)}</button>`; }).join("")}</div>
+      <p class="muted">Pick the emblem of one of your 🎁 reward collections. Unlock more collections (🏆 Achievements → 🎁 Rewards) to get more avatars.</p>
+      ${ids.length ? `<div class="profAvGrid">${shown.map(id => {
+        return `<button class="profAvPick ${id === cur ? "on" : ""}" data-prof-av="${id}" title="${escapeHtml(profAvName(id))}">${profAvatarImg(id)}</button>`; }).join("")}</div>
         ${ids.length > shown.length ? `<button class="btn ghost small" data-prof="all">Show all ${ids.length}</button>` : ""}`
-        : `<p>🔒 Unlock achievements with a badge picture to choose an avatar.</p>`}</div>`;
+        : `<p>🔒 Unlock your first 🎁 reward collection (🏆 Achievements → 🎁 Rewards) to choose an avatar.</p>`}</div>
+    <div class="card profWrap"><h3 style="margin-top:0">☁️ Account</h3><div id="cloudRows">${cloudRowsHtml()}</div></div>`;
 }
 function profUi() {
   const b = $("profileBtn");
@@ -158,6 +165,19 @@ $("profileBtn").addEventListener("click", () => showView("profile"));
 document.addEventListener("click", (e) => {
   const v = $("profileView"); if (!v || !v.contains(e.target)) return;
   const av = e.target.closest("[data-prof-av]"); if (av) return profSetAvatar(av.dataset.profAv);
+  const cb = e.target.closest("[data-cloud]");
+  if (cb) {
+    const k = cb.dataset.cloud;
+    if (k === "in") cloudSignIn();
+    if (k === "out") cloudSignOut();
+    if (k === "del") cloudDeleteAsk();
+    if (k === "now") {
+      if (cloud.conflict) return cloudSync();
+      cloud.dirty = true;
+      cloudUpload().then(ok => { if (!cloud.conflict) showNotice(ok ? "☁️ Saved to the cloud." : "❌ Cloud save failed. Your progress is still saved on this device."); });
+    }
+    return;
+  }
   const b = e.target.closest("[data-prof]"); if (!b) return;
   if (b.dataset.prof === "signin" && typeof cloudSignIn === "function") cloudSignIn();
   if (b.dataset.prof === "nick") profSaveNick($("profNick").value);
@@ -167,11 +187,12 @@ document.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.
 document.addEventListener("input", (e) => { if (e.target.id === "profNick" && (prof.err || prof.msg)) { prof.err = ""; prof.msg = ""; const x = document.querySelector(".profErr, .profOk"); if (x) x.remove(); } });
 // signing in or out (☁️ js/29-cloud.js calls updateCloudUi on every change)
 const profCloudUiOrig = updateCloudUi;
+let profAuthSeen;
 updateCloudUi = function () {
-  profCloudUiOrig();
-  const id = profSignedIn() ? cloud.user.id : null;
+  profCloudUiOrig();   // also refreshes the ☁️ Account rows (#cloudRows) on the profile page
+  const id = profSignedIn() ? cloud.user.id : null, key = (typeof cloud === "object" && cloud.sb ? "sb" : "-") + (id || "");
   if (id && prof.user !== id) { prof.row = null; prof.user = null; profLoad(); }
-  profUi();
+  if (key !== profAuthSeen) { profAuthSeen = key; profUi(); }
 };
 profUi();
 if (state.view === "profile") renderProfile();

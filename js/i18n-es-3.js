@@ -100,8 +100,8 @@ Object.assign(ES, {
     "Una ficha de apuesta gratis de 500 scoin cada 10 min para las mesas de súper altas apuestas, y el resto de fichas gratis llegan el doble de rápido (cada 10 / 7,5 / 5 min en vez de 20 / 15 / 10). Puedes tener hasta 200 fichas de 500 scoin en vez de 100",
   "Tycoon's Legacy and VIP Coins can be picked once, Global Empire twice: 4 picks for 4 prestiges, so by the end you have every bonus, in the order you choose.":
     "Legado del magnate y Monedas VIP se pueden elegir una vez, Imperio global dos: 4 elecciones para 4 prestigios, así que al final tendrás todas las bonificaciones, en el orden que elijas.",
-  "Saving": "Guardado", "The game saves automatically in your browser. Sign in with Google (⚙️ Settings → Account) to keep a ☁️ cloud copy and play on other devices. In ⚙️ Settings you can also reset the game.":
-    "El juego se guarda automáticamente en tu navegador. Inicia sesión con Google (⚙️ Ajustes → Cuenta) para tener una copia en la ☁️ nube y jugar en otros dispositivos. En ⚙️ Ajustes también puedes reiniciar la partida.",
+  "Saving": "Guardado", "The game saves automatically in your browser. Sign in with Google (👤 Profile) to keep a ☁️ cloud copy and play on other devices. In ⚙️ Settings you can also reset the game.":
+    "El juego se guarda automáticamente en tu navegador. Inicia sesión con Google (👤 Perfil) para tener una copia en la ☁️ nube y jugar en otros dispositivos. En ⚙️ Ajustes también puedes reiniciar la partida.",
   "Tips and guided start": "Consejos e inicio guiado",
   "New players get a short guided start (click the coin, buy a business, hire staff). After that, a small tip appears the first time you meet something new, with a link to the matching Wiki page. ⚙️ Settings: turn tips on/off, show all tips again, or replay the guided start.":
     "Los jugadores nuevos tienen un breve inicio guiado (haz clic en la moneda, compra un negocio, contrata personal). Después aparece un pequeño consejo la primera vez que encuentras algo nuevo, con un enlace a la página correspondiente de la Wiki. ⚙️ Ajustes: activa o desactiva los consejos, vuelve a ver todos o repite el inicio guiado.",
@@ -454,8 +454,8 @@ H("This deletes your account and your <b>cloud save</b> for good.", "Esto elimin
 H("☁️ <b>Cloud save</b>: sign in with Google (⚙️ Settings or the main menu) to keep your progress in your account and continue on another device. Playing without an account works as before.",
   "☁️ <b>Guardado en la nube</b>: inicia sesión con Google (⚙️ Ajustes o el menú principal) para guardar tu progreso en tu cuenta y seguir en otro dispositivo. Jugar sin cuenta funciona como antes.");
 
-H("⚠️ <b>Your progress is not being saved</b>: this browser's storage for the game is full. Sign in (⚙️ Settings → Account) to keep it in the ☁️ cloud. <button>OK</button>",
-  "⚠️ <b>Tu progreso no se está guardando</b>: el almacenamiento del navegador para el juego está lleno. Inicia sesión (⚙️ Ajustes → Cuenta) para guardarlo en la ☁️ nube. <button>OK</button>");
+H("⚠️ <b>Your progress is not being saved</b>: this browser's storage for the game is full. Sign in (👤 Profile) to keep it in the ☁️ cloud. <button>OK</button>",
+  "⚠️ <b>Tu progreso no se está guardando</b>: el almacenamiento del navegador para el juego está lleno. Inicia sesión (👤 Perfil) para guardarlo en la ☁️ nube. <button>OK</button>");
 
 Object.assign(ES, {
   "The game is open in another tab": "El juego está abierto en otra pestaña", "Play here": "Jugar aquí",
@@ -1164,7 +1164,10 @@ Object.assign(ES, { "Profile": "Perfil", "Your profile": "Tu perfil", "Visible t
   "Nickname": "Apodo", "Your nickname": "Tu apodo", "Create profile": "Crear perfil", "Avatar": "Avatar", "Save": "Guardar",
   "Sign-in isn't available right now.": "Ahora mismo no se puede iniciar sesión.",
   "3–16 characters: letters, numbers, spaces and _ . - · Every nickname is unique. Rude names aren't allowed.": "De 3 a 16 caracteres: letras, números, espacios y _ . - · Cada apodo es único. No se permiten nombres groseros.",
-  "Pick one of your achievement badges. Unlock more achievements to get more avatars.": "Elige una de tus insignias de logros. Desbloquea más logros para tener más avatares.",
+  "Pick the emblem of one of your 🎁 reward collections. Unlock more collections (🏆 Achievements → 🎁 Rewards) to get more avatars.": "Elige el emblema de una de tus colecciones de 🎁 recompensas. Desbloquea más colecciones (🏆 Logros → 🎁 Recompensas) para tener más avatares.",
+  "Unlock your first 🎁 reward collection (🏆 Achievements → 🎁 Rewards) to choose an avatar.": "Desbloquea tu primera colección de 🎁 recompensas (🏆 Logros → 🎁 Recompensas) para elegir un avatar.",
+  "Signing in also keeps a ☁️ cloud copy of your progress, so you can play on other devices.": "Al iniciar sesión también se guarda una copia de tu progreso en la ☁️ nube, para que puedas jugar en otros dispositivos.",
+  "Account": "Cuenta",
   "Choose a nickname and an avatar to create your profile.": "Elige un apodo y un avatar para crear tu perfil.",
   "Your nickname needs at least 3 characters.": "Tu apodo necesita al menos 3 caracteres.", "Your nickname can have at most 16 characters.": "Tu apodo puede tener como máximo 16 caracteres.",
   "Use only letters, numbers, spaces and _ . -": "Usa solo letras, números, espacios y _ . -",
@@ -1179,10 +1182,10 @@ H("Sign in with Google to create your player profile. Other players will see you
 hrx(String.raw`🏆 <b>(\d+\/\d+)<\/b> achievements`, "🏆 <b>$1</b> logros");
 hrx(String.raw`⭐ Prestige <b>(\d+)<\/b>`, "⭐ Prestigio <b>$1</b>");
 rx(String.raw`Show all (\d+)`, "Mostrar los $1");
-H("👤 <b>Player profiles!</b> Click the round 👤 button next to ⚙️ Settings, sign in with Google and choose a nickname and an avatar (one of your achievement badges). Other players will see your nickname, avatar, achievements and prestige count.",
-  "👤 <b>¡Perfiles de jugador!</b> Pulsa el botón redondo 👤 junto a ⚙️ Ajustes, inicia sesión con Google y elige un apodo y un avatar (una de tus insignias de logros). Otros jugadores verán tu apodo, tu avatar, tus logros y tu número de prestigios.");
-H("👤 <b>Profile</b> (the round button next to ⚙️): once signed in, choose a nickname and an avatar (one of your achievement badges). Other players see your nickname, avatar, achievements and prestige count. Nicknames are unique, and rude ones aren't allowed.",
-  "👤 <b>Perfil</b> (el botón redondo junto a ⚙️): con la sesión iniciada, elige un apodo y un avatar (una de tus insignias de logros). Otros jugadores ven tu apodo, tu avatar, tus logros y tu número de prestigios. Los apodos son únicos y no se permiten los groseros.");
+H("👤 <b>Player profiles!</b> Click the round 👤 button next to ⚙️ Settings, sign in with Google and choose a nickname and an avatar (the emblem of one of your 🎁 reward collections). Other players will see your nickname, avatar, achievements and prestige count.",
+  "👤 <b>¡Perfiles de jugador!</b> Pulsa el botón redondo 👤 junto a ⚙️ Ajustes, inicia sesión con Google y elige un apodo y un avatar (el emblema de una de tus colecciones de 🎁 recompensas). Otros jugadores verán tu apodo, tu avatar, tus logros y tu número de prestigios.");
+H("👤 <b>Profile</b> (the round button next to ⚙️): once signed in, choose a nickname and an avatar (the emblem of one of your 🎁 reward collections). Other players see your nickname, avatar, achievements and prestige count. Nicknames are unique, and rude ones aren't allowed.",
+  "👤 <b>Perfil</b> (el botón redondo junto a ⚙️): con la sesión iniciada, elige un apodo y un avatar (el emblema de una de tus colecciones de 🎁 recompensas). Otros jugadores ven tu apodo, tu avatar, tus logros y tu número de prestigios. Los apodos son únicos y no se permiten los groseros.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

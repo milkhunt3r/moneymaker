@@ -48,8 +48,8 @@ function wikiGeneral() {
       ["🎟️ VIP Coins", "A free 500 scoin bet chip every 10 min for the Super high roller tables, and all other free bet chips come twice as fast (every 10 / 7.5 / 5 min instead of 20 / 15 / 10). You can hold up to 200 chips of 500 scoin instead of 100", "1"]])}
     <p class="muted">Tycoon's Legacy and VIP Coins can be picked once, Global Empire twice: 4 picks for 4 prestiges, so by the end you have every bonus, in the order you choose.</p>
     <h3>💾 Saving</h3>
-    <p>The game saves automatically in your browser. Sign in with Google (⚙️ Settings → Account) to keep a ☁️ cloud copy and play on other devices. In ⚙️ Settings you can also reset the game.</p>
-    <p>👤 <b>Profile</b> (the round button next to ⚙️): once signed in, choose a nickname and an avatar (one of your achievement badges). Other players see your nickname, avatar, achievements and prestige count. Nicknames are unique, and rude ones aren't allowed.</p>
+    <p>The game saves automatically in your browser. Sign in with Google (👤 Profile) to keep a ☁️ cloud copy and play on other devices. In ⚙️ Settings you can also reset the game.</p>
+    <p>👤 <b>Profile</b> (the round button next to ⚙️): once signed in, choose a nickname and an avatar (the emblem of one of your 🎁 reward collections). Other players see your nickname, avatar, achievements and prestige count. Nicknames are unique, and rude ones aren't allowed.</p>
     <h3>💡 Tips and guided start</h3>
     <p>New players get a short guided start (click the coin, buy a business, hire staff). After that, a small tip appears the first time you meet something new, with a link to the matching Wiki page.
       ⚙️ Settings: turn tips on/off, show all tips again, or replay the guided start.</p>

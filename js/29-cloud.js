@@ -200,13 +200,7 @@ function updateCloudUi() {
   if (b) b.innerHTML = !cloud.sb ? "" : cloud.user ? `☁️ ${escapeHtml((cloud.user.user_metadata && cloud.user.user_metadata.name) || cloud.user.email || "")}` : `<span class="gIcon">G</span>Sign in`;
   if (b) b.hidden = !cloud.sb;
 }
-// the account section goes at the top of the ⚙️ Settings panel
-const _showSettingsCloud = showSettings;
-showSettings = function (fromMenu) {
-  _showSettingsCloud(fromMenu);
-  const first = $("modalBox").querySelector(".orSec");
-  if (first) first.insertAdjacentHTML("beforebegin", `<div class="orSec">Account</div><div id="cloudRows">${cloudRowsHtml()}</div>`);
-};
+// the account rows live on the 👤 Profile page (js/37-profile.js), not in ⚙️ Settings
 $("modalBox").addEventListener("click", (e) => {
   const b = e.target.closest("[data-cloud]"); if (!b) return;
   const k = b.dataset.cloud;
@@ -219,8 +213,8 @@ $("modalBox").addEventListener("click", (e) => {
     cloudUpload().then(ok => { if (!cloud.conflict) showNotice(ok ? "☁️ Saved to the cloud." : "❌ Cloud save failed. Your progress is still saved on this device."); });
   }
 });
-$("menuCorner").insertAdjacentHTML("beforeend", `<button id="menuAccount" hidden></button>`);
-$("menuAccount").addEventListener("click", () => cloud.user ? showSettings(true) : cloudSignIn());
+$("menuCorner").insertAdjacentHTML("beforeend", `<button id="menuAccount" hidden data-noi18n></button>`);
+$("menuAccount").addEventListener("click", () => { if (!cloud.user) return cloudSignIn(); closeMenu(); showView("profile"); });
 
 // 👤 Playing as a guest: pressing ▶ Play without being signed in asks once (until "don't ask again" is ticked)
 const GUEST_WARN = "your progress is saved only in this browser. It can be lost if you clear your browsing data, play in a private window or switch to another device.";

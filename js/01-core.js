@@ -363,7 +363,7 @@ function flushSave() {
     if (w) {
       w.hidden = false;
       w.innerHTML = `⚠️ <b>Your progress is not being saved</b>: this browser's storage for the game is full.
-        Sign in (⚙️ Settings → Account) to keep it in the ☁️ cloud. <button class="btn small" id="saveWarnOk">OK</button>`;
+        Sign in (👤 Profile) to keep it in the ☁️ cloud. <button class="btn small" id="saveWarnOk">OK</button>`;
       $("saveWarnOk").addEventListener("click", () => { w.hidden = true; });
     }
   }
