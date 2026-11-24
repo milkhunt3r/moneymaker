@@ -137,6 +137,12 @@ function wikiCasino() {
     <p>Move money into <b>casino chips</b> at the top of the Casino tab, play, then cash out. Most games have Classic, High roller and Super high roller tables.
       Bets give <b>Gambler XP</b> (bet × the table's XP multiplier) and you get <b>cashback</b> on lost bets (0.1% per Gambler level, +5% per Criminal defense lawyer).
       Random results use your browser's secure random generator.</p>
+    <h3>⚔️ Online casino</h3>
+    <p>On the left of the Casino, <b>Online casino</b> lets you play against your friends (👤 Profile → 👥 Friends). Pick ✊ Rock Paper Scissors or 🎲 Dice Battle, choose a bet and challenge a friend who is 🟢 online; both of you need at least the bet in money.</p>
+    <ul><li>Best of 3 rounds; a tie is played again. In Dice Battle both roll 2 dice and the higher total wins the round.</li>
+      <li>You have 15 seconds per round: no pick in time means a random one. Leaving the duel for 30 seconds loses it.</li>
+      <li>The winner gets the other player's bet (paid from your money, not casino chips). The server keeps picks secret and rolls the dice, so nobody can cheat.</li>
+      <li>A challenge expires after 60 seconds.</li></ul>
     ${wt(["Game", "Classic", "High rollers", "Super high rollers"], [
       ["🎡 Roulette", "×" + XP_TABLE_MULT.rouletteLow, "×" + XP_TABLE_MULT.rouletteHigh, "×" + XP_TABLE_MULT.rouletteSuper],
       ["🃏 Blackjack", "×" + XP_TABLE_MULT.bjLow, "×" + XP_TABLE_MULT.bjHigh, "×" + XP_TABLE_MULT.bjSuper],

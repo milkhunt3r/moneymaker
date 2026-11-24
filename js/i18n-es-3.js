@@ -1230,6 +1230,58 @@ H("👥 <b>Friends</b> (👤 Profile → 👥 Friends): find players by nickname
 Object.assign(ES, { "You finished the game!": "¡Has terminado el juego!", "That was your 4th and final prestige. No more resets are possible.": "Ese ha sido tu 4.º y último prestigio. Ya no se puede reiniciar más.",
   "You can keep playing as long as you like: collect the remaining achievements and enjoy your empire!": "Puedes seguir jugando todo lo que quieras: consigue los logros que te faltan y disfruta de tu imperio.", "Keep playing": "Seguir jugando" });
 Object.assign(ES, { "Game saved, also in the ☁️ cloud!": "¡Partida guardada, también en la ☁️ nube!", "Saved on this device. ❌ The cloud save failed.": "Guardada en este dispositivo. ❌ Ha fallado el guardado en la nube." });
+// ⚔️ online casino (duels)
+Object.assign(ES, { "Online casino": "Casino online", "Play against your friends. The winner takes the other player's bet.": "Juega contra tus amigos. El ganador se lleva la apuesta del otro.",
+  "Rock Paper Scissors": "Piedra, papel o tijera", "Dice Battle": "Batalla de dados",
+  "Best of 3. Rock beats scissors, scissors beat paper, paper beats rock. A tie is played again.": "Al mejor de 3. La piedra gana a la tijera, la tijera al papel y el papel a la piedra. Un empate se vuelve a jugar.",
+  "Best of 3. Both roll 2 dice: the higher total wins the round. A tie is rolled again.": "Al mejor de 3. Ambos tiran 2 dados: gana la ronda el total más alto. Un empate se vuelve a tirar.",
+  "1. Choose a game": "1. Elige un juego", "2. Your bet": "2. Tu apuesta", "3. Challenge a friend": "3. Reta a un amigo", "Challenge": "Retar", "Bet": "Apuesta",
+  "You have no friends to challenge yet. Add some in 👤 Profile → 👥 Friends.": "Todavía no tienes amigos a los que retar. Añádelos en 👤 Perfil → 👥 Amigos.",
+  "VS": "VS", "Pick your hand!": "¡Elige tu mano!", "Roll your dice!": "¡Tira tus dados!", "Rock": "Piedra", "Paper": "Papel", "Scissors": "Tijera", "Roll": "Tirar",
+  "Give up": "Rendirse", "Give up?": "¿Rendirte?", "Keep playing": "Seguir jugando", "Draw! Play again.": "¡Empate! Otra vez.", "Same total! Roll again.": "¡Mismo total! Tira otra vez.",
+  "You win this round!": "¡Ganas esta ronda!", "They win this round.": "Tu rival gana esta ronda.", "Back to the online casino": "Volver al casino online",
+  "Your friend left the duel.": "Tu amigo ha abandonado el duelo.", "You were away for too long.": "Has estado fuera demasiado tiempo.", "Your friend gave up.": "Tu amigo se ha rendido.", "You gave up.": "Te has rendido.",
+  "You've been challenged!": "¡Te han retado!", "Decline": "Rechazar", "Accept": "Aceptar", "Expires in": "Caduca en", "s": "s",
+  "You can only challenge your friends.": "Solo puedes retar a tus amigos.", "Your friend isn't online right now.": "Tu amigo no está en línea ahora mismo.",
+  "You don't have enough money for this bet.": "No tienes suficiente dinero para esta apuesta.", "Your friend doesn't have enough money for this bet.": "Tu amigo no tiene suficiente dinero para esta apuesta.",
+  "You already have a challenge or a duel going.": "Ya tienes un reto o un duelo en marcha.", "Your friend is already in a duel.": "Tu amigo ya está en un duelo.", "Choose a bet of at least 1.": "Elige una apuesta de al menos 1.",
+  "This challenge has expired.": "Este reto ha caducado.", "This challenge isn't open any more.": "Este reto ya no está disponible.",
+  "The online casino isn't switched on yet. Please try again later.": "El casino online todavía no está activado. Inténtalo más tarde.",
+  "Sign in with Google and create your profile to play against your friends.": "Inicia sesión con Google y crea tu perfil para jugar contra tus amigos.",
+  "Create your profile first (👤 Profile: choose a nickname). Then add friends and challenge them.": "Primero crea tu perfil (👤 Perfil: elige un apodo). Después añade amigos y rétalos.",
+  "Open my profile": "Abrir mi perfil",
+  "First blood": "Primera sangre", "Win a Rock Paper Scissors duel against a friend": "Gana un duelo de piedra, papel o tijera contra un amigo",
+  "Hand master": "Maestro de la mano", "Win 5 Rock Paper Scissors duels": "Gana 5 duelos de piedra, papel o tijera",
+  "Untouchable hand": "Mano intocable", "Win 20 Rock Paper Scissors duels": "Gana 20 duelos de piedra, papel o tijera",
+  "Lucky roll": "Tirada de suerte", "Win a Dice Battle against a friend": "Gana una batalla de dados contra un amigo",
+  "High roller duel": "Duelo de altos vuelos", "Win 5 Dice Battles": "Gana 5 batallas de dados", "Dice king": "Rey de los dados", "Win 20 Dice Battles": "Gana 20 batallas de dados" });
+const duGameEs = (g) => ES[g] || g;
+rx(String.raw`You have (.+)\. Your friend must have at least the same\. The winner gets the other player's bet\.`, "Tienes $1. Tu amigo debe tener al menos lo mismo. El ganador se lleva la apuesta del otro.");
+hrx(String.raw`✊ Rock Paper Scissors: <b>(\d+)<\/b> won · <b>(\d+)<\/b> lost`, "✊ Piedra, papel o tijera: <b>$1</b> ganados · <b>$2</b> perdidos");
+hrx(String.raw`🎲 Dice Battle: <b>(\d+)<\/b> won · <b>(\d+)<\/b> lost`, "🎲 Batalla de dados: <b>$1</b> ganadas · <b>$2</b> perdidas");
+hrx(String.raw`💰 Won <b>(.+?)<\/b> · lost <b>(.+?)<\/b>`, "💰 Ganado <b>$1</b> · perdido <b>$2</b>");
+hrx(String.raw`⏳ Waiting for <span>(.+?)<\/span> to accept…`, "⏳ Esperando a que <span>$1</span> acepte…");
+hrx(String.raw`⏳ Waiting for <span>(.+?)<\/span>…`, "⏳ Esperando a <span>$1</span>…");
+hrx(String.raw`(Rock Paper Scissors|Dice Battle) · bet (.+) · expires in <span>(\d*)<\/span> s`, (m, g, b, t) => `${duGameEs(g)} · apuesta ${b} · caduca en <span>${t}</span> s`);
+rx(String.raw`Round (\d+) · Bet (.+)`, "Ronda $1 · Apuesta $2");
+rx(String.raw`You won the duel! \+(.+)`, "¡Has ganado el duelo! +$1");
+rx(String.raw`You lost the duel\. −(.+)`, "Has perdido el duelo. −$1");
+hrx(String.raw`challenges you to <b>(.+?)<\/b> for <b>(.+?)<\/b>\.`, (m, g, b) => `te reta a <b>${duGameEs(g)}</b> por <b>${b}</b>.`);
+rx(String.raw`(Best of 3\. .+?) The winner gets the other player's bet\.`, (m, r) => `${ES[r] || r} El ganador se lleva la apuesta del otro.`);
+hrx(String.raw`You need (.+?) to accept \(you have (.+?)\)\.`, "Necesitas $1 para aceptar (tienes $2).");
+hrx(String.raw`Your friend wins the duel and your bet of <b>(.+?)<\/b>\.`, "Tu amigo gana el duelo y tu apuesta de <b>$1</b>.");
+rx(String.raw`Your duel with (.+) has started!`, "¡Tu duelo con $1 ha empezado!");
+rx(String.raw`You won your (Rock Paper Scissors|Dice Battle) duel against (.+): \+(.+)!`, (m, g, n, x) => `Has ganado tu duelo de ${duGameEs(g).toLowerCase()} contra ${n}: +${x}!`);
+rx(String.raw`You lost your (Rock Paper Scissors|Dice Battle) duel against (.+): −(.+)\.`, (m, g, n, x) => `Has perdido tu duelo de ${duGameEs(g).toLowerCase()} contra ${n}: −${x}.`);
+H("⚔️ <b>Online casino!</b> In 🎰 Casino → ⚔️ Online casino, challenge a friend who is online to ✊ Rock Paper Scissors or 🎲 Dice Battle and choose your bet. Best of 3: the winner takes the other player's bet. 6 new achievements.",
+  "⚔️ <b>¡Casino online!</b> En 🎰 Casino → ⚔️ Casino online, reta a un amigo que esté en línea a ✊ piedra, papel o tijera o a 🎲 batalla de dados y elige tu apuesta. Al mejor de 3: el ganador se lleva la apuesta del otro. 6 logros nuevos.");
+Object.assign(ES, {
+  "Best of 3 rounds; a tie is played again. In Dice Battle both roll 2 dice and the higher total wins the round.": "Al mejor de 3 rondas; un empate se vuelve a jugar. En la batalla de dados ambos tiran 2 dados y gana la ronda el total más alto.",
+  "You have 15 seconds per round: no pick in time means a random one. Leaving the duel for 30 seconds loses it.": "Tienes 15 segundos por ronda: si no eliges a tiempo, se elige al azar. Si abandonas el duelo 30 segundos, lo pierdes.",
+  "The winner gets the other player's bet (paid from your money, not casino chips). The server keeps picks secret and rolls the dice, so nobody can cheat.": "El ganador se lleva la apuesta del otro (se paga con tu dinero, no con fichas del casino). El servidor mantiene en secreto las elecciones y tira los dados, así que nadie puede hacer trampas.",
+  "A challenge expires after 60 seconds.": "Un reto caduca a los 60 segundos." });
+H("On the left of the Casino, <b>Online casino</b> lets you play against your friends (👤 Profile → 👥 Friends). Pick ✊ Rock Paper Scissors or 🎲 Dice Battle, choose a bet and challenge a friend who is 🟢 online; both of you need at least the bet in money.",
+  "A la izquierda del Casino, el <b>Casino online</b> te permite jugar contra tus amigos (👤 Perfil → 👥 Amigos). Elige ✊ piedra, papel o tijera o 🎲 batalla de dados, decide la apuesta y reta a un amigo que esté 🟢 en línea; los dos necesitáis tener al menos esa cantidad de dinero.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

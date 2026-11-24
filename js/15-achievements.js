@@ -11,13 +11,14 @@ const ACH_CATEGORIES = [
   { id: "art", name: "🖼️ Art Gallery" }, { id: "mine", name: "⛏️ Mining" },
   { id: "shooter", name: "🚀 Nebula Strike" },
   { id: "space", name: "🪐 Space Logistics" },
+  { id: "online", name: "⚔️ Online casino" },
   // 🌌 secret: invisible (also not counted) until the 1st prestige
   { id: "secret", name: "🌌 Secrets", hidden: () => !((state.legacy && state.legacy.count) >= 1) },
   // 🧬 Gene Splicer: invisible (also not counted) until the 2nd prestige
   { id: "genetics", name: "🧬 Genetics", hidden: () => !((state.legacy && state.legacy.count) >= 2) },
 ];
 // 🎨 painted category icons (assets/icons/ico-ui-*.webp); the name's emoji stays for plain text
-const ACH_CAT_PIC = { space: "space", general: "general", income: "income", casino: "casino", invest: "invest", logistics: "logistics", art: "art", mine: "mining", secret: "secrets", genetics: "genetics", shooter: "nebula" };
+const ACH_CAT_PIC = { online: "online", space: "space", general: "general", income: "income", casino: "casino", invest: "invest", logistics: "logistics", art: "art", mine: "mining", secret: "secrets", genetics: "genetics", shooter: "nebula" };
 const catLabel = (c) => ACH_CAT_PIC[c.id] ? ico("ui-" + ACH_CAT_PIC[c.id]) + c.name.replace(/^\S+\s/, "") : c.name;
 const achCatsShown = () => ACH_CATEGORIES.filter(c => !(c.hidden && c.hidden()));
 // an achievement with a tier stays hidden until that many prestiges (🌌🌌 second-tier secrets: 2)
@@ -272,6 +273,15 @@ const ACHIEVEMENTS = [
   { id: "satellite", cat: "logistics", icon: "🛰️", name: "Eye in the sky", desc: "Launch a satellite", goal: 1, get: () => state.science && state.science.satellite ? 1 : 0 },
   { id: "logi100s",   cat: "logistics", icon: "💎", name: "Shipping tycoon",  desc: "Earn 100 scoin from logistics",      goal: 100 * SC, get: () => logi.earned, money: true },
 ];
+// ⚔️ Online casino: duels against friends (js/39-duels.js)
+ACHIEVEMENTS.push(...[
+  { id: "duelRps1",   icon: "✊", name: "First blood",        desc: "Win a Rock Paper Scissors duel against a friend", goal: 1,  get: () => ((state.duels || {}).rps || {}).w || 0 },
+  { id: "duelRps5",   icon: "✋", name: "Hand master",        desc: "Win 5 Rock Paper Scissors duels",                 goal: 5,  get: () => ((state.duels || {}).rps || {}).w || 0 },
+  { id: "duelRps20",  icon: "👑", name: "Untouchable hand",   desc: "Win 20 Rock Paper Scissors duels",                goal: 20, get: () => ((state.duels || {}).rps || {}).w || 0 },
+  { id: "duelDice1",  icon: "🎲", name: "Lucky roll",         desc: "Win a Dice Battle against a friend",              goal: 1,  get: () => ((state.duels || {}).dice || {}).w || 0 },
+  { id: "duelDice5",  icon: "🎲", name: "High roller duel",   desc: "Win 5 Dice Battles",                              goal: 5,  get: () => ((state.duels || {}).dice || {}).w || 0 },
+  { id: "duelDice20", icon: "👑", name: "Dice king",          desc: "Win 20 Dice Battles",                             goal: 20, get: () => ((state.duels || {}).dice || {}).w || 0 },
+].map(a => ({ ...a, cat: "online" })));
 
 if (!state.stats) state.stats = {};
 for (const [k, v] of Object.entries({ clicks: 0, minesBought: state.special.mines.length, bestIncome: 0 }))
@@ -296,7 +306,7 @@ const ACH_PICS = new Set(["cash1s", "cash10s", "cash100s", "cash1g", "cash5g", "
   // built from existing art in a badge rim (bronze rim = the first step, gold = the bigger one)
   "astro", "station", "wash3", "repair3", "salon3", "casino2", "hotel2", "warehouse5", "law10", "agents100", "mine1", "mine4", "port", "recruit", "artbiz", "sciUni", "sciLab", "parks2", "boost-energy-10", "boost-energy-100", "boost-pill-10", "boost-pill-100", "boost-influence-10", "boost-influence-100", "mineCoal", "mineSilver", "mineGold", "mineDiamond", "mineChest1", "mineLift1", "mineLift20", "gene10", "gene50", "satellite", "play-roulette-100", "play-roulette-1000", "play-blackjack-100", "play-blackjack-1000", "play-plinko-100", "play-plinko-1000", "play-climb-100", "play-climb-1000", "play-vp-100", "play-vp-1000", "play-uth-100", "play-uth-1000", "bac50", "bac100", "bac500", "bacStreak3", "gc50", "gc100", "gc500", "gcFree", "gcBuy",
   // 🚀 Nebula Strike
-  "spMeet1", "spMeet6", "spFriend", "spAlly", "spGifts50", "spMeet9", "spAllies3", "spRoute1", "spSold1k",
+  "duelRps1", "duelRps5", "duelRps20", "duelDice1", "duelDice5", "duelDice20", "spMeet1", "spMeet6", "spFriend", "spAlly", "spGifts50", "spMeet9", "spAllies3", "spRoute1", "spSold1k",
   "shLv1", "shLv2", "shLv3", "shLv4", "shLv5", "shLoot10", "petLove", "petTaps", "shPet", "shPerfect", "shBlock50", "shKill1k", "shWins10", "shFleet", "shMaxShip", "shDust5k"]);
 const achIcon = (a, cls = "") => {
   if (!ACH_PICS.has(a.id)) return a.icon;

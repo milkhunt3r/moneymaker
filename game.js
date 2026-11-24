@@ -2604,6 +2604,58 @@ H("👥 <b>Friends</b> (👤 Profile → 👥 Friends): find players by nickname
 Object.assign(ES, { "You finished the game!": "¡Has terminado el juego!", "That was your 4th and final prestige. No more resets are possible.": "Ese ha sido tu 4.º y último prestigio. Ya no se puede reiniciar más.",
   "You can keep playing as long as you like: collect the remaining achievements and enjoy your empire!": "Puedes seguir jugando todo lo que quieras: consigue los logros que te faltan y disfruta de tu imperio.", "Keep playing": "Seguir jugando" });
 Object.assign(ES, { "Game saved, also in the ☁️ cloud!": "¡Partida guardada, también en la ☁️ nube!", "Saved on this device. ❌ The cloud save failed.": "Guardada en este dispositivo. ❌ Ha fallado el guardado en la nube." });
+// ⚔️ online casino (duels)
+Object.assign(ES, { "Online casino": "Casino online", "Play against your friends. The winner takes the other player's bet.": "Juega contra tus amigos. El ganador se lleva la apuesta del otro.",
+  "Rock Paper Scissors": "Piedra, papel o tijera", "Dice Battle": "Batalla de dados",
+  "Best of 3. Rock beats scissors, scissors beat paper, paper beats rock. A tie is played again.": "Al mejor de 3. La piedra gana a la tijera, la tijera al papel y el papel a la piedra. Un empate se vuelve a jugar.",
+  "Best of 3. Both roll 2 dice: the higher total wins the round. A tie is rolled again.": "Al mejor de 3. Ambos tiran 2 dados: gana la ronda el total más alto. Un empate se vuelve a tirar.",
+  "1. Choose a game": "1. Elige un juego", "2. Your bet": "2. Tu apuesta", "3. Challenge a friend": "3. Reta a un amigo", "Challenge": "Retar", "Bet": "Apuesta",
+  "You have no friends to challenge yet. Add some in 👤 Profile → 👥 Friends.": "Todavía no tienes amigos a los que retar. Añádelos en 👤 Perfil → 👥 Amigos.",
+  "VS": "VS", "Pick your hand!": "¡Elige tu mano!", "Roll your dice!": "¡Tira tus dados!", "Rock": "Piedra", "Paper": "Papel", "Scissors": "Tijera", "Roll": "Tirar",
+  "Give up": "Rendirse", "Give up?": "¿Rendirte?", "Keep playing": "Seguir jugando", "Draw! Play again.": "¡Empate! Otra vez.", "Same total! Roll again.": "¡Mismo total! Tira otra vez.",
+  "You win this round!": "¡Ganas esta ronda!", "They win this round.": "Tu rival gana esta ronda.", "Back to the online casino": "Volver al casino online",
+  "Your friend left the duel.": "Tu amigo ha abandonado el duelo.", "You were away for too long.": "Has estado fuera demasiado tiempo.", "Your friend gave up.": "Tu amigo se ha rendido.", "You gave up.": "Te has rendido.",
+  "You've been challenged!": "¡Te han retado!", "Decline": "Rechazar", "Accept": "Aceptar", "Expires in": "Caduca en", "s": "s",
+  "You can only challenge your friends.": "Solo puedes retar a tus amigos.", "Your friend isn't online right now.": "Tu amigo no está en línea ahora mismo.",
+  "You don't have enough money for this bet.": "No tienes suficiente dinero para esta apuesta.", "Your friend doesn't have enough money for this bet.": "Tu amigo no tiene suficiente dinero para esta apuesta.",
+  "You already have a challenge or a duel going.": "Ya tienes un reto o un duelo en marcha.", "Your friend is already in a duel.": "Tu amigo ya está en un duelo.", "Choose a bet of at least 1.": "Elige una apuesta de al menos 1.",
+  "This challenge has expired.": "Este reto ha caducado.", "This challenge isn't open any more.": "Este reto ya no está disponible.",
+  "The online casino isn't switched on yet. Please try again later.": "El casino online todavía no está activado. Inténtalo más tarde.",
+  "Sign in with Google and create your profile to play against your friends.": "Inicia sesión con Google y crea tu perfil para jugar contra tus amigos.",
+  "Create your profile first (👤 Profile: choose a nickname). Then add friends and challenge them.": "Primero crea tu perfil (👤 Perfil: elige un apodo). Después añade amigos y rétalos.",
+  "Open my profile": "Abrir mi perfil",
+  "First blood": "Primera sangre", "Win a Rock Paper Scissors duel against a friend": "Gana un duelo de piedra, papel o tijera contra un amigo",
+  "Hand master": "Maestro de la mano", "Win 5 Rock Paper Scissors duels": "Gana 5 duelos de piedra, papel o tijera",
+  "Untouchable hand": "Mano intocable", "Win 20 Rock Paper Scissors duels": "Gana 20 duelos de piedra, papel o tijera",
+  "Lucky roll": "Tirada de suerte", "Win a Dice Battle against a friend": "Gana una batalla de dados contra un amigo",
+  "High roller duel": "Duelo de altos vuelos", "Win 5 Dice Battles": "Gana 5 batallas de dados", "Dice king": "Rey de los dados", "Win 20 Dice Battles": "Gana 20 batallas de dados" });
+var duGameEs = (g) => ES[g] || g;
+rx(String.raw`You have (.+)\. Your friend must have at least the same\. The winner gets the other player's bet\.`, "Tienes $1. Tu amigo debe tener al menos lo mismo. El ganador se lleva la apuesta del otro.");
+hrx(String.raw`✊ Rock Paper Scissors: <b>(\d+)<\/b> won · <b>(\d+)<\/b> lost`, "✊ Piedra, papel o tijera: <b>$1</b> ganados · <b>$2</b> perdidos");
+hrx(String.raw`🎲 Dice Battle: <b>(\d+)<\/b> won · <b>(\d+)<\/b> lost`, "🎲 Batalla de dados: <b>$1</b> ganadas · <b>$2</b> perdidas");
+hrx(String.raw`💰 Won <b>(.+?)<\/b> · lost <b>(.+?)<\/b>`, "💰 Ganado <b>$1</b> · perdido <b>$2</b>");
+hrx(String.raw`⏳ Waiting for <span>(.+?)<\/span> to accept…`, "⏳ Esperando a que <span>$1</span> acepte…");
+hrx(String.raw`⏳ Waiting for <span>(.+?)<\/span>…`, "⏳ Esperando a <span>$1</span>…");
+hrx(String.raw`(Rock Paper Scissors|Dice Battle) · bet (.+) · expires in <span>(\d*)<\/span> s`, (m, g, b, t) => `${duGameEs(g)} · apuesta ${b} · caduca en <span>${t}</span> s`);
+rx(String.raw`Round (\d+) · Bet (.+)`, "Ronda $1 · Apuesta $2");
+rx(String.raw`You won the duel! \+(.+)`, "¡Has ganado el duelo! +$1");
+rx(String.raw`You lost the duel\. −(.+)`, "Has perdido el duelo. −$1");
+hrx(String.raw`challenges you to <b>(.+?)<\/b> for <b>(.+?)<\/b>\.`, (m, g, b) => `te reta a <b>${duGameEs(g)}</b> por <b>${b}</b>.`);
+rx(String.raw`(Best of 3\. .+?) The winner gets the other player's bet\.`, (m, r) => `${ES[r] || r} El ganador se lleva la apuesta del otro.`);
+hrx(String.raw`You need (.+?) to accept \(you have (.+?)\)\.`, "Necesitas $1 para aceptar (tienes $2).");
+hrx(String.raw`Your friend wins the duel and your bet of <b>(.+?)<\/b>\.`, "Tu amigo gana el duelo y tu apuesta de <b>$1</b>.");
+rx(String.raw`Your duel with (.+) has started!`, "¡Tu duelo con $1 ha empezado!");
+rx(String.raw`You won your (Rock Paper Scissors|Dice Battle) duel against (.+): \+(.+)!`, (m, g, n, x) => `Has ganado tu duelo de ${duGameEs(g).toLowerCase()} contra ${n}: +${x}!`);
+rx(String.raw`You lost your (Rock Paper Scissors|Dice Battle) duel against (.+): −(.+)\.`, (m, g, n, x) => `Has perdido tu duelo de ${duGameEs(g).toLowerCase()} contra ${n}: −${x}.`);
+H("⚔️ <b>Online casino!</b> In 🎰 Casino → ⚔️ Online casino, challenge a friend who is online to ✊ Rock Paper Scissors or 🎲 Dice Battle and choose your bet. Best of 3: the winner takes the other player's bet. 6 new achievements.",
+  "⚔️ <b>¡Casino online!</b> En 🎰 Casino → ⚔️ Casino online, reta a un amigo que esté en línea a ✊ piedra, papel o tijera o a 🎲 batalla de dados y elige tu apuesta. Al mejor de 3: el ganador se lleva la apuesta del otro. 6 logros nuevos.");
+Object.assign(ES, {
+  "Best of 3 rounds; a tie is played again. In Dice Battle both roll 2 dice and the higher total wins the round.": "Al mejor de 3 rondas; un empate se vuelve a jugar. En la batalla de dados ambos tiran 2 dados y gana la ronda el total más alto.",
+  "You have 15 seconds per round: no pick in time means a random one. Leaving the duel for 30 seconds loses it.": "Tienes 15 segundos por ronda: si no eliges a tiempo, se elige al azar. Si abandonas el duelo 30 segundos, lo pierdes.",
+  "The winner gets the other player's bet (paid from your money, not casino chips). The server keeps picks secret and rolls the dice, so nobody can cheat.": "El ganador se lleva la apuesta del otro (se paga con tu dinero, no con fichas del casino). El servidor mantiene en secreto las elecciones y tira los dados, así que nadie puede hacer trampas.",
+  "A challenge expires after 60 seconds.": "Un reto caduca a los 60 segundos." });
+H("On the left of the Casino, <b>Online casino</b> lets you play against your friends (👤 Profile → 👥 Friends). Pick ✊ Rock Paper Scissors or 🎲 Dice Battle, choose a bet and challenge a friend who is 🟢 online; both of you need at least the bet in money.",
+  "A la izquierda del Casino, el <b>Casino online</b> te permite jugar contra tus amigos (👤 Perfil → 👥 Amigos). Elige ✊ piedra, papel o tijera o 🎲 batalla de dados, decide la apuesta y reta a un amigo que esté 🟢 en línea; los dos necesitáis tener al menos esa cantidad de dinero.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -2924,7 +2976,7 @@ var staffIco = (key, o, cls = "staffI") => STAFF_PICS.includes(key) ? ico("st-" 
 // 👽 alliance bonuses from 🌌 Space (js/34-space.js loads later)
 var alienBonus = (key) => ((__eocLoaded >= 43 && typeof spAllyBonus === "function") ? spAllyBonus(key) : 0);
 var geneBonus = (cat) => (typeof geneCatCount === "function" ? geneCatCount(cat) * 0.01 : 0);
-var PREF_KEYS = ["view", "logiPage", "rewardType", "rewardState", "gamePage", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage",
+var PREF_KEYS = ["view", "casinoPage", "logiPage", "rewardType", "rewardState", "gamePage", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage",
                    "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage"];
 function splitState(st) {   // -> { progress, prefs }
   const progress = {}, prefs = {};
@@ -9784,13 +9836,14 @@ var ACH_CATEGORIES = [
   { id: "art", name: "🖼️ Art Gallery" }, { id: "mine", name: "⛏️ Mining" },
   { id: "shooter", name: "🚀 Nebula Strike" },
   { id: "space", name: "🪐 Space Logistics" },
+  { id: "online", name: "⚔️ Online casino" },
   // 🌌 secret: invisible (also not counted) until the 1st prestige
   { id: "secret", name: "🌌 Secrets", hidden: () => !((state.legacy && state.legacy.count) >= 1) },
   // 🧬 Gene Splicer: invisible (also not counted) until the 2nd prestige
   { id: "genetics", name: "🧬 Genetics", hidden: () => !((state.legacy && state.legacy.count) >= 2) },
 ];
 // 🎨 painted category icons (assets/icons/ico-ui-*.webp); the name's emoji stays for plain text
-var ACH_CAT_PIC = { space: "space", general: "general", income: "income", casino: "casino", invest: "invest", logistics: "logistics", art: "art", mine: "mining", secret: "secrets", genetics: "genetics", shooter: "nebula" };
+var ACH_CAT_PIC = { online: "online", space: "space", general: "general", income: "income", casino: "casino", invest: "invest", logistics: "logistics", art: "art", mine: "mining", secret: "secrets", genetics: "genetics", shooter: "nebula" };
 var catLabel = (c) => ACH_CAT_PIC[c.id] ? ico("ui-" + ACH_CAT_PIC[c.id]) + c.name.replace(/^\S+\s/, "") : c.name;
 var achCatsShown = () => ACH_CATEGORIES.filter(c => !(c.hidden && c.hidden()));
 // an achievement with a tier stays hidden until that many prestiges (🌌🌌 second-tier secrets: 2)
@@ -10045,6 +10098,15 @@ var ACHIEVEMENTS = [
   { id: "satellite", cat: "logistics", icon: "🛰️", name: "Eye in the sky", desc: "Launch a satellite", goal: 1, get: () => state.science && state.science.satellite ? 1 : 0 },
   { id: "logi100s",   cat: "logistics", icon: "💎", name: "Shipping tycoon",  desc: "Earn 100 scoin from logistics",      goal: 100 * SC, get: () => logi.earned, money: true },
 ];
+// ⚔️ Online casino: duels against friends (js/39-duels.js)
+ACHIEVEMENTS.push(...[
+  { id: "duelRps1",   icon: "✊", name: "First blood",        desc: "Win a Rock Paper Scissors duel against a friend", goal: 1,  get: () => ((state.duels || {}).rps || {}).w || 0 },
+  { id: "duelRps5",   icon: "✋", name: "Hand master",        desc: "Win 5 Rock Paper Scissors duels",                 goal: 5,  get: () => ((state.duels || {}).rps || {}).w || 0 },
+  { id: "duelRps20",  icon: "👑", name: "Untouchable hand",   desc: "Win 20 Rock Paper Scissors duels",                goal: 20, get: () => ((state.duels || {}).rps || {}).w || 0 },
+  { id: "duelDice1",  icon: "🎲", name: "Lucky roll",         desc: "Win a Dice Battle against a friend",              goal: 1,  get: () => ((state.duels || {}).dice || {}).w || 0 },
+  { id: "duelDice5",  icon: "🎲", name: "High roller duel",   desc: "Win 5 Dice Battles",                              goal: 5,  get: () => ((state.duels || {}).dice || {}).w || 0 },
+  { id: "duelDice20", icon: "👑", name: "Dice king",          desc: "Win 20 Dice Battles",                             goal: 20, get: () => ((state.duels || {}).dice || {}).w || 0 },
+].map(a => ({ ...a, cat: "online" })));
 
 if (!state.stats) state.stats = {};
 for (const [k, v] of Object.entries({ clicks: 0, minesBought: state.special.mines.length, bestIncome: 0 }))
@@ -10069,7 +10131,7 @@ var ACH_PICS = new Set(["cash1s", "cash10s", "cash100s", "cash1g", "cash5g", "ca
   // built from existing art in a badge rim (bronze rim = the first step, gold = the bigger one)
   "astro", "station", "wash3", "repair3", "salon3", "casino2", "hotel2", "warehouse5", "law10", "agents100", "mine1", "mine4", "port", "recruit", "artbiz", "sciUni", "sciLab", "parks2", "boost-energy-10", "boost-energy-100", "boost-pill-10", "boost-pill-100", "boost-influence-10", "boost-influence-100", "mineCoal", "mineSilver", "mineGold", "mineDiamond", "mineChest1", "mineLift1", "mineLift20", "gene10", "gene50", "satellite", "play-roulette-100", "play-roulette-1000", "play-blackjack-100", "play-blackjack-1000", "play-plinko-100", "play-plinko-1000", "play-climb-100", "play-climb-1000", "play-vp-100", "play-vp-1000", "play-uth-100", "play-uth-1000", "bac50", "bac100", "bac500", "bacStreak3", "gc50", "gc100", "gc500", "gcFree", "gcBuy",
   // 🚀 Nebula Strike
-  "spMeet1", "spMeet6", "spFriend", "spAlly", "spGifts50", "spMeet9", "spAllies3", "spRoute1", "spSold1k",
+  "duelRps1", "duelRps5", "duelRps20", "duelDice1", "duelDice5", "duelDice20", "spMeet1", "spMeet6", "spFriend", "spAlly", "spGifts50", "spMeet9", "spAllies3", "spRoute1", "spSold1k",
   "shLv1", "shLv2", "shLv3", "shLv4", "shLv5", "shLoot10", "petLove", "petTaps", "shPet", "shPerfect", "shBlock50", "shKill1k", "shWins10", "shFleet", "shMaxShip", "shDust5k"]);
 var achIcon = (a, cls = "") => {
   if (!ACH_PICS.has(a.id)) return a.icon;
@@ -10684,6 +10746,12 @@ function wikiCasino() {
     <p>Move money into <b>casino chips</b> at the top of the Casino tab, play, then cash out. Most games have Classic, High roller and Super high roller tables.
       Bets give <b>Gambler XP</b> (bet × the table's XP multiplier) and you get <b>cashback</b> on lost bets (0.1% per Gambler level, +5% per Criminal defense lawyer).
       Random results use your browser's secure random generator.</p>
+    <h3>⚔️ Online casino</h3>
+    <p>On the left of the Casino, <b>Online casino</b> lets you play against your friends (👤 Profile → 👥 Friends). Pick ✊ Rock Paper Scissors or 🎲 Dice Battle, choose a bet and challenge a friend who is 🟢 online; both of you need at least the bet in money.</p>
+    <ul><li>Best of 3 rounds; a tie is played again. In Dice Battle both roll 2 dice and the higher total wins the round.</li>
+      <li>You have 15 seconds per round: no pick in time means a random one. Leaving the duel for 30 seconds loses it.</li>
+      <li>The winner gets the other player's bet (paid from your money, not casino chips). The server keeps picks secret and rolls the dice, so nobody can cheat.</li>
+      <li>A challenge expires after 60 seconds.</li></ul>
     ${wt(["Game", "Classic", "High rollers", "Super high rollers"], [
       ["🎡 Roulette", "×" + XP_TABLE_MULT.rouletteLow, "×" + XP_TABLE_MULT.rouletteHigh, "×" + XP_TABLE_MULT.rouletteSuper],
       ["🃏 Blackjack", "×" + XP_TABLE_MULT.bjLow, "×" + XP_TABLE_MULT.bjHigh, "×" + XP_TABLE_MULT.bjSuper],
@@ -13035,6 +13103,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "24 November 2026", title: "Empire of Coins", items: [
+    "⚔️ <b>Online casino!</b> In 🎰 Casino → ⚔️ Online casino, challenge a friend who is online to ✊ Rock Paper Scissors or 🎲 Dice Battle and choose your bet. Best of 3: the winner takes the other player's bet. 6 new achievements.",
     "👥 <b>Friends!</b> In 👤 Profile → 👥 Friends, find players by nickname or by their friend code, send requests, and see who is 🟢 online. Click a friend to see their avatar, achievements, prestige and pets.",
     "👤 <b>Player profiles!</b> Click the round 👤 button next to ⚙️ Settings, sign in with Google and choose a nickname and an avatar (the emblem of one of your 🎁 reward collections). Other players will see your nickname, avatar, achievements and prestige count.",
     "🐾 <b>New pet: Pip the painter!</b> Become 😊 Friendly with the Lumerians in 🌌 Space Logistics and adopt him for 10 paintings. He lives at the top of the 🎮 Mini-games page and paints a 🟡 Normal painting (85–95% match) every 15 minutes for your collection, even while the game is closed. Rename him on the 🐾 Pet page.",
@@ -19253,5 +19322,291 @@ setInterval(() => { if (state.view === "profile" && prof.tab === "friends" && !d
 // once the profile is loaded: get the friend list for the red number
 var frProfLoadOrig = profLoad;
 profLoad = async function () { await frProfLoadOrig(); if (prof.row && prof.friendsOn) frLoad(true); };
+
+// ===== js/39-duels.js =====
+__eocLoaded = 47;
+/* =====================================================================
+   ⚔️ ONLINE CASINO: duels against friends (🎰 Casino → ⚔️ Online casino on the left).
+   · ✊✋✌️ Rock Paper Scissors and 🎲 Dice Battle (2 dice each, higher total wins the round). Best of 3; a tie is played again.
+   · Challenge a friend who is 🟢 online, with a bet of your choice (both must have it). The winner gets the other's bet.
+   · The database is the referee (docs/supabase-duels.sql): picks stay secret until both chose, it rolls the dice,
+     runs the 15-second timers (no pick = a random one) and decides the winner. Leaving for 30 s = losing.
+   · Money: nothing is taken at the start. When the duel ends, each player collects their result once
+     (duel_settle): +bet for the winner, −bet for the loser (never below 0 money).
+   ===================================================================== */
+var DU_PICKS = ["rock", "paper", "scissors"];
+var DU_GAMES = {
+  rps: { name: "Rock Paper Scissors", ico: "assets/duel/ico-rps.webp", bg: "assets/duel/bg-arena.webp",
+    rules: "Best of 3. Rock beats scissors, scissors beat paper, paper beats rock. A tie is played again." },
+  dice: { name: "Dice Battle", ico: "assets/duel/ico-dice.webp", bg: "assets/duel/bg-table.webp",
+    rules: "Best of 3. Both roll 2 dice: the higher total wins the round. A tie is rolled again." },
+};
+if (!state.duels || typeof state.duels !== "object") state.duels = {};
+["rps", "dice"].forEach(g => { state.duels[g] = state.duels[g] || { w: 0, l: 0 }; });
+state.duels.won = state.duels.won || 0; state.duels.lost = state.duels.lost || 0;
+var DU = { game: "rps", bet: "", cur: null, out: null, invites: {}, shownInvite: null, busy: false, err: "",
+  res: null, lastLog: 0, ticking: false, pendAt: 0, final: null };
+var duOn = () => typeof profSignedIn === "function" && profSignedIn() && prof.row && prof.friendsOn !== false;
+var duRpc = async (fn, args) => { const { data, error } = await cloud.sb.rpc(fn, args || {}); if (error) throw error; return data; };
+function duErr(e) {
+  const m = (e && e.message) || "";
+  const map = { not_friends: "You can only challenge your friends.", offline: "Your friend isn't online right now.",
+    no_money: "You don't have enough money for this bet.", opp_no_money: "Your friend doesn't have enough money for this bet.",
+    busy: "You already have a challenge or a duel going.", opp_busy: "Your friend is already in a duel.", bad_bet: "Choose a bet of at least 1.",
+    expired: "This challenge has expired.", gone: "This challenge isn't open any more." };
+  for (const k in map) if (m.includes(k)) return map[k];
+  if (e && (e.code === "PGRST202" || e.code === "42883" || e.code === "42P01")) return "The online casino isn't switched on yet. Please try again later.";
+  return "Something went wrong. Please try again.";
+}
+var duPerson = (v) => ({ nick: v.opp_nick || "?", avatar: v.opp_avatar || "" });
+var duHand = (pick, flip) => DU_PICKS.includes(pick) ? `<img class="duHand ${flip ? "flip" : ""}" src="assets/duel/hand-${pick}.webp" alt="">` : `<div class="duHand ${flip ? "flip" : ""} wait">${pick === "?" ? "✔️" : "❔"}</div>`;
+var duDice = (roll) => { const r = roll && /^\d,\d$/.test(roll) ? roll.split(",") : null;
+  return r ? r.map(n => `<img class="duDie" src="assets/duel/die-${n}.webp" alt="${n}">`).join("") : `<div class="duDie wait">❔</div><div class="duDie wait">❔</div>`; };
+var duSum = (roll) => roll ? roll.split(",").reduce((s, n) => s + Number(n), 0) : 0;
+
+/* ----- 🔄 talking to the referee ----- */
+async function duPending() {
+  if (!duOn() || DU.busy) return;
+  DU.pendAt = Date.now();
+  let list;
+  try { list = await duRpc("duel_pending"); DU.err = DU.err && DU.err.includes("switched on") ? "" : DU.err; }
+  catch (e) { if (/switched on/.test(duErr(e))) DU.off = true; return; }
+  DU.off = false;
+  const me = cloud.user.id;
+  DU.out = null; const inv = {};
+  for (const v of list || []) {
+    if (v.status === "done" && !v.settled) duSettle(v);
+    else if (v.status === "invited" && v.me === "b") inv[v.id] = v;
+    else if (v.status === "invited") DU.out = v;
+    else if (v.status === "active" && (!DU.cur || DU.cur.id !== v.id)) duStart(v);
+  }
+  DU.invites = inv;
+  duShowInvite();
+  if (duVisible()) renderDuels();
+}
+function duStart(v) {   // a duel begins (you accepted, or your friend accepted your challenge)
+  DU.cur = v; DU.out = null; DU.final = null; DU.lastLog = (v.log || []).length; DU.res = null;
+  if (state.view !== "casino" || state.casinoPage !== "online") {
+    showNotice(`⚔️ Your duel with ${duPerson(v).nick} has started!`);
+    state.casinoPage = "online"; showView("casino");
+  }
+  duLoop();
+}
+async function duLoop() {   // once a second during a duel: "still here" + timers + the latest state
+  if (DU.ticking) return;
+  DU.ticking = true;
+  while (DU.cur && DU.cur.status === "active") {
+    try { duUpdate(await duRpc("duel_tick", { p_id: DU.cur.id })); } catch (e) { console.warn("Duel tick failed:", e); }
+    await new Promise(r => setTimeout(r, 1000));
+  }
+  DU.ticking = false;
+}
+function duUpdate(v) {
+  if (!v || !DU.cur || v.id !== DU.cur.id) return;
+  const n = (v.log || []).length;
+  if (n > DU.lastLog) { DU.res = { e: v.log[n - 1], until: Date.now() + 3000 }; DU.lastLog = n; }
+  DU.cur = v;
+  if (v.status === "done") { DU.final = v; duSettle(v); }
+  else if (v.status !== "active") { DU.cur = null; }
+  if (duVisible()) renderDuels();
+}
+async function duSettle(v) {   // collect your result once
+  if (v.settled || DU["settling" + v.id]) return;
+  DU["settling" + v.id] = true;
+  try {
+    const amt = await duRpc("duel_settle", { p_id: v.id });
+    if (typeof amt === "number") {
+      const g = state.duels[v.game] || (state.duels[v.game] = { w: 0, l: 0 });
+      if (amt > 0) { state.money += amt; g.w++; state.duels.won += amt; }
+      else { const lose = Math.min(-amt, Math.max(0, state.money)); state.money -= lose; g.l++; state.duels.lost += lose; }
+      v.settled = true; updateCounter(); save(); flushSave();
+      if (!DU.final || DU.final.id !== v.id) showNotice(amt > 0 ? `⚔️ You won your ${DU_GAMES[v.game].name} duel against ${duPerson(v).nick}: +${fmt(amt)}!` : `⚔️ You lost your ${DU_GAMES[v.game].name} duel against ${duPerson(v).nick}: −${fmt(-amt)}.`);
+      if ((__eocLoaded >= 21 && typeof checkAchievements === "function")) checkAchievements();
+    }
+  } catch (e) { console.warn("Duel settle failed:", e); }
+  DU["settling" + v.id] = false;
+  if (duVisible()) renderDuels();
+}
+async function duDo(fn, args, after) {
+  if (DU.busy) return;
+  DU.busy = true; DU.err = ""; if (duVisible()) renderDuels();
+  try { const r = await duRpc(fn, args); if (after) after(r); }
+  catch (e) { console.warn("Duel:", e); DU.err = duErr(e); }
+  DU.busy = false;
+  if (duVisible()) renderDuels();
+}
+function duChallenge(oppId) {
+  const bet = Math.floor(Number(DU.bet));
+  if (!(bet >= 1)) { DU.err = "Choose a bet of at least 1."; return renderDuels(); }
+  if (bet > state.money) { DU.err = "You don't have enough money for this bet."; return renderDuels(); }
+  if ((__eocLoaded >= 45 && typeof profPushStats === "function")) profPushStats();   // the referee checks the money on your profile
+  duDo("duel_invite", { p_opp: oppId, p_game: DU.game, p_bet: bet }, () => { setTimeout(duPending, 300); });
+}
+
+/* ----- 📨 a challenge for you (pop-up anywhere in the game) ----- */
+function duShowInvite() {
+  const ids = Object.keys(DU.invites);
+  if (DU.shownInvite && !DU.invites[DU.shownInvite]) {   // it expired or was cancelled
+    if (!$("modal").hidden && $("modalBox").querySelector("[data-du-inv]")) hideModal();
+    DU.shownInvite = null;
+  }
+  if (DU.shownInvite || !ids.length || DU.cur || !$("modal").hidden) return;
+  const v = DU.invites[ids[0]], p = duPerson(v), g = DU_GAMES[v.game], can = state.money >= v.bet;
+  DU.shownInvite = String(v.id);
+  showModal(`<div class="duInvite" data-du-inv="${v.id}"><img class="duInvIco" src="${g.ico}" alt="">
+    <h2>⚔️ You've been challenged!</h2>
+    <div class="duInvWho">${profAvatarImg(p.avatar, "frAv")}<b data-noi18n>${escapeHtml(p.nick)}</b></div>
+    <p>challenges you to <b>${g.name}</b> for <b>${fmt(v.bet)}</b>.</p>
+    <p class="muted">${g.rules} The winner gets the other player's bet.</p>
+    ${can ? "" : `<p class="profErr">You need ${fmt(v.bet)} to accept (you have ${fmt(state.money)}).</p>`}
+    <p class="muted">Expires in <b id="duInvT">${Math.ceil(v.secs_left || 0)}</b> s</p>
+    <div class="row" style="justify-content:center;gap:10px"><button class="btn ghost" data-du="decline" data-id="${v.id}">Decline</button>
+      <button class="btn big" data-du="accept" data-id="${v.id}" ${can ? "" : "disabled"}>⚔️ Accept</button></div></div>`);
+  const until = Date.now() + (v.secs_left || 0) * 1000;
+  const t = setInterval(() => { const el = $("duInvT"); if (!el) return clearInterval(t); const s = Math.max(0, Math.ceil((until - Date.now()) / 1000)); el.textContent = s;
+    if (!s) { clearInterval(t); hideModal(); DU.shownInvite = null; } }, 500);
+}
+
+/* ----- 🖼️ the page ----- */
+var duVisible = () => state.view === "casino" && state.casinoPage === "online" && !document.hidden;
+function duFriendsHtml() {
+  if (typeof fr === "undefined") return "";
+  if (!fr.loaded && !fr.loading) frLoad(true);
+  const list = fr.rows.filter(r => r.status === "accepted").map(r => fr.people[frOther(r)]).filter(Boolean)
+    .sort((a, b) => (frOnline(b) - frOnline(a)) || String(a.nickname).localeCompare(String(b.nickname)));
+  if (!list.length) return `<p class="muted">You have no friends to challenge yet. Add some in 👤 Profile → 👥 Friends.</p>`;
+  return `<div class="frList">${list.map(p => `<div class="frRow ${frOnline(p) ? "" : "off"}"><span class="frWho">${profAvatarImg(p.avatar, "frAv")}${frDot(p)}<span class="frName" data-noi18n>${escapeHtml(p.nickname)}</span>
+      ${"money" in p ? `<span class="frMini">${profCoinImg(p.coin, "duCoinS")} ${fmt(Number(p.money) || 0)}</span>` : ""}</span>
+    <span class="frBtns">${frOnline(p) ? `<button class="btn small" data-du="challenge" data-id="${p.user_id}" ${DU.busy || DU.out ? "disabled" : ""}><img class="ico" src="assets/duel/ico-duel.webp" alt="">Challenge</button>` : `<span class="muted">Offline</span>`}</span></div>`).join("")}</div>`;
+}
+function duLobbyHtml() {
+  const st = state.duels, typed = DU.bet;   // the box keeps DU.bet up to date (input event)
+  const games = Object.entries(DU_GAMES).map(([k, g]) => `<button class="duGame ${DU.game === k ? "on" : ""}" data-du="game" data-g="${k}"><img src="${g.ico}" alt=""><b>${g.name}</b><span>${g.rules}</span>
+    <span class="duRec">🏆 ${st[k].w} · ❌ ${st[k].l}</span></button>`).join("");
+  return `<div class="card"><h3 style="margin-top:0">1. Choose a game</h3><div class="duGames">${games}</div></div>
+    <div class="card"><h3 style="margin-top:0">2. Your bet</h3>
+      <div class="moneyRow"><input id="duBet" type="number" min="1" placeholder="Amount" value="${escapeHtml(typed || "")}" aria-label="Bet">
+        <button class="btn ghost small" data-du="pct" data-p="0.01">1%</button><button class="btn ghost small" data-du="pct" data-p="0.1">10%</button>
+        <button class="btn ghost small" data-du="pct" data-p="0.25">25%</button><button class="btn ghost small" data-du="pct" data-p="0.5">50%</button></div>
+      <div class="muted">You have ${fmt(state.money)}. Your friend must have at least the same. The winner gets the other player's bet.</div></div>
+    ${DU.out ? `<div class="card duWait"><img src="${DU_GAMES[DU.out.game].ico}" alt=""><div><b>⏳ Waiting for <span data-noi18n>${escapeHtml(duPerson(DU.out).nick)}</span> to accept…</b>
+        <div class="muted">${DU_GAMES[DU.out.game].name} · bet ${fmt(DU.out.bet)} · expires in <span data-du-t="${Date.now() + (DU.out.secs_left || 0) * 1000}">${Math.ceil(DU.out.secs_left || 0)}</span> s</div></div>
+        <button class="btn ghost small" data-du="cancel" data-id="${DU.out.id}">Cancel</button></div>` : ""}
+    <div class="card"><h3 style="margin-top:0">3. Challenge a friend</h3>${duFriendsHtml()}</div>
+    <div class="card duStats"><span>✊ Rock Paper Scissors: <b>${st.rps.w}</b> won · <b>${st.rps.l}</b> lost</span><span>🎲 Dice Battle: <b>${st.dice.w}</b> won · <b>${st.dice.l}</b> lost</span>
+      <span>💰 Won <b>${fmt(st.won)}</b> · lost <b>${fmt(st.lost)}</b></span></div>`;
+}
+function duMatchHtml(v) {
+  const g = DU_GAMES[v.game], p = duPerson(v), me = prof.row || {}, now = Date.now();
+  const showing = DU.res && now < DU.res.until ? DU.res.e : null, fin = v.status === "done";
+  const last = fin ? (v.log || [])[(v.log || []).length - 1] : showing;
+  const mine = last ? last[v.me] : v.my_pick, theirs = last ? last[v.me === "a" ? "b" : "a"] : (v.opp_moved ? "?" : null);
+  let say;
+  if (fin) say = v.won ? `🏆 You won the duel! +${fmt(v.bet)}` : `💸 You lost the duel. −${fmt(v.bet)}`;
+  else if (showing) say = !showing.w ? (v.game === "rps" ? "🤝 Draw! Play again." : "🤝 Same total! Roll again.") : showing.w === v.me ? "✅ You win this round!" : "❌ They win this round.";
+  else if (v.my_pick) say = `⏳ Waiting for <span data-noi18n>${escapeHtml(p.nick)}</span>…`;
+  else say = v.game === "rps" ? "Pick your hand!" : "Roll your dice!";
+  const tk = v.id + ":" + v.round + ":" + v.status;   // the end of this round's timer, fixed once (so the page only changes when something happens)
+  if (DU.tKey !== tk) { DU.tKey = tk; DU.tEnd = now + (v.secs_left || 0) * 1000; }
+  const left = fin || showing ? "" : `<span class="duTimer">⏱️ <b data-du-t="${DU.tEnd}"></b></span>`;
+  const stage = v.game === "rps"
+    ? `<div class="duSide">${duHand(mine)}</div><div class="duVs">VS</div><div class="duSide">${duHand(theirs, true)}</div>`
+    : `<div class="duSide duDice">${duDice(mine)}${mine && /,/.test(mine) ? `<b class="duSum">${duSum(mine)}</b>` : ""}</div><div class="duVs">VS</div>
+       <div class="duSide duDice">${duDice(theirs !== "?" ? theirs : null)}${theirs && /,/.test(theirs) ? `<b class="duSum">${duSum(theirs)}</b>` : theirs === "?" ? `<b class="duSum">✔️</b>` : ""}</div>`;
+  const controls = fin
+    ? `<div class="duEnd">${v.reason === "left" ? `<p>${v.won ? "Your friend left the duel." : "You were away for too long."}</p>` : v.reason === "resign" ? `<p>${v.won ? "Your friend gave up." : "You gave up."}</p>` : ""}
+        <button class="btn big" data-du="back">⚔️ Back to the online casino</button></div>`
+    : v.game === "rps"
+      ? `<div class="duPicks">${DU_PICKS.map(k => `<button class="duPick ${v.my_pick === k ? "on" : ""}" data-du="pick" data-k="${k}" ${v.my_pick || showing || DU.busy ? "disabled" : ""}><img src="assets/duel/hand-${k}.webp" alt=""><span>${k[0].toUpperCase() + k.slice(1)}</span></button>`).join("")}</div>`
+      : `<div class="duPicks"><button class="btn big duRoll" data-du="roll" ${v.my_pick || showing || DU.busy ? "disabled" : ""}>🎲 Roll</button></div>`;
+  return `<div class="card duMatch ${v.game}" style="background-image:url('${g.bg}')">
+    <div class="duTop"><div class="duPl">${profAvatarImg(me.avatar, "frAv")}<b data-noi18n>${escapeHtml(me.nickname || "You")}</b><span class="duScore">${v.my_score}</span></div>
+      <div class="duMid"><b>${g.name}</b><span>Round ${v.round} · Bet ${fmt(v.bet)}</span>${left}</div>
+      <div class="duPl r"><span class="duScore">${v.opp_score}</span><b data-noi18n>${escapeHtml(p.nick)}</b>${profAvatarImg(p.avatar, "frAv")}</div></div>
+    <div class="duStage">${stage}</div>
+    <div class="duSay ${fin ? (v.won ? "win" : "lose") : ""}">${say}</div>
+    ${controls}
+    ${fin ? "" : `<button class="btn ghost small duGiveUp" data-du="resign">Give up</button>`}</div>`;
+}
+function renderDuels() {
+  const box = $("onlineCasino"); if (!box) return;
+  const typing = document.activeElement && document.activeElement.id === "duBet";
+  let body;
+  if (typeof cloud !== "object" || !cloud.sb || !cloud.user) body = `<div class="card"><p>Sign in with Google and create your profile to play against your friends.</p><button class="btn" data-du="signin"><span class="gIcon">G</span>Sign in with Google</button></div>`;
+  else if (!prof.row) body = `<div class="card"><p>Create your profile first (👤 Profile: choose a nickname). Then add friends and challenge them.</p><button class="btn" data-du="profile">👤 Open my profile</button></div>`;
+  else if (prof.friendsOn === false || DU.off) body = `<div class="card"><p>The online casino isn't switched on yet. Please try again later.</p></div>`;
+  else if (DU.final) body = duMatchHtml(DU.final);
+  else if (DU.cur) body = duMatchHtml(DU.cur);
+  else { if (typing) return; body = duLobbyHtml(); }
+  const html = `<div class="card duHead"><img src="assets/duel/ico-duel.webp" alt=""><div><h2 style="margin:0">Online casino</h2>
+      <div class="muted">Play against your friends. The winner takes the other player's bet.</div></div></div>
+    ${DU.err ? `<div class="card profErr">❌ ${DU.err}</div>` : ""}${body}`;
+  if (html === DU.html && box.firstChild) return;   // nothing changed: don't redraw (keeps the dice and hands from popping again)
+  DU.html = html; box.innerHTML = html;
+  box.querySelectorAll("[data-du-t]").forEach(el => { el.textContent = Math.max(0, Math.ceil((Number(el.dataset.duT) - Date.now()) / 1000)); });
+}
+// ⏱️ the countdowns on the page tick by themselves
+setInterval(() => { document.querySelectorAll("[data-du-t]").forEach(el => { const s = Math.max(0, Math.ceil((Number(el.dataset.duT) - Date.now()) / 1000)); if (el.textContent !== String(s)) el.textContent = s; });
+  if (DU.res && Date.now() >= DU.res.until && duVisible()) { DU.res = null; renderDuels(); } }, 250);
+
+/* ----- 🔘 clicks ----- */
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-du]"); if (!b) return;
+  const inPage = $("onlineCasino") && $("onlineCasino").contains(b), inModal = $("modalBox").contains(b);
+  if (!inPage && !inModal) return;
+  const k = b.dataset.du, id = Number(b.dataset.id);
+  if (k === "signin" && (__eocLoaded >= 37 && typeof cloudSignIn === "function")) cloudSignIn();
+  if (k === "profile") showView("profile");
+  if (k === "game") { DU.game = b.dataset.g; renderDuels(); }
+  if (k === "pct") { DU.bet = String(Math.max(1, Math.floor(state.money * Number(b.dataset.p)))); DU.err = ""; renderDuels(); }
+  if (k === "challenge") duChallenge(b.dataset.id);
+  if (k === "cancel") duDo("duel_cancel", { p_id: id }, () => { DU.out = null; });
+  if (k === "accept" || k === "decline") {
+    const inv = DU.invites[id]; hideModal(); DU.shownInvite = null; delete DU.invites[id];
+    if (k === "accept" && inv && state.money < inv.bet) return;
+    duDo("duel_respond", { p_id: id, p_accept: k === "accept" }, (v) => { if (v && v.status === "active") duStart(v); });
+  }
+  if (k === "pick" && DU.cur) duDo("duel_move", { p_id: DU.cur.id, p_pick: b.dataset.k }, duUpdate);
+  if (k === "roll" && DU.cur) duDo("duel_move", { p_id: DU.cur.id, p_pick: "roll" }, duUpdate);
+  if (k === "resign" && DU.cur) showModal(`<h2>Give up?</h2><p>Your friend wins the duel and your bet of <b>${fmt(DU.cur.bet)}</b>.</p>
+    <div class="row" style="justify-content:center;gap:10px"><button class="btn ghost" data-modal="close">Keep playing</button><button class="btn dangerBtn" data-du="resignYes">Give up</button></div>`);
+  if (k === "resignYes" && DU.cur) { hideModal(); duDo("duel_cancel", { p_id: DU.cur.id }, duUpdate); }
+  if (k === "back") { DU.final = null; DU.cur = null; DU.res = null; duPending(); renderDuels(); }
+});
+document.addEventListener("input", (e) => { if (e.target.id === "duBet") { DU.bet = e.target.value; if (DU.err) { DU.err = ""; } } });
+
+/* ----- 🎰 the page switch on the left of the Casino ----- */
+function duApplyPage() {
+  const online = state.casinoPage === "online";
+  $("casinoView").classList.toggle("onlineMode", online);
+  $("onlineCasino").hidden = !online;
+  document.querySelectorAll("[data-caspage]").forEach(b => b.classList.toggle("active", b.dataset.caspage === (online ? "online" : "casino")));
+  if (online) { renderDuels(); duPending(); }
+}
+(function duSetup() {
+  const view = $("casinoView");
+  if ($("casTabs")) return;
+  const layout = document.createElement("div"); layout.className = "subLayout"; layout.id = "casLayout";
+  layout.innerHTML = `<nav class="subNav" id="casTabs"><button class="subTab" data-caspage="casino"><img class="ico" src="assets/icons/ico-ui-casino.webp" alt="">Casino</button>
+    <button class="subTab" data-caspage="online"><img class="ico" src="assets/duel/ico-duel.webp" alt="">Online casino</button></nav><div class="subMain" id="casMain"></div>`;
+  const main = layout.querySelector("#casMain");
+  [...view.children].filter(el => !el.classList.contains("debtBanner")).forEach(el => main.appendChild(el));
+  const oc = document.createElement("div"); oc.id = "onlineCasino"; oc.hidden = true; main.appendChild(oc);
+  view.appendChild(layout);
+  layout.querySelector("#casTabs").addEventListener("click", (e) => {
+    const t = e.target.closest("[data-caspage]"); if (!t) return;
+    state.casinoPage = t.dataset.caspage; save(); duApplyPage();
+  });
+  duApplyPage();
+})();
+var duShowViewOrig = showView;
+showView = function (v) { duShowViewOrig(v); if (v === "casino") duApplyPage(); };
+
+/* ----- ⏱️ checking for challenges and results ----- */
+setInterval(() => {
+  if (document.hidden || !duOn() || DU.cur) return;
+  const every = DU.out || duVisible() ? 2500 : 6000;   // faster while waiting for an answer or looking at the page
+  if (Date.now() - DU.pendAt >= every - 100) duPending();
+}, 1000);
 
 })();
