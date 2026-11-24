@@ -2,7 +2,7 @@
    🖼️ ART GALLERY: copy a painting as closely as you can.
    Unlock: 500k. Tiers: Easy (1 scoin), Medium (10 scoin), Hard (100 scoin): you earn match% of the value.
    Sell right away, or keep the painting in your Collection (10 slots; +10 slots for 500k, 750k, 1M…).
-   Paintings are generated from a seed, using only the 16 colors of the player's palette.
+   Paintings are generated from a seed, using only the 24 colors of the player's palette.
    ===================================================================== */
 const ART_SLOTS_MAX = 100;   // a collection can hold at most 100 paintings
 const ART_UNLOCK = 500000, ART_SLOTS_START = 10, ART_SLOTS_STEP = 10, ART_SLOT_PRICE = 500000, ART_SLOT_PRICE_STEP = 250000;
@@ -15,10 +15,14 @@ const ART_TIERS = {
   master: { name: "Masterpiece", icon: "🏛️", value: 1e9, desc: "10 famous paintings, simplified: The Starry Night, The Great Wave, Mona Lisa, The Scream and more" },
 };
 const ART_TIER_LIST = () => Object.keys(ART_TIERS).filter(k => !ART_TIERS[k].hidden);
+// 24 colours (8 added in Nov 2026: slate, tan, maroon, salmon, ochre, olive, turquoise, lavender), in palette order
 const ART_PAL = {
-  white: "#ffffff", black: "#1b1b1b", gray: "#8d8d8d", red: "#e53935", orange: "#fb8c00", yellow: "#fdd835",
-  lime: "#8bc34a", green: "#2e7d32", teal: "#00897b", sky: "#81d4fa", blue: "#1e88e5", navy: "#1a237e",
-  purple: "#8e24aa", pink: "#f48fb1", brown: "#6d4c41", beige: "#ffe0b2",
+  white: "#ffffff", gray: "#8d8d8d", slate: "#455a64", black: "#1b1b1b",
+  beige: "#ffe0b2", tan: "#c8a27a", brown: "#6d4c41", maroon: "#8e1b2b",
+  red: "#e53935", salmon: "#ff8a65", pink: "#f48fb1", orange: "#fb8c00",
+  ochre: "#c9a227", yellow: "#fdd835", lime: "#8bc34a", olive: "#6b7d2a",
+  green: "#2e7d32", teal: "#00897b", turquoise: "#26c6da", sky: "#81d4fa",
+  blue: "#1e88e5", navy: "#1a237e", lavender: "#b39ddb", purple: "#8e24aa",
 };
 const ART_W = 320, ART_H = 240;
 // Unlocks: the gallery opens after the 💵 Millionaire achievement (and costs ART_UNLOCK);
@@ -68,22 +72,22 @@ function paintArt(ctx, tier, seed) {
     rect(skyC, 0, 0, ART_W, ART_H);
     if (scene === "house") {
       ground(); sun();
-      const hx = rnd(85, 135), hw = rnd(110, 130), hy = 110, wall = pick([P.red, P.orange, P.yellow, P.beige, P.pink]);
+      const hx = rnd(85, 135), hw = rnd(110, 130), hy = 110, wall = pick([P.red, P.orange, P.yellow, P.beige, P.pink, P.salmon, P.tan, P.lavender]);
       if (R() < 0.5) rect(P.brown, hx + hw * 0.7, hy - 55, 16, 40);   // chimney
       rect(wall, hx, hy, hw, 80);
-      poly(pick([P.brown, P.red, P.navy]), [[hx - 12, hy], [hx + hw / 2, hy - rnd(55, 70)], [hx + hw + 12, hy]]);
+      poly(pick([P.brown, P.red, P.navy, P.maroon, P.slate]), [[hx - 12, hy], [hx + hw / 2, hy - rnd(55, 70)], [hx + hw + 12, hy]]);
       rect(P.brown, hx + hw * 0.58, hy + 35, 26, 45);
-      const win = pick([P.blue, P.sky, P.yellow]);
+      const win = pick([P.blue, P.sky, P.yellow, P.turquoise]);
       rect(win, hx + hw * 0.14, hy + 20, 30, 28);
     } else if (scene === "flower") {
       ground(); sun();
-      const n = ri(1, 3), pc = pick([P.red, P.pink, P.purple, P.orange, P.blue]);
+      const n = ri(1, 3), pc = pick([P.red, P.pink, P.purple, P.orange, P.blue, P.salmon, P.lavender, P.maroon]);
       for (let f = 0; f < n; f++) {
         const fx = n === 1 ? rnd(130, 190) : 60 + f * (200 / (n - 1)) + rnd(-10, 10), fy = rnd(75, 110), k = ri(5, 6), r = n === 1 ? 26 : 20;
         rect(P.green, fx - 4, fy, 8, 190 - fy);
         ell(P.green, fx - 20, fy + 60, 20, 8, -0.5);
-        for (let i = 0; i < k; i++) { const a = i / k * Math.PI * 2; circ(n === 1 ? pc : pick([P.red, P.pink, P.purple, P.orange]), fx + Math.cos(a) * r, fy + Math.sin(a) * r, r * 0.7); }
-        circ(pick([P.yellow, P.brown, P.orange]), fx, fy, r * 0.6);
+        for (let i = 0; i < k; i++) { const a = i / k * Math.PI * 2; circ(n === 1 ? pc : pick([P.red, P.pink, P.purple, P.orange, P.salmon, P.lavender]), fx + Math.cos(a) * r, fy + Math.sin(a) * r, r * 0.7); }
+        circ(pick([P.yellow, P.brown, P.orange, P.ochre]), fx, fy, r * 0.6);
       }
     } else if (scene === "tree") {
       ground(); sun();
@@ -97,12 +101,12 @@ function paintArt(ctx, tier, seed) {
       const bx = rnd(100, 200);
       poly(P.brown, [[bx - 70, 160], [bx + 70, 160], [bx + 48, 190], [bx - 48, 190]]);
       rect(P.brown, bx - 3, 55, 6, 105);
-      poly(pick([P.white, P.red, P.orange]), [[bx + 6, 60], [bx + 6, 150], [bx + 70, 150]]);
-      poly(pick([P.yellow, P.pink, P.white]), [[bx - 6, 75], [bx - 6, 150], [bx - 55, 150]]);
+      poly(pick([P.white, P.red, P.orange, P.salmon]), [[bx + 6, 60], [bx + 6, 150], [bx + 70, 150]]);
+      poly(pick([P.yellow, P.pink, P.white, P.lavender]), [[bx - 6, 75], [bx - 6, 150], [bx - 55, 150]]);
     } else if (scene === "car") {
       ground(P.lime, 170); rect(P.gray, 0, 190, ART_W, 50); sun();
       if (R() < 0.6) cloud(rnd(110, 200), rnd(40, 60));
-      const cx = rnd(40, 110), body = pick([P.red, P.blue, P.yellow, P.orange, P.purple]);
+      const cx = rnd(40, 110), body = pick([P.red, P.blue, P.yellow, P.orange, P.purple, P.turquoise, P.maroon, P.olive]);
       poly(body, [[cx + 40, 160], [cx + 60, 125], [cx + 130, 125], [cx + 150, 160]]);
       rect(body, cx, 158, 190, 40);
       rect(P.sky, cx + 64, 132, 30, 24); rect(P.sky, cx + 100, 132, 30, 24);
@@ -129,7 +133,7 @@ function paintArt(ctx, tier, seed) {
       poly(P.orange, [[sx, 64], [sx + 22, 68], [sx, 71]]);
       for (const y of [102, 118, 134]) circ(P.black, sx, y, 3.5);
       line(P.brown, 5, [[sx - 30, 110], [sx - 70, 85]]); line(P.brown, 5, [[sx + 30, 110], [sx + 70, 85]]);
-      rect(pick([P.red, P.blue, P.green, P.purple]), sx - 26, 82, 52, 9);
+      rect(pick([P.red, P.blue, P.green, P.purple, P.maroon, P.turquoise]), sx - 26, 82, 52, 9);
     } else if (scene === "rainbow") {
       rect(P.sky, 0, 0, ART_W, ART_H);
       const cx = rnd(140, 180), cy = 200;
@@ -143,7 +147,7 @@ function paintArt(ctx, tier, seed) {
       if (skyC !== P.white) sun();
       const n = ri(1, 2);
       for (let m = 0; m < n; m++) {
-        const mx = n === 1 ? rnd(130, 190) : 90 + m * 140, s = n === 1 ? 1 : 0.75, cap = pick([P.red, P.orange, P.purple]);
+        const mx = n === 1 ? rnd(130, 190) : 90 + m * 140, s = n === 1 ? 1 : 0.75, cap = pick([P.red, P.orange, P.purple, P.maroon, P.salmon]);
         rect(P.beige, mx - 22 * s, 200 - 80 * s, 44 * s, 80 * s);
         fill(cap); ctx.beginPath(); ctx.ellipse(mx, 200 - 78 * s, 85 * s, 70 * s, 0, Math.PI, 0); ctx.fill();
         circ(P.white, mx - 40 * s, 200 - 110 * s, 12 * s); circ(P.white, mx + 10 * s, 200 - 130 * s, 14 * s); circ(P.white, mx + 48 * s, 200 - 100 * s, 10 * s);
@@ -161,16 +165,16 @@ function paintArt(ctx, tier, seed) {
         poly(cols[i], [[bx, by + 36], [bx + 6, by + 46], [bx - 6, by + 46]]);
       }
     } else if (scene === "icecream") {
-      rect(pick([P.white, P.pink, P.sky]), 0, 0, ART_W, ART_H);
+      rect(pick([P.white, P.pink, P.sky, P.lavender]), 0, 0, ART_W, ART_H);
       const ix = rnd(130, 190), scoops = ri(1, 3);
-      poly(pick([P.orange, P.brown]), [[ix - 45, 140], [ix + 45, 140], [ix, 230]]);
+      poly(pick([P.orange, P.brown, P.tan, P.ochre]), [[ix - 45, 140], [ix + 45, 140], [ix, 230]]);
       const flav = [P.pink, P.beige, P.brown, P.lime, P.yellow].sort(() => R() - 0.5);
       for (let i = 0; i < scoops; i++) circ(flav[i], ix, 125 - i * 42, 46);
       circ(P.red, ix, 125 - (scoops - 1) * 42 - 50, 11);
       line(P.green, 3, [[ix, 125 - (scoops - 1) * 42 - 60], [ix + 10, 125 - (scoops - 1) * 42 - 76]]);
     } else if (scene === "castle") {
       ground(); sun();
-      const cx = rnd(70, 110), wall = pick([P.gray, P.beige, P.pink]), roof = pick([P.red, P.blue, P.purple]);
+      const cx = rnd(70, 110), wall = pick([P.gray, P.beige, P.pink, P.tan, P.lavender]), roof = pick([P.red, P.blue, P.purple, P.maroon, P.slate]);
       rect(wall, cx + 30, 100, 120, 90);
       for (let i = 0; i < 4; i++) rect(wall, cx + 34 + i * 30, 88, 18, 14);
       for (const tx of [cx, cx + 150]) { rect(wall, tx, 80, 40, 110); poly(roof, [[tx - 6, 80], [tx + 20, 30], [tx + 46, 80]]); }
@@ -182,7 +186,7 @@ function paintArt(ctx, tier, seed) {
       for (let i = 0; i < ri(2, 3); i++) { const wx = rnd(20, 300); line(P.green, 6, [[wx, 205], [wx - 8, 180], [wx + 6, 160], [wx - 4, 140]]); }
       const n = ri(1, 2);
       for (let f = 0; f < n; f++) {
-        const fx = n === 1 ? rnd(130, 190) : 90 + f * 140, fy = rnd(80, 140), s = n === 1 ? 1 : 0.7, c = pick([P.orange, P.yellow, P.red, P.pink, P.purple]), d = R() < 0.5 ? 1 : -1;
+        const fx = n === 1 ? rnd(130, 190) : 90 + f * 140, fy = rnd(80, 140), s = n === 1 ? 1 : 0.7, c = pick([P.orange, P.yellow, P.red, P.pink, P.purple, P.salmon, P.turquoise]), d = R() < 0.5 ? 1 : -1;
         poly(c, [[fx - d * 50 * s, fy], [fx - d * 90 * s, fy - 35 * s], [fx - d * 90 * s, fy + 35 * s]]);
         ell(c, fx, fy, 60 * s, 38 * s);
         circ(P.white, fx + d * 30 * s, fy - 8 * s, 10 * s); circ(P.black, fx + d * 32 * s, fy - 8 * s, 5 * s);
@@ -190,7 +194,7 @@ function paintArt(ctx, tier, seed) {
       for (let i = 0; i < 5; i++) circ(P.white, rnd(30, 300), rnd(20, 120), rnd(4, 8));
     } else {   // butterfly
       ground(); sun();
-      const bx = rnd(130, 190), by = rnd(95, 120), w1 = pick([P.purple, P.blue, P.orange, P.pink, P.red]), w2 = pick([P.yellow, P.pink, P.sky, P.lime]);
+      const bx = rnd(130, 190), by = rnd(95, 120), w1 = pick([P.purple, P.blue, P.orange, P.pink, P.red, P.turquoise, P.maroon]), w2 = pick([P.yellow, P.pink, P.sky, P.lime, P.lavender, P.salmon]);
       ell(w1, bx - 38, by - 25, 38, 30, -0.4); ell(w1, bx + 38, by - 25, 38, 30, 0.4);
       ell(w2, bx - 30, by + 25, 26, 22, 0.4); ell(w2, bx + 30, by + 25, 26, 22, -0.4);
       circ(w2, bx - 40, by - 28, 10); circ(w2, bx + 40, by - 28, 10);
@@ -222,7 +226,7 @@ function paintArt(ctx, tier, seed) {
       if (time === "night") for (let i = 0; i < 18; i++) circ(P.white, rnd(5, 315), rnd(5, 110), rnd(1.2, 2.4));
       circ(time === "night" ? P.beige : P.yellow, rnd(40, 280), rnd(30, 70), rnd(16, 24));
       if (time !== "night") for (let i = 0; i < ri(2, 3); i++) { const cx = rnd(30, 290), cy = rnd(20, 60); circ(P.white, cx, cy, 13); circ(P.white, cx + 15, cy - 6, 15); circ(P.white, cx + 30, cy, 12); }
-      const far = time === "night" ? P.purple : P.gray, near = time === "night" ? P.navy : pick([P.purple, P.brown]);
+      const far = time === "night" ? P.purple : P.gray, near = time === "night" ? P.navy : pick([P.purple, P.brown, P.slate, P.olive]);
       const peaks = (c, base, hmin, hmax, step) => { const pts = [[0, ART_H]]; for (let x = 0; x <= ART_W; x += step) pts.push([x, base - (x / step) % 2 * rnd(hmin, hmax) - rnd(0, 10)]); pts.push([ART_W, ART_H]); poly(c, pts); };
       peaks(far, 150, 40, 70, 40);
       peaks(near, 170, 25, 45, 32);
@@ -230,7 +234,7 @@ function paintArt(ctx, tier, seed) {
       rect(time === "night" ? P.navy : P.blue, rnd(10, 60), 192, rnd(110, 170), 26);
       for (let i = 0; i < ri(4, 6); i++) { const x = rnd(10, 310), y = rnd(185, 230), h = rnd(28, 45); rect(P.brown, x - 3, y - 10, 6, 14); poly(P.green, [[x, y - h], [x + h * 0.35, y - 8], [x - h * 0.35, y - 8]]); }
       const hx = rnd(200, 255), hy = 178;
-      rect(pick([P.red, P.beige, P.pink]), hx, hy, 46, 34); poly(P.brown, [[hx - 6, hy], [hx + 23, hy - 22], [hx + 52, hy]]);
+      rect(pick([P.red, P.beige, P.pink, P.tan, P.salmon]), hx, hy, 46, 34); poly(P.brown, [[hx - 6, hy], [hx + 23, hy - 22], [hx + 52, hy]]);
       rect(time === "night" ? P.yellow : P.sky, hx + 6, hy + 8, 11, 10); rect(P.black, hx + 28, hy + 14, 10, 20);
       for (let i = 0; i < ri(2, 4); i++) { const bx = rnd(60, 260), by = rnd(70, 110); line(P.black, 2, [[bx - 7, by - 4], [bx, by], [bx + 7, by - 4]]); }
       for (let i = 0; i < ri(5, 8); i++) circ(pick([P.red, P.yellow, P.pink, P.white]), rnd(5, 315), rnd(220, 236), 3);
@@ -240,7 +244,7 @@ function paintArt(ctx, tier, seed) {
       skyAndSun();
       let x = rnd(-10, 5);
       while (x < ART_W) {
-        const w = rnd(30, 52), h = rnd(70, 165), c = pick([P.gray, P.navy, P.purple, P.brown, P.teal, P.black]);
+        const w = rnd(30, 52), h = rnd(70, 165), c = pick([P.gray, P.navy, P.purple, P.brown, P.teal, P.black, P.slate, P.maroon, P.tan]);
         rect(c, x, 200 - h, w, h);
         if (R() < 0.3) rect(c, x + w * 0.35, 200 - h - 18, w * 0.3, 18);   // tower on top
         const win = time === "night" ? P.yellow : time === "sunset" ? P.orange : P.sky;
@@ -249,7 +253,7 @@ function paintArt(ctx, tier, seed) {
       }
       rect(P.black, 0, 200, ART_W, 40);
       for (let i = 0; i < 8; i++) rect(P.yellow, i * 42 + 6, 218, 22, 4);
-      for (let i = 0; i < ri(2, 4); i++) { const cx = rnd(10, 280), cy = pick([204, 226]); rect(pick([P.red, P.blue, P.yellow, P.white, P.lime]), cx, cy, 34, 10); circ(P.gray, cx + 8, cy + 10, 4); circ(P.gray, cx + 26, cy + 10, 4); }
+      for (let i = 0; i < ri(2, 4); i++) { const cx = rnd(10, 280), cy = pick([204, 226]); rect(pick([P.red, P.blue, P.yellow, P.white, P.lime, P.turquoise, P.salmon]), cx, cy, 34, 10); circ(P.gray, cx + 8, cy + 10, 4); circ(P.gray, cx + 26, cy + 10, 4); }
     } else if (scene === "seaside") {
       // beach with a lighthouse, sea, boats and palm trees
       skyAndSun();
@@ -263,7 +267,7 @@ function paintArt(ctx, tier, seed) {
       rect(time === "night" ? P.yellow : P.black, lx - 8, beachY - 104, 16, 14); poly(P.red, [[lx - 12, beachY - 104], [lx, beachY - 120], [lx + 12, beachY - 104]]);
       for (let i = 0; i < ri(1, 3); i++) { const bx = rnd(110, 230), by = rnd(130, beachY - 15); poly(P.brown, [[bx - 18, by], [bx + 18, by], [bx + 12, by + 8], [bx - 12, by + 8]]); poly(pick([P.white, P.red, P.yellow]), [[bx + 2, by - 2], [bx + 2, by - 30], [bx + 20, by - 2]]); }
       for (let i = 0; i < ri(1, 2); i++) { const px = rnd(120, 230), py = beachY + rnd(10, 30); line(P.brown, 6, [[px, py], [px + 6, py - 45]]); for (let a = 0; a < 5; a++) ell(P.green, px + 6 + Math.cos(a * 1.25) * 16, py - 45 + Math.sin(a * 1.25) * 6, 18, 6, a * 1.25); }
-      if (R() < 0.7) { const ux = rnd(170, 290), uy = beachY + rnd(22, 40); line(P.black, 2, [[ux, uy], [ux, uy - 28]]); poly(pick([P.red, P.pink, P.orange, P.purple]), [[ux - 22, uy - 26], [ux, uy - 40], [ux + 22, uy - 26]]); }
+      if (R() < 0.7) { const ux = rnd(170, 290), uy = beachY + rnd(22, 40); line(P.black, 2, [[ux, uy], [ux, uy - 28]]); poly(pick([P.red, P.pink, P.orange, P.purple, P.turquoise, P.salmon]), [[ux - 22, uy - 26], [ux, uy - 40], [ux + 22, uy - 26]]); }
     } else if (scene === "desert") {
       // dunes, pyramids, cacti
       skyAndSun();
@@ -301,27 +305,27 @@ function paintArt(ctx, tier, seed) {
       if (R() < 0.7) { const sx = bx + 85; rect(P.gray, sx, by - 70, 22, 70); ell(P.gray, sx + 11, by - 70, 11, 8); }
       for (let x = 4; x < ART_W; x += 18) rect(P.brown, x, 186, 4, 18);
       rect(P.brown, 0, 190, ART_W, 3); rect(P.brown, 0, 198, ART_W, 3);
-      for (let i = 0; i < ri(1, 3); i++) { const ax = rnd(200, 300), ay = rnd(160, 178), col = pick([P.white, P.pink, P.brown]); ell(col, ax, ay, 14, 9); circ(col, ax + 14, ay - 5, 6); rect(P.black, ax - 9, ay + 6, 3, 8); rect(P.black, ax + 6, ay + 6, 3, 8); if (col === P.white) { circ(P.black, ax - 3, ay - 2, 3); circ(P.black, ax + 5, ay + 2, 2.5); } }
+      for (let i = 0; i < ri(1, 3); i++) { const ax = rnd(200, 300), ay = rnd(160, 178), col = pick([P.white, P.pink, P.brown, P.tan]); ell(col, ax, ay, 14, 9); circ(col, ax + 14, ay - 5, 6); rect(P.black, ax - 9, ay + 6, 3, 8); rect(P.black, ax + 6, ay + 6, 3, 8); if (col === P.white) { circ(P.black, ax - 3, ay - 2, 3); circ(P.black, ax + 5, ay + 2, 2.5); } }
       birds(ri(1, 3), 50, 90);
     } else if (scene === "underwater") {
       // sea floor with fish, seaweed, coral and bubbles
       rect(P.sky, 0, 0, ART_W, 60); rect(P.blue, 0, 60, ART_W, 90); rect(P.navy, 0, 150, ART_W, 90);
       poly(P.beige, [[0, 205], [80, 195], [160, 208], [240, 196], [ART_W, 204], [ART_W, ART_H], [0, ART_H]]);
-      for (let i = 0; i < ri(4, 7); i++) { const sx = rnd(10, 310), h = rnd(40, 90); const pts = []; for (let k = 0; k <= 6; k++) pts.push([sx + (k % 2 ? 6 : -6), 205 - h * k / 6]); line(pick([P.green, P.lime, P.teal]), 5, pts); }
-      for (let i = 0; i < ri(2, 4); i++) { const cx = rnd(20, 300), cy = rnd(200, 215), c = pick([P.pink, P.orange, P.red, P.purple]); circ(c, cx, cy, 10); circ(c, cx - 10, cy - 8, 7); circ(c, cx + 9, cy - 10, 7); circ(c, cx, cy - 18, 6); }
-      for (let i = 0; i < ri(4, 7); i++) { const fx = rnd(30, 290), fy = rnd(50, 180), s = rnd(10, 18), c = pick([P.orange, P.yellow, P.red, P.pink, P.lime, P.purple]), dir = R() < 0.5 ? 1 : -1; ell(c, fx, fy, s, s * 0.55); poly(c, [[fx - dir * s * 0.8, fy], [fx - dir * s * 1.6, fy - s * 0.5], [fx - dir * s * 1.6, fy + s * 0.5]]); circ(P.black, fx + dir * s * 0.5, fy - s * 0.12, 2); }
+      for (let i = 0; i < ri(4, 7); i++) { const sx = rnd(10, 310), h = rnd(40, 90); const pts = []; for (let k = 0; k <= 6; k++) pts.push([sx + (k % 2 ? 6 : -6), 205 - h * k / 6]); line(pick([P.green, P.lime, P.teal, P.olive]), 5, pts); }
+      for (let i = 0; i < ri(2, 4); i++) { const cx = rnd(20, 300), cy = rnd(200, 215), c = pick([P.pink, P.orange, P.red, P.purple, P.salmon, P.lavender]); circ(c, cx, cy, 10); circ(c, cx - 10, cy - 8, 7); circ(c, cx + 9, cy - 10, 7); circ(c, cx, cy - 18, 6); }
+      for (let i = 0; i < ri(4, 7); i++) { const fx = rnd(30, 290), fy = rnd(50, 180), s = rnd(10, 18), c = pick([P.orange, P.yellow, P.red, P.pink, P.lime, P.purple, P.turquoise, P.salmon]), dir = R() < 0.5 ? 1 : -1; ell(c, fx, fy, s, s * 0.55); poly(c, [[fx - dir * s * 0.8, fy], [fx - dir * s * 1.6, fy - s * 0.5], [fx - dir * s * 1.6, fy + s * 0.5]]); circ(P.black, fx + dir * s * 0.5, fy - s * 0.12, 2); }
       if (R() < 0.6) { const sx = rnd(40, 280), sy = rnd(220, 232); for (let a = 0; a < 5; a++) line(P.orange, 5, [[sx, sy], [sx + Math.cos(a * 1.257 - 1.57) * 10, sy + Math.sin(a * 1.257 - 1.57) * 10]]); }
       for (let i = 0; i < 12; i++) circ(P.white, rnd(10, 310), rnd(20, 190), rnd(2, 4));
     } else {
       // space: planets, a moon, a rocket and stars
       rect(pick([P.navy, P.black]), 0, 0, ART_W, ART_H);
       stars(40, 235);
-      const big = { x: rnd(60, 260), y: rnd(60, 180), r: rnd(28, 44), c: pick([P.orange, P.purple, P.teal, P.red, P.lime]) };
+      const big = { x: rnd(60, 260), y: rnd(60, 180), r: rnd(28, 44), c: pick([P.orange, P.purple, P.teal, P.red, P.lime, P.turquoise, P.salmon, P.ochre]) };
       if (R() < 0.6) ell(P.beige, big.x, big.y, big.r * 1.9, big.r * 0.45, -0.3);
       circ(big.c, big.x, big.y, big.r);
       ell(pick([P.yellow, P.pink, P.white]), big.x, big.y - big.r * 0.3, big.r * 0.9, big.r * 0.12);
       ell(pick([P.yellow, P.pink, P.white]), big.x, big.y + big.r * 0.25, big.r * 0.85, big.r * 0.1);
-      for (let i = 0; i < ri(2, 3); i++) circ(pick([P.blue, P.pink, P.green, P.gray, P.yellow]), rnd(20, 300), rnd(20, 220), rnd(8, 18));
+      for (let i = 0; i < ri(2, 3); i++) circ(pick([P.blue, P.pink, P.green, P.gray, P.yellow, P.lavender, P.maroon]), rnd(20, 300), rnd(20, 220), rnd(8, 18));
       const mx = rnd(30, 290), my = rnd(25, 70); circ(P.gray, mx, my, 16); circ(P.white, mx - 5, my - 4, 4); circ(P.white, mx + 6, my + 5, 3);
       const rx = rnd(60, 260), ry = rnd(90, 200);
       poly(P.white, [[rx, ry - 40], [rx + 12, ry - 22], [rx + 12, ry + 14], [rx - 12, ry + 14], [rx - 12, ry - 22]]);

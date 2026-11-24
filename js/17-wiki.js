@@ -309,7 +309,7 @@ function wikiArt() {
     <p>🟡 Normal unlocks after you submit (sell or keep) ${ART_TIER_NEED.hard.count} Easy paintings; 🏛️ Masterpiece unlocks after ${ART_TIER_NEED.master.count} Normal paintings.</p>
     ${wt(["Tier", "Paintings", "Full value"], ART_TIER_LIST().map(k => ART_TIERS[k]).map(t => [`${t.icon} ${t.name}`, t.desc, fmt(t.value)]))}
     <h3>🏛️ Masterpieces</h3>
-    <p>Simplified versions of famous old paintings (all old enough to be free for everyone to use), drawn in the game's 16 colours:</p>
+    <p>Simplified versions of famous old paintings (all old enough to be free for everyone to use), drawn in the game's 24 colours:</p>
     ${wt(["Painting", "Artist", "Year"], ART_MASTERS.map(m => [`${m.emoji} ${m.name}`, m.artist, m.year]))}
     <h3>📜 Daily commission</h3>
     <p>Every 24 hours a collector asks for one specific painting (🟡 Normal, or a 🏛️ Masterpiece once they are open) and pays <b>×${ART_COMM_MULT}</b> its value. Press 🖌️ Paint it in the studio, then sell or keep a copy of at least ${ART_MIN_MATCH}% before the time runs out. One delivery per commission.</p>

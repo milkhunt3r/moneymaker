@@ -1054,6 +1054,7 @@ Object.assign(ES, ART_ES_MASTER, { "Normal": "Normal", "Masterpiece": "Obra maes
   "Submit a 90%+ match on a Masterpiece": "Entrega una copia de una obra maestra con un 90 %+ de parecido",
   "white": "blanco", "black": "negro", "gray": "gris", "red": "rojo", "orange": "naranja", "yellow": "amarillo", "lime": "lima", "green": "verde", "teal": "verde azulado", "sky": "celeste",
   "blue": "azul", "navy": "azul marino", "purple": "morado", "pink": "rosa", "brown": "marrón", "beige": "beis",
+  "slate": "gris pizarra", "tan": "canela", "maroon": "granate", "salmon": "salmón", "ochre": "ocre", "olive": "verde oliva", "turquoise": "turquesa", "lavender": "lavanda",
   "10 famous paintings, simplified: The Starry Night, The Great Wave, Mona Lisa, The Scream and more": "10 cuadros famosos, simplificados: La noche estrellada, La gran ola, La Gioconda, El grito y más",
   "Painting": "Cuadro", "Artist": "Artista", "Year": "Año" });
 rx(String.raw`Brush size (\d+) px`, "Tamaño del pincel: $1 px");
@@ -1074,7 +1075,7 @@ rx(String.raw`(Easy|Normal|Masterpiece) painting`, (m, t) => `Cuadro ${ART_ES_TI
 rx(String.raw`Easy (${NUM}) · 🟡 Normal (${NUM}) · 🏛️ Masterpiece (${NUM}) \(you earn your match %; at least (\d+)% to sell or keep\)`,
   (m, a, b, c, u) => `Fácil ${a} · 🟡 Normal ${b} · 🏛️ Obra maestra ${c} (ganas tu % de parecido; al menos el ${u} % para vender o guardar)`);
 hrx(String.raw`🟡 Normal unlocks after you submit \(sell or keep\) (\d+) Easy paintings; 🏛️ Masterpiece unlocks after (\d+) Normal paintings\.`, "🟡 Normal se desbloquea al entregar (vender o guardar) $1 cuadros fáciles; 🏛️ Obra maestra, tras $2 cuadros normales.");
-H("Simplified versions of famous old paintings (all old enough to be free for everyone to use), drawn in the game's 16 colours:", "Versiones simplificadas de cuadros antiguos famosos (todos tan antiguos que cualquiera puede usarlos), dibujadas con los 16 colores del juego:");
+H("Simplified versions of famous old paintings (all old enough to be free for everyone to use), drawn in the game's 24 colours:", "Versiones simplificadas de cuadros antiguos famosos (todos tan antiguos que cualquiera puede usarlos), dibujadas con los 24 colores del juego:");
 hrx(String.raw`Every 24 hours a collector asks for one specific painting \(🟡 Normal, or a 🏛️ Masterpiece once they are open\) and pays <b>×(\d+)<\/b> its value\. Press 🖌️ Paint it in the studio, then sell or keep a copy of at least (\d+)% before the time runs out\. One delivery per commission\.`,
   "Cada 24 horas un coleccionista pide un cuadro concreto (🟡 normal, o una 🏛️ obra maestra cuando estén abiertas) y paga <b>×$1</b> su valor. Pulsa 🖌️ Pintarlo en el estudio y después vende o guarda una copia de al menos el $2 % antes de que se acabe el tiempo. Una entrega por encargo.");
 hrx(String.raw`Your copy is worth <b>match % × the full value<\/b>: an 80% copy of a Normal painting is worth (${NUM})\. A copy under <b>(\d+)%<\/b> can't be sold or kept: keep working on it or start a new one\. There is no timer\.`,
@@ -1089,11 +1090,13 @@ H("🎨 <b>Art Gallery update!</b> New tiers: 🟢 Easy (kid-style drawings), �
 ES["🖌️ New drawing tools: ➖ Line, 💧 Eyedropper and 🪞 Mirror mode. After you submit, a 🔥 heatmap shows where your copy differs from the original."] =
   "🖌️ Nuevas herramientas de dibujo: ➖ Línea, 💧 Cuentagotas y 🪞 Modo espejo. Al entregar, un 🔥 mapa de calor muestra dónde tu copia difiere del original.";
 H("📜 <b>Daily commission</b>: every day a collector asks for one specific painting and pays ×3. You have 24 hours to deliver it.", "📜 <b>Encargo diario</b>: cada día un coleccionista pide un cuadro concreto y paga ×3. Tienes 24 horas para entregarlo.");
+ES["🎨 8 new colours in the Art studio palette (24 in all): slate, tan, maroon, salmon, ochre, olive, turquoise and lavender. Every painting now uses them."] =
+  "🎨 8 colores nuevos en la paleta del Estudio de arte (24 en total): gris pizarra, canela, granate, salmón, ocre, verde oliva, turquesa y lavanda. Todos los cuadros los usan ahora.";
 ES["🏆 Art Gallery achievements now follow the new tiers (Easy, Normal and Masterpiece). Achievements you already have stay unlocked."] =
   "🏆 Los logros de la Galería de arte siguen ahora los nuevos niveles (Fácil, Normal y Obra maestra). Los logros que ya tienes siguen desbloqueados.";
 Object.assign(ES, { "Masterpieces": "Obras maestras", "Vincent van Gogh": "Vincent van Gogh", "Katsushika Hokusai": "Katsushika Hokusai", "Edvard Munch": "Edvard Munch",
   "Leonardo da Vinci": "Leonardo da Vinci", "Johannes Vermeer": "Johannes Vermeer", "Claude Monet": "Claude Monet",
-  "Simplified versions of famous old paintings (all old enough to be free for everyone to use), drawn in the game's 16 colours": "Versiones simplificadas de cuadros antiguos famosos (todos tan antiguos que cualquiera puede usarlos), dibujadas con los 16 colores del juego" });
+  "Simplified versions of famous old paintings (all old enough to be free for everyone to use), drawn in the game's 24 colours": "Versiones simplificadas de cuadros antiguos famosos (todos tan antiguos que cualquiera puede usarlos), dibujadas con los 24 colores del juego" });
 rx(String.raw`Normal unlocks after you submit \(sell or keep\) (\d+) Easy paintings; 🏛️ Masterpiece unlocks after (\d+) Normal paintings\.`, "Normal se desbloquea al entregar (vender o guardar) $1 cuadros fáciles; 🏛️ Obra maestra, tras $2 cuadros normales.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",

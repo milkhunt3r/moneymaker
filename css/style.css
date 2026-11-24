@@ -161,7 +161,7 @@ body {
 #artDraw { cursor: crosshair; touch-action: none; }
 .artLabel { margin-bottom: 4px; font-weight: 700; }
 .artTools { margin-top: 12px; }
-.artPalette { display: flex; flex-wrap: wrap; gap: 6px; }
+.artPalette { display: grid; grid-template-columns: repeat(12, 30px); gap: 6px 8px; }   /* 24 colours: two rows of 12 */
 .artColor { width: 30px; height: 30px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.25); cursor: pointer; }
 .artColor.on { outline: 3px solid #ffd34d; outline-offset: 2px; }
 .artToolRow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
@@ -2082,3 +2082,4 @@ body.phone .spPortrait { width: 110px; height: 110px; }
 .artHeat { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
 .artHeat img { width: 200px; height: 150px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: #fff; flex: none; }
 body.phone .artCommCard, body.phone .artHeat { flex-direction: column; align-items: flex-start; }
+body.phone .artPalette { grid-template-columns: repeat(8, 30px); }
