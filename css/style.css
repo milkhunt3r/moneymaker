@@ -2102,3 +2102,5 @@ body.phone .pipStage { margin: 0 auto; }
 .pipOffer .btn { margin-top: 6px; }
 .pipOffer.locked { opacity: 0.75; background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.12); }
 .pipOffer.locked img { filter: grayscale(1) brightness(0.6); }
+.spMkBuy { margin-top: 6px; display: flex; gap: 6px; align-items: center; justify-content: flex-end; font-size: 12px; }
+.spMkBuy input { width: 70px; padding: 4px 6px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: #15132a; color: #fff; }

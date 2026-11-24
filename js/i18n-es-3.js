@@ -917,8 +917,8 @@ rx(String.raw`Sold (\S+) (\d+) (${SP_RX_GOOD}) for (.+)\.`, (m, e, n, g, x) => `
 hrx(String.raw`📦 Sold: <b>([\d.,]+)<\/b>`, "📦 Vendidos: <b>$1</b>"); hrx(String.raw`💰 Earned: <b>(.+)<\/b>`, "💰 Ganado: <b>$1</b>");
 hrx(String.raw`🛣️ <b>Trade routes<\/b> \(from 😊 Friendly\): one ship flies to the race and back for good, bringing (\d+) goods every trip \((\d+) at 💛 Trusted and (\d+) at 💖 Allies, with trips 15% and 30% faster\)\. It keeps going while the game is closed and gives Logistics XP like a gift trip\. Stop it any time: the ship comes home after its trip\.`,
   "🛣️ <b>Rutas comerciales</b> (desde 😊 Amistosa): una nave va y vuelve de la raza para siempre y trae $1 bienes en cada viaje ($2 en 💛 De confianza y $3 en 💖 Aliada, con viajes un 15 % y un 30 % más rápidos). Sigue funcionando con el juego cerrado y da XP de logística como un viaje con regalo. Puedes pararla cuando quieras: la nave vuelve a casa tras su viaje.");
-hrx(String.raw`🏪 <b>Market<\/b> \(🌌 Space → Market\): sell alien goods for money\. A good is worth about ([\d.]+) × the race's distance \(in minutes\) minutes of your business income, and every price moves up or down every 30 minutes\.`,
-  (m, x) => `🏪 <b>Mercado</b> (🌌 Espacio → Mercado): vende bienes alienígenas por dinero. Un bien vale unos ${x.replace(".", ",")} × la distancia de la raza (en minutos) minutos de los ingresos de tus negocios, y cada precio sube o baja cada 30 minutos.`);
+hrx(String.raw`🏪 <b>Market<\/b> \(🌌 Space → Market\): sell alien goods for money\. A good is worth about ([\d.]+) × the race's distance \(in minutes\) minutes of your business income, and every price moves up or down every 30 minutes\.( Once you are 💖 Allies with a race, you can also buy its goods there; buying always costs more than the best selling price\.)?`,
+  (m, x, b) => `🏪 <b>Mercado</b> (🌌 Espacio → Mercado): vende bienes alienígenas por dinero. Un bien vale unos ${x.replace(".", ",")} × la distancia de la raza (en minutos) minutos de los ingresos de tus negocios, y cada precio sube o baja cada 30 minutos.${b ? " Cuando seas 💖 Aliada de una raza, también podrás comprar allí sus bienes; comprar siempre cuesta más que el mejor precio de venta." : ""}`);
 H("<b>3. Alien goods:</b> your ship comes back with the race's own goods (more at higher friendship, plus a thank-you shipment at every new level). Sell them at the 🏪 Market.",
   "<b>3. Bienes alienígenas:</b> tu nave vuelve con los bienes propios de la raza (más cuanto mayor sea la amistad, y un envío de agradecimiento en cada nivel nuevo). Véndelos en el 🏪 Mercado.");
 H("🛣️ Space: <b>trade routes</b>! Once you are 😊 Friendly with a race, give it a ship that flies back and forth for good and brings their goods home every trip (more and faster at Trusted and Allies).",
@@ -1148,6 +1148,15 @@ Object.assign(ES, { "A painter in the family": "Un pintor en la familia", "Adopt
   "Little artist": "Pequeño artista", "Let Pip paint 5 paintings": "Deja que Pip pinte 5 cuadros", "Prolific painter": "Pintor prolífico", "Let Pip paint 50 paintings": "Deja que Pip pinte 50 cuadros",
   "Muse": "Musa", "Pet Pip 100 times": "Acaricia a Pip 100 veces",
   "🏆 4 new 🖼️ Art Gallery achievements for Pip: 🐭 A painter in the family, 🖌️ Little artist, 🎨 Prolific painter and 💜 Muse.": "🏆 4 logros nuevos de 🖼️ Galería de arte para Pip: 🐭 Un pintor en la familia, 🖌️ Pequeño artista, 🎨 Pintor prolífico y 💜 Musa." });
+// 🏪 buying alien goods at 💖 Allies
+ES["Sell the goods your ships bring home. Prices move every 30 minutes: sell when they are high. The further away a race lives, the more its goods are worth. Once you are 💖 Allies with a race, you can buy its goods here too."] =
+  "Vende los bienes que traen tus naves. Los precios cambian cada 30 minutos: vende cuando estén altos. Cuanto más lejos vive una raza, más valen sus bienes. Cuando seas 💖 Aliada de una raza, también podrás comprar aquí sus bienes.";
+Object.assign(ES, { "Buy": "Comprar", "Buy here at 💖 Allies": "Compra aquí al llegar a 💖 Aliada", "Bought": "Comprados", "Spent": "Gastado" });
+hrx(String.raw`💖 Buy: <b>(.+)<\/b> each`, "💖 Comprar: <b>$1</b> cada uno");
+rx(String.raw`Bought (\S+) (\d+) (${SP_RX_GOOD}) for (.+)\.`, (m, e, n, g, x) => `Has comprado ${e} ${n} ${spG(g)} por ${x}.`);
+rx(String.raw`You need (.+) to buy (\d+) (${SP_RX_GOOD})\.`, (m, x, n, g) => `Necesitas ${x} para comprar ${n} ${spG(g)}.`);
+ES["🏪 Alien market: once you are 💖 Allies with a race, you can also buy its goods there (handy for gifts to other races). Buying always costs more than selling."] =
+  "🏪 Mercado alienígena: cuando seas 💖 Aliada de una raza, también podrás comprar allí sus bienes (útil para regalos a otras razas). Comprar siempre cuesta más que vender.";
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

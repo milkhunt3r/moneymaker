@@ -615,7 +615,19 @@ function spMult(g, slot) {
 }
 const spBase = (g) => mineBase() * 60 * SP_PRICE_MIN * SP_RACES[SP_GOOD_RACE[g]].min;
 const spPrice = (g, slot = spSlot()) => Math.max(1, Math.round(spBase(g) * spMult(g, slot) * (1 + spAllyBonus("market"))));
-let spQty = {};
+// 💖 at Allies you can also BUY that race's good. The buy price moves with the market but always stays above the best selling price, so buying to sell back never pays.
+const spBuyPrice = (g, slot = spSlot()) => Math.max(2, Math.round(spBase(g) * (1.75 + 0.5 * spMult(g, slot)) * (1 + spAllyBonus("market"))));
+const spCanBuy = (g) => SP.races[SP_GOOD_RACE[g]].found && spLevel(SP_GOOD_RACE[g]) >= 5;
+let spQty = {}, spBQty = {};
+function spBuy(g) {
+  if (isPaused() || !spCanBuy(g)) return;
+  const each = spBuyPrice(g), n = Math.max(1, Math.floor(spBQty[g] || 1)), cost = n * each;
+  if (state.money < cost) { showNotice(`❌ You need ${fmt(cost)} to buy ${n} ${SP_GOODS[g].name}.`); return; }
+  state.money -= cost; SP.goods[g] = (SP.goods[g] || 0) + n;
+  SP.stats.bought = (SP.stats.bought || 0) + n; SP.stats.boughtMoney = (SP.stats.boughtMoney || 0) + cost;
+  showNotice(`🏪 Bought ${SP_GOODS[g].emoji} ${n} ${SP_GOODS[g].name} for ${fmt(cost)}.`);
+  updateCounter(); save(); renderSpace();
+}
 function spSell(g, all) {
   const have = SP.goods[g] || 0, n = all ? have : Math.min(have, Math.max(1, Math.floor(spQty[g] || 1)));
   if (isPaused() || !n) return;
@@ -641,15 +653,19 @@ function spMarketHtml() {
       <td><b>${fmt(p)}</b><div class="${ch >= 0 ? "up" : "down"}">${ch >= 0 ? "▲" : "▼"} ${Math.abs(ch).toFixed(0)}%</div></td><td>${spSpark(g)}</td>
       <td class="spMkSell"><input type="number" min="1" max="${have}" value="${q}" data-spq="${g}" ${have ? "" : "disabled"}>
         <button class="btn small" data-spx="sell" data-g="${g}" ${have ? "" : "disabled"}>Sell</button>
-        <button class="btn ghost small" data-spx="sellall" data-g="${g}" ${have ? "" : "disabled"}>Sell all${have ? ` (${fmt(have * p)})` : ""}</button></td></tr>`;
+        <button class="btn ghost small" data-spx="sellall" data-g="${g}" ${have ? "" : "disabled"}>Sell all${have ? ` (${fmt(have * p)})` : ""}</button>
+        ${spCanBuy(g) ? `<div class="spMkBuy"><span class="muted">💖 Buy: <b>${fmt(spBuyPrice(g))}</b> each</span>
+          <input type="number" min="1" value="${Math.max(1, Math.floor(spBQty[g] || 1))}" data-spbq="${g}"><button class="btn small" data-spx="buy" data-g="${g}">Buy</button></div>`
+          : `<div class="spMkBuy muted">🔒 Buy here at 💖 Allies</div>`}</td></tr>`;
   }).join("");
   return `<div class="card spResBar" id="spResBar">${spResHtml()}</div>
     <div class="card"><div class="row"><h2 style="margin:0"><img class="ico h" src="assets/icons/ico-lg-market.webp" alt="">Alien market</h2><span class="muted">⏱️ Prices change in <b data-spt="${next}">${spClock(next - Date.now())}</b></span></div>
-    <p class="muted">Sell the goods your ships bring home. Prices move every 30 minutes: sell when they are high. The further away a race lives, the more its goods are worth.</p>
+    <p class="muted">Sell the goods your ships bring home. Prices move every 30 minutes: sell when they are high. The further away a race lives, the more its goods are worth. Once you are 💖 Allies with a race, you can buy its goods here too.</p>
     <div class="spMkWrap"><table class="spMarket"><thead><tr><th>Good</th><th>You have</th><th>Price each</th><th>Last 6 hours</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
-    <div class="spStats"><span>📦 Sold: <b>${(SP.stats.sold || 0).toLocaleString()}</b></span><span>💰 Earned: <b>${fmt(SP.stats.soldMoney || 0)}</b></span></div></div>`;
+    <div class="spStats"><span>📦 Sold: <b>${(SP.stats.sold || 0).toLocaleString()}</b></span><span>💰 Earned: <b>${fmt(SP.stats.soldMoney || 0)}</b></span>${SP.stats.bought ? `<span>🛒 Bought: <b>${SP.stats.bought.toLocaleString()}</b></span><span>💸 Spent: <b>${fmt(SP.stats.boughtMoney || 0)}</b></span>` : ""}</div></div>`;
 }
-document.addEventListener("input", (e) => { const el = e.target.closest("[data-spq]"); if (el) spQty[el.dataset.spq] = Number(el.value) || 1; });
+document.addEventListener("input", (e) => { const el = e.target.closest("[data-spq]"); if (el) spQty[el.dataset.spq] = Number(el.value) || 1;
+  const b = e.target.closest("[data-spbq]"); if (b) spBQty[b.dataset.spbq] = Number(b.value) || 1; });
 function renderSpace() {
   const box = $("spaceView");
   if (!box || !spShown()) return;
@@ -748,6 +764,7 @@ document.addEventListener("click", (e) => {
   if (x.dataset.spx === "route") spRouteStart(spSel);
   if (x.dataset.spx === "rstop" || x.dataset.spx === "rgo") { const rt = spRouteOf(spSel); if (rt) { rt.stop = x.dataset.spx === "rstop"; save(); renderSpace(); } }
   if (x.dataset.spx === "sell" || x.dataset.spx === "sellall") spSell(x.dataset.g, x.dataset.spx === "sellall");
+  if (x.dataset.spx === "buy") spBuy(x.dataset.g);
   if (x.dataset.spx === "gift") spOpenGift(spSel);
   if (x.dataset.spx === "reroll") {
     const r = SP.races[spSel];
