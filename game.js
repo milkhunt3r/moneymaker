@@ -2572,6 +2572,35 @@ Object.assign(ES, { "Your save couldn't be loaded": "No se ha podido cargar tu p
   "Your last automatic backup was loaded instead.": "En su lugar se ha cargado tu última copia de seguridad automática.",
   "A new game was started. If you play with a Google account, sign in (👤 Profile) to get your ☁️ cloud save back.": "Se ha empezado una partida nueva. Si juegas con una cuenta de Google, inicia sesión (👤 Perfil) para recuperar tu partida de la ☁️ nube.",
   "The cloud save was changed outside the game, so it was not loaded. This device's progress is kept and saved to the cloud again.": "La partida en la nube se ha modificado fuera del juego, así que no se ha cargado. Se conserva el progreso de este dispositivo y se vuelve a guardar en la nube." });
+// 👥 friends
+Object.assign(ES, { "Friends": "Amigos", "Friend requests": "Solicitudes de amistad", "Friend code": "Código de amigo", "Copy": "Copiar", "Find players": "Buscar jugadores",
+  "Your friend code": "Tu código de amigo", "Share it so friends can find you.": "Compártelo para que tus amigos te encuentren.", "Nickname or friend code": "Apodo o código de amigo",
+  "Search": "Buscar", "Searching…": "Buscando…", "No players found.": "No se ha encontrado ningún jugador.", "Online": "En línea", "Offline": "Desconectado",
+  "Accept": "Aceptar", "Decline": "Rechazar", "Add friend": "Añadir amigo", "Request sent": "Solicitud enviada", "Requests you sent": "Solicitudes que has enviado",
+  "No friends yet. Search for a nickname or a friend code above.": "Todavía no tienes amigos. Busca un apodo o un código de amigo arriba.",
+  "You are now friends!": "¡Ahora sois amigos!", "Request declined.": "Solicitud rechazada.", "Request cancelled.": "Solicitud cancelada.", "Friend removed.": "Amigo eliminado.",
+  "Pets": "Mascotas", "No pets yet.": "Todavía no tiene mascotas.", "Baby dragon-moth": "Bebé dragón-polilla", "Remove friend": "Eliminar amigo", "Remove": "Eliminar",
+  "You will no longer be friends. You can send a new request later.": "Dejaréis de ser amigos. Podrás enviar una nueva solicitud más adelante.",
+  "Create your profile first (👤 Profile tab: choose a nickname). Then you can add friends.": "Primero crea tu perfil (pestaña 👤 Perfil: elige un apodo). Después podrás añadir amigos.",
+  "Friends aren't switched on yet. Please try again later.": "Los amigos todavía no están activados. Inténtalo más tarde.",
+  "You have too many requests waiting. Cancel some first.": "Tienes demasiadas solicitudes pendientes. Cancela algunas primero.",
+  "Your friend list is full (200 friends).": "Tu lista de amigos está llena (200 amigos).", "There is already a request between you two.": "Ya hay una solicitud entre vosotros dos." });
+hrx(String.raw`👥 Friends <span>(\d+)<\/span>`, "👥 Amigos <span>$1</span>");
+hrx(String.raw`📨 Friend requests <span>(\d+)<\/span>`, "📨 Solicitudes de amistad <span>$1</span>");
+hrx(String.raw`<span><\/span> Online`, "<span></span> En línea");
+hrx(String.raw`<span><\/span> Offline`, "<span></span> Desconectado");
+hrx(String.raw`<span><\/span> Last seen (\d+) (min|h|days) ago`, (m, n, u) => `<span></span> Visto por última vez hace ${n} ${u === "days" ? (n === "1" ? "día" : "días") : u}`);
+rx(String.raw`Your friends \((\d+)\)`, "Tus amigos ($1)");
+rx(String.raw`(\d+) online`, "$1 en línea");
+rx(String.raw`(\d+) (min|h|days) ago`, (m, n, u) => `hace ${n} ${u === "days" ? (n === "1" ? "día" : "días") : u}`);
+rx(String.raw`Friend request sent to (.+)\.`, "Solicitud de amistad enviada a $1.");
+rx(String.raw`Remove (.+)\?`, "¿Eliminar a $1?");
+rx(String.raw`Friend code (\w+) copied\.`, "Código de amigo $1 copiado.");
+rx(String.raw`Your friend code: (\w+)`, "Tu código de amigo: $1");
+H("👥 <b>Friends!</b> In 👤 Profile → 👥 Friends, find players by nickname or by their friend code, send requests, and see who is 🟢 online. Click a friend to see their avatar, achievements, prestige and pets.",
+  "👥 <b>¡Amigos!</b> En 👤 Perfil → 👥 Amigos, busca jugadores por su apodo o su código de amigo, envía solicitudes y mira quién está 🟢 en línea. Pulsa en un amigo para ver su avatar, sus logros, sus prestigios y sus mascotas.");
+H("👥 <b>Friends</b> (👤 Profile → 👥 Friends): find players by nickname or by their 8-letter friend code (yours is on your profile), send a friend request, and accept or decline the ones you get. 🟢 means the friend is playing right now. Click a friend to see their avatar, achievements, prestige and pets.",
+  "👥 <b>Amigos</b> (👤 Perfil → 👥 Amigos): busca jugadores por su apodo o por su código de amigo de 8 caracteres (el tuyo está en tu perfil), envía solicitudes de amistad y acepta o rechaza las que recibas. 🟢 significa que ese amigo está jugando ahora mismo. Pulsa en un amigo para ver su avatar, sus logros, sus prestigios y sus mascotas.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -10557,6 +10586,7 @@ function wikiGeneral() {
     <h3>💾 Saving</h3>
     <p>The game saves automatically in your browser. Sign in with Google (👤 Profile) to keep a ☁️ cloud copy and play on other devices. In ⚙️ Settings you can also reset the game.</p>
     <p>👤 <b>Profile</b> (the round button next to ⚙️): once signed in, choose a nickname and an avatar (the emblem of one of your 🎁 reward collections). Other players see your nickname, avatar, achievements and prestige count. Nicknames are unique, and rude ones aren't allowed. Your first nickname is free; changing it later (✏️ next to your name) costs 100 gcoin.</p>
+    <p>👥 <b>Friends</b> (👤 Profile → 👥 Friends): find players by nickname or by their 8-letter friend code (yours is on your profile), send a friend request, and accept or decline the ones you get. 🟢 means the friend is playing right now. Click a friend to see their avatar, achievements, prestige and pets.</p>
     <h3>💡 Tips and guided start</h3>
     <p>New players get a short guided start (click the coin, buy a business, hire staff). After that, a small tip appears the first time you meet something new, with a link to the matching Wiki page.
       ⚙️ Settings: turn tips on/off, show all tips again, or replay the guided start.</p>
@@ -12994,6 +13024,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "24 November 2026", title: "Empire of Coins", items: [
+    "👥 <b>Friends!</b> In 👤 Profile → 👥 Friends, find players by nickname or by their friend code, send requests, and see who is 🟢 online. Click a friend to see their avatar, achievements, prestige and pets.",
     "👤 <b>Player profiles!</b> Click the round 👤 button next to ⚙️ Settings, sign in with Google and choose a nickname and an avatar (the emblem of one of your 🎁 reward collections). Other players will see your nickname, avatar, achievements and prestige count.",
     "🐭 <b>New pet: Pip the painter!</b> Become 😊 Friendly with the Lumerians in 🌌 Space Logistics and adopt him for 10 paintings. He lives at the top of the 🎮 Mini-games page and paints a 🟡 Normal painting (85–95% match) every 15 minutes for your collection, even while the game is closed. Rename him on the 🐾 Pet page.",
     "🏆 4 new 🖼️ Art Gallery achievements for Pip: 🐭 A painter in the family, 🖌️ Little artist, 🎨 Prolific painter and 💜 Muse.",
@@ -18821,13 +18852,19 @@ var profColOpen = (col) => COSMETICS.some(c => c.collection === col.id && state.
 var profAvatarIds = () => COLLECTIONS.filter(c => c.reward && COL_EMBLEMS.has(c.id) && !(c.hidden && c.hidden()) && profColOpen(c)).map(c => c.id);
 var profAvName = (id) => { const c = COLLECTIONS.find(x => x.id === id); return c ? c.name.replace(/^\S+\s/, "") : ""; };
 var profAvatarImg = (id, cls = "") => id && COL_EMBLEMS.has(id) ? `<img class="${cls}" src="assets/col/${id}.webp" alt="">` : `<span class="${cls} profNoAv">👤</span>`;
+// 🐾 pets other players see on your profile
+var PROF_PETS = { mochi: { pic: "assets/pet/pet-portrait.webp", name: "Baby dragon-moth" }, pip: { pic: "assets/pip/pip-portrait.webp", name: "Pip the painter" } };
+var profPets = () => [state.pet && state.pet.owned && !state.pet.pending ? "mochi" : null, state.pip && state.pip.owned ? "pip" : null].filter(Boolean);
 var profSignedIn = () => typeof cloud === "object" && !!cloud.user && !!cloud.sb;
 
 async function profLoad() {
   if (!profSignedIn() || prof.loading) return;
   prof.loading = true; prof.err = "";
   try {
-    const { data, error } = await cloud.sb.from("profiles").select("nickname, avatar, ach_done, ach_total, prestige").eq("user_id", cloud.user.id).maybeSingle();
+    const base = "nickname, avatar, ach_done, ach_total, prestige";
+    let { data, error } = await cloud.sb.from("profiles").select(base + ", friend_code, pets").eq("user_id", cloud.user.id).maybeSingle();
+    prof.friendsOn = !error;
+    if (error && error.code === "42703") ({ data, error } = await cloud.sb.from("profiles").select(base).eq("user_id", cloud.user.id).maybeSingle());   // 👥 friends not switched on yet
     if (error) throw error;
     prof.row = data; prof.user = cloud.user.id; profCache();
   } catch (e) { console.warn("Profile load failed:", e); prof.err = e && (e.code === "42P01" || e.code === "PGRST205") ? profDbError(e) : "load"; }
@@ -18862,6 +18899,7 @@ async function profSaveNick(raw) {
     if (paid) { state.money -= PROF_RENAME_COST; updateCounter(); save(); }
     prof.editing = false;
     prof.msg = paid ? `✅ Nickname changed (−${fmt(PROF_RENAME_COST)}).` : "✅ Nickname saved.";
+    if (!paid) setTimeout(profLoad, 300);   // fetch the friend code the database gave the new profile
   } catch (e) { console.warn("Nickname save failed:", e); prof.err = profDbError(e); }
   prof.busy = false; profUi();
 }
@@ -18879,7 +18917,8 @@ async function profPushStats() {
   if (!profSignedIn() || !prof.row || profPushing || prof.user !== cloud.user.id) return;
   const st = profStats();
   st.prestige = Math.min(st.prestige, (prof.row.prestige || 0) + 1);   // the database accepts one prestige step per upload
-  if (st.ach_done === prof.row.ach_done && st.ach_total === prof.row.ach_total && st.prestige === prof.row.prestige) return;
+  if (prof.friendsOn) st.pets = profPets();
+  if (st.ach_done === prof.row.ach_done && st.ach_total === prof.row.ach_total && st.prestige === prof.row.prestige && String(st.pets) === String(prof.row.pets)) return;
   profPushing = true;
   try { const { error } = await cloud.sb.from("profiles").update(st).eq("user_id", cloud.user.id); if (!error) { Object.assign(prof.row, st); profCache(); } }
   catch (e) {}
@@ -18892,7 +18931,8 @@ function profCardHtml(row) {
   const st = profStats(), nick = row ? row.nickname : "", av = row ? row.avatar : prof.pendingAvatar;
   return `<div class="profCard">${profAvatarImg(av, "profAv")}
     <div class="profCardInfo"><div class="profNick"><span data-noi18n>${nick ? escapeHtml(nick) : "<i>…</i>"}</span>${row && !prof.editing ? `<button class="profEdit" data-prof="edit" title="Change nickname" aria-label="Change nickname">✏️</button>` : ""}</div>
-      <div class="profStats"><span>🏆 <b>${st.ach_done}/${st.ach_total}</b> achievements</span><span>⭐ Prestige <b>${st.prestige}</b></span></div></div></div>`;
+      <div class="profStats"><span>🏆 <b>${st.ach_done}/${st.ach_total}</b> achievements</span><span>⭐ Prestige <b>${st.prestige}</b></span></div>
+      ${row && row.friend_code ? `<div class="profCode">Friend code: <b data-noi18n>${escapeHtml(row.friend_code)}</b> <button class="btn ghost small" data-prof="copy">📋 Copy</button></div>` : ""}</div></div>`;
 }
 function renderProfile() {
   const box = $("profileView"); if (!box || box.hidden) return;
@@ -18907,12 +18947,16 @@ function renderProfile() {
   }
   if (prof.user !== cloud.user.id && !prof.loading) { prof.row = null; profLoad(); }
   const row = prof.user === cloud.user.id ? prof.row : null;
+  const inc = typeof frIncoming === "function" ? frIncoming() : 0;
+  const tabs = `<div class="profTabs"><button class="profTab ${prof.tab !== "friends" ? "on" : ""}" data-prof="tab-me">👤 Profile</button>
+    <button class="profTab ${prof.tab === "friends" ? "on" : ""}" data-prof="tab-friends">👥 Friends${inc ? ` <span class="profBadge">${inc}</span>` : ""}</button></div>`;
+  if (prof.tab === "friends" && (__eocLoaded >= 46 && typeof renderFriends === "function")) { box.innerHTML = tabs + `<div id="friendsBox"></div>`; renderFriends(row); return; }
   const ids = profAvatarIds(), cur = row ? row.avatar : prof.pendingAvatar;
   const shown = prof.showAll ? ids : ids.slice(0, 60);
   const typed = $("profNick") ? $("profNick").value : null;
   const showNick = (!row && !prof.loading) || (row && prof.editing), afford = state.money >= PROF_RENAME_COST;
   const errText = prof.err === "load" ? "Your profile couldn't be loaded. Check your connection and try again." : prof.err;
-  box.innerHTML = `<div class="card profWrap"><div class="row"><h2 style="margin:0">👤 Your profile</h2><span class="muted">Visible to other players</span></div>
+  box.innerHTML = tabs + `<div class="card profWrap"><div class="row"><h2 style="margin:0">👤 Your profile</h2><span class="muted">Visible to other players</span></div>
       ${profCardHtml(row)}
       ${prof.loading && !row ? `<p class="muted">Loading…</p>` : ""}
       ${!row && !prof.loading ? `<p class="profNew">✨ Choose a nickname and an avatar to create your profile.</p>` : ""}
@@ -18939,9 +18983,11 @@ function profUi() {
   if (b) {
     const av = profSignedIn() && prof.user === cloud.user.id && prof.row ? prof.row.avatar : "";
     const html = av ? profAvatarImg(av, "profBtnAv") : `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>`;
-    if (b.dataset.av !== (av || "-")) { b.innerHTML = html; b.dataset.av = av || "-"; }
+    const inc = typeof frIncoming === "function" ? frIncoming() : 0, key = (av || "-") + "|" + inc;
+    if (b.dataset.av !== key) { b.innerHTML = html + (inc ? `<span class="profBtnDot" aria-label="Friend requests">${inc}</span>` : ""); b.dataset.av = key; }
   }
-  if (state.view === "profile") renderProfile();
+  const typing = document.activeElement && ["profNick", "frSearch"].includes(document.activeElement.id);   // don't rebuild the page under the player's fingers
+  if (state.view === "profile" && !typing) renderProfile();
 }
 
 /* ----- 🔘 wiring ----- */
@@ -18967,6 +19013,11 @@ document.addEventListener("click", (e) => {
   if (b.dataset.prof === "signin" && (__eocLoaded >= 37 && typeof cloudSignIn === "function")) cloudSignIn();
   if (b.dataset.prof === "nick") profSaveNick($("profNick").value);
   if (b.dataset.prof === "all") { prof.showAll = true; renderProfile(); }
+  if (b.dataset.prof === "tab-me" || b.dataset.prof === "tab-friends") { prof.tab = b.dataset.prof === "tab-friends" ? "friends" : "me"; prof.err = ""; prof.msg = ""; renderProfile(); if (prof.tab === "friends" && (__eocLoaded >= 46 && typeof frLoad === "function")) frLoad(); }
+  if (b.dataset.prof === "copy" && prof.row && prof.row.friend_code) {
+    const c = prof.row.friend_code;
+    (navigator.clipboard ? navigator.clipboard.writeText(c) : Promise.reject()).then(() => showNotice(`📋 Friend code ${c} copied.`), () => showNotice(`📋 Your friend code: ${c}`));
+  }
   if (b.dataset.prof === "edit") { prof.editing = true; prof.err = ""; prof.msg = ""; renderProfile(); const i = $("profNick"); if (i) { i.focus(); i.select(); } }
   if (b.dataset.prof === "cancel") { prof.editing = false; prof.err = ""; prof.msg = ""; renderProfile(); }
 });
@@ -18983,5 +19034,183 @@ updateCloudUi = function () {
 };
 profUi();
 if (state.view === "profile") renderProfile();
+
+// ===== js/38-friends.js =====
+__eocLoaded = 46;
+/* =====================================================================
+   👥 FRIENDS (👤 Profile → 👥 Friends). Needs a profile (js/37-profile.js) and the tables from docs/supabase-friends.sql.
+   · Find players by nickname (start of the name) or by their 8-letter friend code, and send a request.
+   · Requests: accept or decline the ones you got, cancel the ones you sent. Remove a friend at any time.
+   · 🟢 online / ⚫ offline: the game updates your profile once a minute while it's open and visible
+     (the database stamps last_seen); a friend seen in the last 3 minutes counts as online.
+   · Click a friend to see their profile: avatar, achievements, prestige and pets.
+   ===================================================================== */
+var FR_ONLINE = 3 * 60e3, FR_PING = 60e3, FR_POLL = 2 * 60e3;
+var fr = { rows: [], people: {}, loaded: false, loading: false, err: "", q: "", results: null, searching: false, busy: false, at: 0 };
+var frMe = () => (profSignedIn() ? cloud.user.id : null);
+var frOther = (r) => (r.requester === frMe() ? r.addressee : r.requester);
+var frIncoming = () => fr.rows.filter(r => r.status === "pending" && r.addressee === frMe()).length;
+var frOnline = (p) => !!(p && p.last_seen && Date.now() - Date.parse(p.last_seen) < FR_ONLINE);
+var frDot = (p) => `<span class="frDot ${frOnline(p) ? "on" : ""}" title="${frOnline(p) ? "Online" : "Offline"}"></span>`;
+var FR_COLS = "user_id, nickname, avatar, ach_done, ach_total, prestige, pets, last_seen";
+function frErr(e) {
+  const m = (e && e.message) || "";
+  if (/too_many_requests/.test(m)) return "You have too many requests waiting. Cancel some first.";
+  if (/too_many_friends/.test(m)) return "Your friend list is full (200 friends).";
+  if (e && e.code === "23505") return "There is already a request between you two.";
+  if (e && (e.code === "42P01" || e.code === "PGRST205" || e.code === "42703")) return "Friends aren't switched on yet. Please try again later.";
+  return "Something went wrong. Please try again.";
+}
+var frAgo = (t) => {
+  const s = Math.max(0, (Date.now() - Date.parse(t)) / 1000);
+  if (s < 3600) return `${Math.max(1, Math.round(s / 60))} min ago`;
+  if (s < 86400) return `${Math.round(s / 3600)} h ago`;
+  return `${Math.round(s / 86400)} days ago`;
+};
+
+/* ----- 🔄 loading ----- */
+async function frLoad(quiet) {
+  if (!frMe() || !prof.row || fr.loading) return;
+  fr.loading = true; if (!quiet) fr.err = "";
+  try {
+    const { data, error } = await cloud.sb.from("friendships").select("id, requester, addressee, status, created_at");
+    if (error) throw error;
+    fr.rows = data || [];
+    const ids = [...new Set(fr.rows.map(frOther))];
+    if (ids.length) {
+      const r = await cloud.sb.from("profiles").select(FR_COLS).in("user_id", ids);
+      if (r.error) throw r.error;
+      (r.data || []).forEach(p => fr.people[p.user_id] = p);
+    }
+    fr.loaded = true; fr.at = Date.now();
+  } catch (e) { console.warn("Friends load failed:", e); if (!quiet) fr.err = frErr(e); }
+  fr.loading = false;
+  profUi();
+}
+async function frSearch(q) {
+  q = profTidy(q); fr.q = q; fr.err = "";
+  if (!frMe() || q.length < 2) { fr.results = null; return renderProfile(); }
+  fr.searching = true; renderProfile();
+  try {
+    const code = q.replace(/[\s-]/g, "").toUpperCase();
+    let res;
+    if (/^[A-Z0-9]{8}$/.test(code)) {
+      res = await cloud.sb.from("profiles").select(FR_COLS).eq("friend_code", code).limit(1);
+      if (!res.error && (!res.data || !res.data.length)) res = null;   // not a code after all: search the name
+    }
+    if (!res) res = await cloud.sb.from("profiles").select(FR_COLS).ilike("nickname", q.replace(/[\\%_]/g, "\\$&") + "%").order("nickname").limit(10);
+    if (res.error) throw res.error;
+    fr.results = (res.data || []).filter(p => p.user_id !== frMe());
+    fr.results.forEach(p => fr.people[p.user_id] = { ...(fr.people[p.user_id] || {}), ...p });
+  } catch (e) { console.warn("Friend search failed:", e); fr.err = frErr(e); fr.results = null; }
+  fr.searching = false; renderProfile();
+}
+async function frDo(fn, ok) {
+  if (fr.busy) return;
+  fr.busy = true; fr.err = "";
+  try { const { error } = await fn(); if (error) throw error; if (ok) showNotice(ok); }
+  catch (e) { console.warn("Friends:", e); fr.err = frErr(e); }
+  fr.busy = false;
+  await frLoad(true);
+}
+var frRowWith = (id) => fr.rows.find(r => frOther(r) === id);
+function frAdd(id) {
+  const r = frRowWith(id), p = fr.people[id];
+  if (r && r.status === "pending" && r.addressee === frMe()) return frAccept(r.id);   // they already asked you
+  if (r) return;
+  frDo(() => cloud.sb.from("friendships").insert({ requester: frMe(), addressee: id }), `👥 Friend request sent to ${p ? p.nickname : "the player"}.`);
+}
+var frAccept = (rid) => frDo(() => cloud.sb.from("friendships").update({ status: "accepted" }).eq("id", rid), "👥 You are now friends!");
+var frDelete = (rid, msg) => frDo(() => cloud.sb.from("friendships").delete().eq("id", rid), msg);
+
+/* ----- 🖼️ the Friends tab ----- */
+function frPersonRow(p, right) {
+  return `<div class="frRow"><button class="frWho" data-fr-view="${p.user_id}">${profAvatarImg(p.avatar, "frAv")}${frDot(p)}
+      <span class="frName" data-noi18n>${escapeHtml(p.nickname || "?")}</span><span class="frMini">🏆 ${p.ach_done || 0} · ⭐ ${p.prestige || 0}</span></button>
+    <span class="frBtns">${right || ""}</span></div>`;
+}
+function frResultBtn(p) {
+  const r = frRowWith(p.user_id);
+  if (!r) return `<button class="btn small" data-fr="add" data-id="${p.user_id}" ${fr.busy ? "disabled" : ""}>➕ Add friend</button>`;
+  if (r.status === "accepted") return `<span class="muted">✅ Friends</span>`;
+  if (r.addressee === frMe()) return `<button class="btn small" data-fr="accept" data-rid="${r.id}">✅ Accept</button>`;
+  return `<span class="muted">⏳ Request sent</span>`;
+}
+function renderFriends(row) {
+  const box = $("friendsBox"); if (!box) return;
+  if (!row) { box.innerHTML = `<div class="card profWrap"><h2 style="margin-top:0">👥 Friends</h2><p>Create your profile first (👤 Profile tab: choose a nickname). Then you can add friends.</p></div>`; return; }
+  if (prof.friendsOn === false) { box.innerHTML = `<div class="card profWrap"><h2 style="margin-top:0">👥 Friends</h2><p>Friends aren't switched on yet. Please try again later.</p></div>`; return; }
+  if (!fr.loaded && !fr.loading) frLoad();
+  const me = frMe(), P = (r) => fr.people[frOther(r)] || { user_id: frOther(r), nickname: "…" };
+  const incoming = fr.rows.filter(r => r.status === "pending" && r.addressee === me);
+  const outgoing = fr.rows.filter(r => r.status === "pending" && r.requester === me);
+  const friends = fr.rows.filter(r => r.status === "accepted").map(P)
+    .sort((a, b) => (frOnline(b) - frOnline(a)) || String(a.nickname).localeCompare(String(b.nickname)));
+  const online = friends.filter(frOnline).length;
+  const typed = $("frSearch") ? $("frSearch").value : fr.q;
+  box.innerHTML = `<div class="card profWrap"><h3 style="margin-top:0">🔍 Find players</h3>
+      <div class="profNickRow"><input id="frSearch" maxlength="20" autocomplete="off" spellcheck="false" placeholder="Nickname or friend code" value="${escapeHtml(typed || "")}" data-noi18n aria-label="Nickname or friend code">
+        <button class="btn" data-fr="search" ${fr.searching ? "disabled" : ""}>Search</button></div>
+      <div class="muted">Your friend code: <b data-noi18n>${escapeHtml(row.friend_code || "…")}</b> <button class="btn ghost small" data-prof="copy">📋 Copy</button> · Share it so friends can find you.</div>
+      ${fr.err ? `<div class="profErr">❌ ${fr.err}</div>` : ""}
+      ${fr.searching ? `<p class="muted">Searching…</p>` : fr.results ? (fr.results.length ? `<div class="frList">${fr.results.map(p => frPersonRow(p, frResultBtn(p))).join("")}</div>` : `<p class="muted">No players found.</p>`) : ""}</div>
+    ${incoming.length ? `<div class="card profWrap"><h3 style="margin-top:0">📨 Friend requests <span class="profBadge">${incoming.length}</span></h3><div class="frList">${incoming.map(r => frPersonRow(P(r),
+      `<button class="btn small" data-fr="accept" data-rid="${r.id}">✅ Accept</button><button class="btn ghost small" data-fr="decline" data-rid="${r.id}">Decline</button>`)).join("")}</div></div>` : ""}
+    <div class="card profWrap"><div class="row"><h3 style="margin:0">👥 Your friends (${friends.length})</h3><span class="muted">${friends.length ? `🟢 ${online} online` : ""}</span></div>
+      ${fr.loading && !fr.loaded ? `<p class="muted">Loading…</p>` : friends.length ? `<div class="frList">${friends.map(p => frPersonRow(p, frOnline(p) ? `<span class="frOn">Online</span>` : p.last_seen ? `<span class="muted">${frAgo(p.last_seen)}</span>` : "")).join("")}</div>`
+        : `<p class="muted">No friends yet. Search for a nickname or a friend code above.</p>`}</div>
+    ${outgoing.length ? `<div class="card profWrap"><h3 style="margin-top:0">⏳ Requests you sent</h3><div class="frList">${outgoing.map(r => frPersonRow(P(r),
+      `<button class="btn ghost small" data-fr="cancel" data-rid="${r.id}">Cancel</button>`)).join("")}</div></div>` : ""}`;
+}
+
+/* ----- 👤 a friend's profile ----- */
+function frShowProfile(id) {
+  const p = fr.people[id]; if (!p) return;
+  const r = frRowWith(id), pets = (p.pets || []).filter(k => PROF_PETS[k]);
+  showModal(`<div class="frProfile">${profAvatarImg(p.avatar, "profAv")}
+      <h2 data-noi18n>${escapeHtml(p.nickname)}</h2>
+      <div class="frStatus">${frDot(p)} ${frOnline(p) ? "Online" : p.last_seen ? `Last seen ${frAgo(p.last_seen)}` : "Offline"}</div>
+      <div class="profStats" style="justify-content:center"><span>🏆 <b>${p.ach_done || 0}/${p.ach_total || 0}</b> achievements</span><span>⭐ Prestige <b>${p.prestige || 0}</b></span></div>
+      <h3 style="margin:16px 0 8px">🐾 Pets</h3>
+      ${pets.length ? `<div class="frPets">${pets.map(k => `<div class="frPet"><img src="${PROF_PETS[k].pic}" alt=""><span>${PROF_PETS[k].name}</span></div>`).join("")}</div>` : `<p class="muted">No pets yet.</p>`}
+      <div class="row" style="justify-content:center;gap:10px;margin-top:14px">
+        ${r && r.status === "accepted" ? `<button class="btn ghost" data-fr="remove" data-rid="${r.id}" data-name="${escapeHtml(p.nickname)}">Remove friend</button>` : !r ? `<button class="btn" data-fr="add" data-id="${p.user_id}">➕ Add friend</button>` : ""}
+        <button class="btn" data-modal="close">Close</button></div></div>`);
+}
+
+/* ----- 🔘 clicks ----- */
+document.addEventListener("click", (e) => {
+  const inPage = $("profileView") && $("profileView").contains(e.target), inModal = $("modalBox") && $("modalBox").contains(e.target);
+  if (!inPage && !inModal) return;
+  const v = e.target.closest("[data-fr-view]"); if (v && inPage) return frShowProfile(v.dataset.frView);
+  const b = e.target.closest("[data-fr]"); if (!b) return;
+  const k = b.dataset.fr, rid = Number(b.dataset.rid);
+  if (k === "search") frSearch($("frSearch").value);
+  if (k === "add") { if (inModal) hideModal(); frAdd(b.dataset.id); }
+  if (k === "accept") frAccept(rid);
+  if (k === "decline") frDelete(rid, "Request declined.");
+  if (k === "cancel") frDelete(rid, "Request cancelled.");
+  if (k === "remove") {
+    const name = b.dataset.name;
+    showModal(`<h2>Remove ${escapeHtml(name)}?</h2><p>You will no longer be friends. You can send a new request later.</p>
+      <div class="row" style="justify-content:center;gap:10px"><button class="btn ghost" data-modal="close">Cancel</button><button class="btn dangerBtn" data-fr="removeYes" data-rid="${rid}">Remove</button></div>`);
+  }
+  if (k === "removeYes") { hideModal(); frDelete(rid, "Friend removed."); }
+});
+document.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.id === "frSearch") frSearch(e.target.value); });
+
+/* ----- ⏱️ staying "online" and checking for new requests ----- */
+setInterval(() => {   // 🟢 a small update once a minute while the game is visible: the database stamps last_seen
+  if (document.hidden || !frMe() || !prof.row || prof.friendsOn !== true || (typeof tabActive !== "undefined" && !tabActive)) return;
+  cloud.sb.from("profiles").update({ pets: profPets() }).eq("user_id", frMe()).then(({ error }) => { if (!error) prof.row.pets = profPets(); }, () => {});
+}, FR_PING);
+setInterval(() => {   // new requests (the red number on 👤) and friends going on/offline
+  if (document.hidden || !frMe() || !prof.row || prof.friendsOn !== true) return;
+  frLoad(true);
+}, FR_POLL);
+setInterval(() => { if (state.view === "profile" && prof.tab === "friends" && !document.hidden) profUi(); }, 30e3);   // refresh "x min ago"
+// once the profile is loaded: get the friend list for the red number
+var frProfLoadOrig = profLoad;
+profLoad = async function () { await frProfLoadOrig(); if (prof.row && prof.friendsOn) frLoad(true); };
 
 })();

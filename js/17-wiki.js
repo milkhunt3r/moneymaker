@@ -50,6 +50,7 @@ function wikiGeneral() {
     <h3>💾 Saving</h3>
     <p>The game saves automatically in your browser. Sign in with Google (👤 Profile) to keep a ☁️ cloud copy and play on other devices. In ⚙️ Settings you can also reset the game.</p>
     <p>👤 <b>Profile</b> (the round button next to ⚙️): once signed in, choose a nickname and an avatar (the emblem of one of your 🎁 reward collections). Other players see your nickname, avatar, achievements and prestige count. Nicknames are unique, and rude ones aren't allowed. Your first nickname is free; changing it later (✏️ next to your name) costs 100 gcoin.</p>
+    <p>👥 <b>Friends</b> (👤 Profile → 👥 Friends): find players by nickname or by their 8-letter friend code (yours is on your profile), send a friend request, and accept or decline the ones you get. 🟢 means the friend is playing right now. Click a friend to see their avatar, achievements, prestige and pets.</p>
     <h3>💡 Tips and guided start</h3>
     <p>New players get a short guided start (click the coin, buy a business, hire staff). After that, a small tip appears the first time you meet something new, with a link to the matching Wiki page.
       ⚙️ Settings: turn tips on/off, show all tips again, or replay the guided start.</p>

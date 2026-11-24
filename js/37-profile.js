@@ -49,13 +49,19 @@ const profColOpen = (col) => COSMETICS.some(c => c.collection === col.id && stat
 const profAvatarIds = () => COLLECTIONS.filter(c => c.reward && COL_EMBLEMS.has(c.id) && !(c.hidden && c.hidden()) && profColOpen(c)).map(c => c.id);
 const profAvName = (id) => { const c = COLLECTIONS.find(x => x.id === id); return c ? c.name.replace(/^\S+\s/, "") : ""; };
 const profAvatarImg = (id, cls = "") => id && COL_EMBLEMS.has(id) ? `<img class="${cls}" src="assets/col/${id}.webp" alt="">` : `<span class="${cls} profNoAv">👤</span>`;
+// 🐾 pets other players see on your profile
+const PROF_PETS = { mochi: { pic: "assets/pet/pet-portrait.webp", name: "Baby dragon-moth" }, pip: { pic: "assets/pip/pip-portrait.webp", name: "Pip the painter" } };
+const profPets = () => [state.pet && state.pet.owned && !state.pet.pending ? "mochi" : null, state.pip && state.pip.owned ? "pip" : null].filter(Boolean);
 const profSignedIn = () => typeof cloud === "object" && !!cloud.user && !!cloud.sb;
 
 async function profLoad() {
   if (!profSignedIn() || prof.loading) return;
   prof.loading = true; prof.err = "";
   try {
-    const { data, error } = await cloud.sb.from("profiles").select("nickname, avatar, ach_done, ach_total, prestige").eq("user_id", cloud.user.id).maybeSingle();
+    const base = "nickname, avatar, ach_done, ach_total, prestige";
+    let { data, error } = await cloud.sb.from("profiles").select(base + ", friend_code, pets").eq("user_id", cloud.user.id).maybeSingle();
+    prof.friendsOn = !error;
+    if (error && error.code === "42703") ({ data, error } = await cloud.sb.from("profiles").select(base).eq("user_id", cloud.user.id).maybeSingle());   // 👥 friends not switched on yet
     if (error) throw error;
     prof.row = data; prof.user = cloud.user.id; profCache();
   } catch (e) { console.warn("Profile load failed:", e); prof.err = e && (e.code === "42P01" || e.code === "PGRST205") ? profDbError(e) : "load"; }
@@ -90,6 +96,7 @@ async function profSaveNick(raw) {
     if (paid) { state.money -= PROF_RENAME_COST; updateCounter(); save(); }
     prof.editing = false;
     prof.msg = paid ? `✅ Nickname changed (−${fmt(PROF_RENAME_COST)}).` : "✅ Nickname saved.";
+    if (!paid) setTimeout(profLoad, 300);   // fetch the friend code the database gave the new profile
   } catch (e) { console.warn("Nickname save failed:", e); prof.err = profDbError(e); }
   prof.busy = false; profUi();
 }
@@ -107,7 +114,8 @@ async function profPushStats() {
   if (!profSignedIn() || !prof.row || profPushing || prof.user !== cloud.user.id) return;
   const st = profStats();
   st.prestige = Math.min(st.prestige, (prof.row.prestige || 0) + 1);   // the database accepts one prestige step per upload
-  if (st.ach_done === prof.row.ach_done && st.ach_total === prof.row.ach_total && st.prestige === prof.row.prestige) return;
+  if (prof.friendsOn) st.pets = profPets();
+  if (st.ach_done === prof.row.ach_done && st.ach_total === prof.row.ach_total && st.prestige === prof.row.prestige && String(st.pets) === String(prof.row.pets)) return;
   profPushing = true;
   try { const { error } = await cloud.sb.from("profiles").update(st).eq("user_id", cloud.user.id); if (!error) { Object.assign(prof.row, st); profCache(); } }
   catch (e) {}
@@ -120,7 +128,8 @@ function profCardHtml(row) {
   const st = profStats(), nick = row ? row.nickname : "", av = row ? row.avatar : prof.pendingAvatar;
   return `<div class="profCard">${profAvatarImg(av, "profAv")}
     <div class="profCardInfo"><div class="profNick"><span data-noi18n>${nick ? escapeHtml(nick) : "<i>…</i>"}</span>${row && !prof.editing ? `<button class="profEdit" data-prof="edit" title="Change nickname" aria-label="Change nickname">✏️</button>` : ""}</div>
-      <div class="profStats"><span>🏆 <b>${st.ach_done}/${st.ach_total}</b> achievements</span><span>⭐ Prestige <b>${st.prestige}</b></span></div></div></div>`;
+      <div class="profStats"><span>🏆 <b>${st.ach_done}/${st.ach_total}</b> achievements</span><span>⭐ Prestige <b>${st.prestige}</b></span></div>
+      ${row && row.friend_code ? `<div class="profCode">Friend code: <b data-noi18n>${escapeHtml(row.friend_code)}</b> <button class="btn ghost small" data-prof="copy">📋 Copy</button></div>` : ""}</div></div>`;
 }
 function renderProfile() {
   const box = $("profileView"); if (!box || box.hidden) return;
@@ -135,12 +144,16 @@ function renderProfile() {
   }
   if (prof.user !== cloud.user.id && !prof.loading) { prof.row = null; profLoad(); }
   const row = prof.user === cloud.user.id ? prof.row : null;
+  const inc = typeof frIncoming === "function" ? frIncoming() : 0;
+  const tabs = `<div class="profTabs"><button class="profTab ${prof.tab !== "friends" ? "on" : ""}" data-prof="tab-me">👤 Profile</button>
+    <button class="profTab ${prof.tab === "friends" ? "on" : ""}" data-prof="tab-friends">👥 Friends${inc ? ` <span class="profBadge">${inc}</span>` : ""}</button></div>`;
+  if (prof.tab === "friends" && typeof renderFriends === "function") { box.innerHTML = tabs + `<div id="friendsBox"></div>`; renderFriends(row); return; }
   const ids = profAvatarIds(), cur = row ? row.avatar : prof.pendingAvatar;
   const shown = prof.showAll ? ids : ids.slice(0, 60);
   const typed = $("profNick") ? $("profNick").value : null;
   const showNick = (!row && !prof.loading) || (row && prof.editing), afford = state.money >= PROF_RENAME_COST;
   const errText = prof.err === "load" ? "Your profile couldn't be loaded. Check your connection and try again." : prof.err;
-  box.innerHTML = `<div class="card profWrap"><div class="row"><h2 style="margin:0">👤 Your profile</h2><span class="muted">Visible to other players</span></div>
+  box.innerHTML = tabs + `<div class="card profWrap"><div class="row"><h2 style="margin:0">👤 Your profile</h2><span class="muted">Visible to other players</span></div>
       ${profCardHtml(row)}
       ${prof.loading && !row ? `<p class="muted">Loading…</p>` : ""}
       ${!row && !prof.loading ? `<p class="profNew">✨ Choose a nickname and an avatar to create your profile.</p>` : ""}
@@ -167,9 +180,11 @@ function profUi() {
   if (b) {
     const av = profSignedIn() && prof.user === cloud.user.id && prof.row ? prof.row.avatar : "";
     const html = av ? profAvatarImg(av, "profBtnAv") : `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>`;
-    if (b.dataset.av !== (av || "-")) { b.innerHTML = html; b.dataset.av = av || "-"; }
+    const inc = typeof frIncoming === "function" ? frIncoming() : 0, key = (av || "-") + "|" + inc;
+    if (b.dataset.av !== key) { b.innerHTML = html + (inc ? `<span class="profBtnDot" aria-label="Friend requests">${inc}</span>` : ""); b.dataset.av = key; }
   }
-  if (state.view === "profile") renderProfile();
+  const typing = document.activeElement && ["profNick", "frSearch"].includes(document.activeElement.id);   // don't rebuild the page under the player's fingers
+  if (state.view === "profile" && !typing) renderProfile();
 }
 
 /* ----- 🔘 wiring ----- */
@@ -195,6 +210,11 @@ document.addEventListener("click", (e) => {
   if (b.dataset.prof === "signin" && typeof cloudSignIn === "function") cloudSignIn();
   if (b.dataset.prof === "nick") profSaveNick($("profNick").value);
   if (b.dataset.prof === "all") { prof.showAll = true; renderProfile(); }
+  if (b.dataset.prof === "tab-me" || b.dataset.prof === "tab-friends") { prof.tab = b.dataset.prof === "tab-friends" ? "friends" : "me"; prof.err = ""; prof.msg = ""; renderProfile(); if (prof.tab === "friends" && typeof frLoad === "function") frLoad(); }
+  if (b.dataset.prof === "copy" && prof.row && prof.row.friend_code) {
+    const c = prof.row.friend_code;
+    (navigator.clipboard ? navigator.clipboard.writeText(c) : Promise.reject()).then(() => showNotice(`📋 Friend code ${c} copied.`), () => showNotice(`📋 Your friend code: ${c}`));
+  }
   if (b.dataset.prof === "edit") { prof.editing = true; prof.err = ""; prof.msg = ""; renderProfile(); const i = $("profNick"); if (i) { i.focus(); i.select(); } }
   if (b.dataset.prof === "cancel") { prof.editing = false; prof.err = ""; prof.msg = ""; renderProfile(); }
 });

@@ -1198,6 +1198,35 @@ Object.assign(ES, { "Your save couldn't be loaded": "No se ha podido cargar tu p
   "Your last automatic backup was loaded instead.": "En su lugar se ha cargado tu última copia de seguridad automática.",
   "A new game was started. If you play with a Google account, sign in (👤 Profile) to get your ☁️ cloud save back.": "Se ha empezado una partida nueva. Si juegas con una cuenta de Google, inicia sesión (👤 Perfil) para recuperar tu partida de la ☁️ nube.",
   "The cloud save was changed outside the game, so it was not loaded. This device's progress is kept and saved to the cloud again.": "La partida en la nube se ha modificado fuera del juego, así que no se ha cargado. Se conserva el progreso de este dispositivo y se vuelve a guardar en la nube." });
+// 👥 friends
+Object.assign(ES, { "Friends": "Amigos", "Friend requests": "Solicitudes de amistad", "Friend code": "Código de amigo", "Copy": "Copiar", "Find players": "Buscar jugadores",
+  "Your friend code": "Tu código de amigo", "Share it so friends can find you.": "Compártelo para que tus amigos te encuentren.", "Nickname or friend code": "Apodo o código de amigo",
+  "Search": "Buscar", "Searching…": "Buscando…", "No players found.": "No se ha encontrado ningún jugador.", "Online": "En línea", "Offline": "Desconectado",
+  "Accept": "Aceptar", "Decline": "Rechazar", "Add friend": "Añadir amigo", "Request sent": "Solicitud enviada", "Requests you sent": "Solicitudes que has enviado",
+  "No friends yet. Search for a nickname or a friend code above.": "Todavía no tienes amigos. Busca un apodo o un código de amigo arriba.",
+  "You are now friends!": "¡Ahora sois amigos!", "Request declined.": "Solicitud rechazada.", "Request cancelled.": "Solicitud cancelada.", "Friend removed.": "Amigo eliminado.",
+  "Pets": "Mascotas", "No pets yet.": "Todavía no tiene mascotas.", "Baby dragon-moth": "Bebé dragón-polilla", "Remove friend": "Eliminar amigo", "Remove": "Eliminar",
+  "You will no longer be friends. You can send a new request later.": "Dejaréis de ser amigos. Podrás enviar una nueva solicitud más adelante.",
+  "Create your profile first (👤 Profile tab: choose a nickname). Then you can add friends.": "Primero crea tu perfil (pestaña 👤 Perfil: elige un apodo). Después podrás añadir amigos.",
+  "Friends aren't switched on yet. Please try again later.": "Los amigos todavía no están activados. Inténtalo más tarde.",
+  "You have too many requests waiting. Cancel some first.": "Tienes demasiadas solicitudes pendientes. Cancela algunas primero.",
+  "Your friend list is full (200 friends).": "Tu lista de amigos está llena (200 amigos).", "There is already a request between you two.": "Ya hay una solicitud entre vosotros dos." });
+hrx(String.raw`👥 Friends <span>(\d+)<\/span>`, "👥 Amigos <span>$1</span>");
+hrx(String.raw`📨 Friend requests <span>(\d+)<\/span>`, "📨 Solicitudes de amistad <span>$1</span>");
+hrx(String.raw`<span><\/span> Online`, "<span></span> En línea");
+hrx(String.raw`<span><\/span> Offline`, "<span></span> Desconectado");
+hrx(String.raw`<span><\/span> Last seen (\d+) (min|h|days) ago`, (m, n, u) => `<span></span> Visto por última vez hace ${n} ${u === "days" ? (n === "1" ? "día" : "días") : u}`);
+rx(String.raw`Your friends \((\d+)\)`, "Tus amigos ($1)");
+rx(String.raw`(\d+) online`, "$1 en línea");
+rx(String.raw`(\d+) (min|h|days) ago`, (m, n, u) => `hace ${n} ${u === "days" ? (n === "1" ? "día" : "días") : u}`);
+rx(String.raw`Friend request sent to (.+)\.`, "Solicitud de amistad enviada a $1.");
+rx(String.raw`Remove (.+)\?`, "¿Eliminar a $1?");
+rx(String.raw`Friend code (\w+) copied\.`, "Código de amigo $1 copiado.");
+rx(String.raw`Your friend code: (\w+)`, "Tu código de amigo: $1");
+H("👥 <b>Friends!</b> In 👤 Profile → 👥 Friends, find players by nickname or by their friend code, send requests, and see who is 🟢 online. Click a friend to see their avatar, achievements, prestige and pets.",
+  "👥 <b>¡Amigos!</b> En 👤 Perfil → 👥 Amigos, busca jugadores por su apodo o su código de amigo, envía solicitudes y mira quién está 🟢 en línea. Pulsa en un amigo para ver su avatar, sus logros, sus prestigios y sus mascotas.");
+H("👥 <b>Friends</b> (👤 Profile → 👥 Friends): find players by nickname or by their 8-letter friend code (yours is on your profile), send a friend request, and accept or decline the ones you get. 🟢 means the friend is playing right now. Click a friend to see their avatar, achievements, prestige and pets.",
+  "👥 <b>Amigos</b> (👤 Perfil → 👥 Amigos): busca jugadores por su apodo o por su código de amigo de 8 caracteres (el tuyo está en tu perfil), envía solicitudes de amistad y acepta o rechaza las que recibas. 🟢 significa que ese amigo está jugando ahora mismo. Pulsa en un amigo para ver su avatar, sus logros, sus prestigios y sus mascotas.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
