@@ -52,17 +52,20 @@ const profAvatarImg = (id, cls = "") => id && COL_EMBLEMS.has(id) ? `<img class=
 // 🐾 pets other players see on your profile
 const PROF_PETS = { mochi: { pic: "assets/pet/pet-portrait.webp", name: "Baby dragon-moth" }, pip: { pic: "assets/pip/pip-portrait.webp", name: "Pip the painter" } };
 const profPets = () => [state.pet && state.pet.owned && !state.pet.pending ? "mochi" : null, state.pip && state.pip.owned ? "pip" : null].filter(Boolean);
+// 🪙 the coin skin you use (assets/<id>-coin.webp; "" = the normal coin) and its picture
+const profCoin = () => { const c = COSMETICS.find(x => x.slot === "coin" && state.cosmetics.on[x.id]); return c ? c.id.replace(/Coin$/, "") : ""; };
+const profCoinImg = (id, cls = "profCoinI") => `<img class="${cls}" src="assets/${/^[a-z0-9]{1,20}$/.test(id || "") && COSMETICS.some(x => x.id === id + "Coin") ? id + "-coin" : "coin"}.webp" alt="">`;
+const profPetsHtml = (pets) => pets.length ? `<div class="profPets">${pets.filter(k => PROF_PETS[k]).map(k => `<img src="${PROF_PETS[k].pic}" alt="" title="${PROF_PETS[k].name}">`).join("")}</div>` : "";
 const profSignedIn = () => typeof cloud === "object" && !!cloud.user && !!cloud.sb;
 
 async function profLoad() {
   if (!profSignedIn() || prof.loading) return;
   prof.loading = true; prof.err = "";
   try {
-    const base = "nickname, avatar, ach_done, ach_total, prestige";
-    let { data, error } = await cloud.sb.from("profiles").select(base + ", friend_code, pets").eq("user_id", cloud.user.id).maybeSingle();
-    prof.friendsOn = !error;
-    if (error && error.code === "42703") ({ data, error } = await cloud.sb.from("profiles").select(base).eq("user_id", cloud.user.id).maybeSingle());   // 👥 friends not switched on yet
+    // "*": the columns added by later SQL files (friends, money) may not exist yet; see what came back
+    const { data, error } = await cloud.sb.from("profiles").select("*").eq("user_id", cloud.user.id).maybeSingle();
     if (error) throw error;
+    if (data) { prof.friendsOn = "friend_code" in data; prof.moneyOn = "money" in data; }
     prof.row = data; prof.user = cloud.user.id; profCache();
   } catch (e) { console.warn("Profile load failed:", e); prof.err = e && (e.code === "42P01" || e.code === "PGRST205") ? profDbError(e) : "load"; }
   prof.loading = false;
@@ -115,7 +118,9 @@ async function profPushStats() {
   const st = profStats();
   st.prestige = Math.min(st.prestige, (prof.row.prestige || 0) + 1);   // the database accepts one prestige step per upload
   if (prof.friendsOn) st.pets = profPets();
-  if (st.ach_done === prof.row.ach_done && st.ach_total === prof.row.ach_total && st.prestige === prof.row.prestige && String(st.pets) === String(prof.row.pets)) return;
+  if (prof.moneyOn) { st.coin = profCoin(); st.money = Math.max(0, Math.floor(state.money)); }
+  const moneySame = !prof.moneyOn || (st.coin === prof.row.coin && Math.abs(st.money - (prof.row.money || 0)) <= Math.max(1, (prof.row.money || 0) * 0.01));   // money: only when it moved 1%+
+  if (st.ach_done === prof.row.ach_done && st.ach_total === prof.row.ach_total && st.prestige === prof.row.prestige && String(st.pets) === String(prof.row.pets) && moneySame) return;
   profPushing = true;
   try { const { error } = await cloud.sb.from("profiles").update(st).eq("user_id", cloud.user.id); if (!error) { Object.assign(prof.row, st); profCache(); } }
   catch (e) {}
@@ -129,6 +134,8 @@ function profCardHtml(row) {
   return `<div class="profCard">${profAvatarImg(av, "profAv")}
     <div class="profCardInfo"><div class="profNick"><span data-noi18n>${nick ? escapeHtml(nick) : "<i>…</i>"}</span>${row && !prof.editing ? `<button class="profEdit" data-prof="edit" title="Change nickname" aria-label="Change nickname">✏️</button>` : ""}</div>
       <div class="profStats"><span>🏆 <b>${st.ach_done}/${st.ach_total}</b> achievements</span><span>⭐ Prestige <b>${st.prestige}</b></span></div>
+      <div class="profMoney">${profCoinImg(profCoin())}<b id="profMoney">${fmt(state.money)}</b></div>
+      ${profPetsHtml(profPets())}
       ${row && row.friend_code ? `<div class="profCode">Friend code: <b data-noi18n>${escapeHtml(row.friend_code)}</b> <button class="btn ghost small" data-prof="copy">📋 Copy</button></div>` : ""}</div></div>`;
 }
 function renderProfile() {
@@ -232,3 +239,4 @@ updateCloudUi = function () {
 };
 profUi();
 if (state.view === "profile") renderProfile();
+setInterval(() => { const m = $("profMoney"); if (m) { const t = fmt(state.money); if (m.textContent !== t) m.textContent = t; } }, 1000);   // 💰 the money on your profile card stays live

@@ -18855,17 +18855,20 @@ var profAvatarImg = (id, cls = "") => id && COL_EMBLEMS.has(id) ? `<img class="$
 // 🐾 pets other players see on your profile
 var PROF_PETS = { mochi: { pic: "assets/pet/pet-portrait.webp", name: "Baby dragon-moth" }, pip: { pic: "assets/pip/pip-portrait.webp", name: "Pip the painter" } };
 var profPets = () => [state.pet && state.pet.owned && !state.pet.pending ? "mochi" : null, state.pip && state.pip.owned ? "pip" : null].filter(Boolean);
+// 🪙 the coin skin you use (assets/<id>-coin.webp; "" = the normal coin) and its picture
+var profCoin = () => { const c = COSMETICS.find(x => x.slot === "coin" && state.cosmetics.on[x.id]); return c ? c.id.replace(/Coin$/, "") : ""; };
+var profCoinImg = (id, cls = "profCoinI") => `<img class="${cls}" src="assets/${/^[a-z0-9]{1,20}$/.test(id || "") && COSMETICS.some(x => x.id === id + "Coin") ? id + "-coin" : "coin"}.webp" alt="">`;
+var profPetsHtml = (pets) => pets.length ? `<div class="profPets">${pets.filter(k => PROF_PETS[k]).map(k => `<img src="${PROF_PETS[k].pic}" alt="" title="${PROF_PETS[k].name}">`).join("")}</div>` : "";
 var profSignedIn = () => typeof cloud === "object" && !!cloud.user && !!cloud.sb;
 
 async function profLoad() {
   if (!profSignedIn() || prof.loading) return;
   prof.loading = true; prof.err = "";
   try {
-    const base = "nickname, avatar, ach_done, ach_total, prestige";
-    let { data, error } = await cloud.sb.from("profiles").select(base + ", friend_code, pets").eq("user_id", cloud.user.id).maybeSingle();
-    prof.friendsOn = !error;
-    if (error && error.code === "42703") ({ data, error } = await cloud.sb.from("profiles").select(base).eq("user_id", cloud.user.id).maybeSingle());   // 👥 friends not switched on yet
+    // "*": the columns added by later SQL files (friends, money) may not exist yet; see what came back
+    const { data, error } = await cloud.sb.from("profiles").select("*").eq("user_id", cloud.user.id).maybeSingle();
     if (error) throw error;
+    if (data) { prof.friendsOn = "friend_code" in data; prof.moneyOn = "money" in data; }
     prof.row = data; prof.user = cloud.user.id; profCache();
   } catch (e) { console.warn("Profile load failed:", e); prof.err = e && (e.code === "42P01" || e.code === "PGRST205") ? profDbError(e) : "load"; }
   prof.loading = false;
@@ -18918,7 +18921,9 @@ async function profPushStats() {
   const st = profStats();
   st.prestige = Math.min(st.prestige, (prof.row.prestige || 0) + 1);   // the database accepts one prestige step per upload
   if (prof.friendsOn) st.pets = profPets();
-  if (st.ach_done === prof.row.ach_done && st.ach_total === prof.row.ach_total && st.prestige === prof.row.prestige && String(st.pets) === String(prof.row.pets)) return;
+  if (prof.moneyOn) { st.coin = profCoin(); st.money = Math.max(0, Math.floor(state.money)); }
+  const moneySame = !prof.moneyOn || (st.coin === prof.row.coin && Math.abs(st.money - (prof.row.money || 0)) <= Math.max(1, (prof.row.money || 0) * 0.01));   // money: only when it moved 1%+
+  if (st.ach_done === prof.row.ach_done && st.ach_total === prof.row.ach_total && st.prestige === prof.row.prestige && String(st.pets) === String(prof.row.pets) && moneySame) return;
   profPushing = true;
   try { const { error } = await cloud.sb.from("profiles").update(st).eq("user_id", cloud.user.id); if (!error) { Object.assign(prof.row, st); profCache(); } }
   catch (e) {}
@@ -18932,6 +18937,8 @@ function profCardHtml(row) {
   return `<div class="profCard">${profAvatarImg(av, "profAv")}
     <div class="profCardInfo"><div class="profNick"><span data-noi18n>${nick ? escapeHtml(nick) : "<i>…</i>"}</span>${row && !prof.editing ? `<button class="profEdit" data-prof="edit" title="Change nickname" aria-label="Change nickname">✏️</button>` : ""}</div>
       <div class="profStats"><span>🏆 <b>${st.ach_done}/${st.ach_total}</b> achievements</span><span>⭐ Prestige <b>${st.prestige}</b></span></div>
+      <div class="profMoney">${profCoinImg(profCoin())}<b id="profMoney">${fmt(state.money)}</b></div>
+      ${profPetsHtml(profPets())}
       ${row && row.friend_code ? `<div class="profCode">Friend code: <b data-noi18n>${escapeHtml(row.friend_code)}</b> <button class="btn ghost small" data-prof="copy">📋 Copy</button></div>` : ""}</div></div>`;
 }
 function renderProfile() {
@@ -19035,6 +19042,7 @@ updateCloudUi = function () {
 };
 profUi();
 if (state.view === "profile") renderProfile();
+setInterval(() => { const m = $("profMoney"); if (m) { const t = fmt(state.money); if (m.textContent !== t) m.textContent = t; } }, 1000);   // 💰 the money on your profile card stays live
 
 // ===== js/38-friends.js =====
 __eocLoaded = 46;
@@ -19053,7 +19061,7 @@ var frOther = (r) => (r.requester === frMe() ? r.addressee : r.requester);
 var frIncoming = () => fr.rows.filter(r => r.status === "pending" && r.addressee === frMe()).length;
 var frOnline = (p) => !!(p && p.last_seen && Date.now() - Date.parse(p.last_seen) < FR_ONLINE);
 var frDot = (p) => `<span class="frDot ${frOnline(p) ? "on" : ""}" title="${frOnline(p) ? "Online" : "Offline"}"></span>`;
-var FR_COLS = "user_id, nickname, avatar, ach_done, ach_total, prestige, pets, last_seen";
+var FR_COLS = "*";   // every column there is (later SQL files add some)
 function frErr(e) {
   const m = (e && e.message) || "";
   if (/too_many_requests/.test(m)) return "You have too many requests waiting. Cancel some first.";
@@ -19172,6 +19180,7 @@ function frShowProfile(id) {
       <h2 data-noi18n>${escapeHtml(p.nickname)}</h2>
       <div class="frStatus">${frDot(p)} ${frOnline(p) ? "Online" : p.last_seen ? `Last seen ${frAgo(p.last_seen)}` : "Offline"}</div>
       <div class="profStats" style="justify-content:center"><span>🏆 <b>${p.ach_done || 0}/${p.ach_total || 0}</b> achievements</span><span>⭐ Prestige <b>${p.prestige || 0}</b></span></div>
+      ${"money" in p ? `<div class="profMoney" style="justify-content:center">${profCoinImg(p.coin)}<b>${fmt(Number(p.money) || 0)}</b></div>` : ""}
       <h3 style="margin:16px 0 8px">🐾 Pets</h3>
       ${pets.length ? `<div class="frPets">${pets.map(k => `<div class="frPet"><img src="${PROF_PETS[k].pic}" alt=""><span>${PROF_PETS[k].name}</span></div>`).join("")}</div>` : `<p class="muted">No pets yet.</p>`}
       <div class="row" style="justify-content:center;gap:10px;margin-top:14px">

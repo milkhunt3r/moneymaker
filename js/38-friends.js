@@ -14,7 +14,7 @@ const frOther = (r) => (r.requester === frMe() ? r.addressee : r.requester);
 const frIncoming = () => fr.rows.filter(r => r.status === "pending" && r.addressee === frMe()).length;
 const frOnline = (p) => !!(p && p.last_seen && Date.now() - Date.parse(p.last_seen) < FR_ONLINE);
 const frDot = (p) => `<span class="frDot ${frOnline(p) ? "on" : ""}" title="${frOnline(p) ? "Online" : "Offline"}"></span>`;
-const FR_COLS = "user_id, nickname, avatar, ach_done, ach_total, prestige, pets, last_seen";
+const FR_COLS = "*";   // every column there is (later SQL files add some)
 function frErr(e) {
   const m = (e && e.message) || "";
   if (/too_many_requests/.test(m)) return "You have too many requests waiting. Cancel some first.";
@@ -133,6 +133,7 @@ function frShowProfile(id) {
       <h2 data-noi18n>${escapeHtml(p.nickname)}</h2>
       <div class="frStatus">${frDot(p)} ${frOnline(p) ? "Online" : p.last_seen ? `Last seen ${frAgo(p.last_seen)}` : "Offline"}</div>
       <div class="profStats" style="justify-content:center"><span>🏆 <b>${p.ach_done || 0}/${p.ach_total || 0}</b> achievements</span><span>⭐ Prestige <b>${p.prestige || 0}</b></span></div>
+      ${"money" in p ? `<div class="profMoney" style="justify-content:center">${profCoinImg(p.coin)}<b>${fmt(Number(p.money) || 0)}</b></div>` : ""}
       <h3 style="margin:16px 0 8px">🐾 Pets</h3>
       ${pets.length ? `<div class="frPets">${pets.map(k => `<div class="frPet"><img src="${PROF_PETS[k].pic}" alt=""><span>${PROF_PETS[k].name}</span></div>`).join("")}</div>` : `<p class="muted">No pets yet.</p>`}
       <div class="row" style="justify-content:center;gap:10px;margin-top:14px">
