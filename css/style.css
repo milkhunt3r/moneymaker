@@ -2092,6 +2092,7 @@ body.phone .artPalette { grid-template-columns: repeat(8, 30px); }
 .pipEasel canvas { position: absolute; left: 20.9%; top: 15.3%; width: 60.8%; height: 43.2%; }
 .pipSprite { position: absolute; left: 0; bottom: -6.5%; width: 47.5%; aspect-ratio: 1; padding: 0; border: 0; background: none; cursor: pointer; z-index: 2; transition: transform 1.4s ease-in-out; }
 .pipSprite.atEasel { transform: translateX(32%); }
+.pipSprite.noAnim { transition: none; }
 .pipSprite img { width: 100%; height: 100%; display: block; pointer-events: none; }
 .pipSprite:focus-visible { outline: 2px solid #ffd54f; border-radius: 12px; }
 .pipInfo h3 { margin: 0 0 6px; }

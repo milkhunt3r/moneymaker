@@ -9,8 +9,9 @@
    - Click him: while asleep he enjoys it; while painting he gets a bit annoyed.
    ===================================================================== */
 const PIP_CYCLE = 15 * 60e3, PIP_PAINT = 60e3, PIP_TIER = "hard", PIP_COST = 10, PIP_LV = 3, PIP_CATCHUP = 96;
-const PIP_V = "2";   // bump when a Pip picture changes (browser cache)
-const PIP_FRAMES = ["paint-1", "paint-2", "paint-3", "paint-4", "tada", "sleep-1", "sleep-2", "sleeppet-1", "sleeppet-2", "sleeppet-3", "annoyed-1", "annoyed-2", "annoyed-3"];
+const PIP_V = "3";   // bump when a Pip picture changes (browser cache)
+const PIP_FRAMES = ["paint-1", "paint-2", "paint-3", "paint-4", "tada", "sleep-1", "sleep-2", "sleeppet-1", "sleeppet-2", "sleeppet-3", "annoyed-1", "annoyed-2", "annoyed-3", "walk-1", "walk-2", "walk-3", "walk-4"];
+const PIP_WALK = 1400;   // ms to walk between his corner and the easel (same as the CSS transition of .pipSprite)
 const pipSrc = (f) => `assets/pip/pip-${f}.webp?v=${PIP_V}`;
 const pipOwned = () => !!(state.pip && state.pip.owned);
 const pipName = () => (typeof petCleanName === "function" ? petCleanName(state.pip && state.pip.name) : "") || "Pip";
@@ -125,7 +126,7 @@ function renderPipCorner() {
         <button class="pipSprite" id="pipSprite" aria-label="Pip" data-noi18n><img alt="" draggable="false"></button></div>
       <div class="pipInfo"><h3 id="pipTitle" data-noi18n></h3><div id="pipStatus"></div><div class="pipNums" id="pipNums"></div>
         <div class="muted pipHint">Click him to pet him (he doesn't like it while he's painting!).</div></div></div>`;
-    pipUI.built = true; pipUI.lastFrame = ""; pipUI.lastDrawn = -1;
+    pipUI.built = true; pipUI.lastFrame = ""; pipUI.lastDrawn = -1; pipUI.pos = null; pipUI.walk = null;
   }
   pipTick(true);
 }
@@ -155,11 +156,26 @@ function pipDrawEasel(ph, now) {
 }
 function pipTick(force) {
   if (!pipOwned() || (!force && !pipCornerVisible())) return;
+  if (pipPhase().k - 1 > state.pip.done) pipProcess(false);   // a painting just finished: hand it in now, so "ta-da!" shows before he walks off
   const now = Date.now(), ph = pipPhase(now), p = state.pip;
-  const f = pipFrame(now, ph), img = document.querySelector("#pipSprite img");
+  let f = pipFrame(now, ph);
+  const img = document.querySelector("#pipSprite img"), sp = $("pipSprite");
+  // 🚶 awake: he walks up to the easel; asleep: he walks back to his corner (walk frames face right; flipped to go back)
+  const want = /^sleep/.test(f) ? "corner" : "easel";
+  if (sp && (!pipUI.pos || now - (pipUI.seen || 0) > 3000)) {   // first look (or back after a while): just be there
+    pipUI.pos = want; pipUI.walk = null; sp.classList.add("noAnim"); requestAnimationFrame(() => sp.classList.remove("noAnim"));
+  }
+  pipUI.seen = now;
+  if (want !== pipUI.pos && !pipUI.walk) pipUI.walk = { to: want, until: now + PIP_WALK };
+  let flip = null;
+  if (pipUI.walk) {
+    if (now >= pipUI.walk.until) { pipUI.pos = pipUI.walk.to; pipUI.walk = null; }
+    else { f = "walk-" + (1 + Math.floor(now / 170) % 4); flip = pipUI.walk.to === "corner"; }
+  }
   if (img && f !== pipUI.lastFrame) { img.src = pipSrc(f); pipUI.lastFrame = f; }
-  const sp = $("pipSprite"), near = !/^sleep/.test(f);   // 🎨 awake: he steps up to the easel; asleep: back to his corner
-  if (sp && sp.classList.contains("atEasel") !== near) sp.classList.toggle("atEasel", near);
+  if (img) { const tf = flip === null ? "" : flip ? "translateX(-19%) scaleX(-1)" : "translateX(-14%)"; if (img.style.transform !== tf) img.style.transform = tf; }
+  const at = (pipUI.walk ? pipUI.walk.to : pipUI.pos) === "easel";
+  if (sp && sp.classList.contains("atEasel") !== at) sp.classList.toggle("atEasel", at);
   pipDrawEasel(ph, now);
   const t = $("pipTitle"); if (t) t.textContent = `🐭 ${pipName()}`;
   const s = $("pipStatus");
