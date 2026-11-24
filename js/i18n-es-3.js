@@ -1021,6 +1021,20 @@ ES["🎁 All cosmetic collections are now rewards in 🏆 Achievements → 🎁 
   "🎁 Todas las colecciones cosméticas son ahora recompensas en 🏆 Logros → 🎁 Recompensas: 🐕 Wow So Rich (💰 Multimillonario), ♟️ «Un paso por delante» (🤑 Ganarle a la banca), 👑 Realeza (🏦 Amigos en las altas esferas), 🐸 «Lluvia de billetes» (💸 Fuente de dinero, 🎩 Lobista y 🧙 Sensación mágica) y 🦁 Emperador (🏰 Emperador de las monedas). Los objetos que ya compraste siguen siendo tuyos.";
 Object.assign(ES, { "Energy drinks": "Bebidas energéticas", "Coins": "Monedas", "Cards": "Cartas", "Backgrounds": "Fondos", "Unlocked": "Desbloqueadas", "Locked": "Bloqueadas",
   "Nothing matches these filters.": "Nada coincide con estos filtros." });
+// 👽 alien card v2 (painted icons sit outside the text now)
+const spKindsEs = (l) => l.replace(new RegExp(SP_RX_GOOD, "g"), (g) => spG(g)).replace(/(\{i\}|\S) (Money|Ore|Paintings|Stardust|DNA samples)\b/g, (m, i, w) => `${i} ${ES[w] || w}`);
+const spReqEs2 = (r) => spReqEs(r.replace(new RegExp(SP_RX_GOOD, "g"), (g) => spG(g)));
+hrx(String.raw`<b>Favourite:<\/b> (.+) <span>\(\+(\d+) friendship\)<\/span>`, (m, k, n) => `<b>Favorito:</b> ${spKindsEs(k)} <span>(+${n} de amistad)</span>`);
+hrx(String.raw`<b>Also likes:<\/b> (.+) <span>\(\+(\d+)\)<\/span>`, (m, k, n) => `<b>También le gusta:</b> ${spKindsEs(k)} <span>(+${n})</span>`);
+hrx(String.raw`<b>Wants a mix of:<\/b> (.+) <span>\(\+(\d+) friendship\)<\/span>`, (m, k, n) => `<b>Quiere una mezcla de:</b> ${spKindsEs(k)} <span>(+${n} de amistad)</span>`);
+hrx(String.raw`<b>They send back:<\/b> (\S+) (${SP_RX_GOOD}) <span>\((\d+) per gift, more when you level up\)<\/span>`, (m, e, g, n) => `<b>Te devuelven:</b> ${e} ${spG(g)} <span>(${n} por regalo, más al subir de nivel)</span>`);
+hrx(String.raw`<b>Distance:<\/b> (\d+) min each way`, "<b>Distancia:</b> $1 min por trayecto");
+hrx(String.raw`<b>Their request:<\/b> (.+)`, (m, r) => `<b>Su petición:</b> ${spReqEs2(r)}`);
+hrx(String.raw`<b>Trade route:<\/b> opens when you are <b>😊 Friendly<\/b> with the (${SP_RX_NAME})\.`, (m, n) => `<b>Ruta comercial:</b> se abre cuando tu amistad con los ${spN(n)} sea <b>😊 Amistosa</b>.`);
+hrx(String.raw`<b>Trade route:<\/b> one ship flies to the (${SP_RX_NAME}) and back <b>for good<\/b>, bringing (\S+) <b>(\d+)<\/b> (${SP_RX_GOOD}) every trip \((\d+) min round trip\)\. It keeps going while the game is closed\.`, (m, n, e, x, g, t) =>
+  `<b>Ruta comercial:</b> una nave va y vuelve de los ${spN(n)} <b>para siempre</b> y trae ${e} <b>${x}</b> ${spG(g)} en cada viaje (${t} min ida y vuelta). Sigue funcionando con el juego cerrado.`);
+hrx(String.raw`<b>Trade route open<\/b> · (\S+) <b>(\d+)<\/b> (${SP_RX_GOOD}) every trip \((\d+) min round trip\)`, (m, e, x, g, t) => `<b>Ruta comercial abierta</b> · ${e} <b>${x}</b> ${spG(g)} en cada viaje (${t} min ida y vuelta)`);
+ES["Alliance bonus"] = "Bonificación de alianza";
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

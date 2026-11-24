@@ -69,6 +69,13 @@ const SP_LEVELS = [
   { name: "Friendly", pts: 1000, icon: "😊" }, { name: "Trusted", pts: 2500, icon: "💛" }, { name: "Allies", pts: 5000, icon: "💖" },
 ];
 const SP_KINDS = { money: "💰 Money", ore: "⛏️ Ore", dna: "🧬 DNA samples", art: "🖼️ Paintings", dust: "✨ Stardust" };
+// 🎨 painted icons for the alien card (assets/space/sp-ico-*.webp, sp-kind-*.webp) and portraits (assets/space/aliens/)
+const spI = (n, cls = "spI") => `<img class="${cls}" src="assets/space/sp-ico-${n}.webp" alt="">`;
+const SP_LV_ICO = [null, "contacted", "acquainted", "friendly", "trusted", "allies"];
+const spLvI = (L, cls) => L ? spI(SP_LV_ICO[L], cls) : "❔";
+const SP_KIND_ICO = { money: "money", ore: "ore", art: "art", dust: "dust" };
+const spKindI = (kind) => SP_KIND_ICO[kind] ? `<img class="spI" src="assets/space/sp-kind-${SP_KIND_ICO[kind]}.webp" alt="">` : SP_KINDS[kind].split(" ")[0];
+const spPortrait = (k) => `assets/space/aliens/alien-${k}${spLevel(k) >= 4 ? "-happy" : ""}.webp`;
 const SP_FAV_PTS = 200, SP_PTS = 120, SP_REQ_LIFE = 24 * 3600e3, SP_REROLL = 4 * 3600e3;
 const SP_EXPLORE_SCI = 10;   // 🔬 scientists on board an exploring ship (they stay out there)
 // 🆘 alien emergency: only starts while you play; send scientists in time for friendship, or lose some
@@ -122,7 +129,7 @@ const spKindOpen = {
   dust: () => !!(state.shooter && state.shooter.unlocked),
 };
 const spKindName = (kind) => kind.startsWith("g:") ? `${spGI(kind.slice(2))} ${SP_GOODS[kind.slice(2)].name}`
-  : kind === "dna" && !spKindOpen.dna() ? "❓ Something you haven't discovered yet" : SP_KINDS[kind];
+  : kind === "dna" && !spKindOpen.dna() ? "❓ Something you haven't discovered yet" : `${spKindI(kind)} ${SP_KINDS[kind].replace(/^\S+ /, "")}`;
 const spOpenKind = (w) => w.startsWith("g:") || spKindOpen[w]();
 function spRound(n) { if (n < 100) return Math.round(n); const p = Math.pow(10, Math.floor(Math.log10(n)) - 1); return Math.round(n / p) * p; }
 function spMakeReq(k, skip) {
@@ -161,10 +168,10 @@ function spSpecial(k, q) {
   return q;
 }
 const spReqPts = (q) => Math.round((q.fav ? SP_FAV_PTS : SP_PTS) * (q.special ? SP_SPECIAL.pts : 1));
-const spReqText = (q) => q.kind === "money" ? `💰 <b>${fmt(q.amount)}</b>`
-  : q.kind === "dust" ? `✨ <b>${q.amount.toLocaleString()}</b> stardust`
+const spReqText = (q) => q.kind === "money" ? `${spKindI("money")} <b>${fmt(q.amount)}</b>`
+  : q.kind === "dust" ? `${spKindI("dust")} <b>${q.amount.toLocaleString()}</b> stardust`
   : q.kind === "dna" ? `🧬 <b>${q.amount}</b> DNA samples (you choose which)`
-  : q.kind === "art" ? `🖼️ <b>${q.amount}</b> paintings (you choose which)`
+  : q.kind === "art" ? `${spKindI("art")} <b>${q.amount}</b> paintings (you choose which)`
   : q.kind === "goods" ? Object.entries(q.goods).map(([g, n]) => `${spGI(g)} <b>${n}</b> ${SP_GOODS[g].name}`).join(" + ")
   : Object.entries(q.ore).map(([o, n]) => `${typeof oreIcon === "function" ? oreIcon(o) : ""} <b>${n}</b> ${ORES[o].name}`).join(" + ");
 function spCanPay(q) {
@@ -388,7 +395,7 @@ function spMapHtml() {
   const nodes = Object.entries(SP_RACES).map(([k, R]) => {
     const r = SP.races[k], vis = spVisible(k), L = spLevel(k);
     const img = r.found ? `sys-${k}` : "sys-unknown";
-    const lbl = r.found ? `${R.name}<small>${SP_LEVELS[L].icon} ${SP_LEVELS[L].name}</small>` : vis ? `Unknown signal<small>❓ Explore</small>` : `<small>🔒 Uncharted</small>`;
+    const lbl = r.found ? `${R.name}<small>${spLvI(L, "spI tiny")} ${SP_LEVELS[L].name}</small>` : vis ? `Unknown signal<small>❓ Explore</small>` : `<small>🔒 Uncharted</small>`;
     return `<button class="spNode ${r.found ? "found" : vis ? "fog" : "hidden"} ${spSel === k ? "sel" : ""}" data-sp="${k}" style="left:${R.pos[0]}%;top:${R.pos[1]}%">
       <img src="assets/space/${img}.webp" alt="" draggable="false"><span class="spLbl">${lbl}</span>${SP.sos && SP.sos.k === k ? `<i class="spSosPin">🆘</i>` : ""}${r.found && r.req && spFree() && !spTripTo(k, "gift") && spCanPay(r.req) ? `<i class="spPing">🎁</i>` : ""}</button>`; }).join("");
   const ships = SP.trips.map(tr => `<img class="spShip ${tr.k}" data-trip="${tr.id}" src="assets/space/ship-explorer.webp" alt="" draggable="false" style="${spShipCss(spShipPos(tr, now))}">`).join("");
@@ -477,34 +484,37 @@ function spPanelHtml() {
   const R = SP_RACES[spSel], r = SP.races[spSel], L = spLevel(spSel), trip = spTripTo(spSel, r.found ? "gift" : null);
   if (!spVisible(spSel)) return R.viaTrusted ? `<h3>🔒 Uncharted system</h3><p>Only the most trusted traders may visit this system. Become <b>💛 Trusted</b> with <b>${R.viaTrusted}</b> races (you have ${spTrustedCount()}).</p>`
     : `<h3>🔒 Uncharted system</h3><p>Your scanners can't find this system yet. Become <b>${R.viaLv === 3 ? "😊 Friendly" : "Acquainted"}</b> with ${SP.races[R.via].found ? `the <b>${SP_RACES[R.via].name}</b>` : "a nearby race"} and they will tell you where it is.</p>`;
-  if (!r.found) return `<h3>❓ Unknown signal</h3>
+  if (!r.found) return `<h3 class="spH">${spI("explore", "spI big")} Unknown signal</h3>
     <p>Something is out there. Send a ship to explore it: <b>${R.min} min</b> there and <b>${R.min} min</b> back.</p>
-    ${trip ? spTripLine(trip) : `<button class="btn big" data-spx="explore" ${spFree() && spSci2() >= SP_EXPLORE_SCI ? "" : "disabled"}>🚀 Explore · 🔬 ${SP_EXPLORE_SCI} scientists</button>
+    ${trip ? spTripLine(trip) : `<button class="btn big" data-spx="explore" ${spFree() && spSci2() >= SP_EXPLORE_SCI ? "" : "disabled"}>${spI("explore", "spI btnI")}Explore · 🔬 ${SP_EXPLORE_SCI} scientists</button>
       ${!spFree() ? `<div class="muted">All your ships are busy.</div>` : spSci2() < SP_EXPLORE_SCI ? `<div class="muted">You need ${SP_EXPLORE_SCI} scientists (you have ${spSci2()}).</div>` : ""}`}`;
   const next = SP_LEVELS[L + 1], pct = next ? Math.min(100, (r.pts - SP_LEVELS[L].pts) / (next.pts - SP_LEVELS[L].pts) * 100) : 100;
   const q = r.req, can = q && spCanPay(q);
   const rerollLeft = (r.rerollAt || 0) - Date.now();
-  return `<div class="spRace"><div class="spFace">${R.emoji}</div><div>
-      <h3>${R.name} <span class="muted">· ${R.title}</span></h3><p class="spBio">${R.bio}</p></div></div>
-    <div class="spFriend"><b>${SP_LEVELS[L].icon} ${SP_LEVELS[L].name}</b> <span class="muted">${next ? `${r.pts.toLocaleString()} / ${next.pts.toLocaleString()} friendship to ${next.name}` : `${r.pts.toLocaleString()} friendship · best friends!`}</span>
+  return `<div class="spCardHead"><div class="spCardSys" style="background-image:url(assets/space/sys-${spSel}.webp)"></div>
+      <img class="spPortrait" src="${spPortrait(spSel)}" alt="${R.emoji}">
+      <div class="spHeadTxt"><h3>${R.name} <span class="muted">· ${R.title}</span></h3>
+        <div class="spLvBadge">${spLvI(L, "spI")}<b>${SP_LEVELS[L].name}</b></div>
+        <p class="spBio">${R.bio}</p></div></div>
+    <div class="spFriend"><span class="muted">${next ? `${r.pts.toLocaleString()} / ${next.pts.toLocaleString()} friendship to ${next.name}` : `${r.pts.toLocaleString()} friendship · best friends!`}</span>
       <div class="xpBar"><div class="xpFill" style="width:${pct}%"></div></div></div>
-    <div class="spInfo">${R.mix ? `<div>❤️ <b>Wants a mix of:</b> ${R.wants.map(spKindName).join(", ")} <span class="muted">(+${SP_FAV_PTS} friendship)</span></div>`
-      : `<div>❤️ <b>Favourite:</b> ${spKindName(R.wants[0])} <span class="muted">(+${SP_FAV_PTS} friendship)</span></div>
-      <div>👍 <b>Also likes:</b> ${spKindName(R.wants[1])} <span class="muted">(+${SP_PTS})</span></div>`}
-      <div>📦 <b>They send back:</b> ${spGood(R.good)} <span class="muted">(${spReturnGoods(L)} per gift, more when you level up)</span></div>
-      <div>🛣️ <b>Distance:</b> ${R.min} min each way</div></div>
-    ${trip ? spTripLine(trip) : q ? `<div class="spReq ${q.special ? "special" : ""}">${q.special ? `<div class="spSpecial">⭐ Special request! Bring it in time for extra friendship and goods, or they will be offended (−${SP_SPECIAL.offend}).</div>` : ""}<div><b>📜 Their request:</b> ${spReqText(q)}</div>
+    <div class="spInfo">${R.mix ? `<div class="spRow">${spI("fav")}<span><b>Wants a mix of:</b> ${R.wants.map(spKindName).join(", ")} <span class="muted">(+${SP_FAV_PTS} friendship)</span></span></div>`
+      : `<div class="spRow">${spI("fav")}<span><b>Favourite:</b> ${spKindName(R.wants[0])} <span class="muted">(+${SP_FAV_PTS} friendship)</span></span></div>
+      <div class="spRow">${spI("likes")}<span><b>Also likes:</b> ${spKindName(R.wants[1])} <span class="muted">(+${SP_PTS})</span></span></div>`}
+      <div class="spRow">${spI("sendback")}<span><b>They send back:</b> ${spGood(R.good)} <span class="muted">(${spReturnGoods(L)} per gift, more when you level up)</span></span></div>
+      <div class="spRow">${spI("distance")}<span><b>Distance:</b> ${R.min} min each way</span></div></div>
+    ${trip ? spTripLine(trip) : q ? `<div class="spReq ${q.special ? "special" : ""}">${q.special ? `<div class="spSpecial spRow">${spI("special")}<span>Special request! Bring it in time for extra friendship and goods, or they will be offended (−${SP_SPECIAL.offend}).</span></div>` : ""}<div class="spRow">${spI("request")}<span><b>Their request:</b> ${spReqText(q)}</span></div>
         <div class="muted">+${spReqPts(q)} friendship${q.fav ? " (their favourite!)" : ""} · ${q.special ? "time left" : "a new request in"} <span data-spt="${q.until}">${spClock(q.until - Date.now())}</span></div>
-        <div class="spBtns"><button class="btn big" data-spx="gift" ${can && spFree() ? "" : "disabled"}>🎁 Send gift</button>
-          <button class="btn ghost" data-spx="reroll" ${rerollLeft > 0 ? "disabled" : ""}>🔄 Ask for something else${rerollLeft > 0 ? ` (${spClock(rerollLeft)})` : ""}</button></div>
+        <div class="spBtns"><button class="btn big" data-spx="gift" ${can && spFree() ? "" : "disabled"}>${spI("gift", "spI btnI")}Send gift</button>
+          <button class="btn ghost" data-spx="reroll" ${rerollLeft > 0 ? "disabled" : ""}>${spI("reroll", "spI btnI")}Ask for something else${rerollLeft > 0 ? ` (${spClock(rerollLeft)})` : ""}</button></div>
         ${!spFree() ? `<div class="muted">All your ships are busy.</div>` : !can ? `<div class="muted">You don't have enough for this gift yet.</div>` : ""}</div>` : ""}
     ${spRouteHtml(spSel)}${spBonusHtml(spSel)}`;
 }
 function spBonusHtml(k) {
   const B = SP_BONUS[k], L = spLevel(k);
-  return `<div class="spBonus"><b>🏅 Alliance bonus</b>
-    <div class="${L >= 4 ? "on" : ""}">${L >= 4 ? "✅" : "🔒"} 💛 Trusted: ${B.text(B.val[0], 0)}</div>
-    <div class="${L >= 5 ? "on" : ""}">${L >= 5 ? "✅" : "🔒"} 💖 Allies: ${B.text(B.val[1], 1)}${k === "machine" ? " (and trips stay 15% faster)" : ""}</div></div>`;
+  return `<div class="spBonus"><div class="spRow">${spI("bonus")}<b>Alliance bonus</b></div>
+    <div class="spRow ${L >= 4 ? "on" : ""}">${L >= 4 ? "✅" : "🔒"} ${spI("trusted")}<span>Trusted: ${B.text(B.val[0], 0)}</span></div>
+    <div class="spRow ${L >= 5 ? "on" : ""}">${L >= 5 ? "✅" : "🔒"} ${spI("allies")}<span>Allies: ${B.text(B.val[1], 1)}${k === "machine" ? " (and trips stay 15% faster)" : ""}</span></div></div>`;
 }
 function spBonusList() {
   return Object.keys(SP_BONUS).filter(k => spLevel(k) >= 4).map(k => { const B = SP_BONUS[k], i = spLevel(k) >= 5 ? 1 : 0;
@@ -512,14 +522,14 @@ function spBonusList() {
 }
 function spRouteHtml(k) {
   const R = SP_RACES[k], L = spLevel(k), rt = spRouteOf(k);
-  if (L < SP_ROUTE_LV) return `<div class="spRoute locked">🛣️ <b>Trade route:</b> opens when you are <b>😊 Friendly</b> with the ${R.name}.</div>`;
+  if (L < SP_ROUTE_LV) return `<div class="spRoute locked spRow">${spI("route")}<span><b>Trade route:</b> opens when you are <b>😊 Friendly</b> with the ${R.name}.</span></div>`;
   const goods = SP_ROUTE_GOODS[L], mins = Math.round(spRouteMs(k) * 2 / 60e3);
-  if (rt) return `<div class="spRoute on"><div>🛣️ <b>Trade route open</b> · ${spGI(R.good)} <b>${goods}</b> ${SP_GOODS[R.good].name} every trip (${mins} min round trip)</div>
+  if (rt) return `<div class="spRoute on"><div class="spRow">${spI("route")}<span><b>Trade route open</b> · ${spGI(R.good)} <b>${goods}</b> ${SP_GOODS[R.good].name} every trip (${mins} min round trip)</span></div>
     ${spTripLine(rt)}<div class="muted">Trips so far: ${rt.loops || 0} · goods brought home: ${(rt.got || 0).toLocaleString()}</div>
     <div class="spBtns">${rt.stop ? `<span class="muted">⏹️ Stops when the ship gets home.</span> <button class="btn ghost small" data-spx="rgo">▶ Keep it running</button>` : `<button class="btn ghost" data-spx="rstop">⏹️ Stop the route</button>`}</div></div>`;
-  return `<div class="spRoute"><div>🛣️ <b>Trade route:</b> one ship flies to the ${R.name} and back <b>for good</b>, bringing ${spGI(R.good)} <b>${goods}</b> ${SP_GOODS[R.good].name} every trip (${mins} min round trip). It keeps going while the game is closed.</div>
+  return `<div class="spRoute"><div class="spRow">${spI("route")}<span><b>Trade route:</b> one ship flies to the ${R.name} and back <b>for good</b>, bringing ${spGI(R.good)} <b>${goods}</b> ${SP_GOODS[R.good].name} every trip (${mins} min round trip). It keeps going while the game is closed.</span></div>
     <div class="muted">More goods and faster trips at 💛 Trusted and 💖 Allies.</div>
-    <div class="spBtns"><button class="btn big" data-spx="route" ${spFree() ? "" : "disabled"}>🛣️ Open trade route</button></div>${spFree() ? "" : `<div class="muted">All your ships are busy.</div>`}</div>`;
+    <div class="spBtns"><button class="btn big" data-spx="route" ${spFree() ? "" : "disabled"}>${spI("route", "spI btnI")}Open trade route</button></div>${spFree() ? "" : `<div class="muted">All your ships are busy.</div>`}</div>`;
 }
 function spGoodsHtml() {
   const have = Object.keys(SP_GOODS).filter(g => SP.goods[g]);
