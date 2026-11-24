@@ -145,9 +145,10 @@ function renderProfile() {
   if (prof.user !== cloud.user.id && !prof.loading) { prof.row = null; profLoad(); }
   const row = prof.user === cloud.user.id ? prof.row : null;
   const inc = typeof frIncoming === "function" ? frIncoming() : 0;
-  const tabs = `<div class="profTabs"><button class="profTab ${prof.tab !== "friends" ? "on" : ""}" data-prof="tab-me">👤 Profile</button>
-    <button class="profTab ${prof.tab === "friends" ? "on" : ""}" data-prof="tab-friends">👥 Friends${inc ? ` <span class="profBadge">${inc}</span>` : ""}</button></div>`;
-  if (prof.tab === "friends" && typeof renderFriends === "function") { box.innerHTML = tabs + `<div id="friendsBox"></div>`; renderFriends(row); return; }
+  // 👈 Profile / Friends on the left, like the other pages (.subLayout)
+  const tabs = `<div class="subLayout"><nav class="subNav"><button class="subTab ${prof.tab !== "friends" ? "active" : ""}" data-prof="tab-me">👤 Profile</button>
+    <button class="subTab ${prof.tab === "friends" ? "active" : ""}" data-prof="tab-friends">👥 Friends${inc ? ` <span class="profBadge">${inc}</span>` : ""}</button></nav><div class="subMain">`;
+  if (prof.tab === "friends" && typeof renderFriends === "function") { box.innerHTML = tabs + `<div id="friendsBox"></div></div></div>`; renderFriends(row); return; }
   const ids = profAvatarIds(), cur = row ? row.avatar : prof.pendingAvatar;
   const shown = prof.showAll ? ids : ids.slice(0, 60);
   const typed = $("profNick") ? $("profNick").value : null;
@@ -173,7 +174,7 @@ function renderProfile() {
         return `<button class="profAvPick ${id === cur ? "on" : ""}" data-prof-av="${id}" title="${escapeHtml(profAvName(id))}">${profAvatarImg(id)}</button>`; }).join("")}</div>
         ${ids.length > shown.length ? `<button class="btn ghost small" data-prof="all">Show all ${ids.length}</button>` : ""}`
         : `<p>🔒 Unlock your first 🎁 reward collection (🏆 Achievements → 🎁 Rewards) to choose an avatar.</p>`}</div>
-    <div class="card profWrap"><h3 style="margin-top:0">☁️ Account</h3><div id="cloudRows">${cloudRowsHtml()}</div></div>`;
+    <div class="card profWrap"><h3 style="margin-top:0">☁️ Account</h3><div id="cloudRows">${cloudRowsHtml()}</div></div></div></div>`;
 }
 function profUi() {
   const b = $("profileBtn");
