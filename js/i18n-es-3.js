@@ -1184,8 +1184,14 @@ hrx(String.raw`⭐ Prestige <b>(\d+)<\/b>`, "⭐ Prestigio <b>$1</b>");
 rx(String.raw`Show all (\d+)`, "Mostrar los $1");
 H("👤 <b>Player profiles!</b> Click the round 👤 button next to ⚙️ Settings, sign in with Google and choose a nickname and an avatar (the emblem of one of your 🎁 reward collections). Other players will see your nickname, avatar, achievements and prestige count.",
   "👤 <b>¡Perfiles de jugador!</b> Pulsa el botón redondo 👤 junto a ⚙️ Ajustes, inicia sesión con Google y elige un apodo y un avatar (el emblema de una de tus colecciones de 🎁 recompensas). Otros jugadores verán tu apodo, tu avatar, tus logros y tu número de prestigios.");
-H("👤 <b>Profile</b> (the round button next to ⚙️): once signed in, choose a nickname and an avatar (the emblem of one of your 🎁 reward collections). Other players see your nickname, avatar, achievements and prestige count. Nicknames are unique, and rude ones aren't allowed.",
-  "👤 <b>Perfil</b> (el botón redondo junto a ⚙️): con la sesión iniciada, elige un apodo y un avatar (el emblema de una de tus colecciones de 🎁 recompensas). Otros jugadores ven tu apodo, tu avatar, tus logros y tu número de prestigios. Los apodos son únicos y no se permiten los groseros.");
+H("👤 <b>Profile</b> (the round button next to ⚙️): once signed in, choose a nickname and an avatar (the emblem of one of your 🎁 reward collections). Other players see your nickname, avatar, achievements and prestige count. Nicknames are unique, and rude ones aren't allowed. Your first nickname is free; changing it later (✏️ next to your name) costs 100 gcoin.",
+  "👤 <b>Perfil</b> (el botón redondo junto a ⚙️): con la sesión iniciada, elige un apodo y un avatar (el emblema de una de tus colecciones de 🎁 recompensas). Otros jugadores ven tu apodo, tu avatar, tus logros y tu número de prestigios. Los apodos son únicos y no se permiten los groseros. Tu primer apodo es gratis; cambiarlo después (✏️ junto a tu nombre) cuesta 100 gcoin.");
+Object.assign(ES, { "Change nickname": "Cambiar apodo", "Cancel": "Cancelar",
+  "Your first nickname is free. Changing it later costs 100 gcoin.": "Tu primer apodo es gratis. Cambiarlo después cuesta 100 gcoin." });
+rx(String.raw`Change · (.+)`, "Cambiar · $1");
+hrx(String.raw`Changing your nickname costs <b>(.+?)<\/b>\.( You have (.+)\.)?`, (m, c, y, h) => `Cambiar tu apodo cuesta <b>${c}</b>.${y ? ` Tienes ${h}.` : ""}`);
+rx(String.raw`You need (.+) to change your nickname\.`, "Necesitas $1 para cambiar tu apodo.");
+rx(String.raw`Nickname changed \(−(.+)\)\.`, "Apodo cambiado (−$1).");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

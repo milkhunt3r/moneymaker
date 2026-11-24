@@ -10,6 +10,7 @@
    · The ☁️ Account rows (sign in / save now / sign out / delete account) live here too, not in ⚙️ Settings.
    ===================================================================== */
 const PROF_CACHE = "eoc-profile";
+const PROF_RENAME_COST = 100 * GCOIN;   // the first nickname is free; every change after that costs 100 gcoin
 const prof = { row: null, user: null, loading: false, err: "", msg: "", busy: false, showAll: false };
 try { const c = JSON.parse(localStorage.getItem(PROF_CACHE) || "null"); if (c && c.user) { prof.row = c.row; prof.user = c.user; } } catch (e) {}
 const profCache = () => { try { localStorage.setItem(PROF_CACHE, JSON.stringify(prof.row && prof.user ? { user: prof.user, row: prof.row } : null)); } catch (e) {} };
@@ -73,7 +74,9 @@ async function profSaveNick(raw) {
   prof.msg = "";
   if (bad) { prof.err = bad; return renderProfile(); }
   if (!profSignedIn() || prof.busy) return;
-  if (prof.row && prof.row.nickname === n) { prof.err = ""; return renderProfile(); }
+  if (prof.row && prof.row.nickname === n) { prof.err = ""; prof.editing = false; return renderProfile(); }
+  const paid = !!prof.row;
+  if (paid && state.money < PROF_RENAME_COST) { prof.err = `You need ${fmt(PROF_RENAME_COST)} to change your nickname.`; return renderProfile(); }
   prof.busy = true; prof.err = ""; renderProfile();
   try {
     const st = profStats(), avatar = (prof.row && prof.row.avatar) || prof.pendingAvatar || "";
@@ -83,7 +86,9 @@ async function profSaveNick(raw) {
     const { error } = await q;
     if (error) throw error;
     prof.row = { ...(prof.row || { avatar, ...st }), nickname: n }; prof.user = cloud.user.id; profCache();
-    prof.msg = "✅ Nickname saved.";
+    if (paid) { state.money -= PROF_RENAME_COST; updateCounter(); save(); }
+    prof.editing = false;
+    prof.msg = paid ? `✅ Nickname changed (−${fmt(PROF_RENAME_COST)}).` : "✅ Nickname saved.";
   } catch (e) { console.warn("Nickname save failed:", e); prof.err = profDbError(e); }
   prof.busy = false; profUi();
 }
@@ -112,7 +117,7 @@ setInterval(profPushStats, 30000);
 function profCardHtml(row) {
   const st = profStats(), nick = row ? row.nickname : "", av = row ? row.avatar : prof.pendingAvatar;
   return `<div class="profCard">${profAvatarImg(av, "profAv")}
-    <div class="profCardInfo"><div class="profNick" data-noi18n>${nick ? escapeHtml(nick) : "<i>…</i>"}</div>
+    <div class="profCardInfo"><div class="profNick"><span data-noi18n>${nick ? escapeHtml(nick) : "<i>…</i>"}</span>${row && !prof.editing ? `<button class="profEdit" data-prof="edit" title="Change nickname" aria-label="Change nickname">✏️</button>` : ""}</div>
       <div class="profStats"><span>🏆 <b>${st.ach_done}/${st.ach_total}</b> achievements</span><span>⭐ Prestige <b>${st.prestige}</b></span></div></div></div>`;
 }
 function renderProfile() {
@@ -131,16 +136,22 @@ function renderProfile() {
   const ids = profAvatarIds(), cur = row ? row.avatar : prof.pendingAvatar;
   const shown = prof.showAll ? ids : ids.slice(0, 60);
   const typed = $("profNick") ? $("profNick").value : null;
+  const showNick = (!row && !prof.loading) || (row && prof.editing), afford = state.money >= PROF_RENAME_COST;
+  const errText = prof.err === "load" ? "Your profile couldn't be loaded. Check your connection and try again." : prof.err;
   box.innerHTML = `<div class="card profWrap"><div class="row"><h2 style="margin:0">👤 Your profile</h2><span class="muted">Visible to other players</span></div>
       ${profCardHtml(row)}
       ${prof.loading && !row ? `<p class="muted">Loading…</p>` : ""}
-      ${!row && !prof.loading ? `<p class="profNew">✨ Choose a nickname and an avatar to create your profile.</p>` : ""}</div>
-    <div class="card profWrap"><h3 style="margin-top:0">✏️ Nickname</h3>
+      ${!row && !prof.loading ? `<p class="profNew">✨ Choose a nickname and an avatar to create your profile.</p>` : ""}
+      ${prof.msg && !showNick ? `<div class="profOk">${prof.msg}</div>` : ""}
+      ${prof.err && !showNick ? `<div class="profErr">❌ ${errText}</div>` : ""}</div>
+    ${showNick ? `<div class="card profWrap"><h3 style="margin-top:0">✏️ ${row ? "Change nickname" : "Nickname"}</h3>
       <div class="profNickRow"><input id="profNick" maxlength="16" autocomplete="off" spellcheck="false" placeholder="Your nickname" value="${escapeHtml(typed != null ? typed : row ? row.nickname : "")}" data-noi18n aria-label="Nickname">
-        <button class="btn" data-prof="nick" ${prof.busy ? "disabled" : ""}>${row ? "Save" : "Create profile"}</button></div>
+        ${row ? `<button class="btn" data-prof="nick" ${prof.busy || !afford ? "disabled" : ""}>Change · ${fmt(PROF_RENAME_COST)}</button><button class="btn ghost" data-prof="cancel">Cancel</button>`
+          : `<button class="btn" data-prof="nick" ${prof.busy ? "disabled" : ""}>Create profile</button>`}</div>
       <div class="muted">3–16 characters: letters, numbers, spaces and _ . - · Every nickname is unique. Rude names aren't allowed.</div>
-      ${prof.err ? `<div class="profErr">❌ ${prof.err === "load" ? "Your profile couldn't be loaded. Check your connection and try again." : prof.err}</div>` : ""}
-      ${prof.msg ? `<div class="profOk">${prof.msg}</div>` : ""}</div>
+      <div class="muted">${row ? `Changing your nickname costs <b>${fmt(PROF_RENAME_COST)}</b>.${afford ? "" : ` You have ${fmt(state.money)}.`}` : "Your first nickname is free. Changing it later costs 100 gcoin."}</div>
+      ${prof.err ? `<div class="profErr">❌ ${errText}</div>` : ""}
+      ${prof.msg ? `<div class="profOk">${prof.msg}</div>` : ""}</div>` : ""}
     <div class="card profWrap"><h3 style="margin-top:0">🖼️ Avatar</h3>
       <p class="muted">Pick the emblem of one of your 🎁 reward collections. Unlock more collections (🏆 Achievements → 🎁 Rewards) to get more avatars.</p>
       ${ids.length ? `<div class="profAvGrid">${shown.map(id => {
@@ -182,6 +193,8 @@ document.addEventListener("click", (e) => {
   if (b.dataset.prof === "signin" && typeof cloudSignIn === "function") cloudSignIn();
   if (b.dataset.prof === "nick") profSaveNick($("profNick").value);
   if (b.dataset.prof === "all") { prof.showAll = true; renderProfile(); }
+  if (b.dataset.prof === "edit") { prof.editing = true; prof.err = ""; prof.msg = ""; renderProfile(); const i = $("profNick"); if (i) { i.focus(); i.select(); } }
+  if (b.dataset.prof === "cancel") { prof.editing = false; prof.err = ""; prof.msg = ""; renderProfile(); }
 });
 document.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.id === "profNick") profSaveNick(e.target.value); });
 document.addEventListener("input", (e) => { if (e.target.id === "profNick" && (prof.err || prof.msg)) { prof.err = ""; prof.msg = ""; const x = document.querySelector(".profErr, .profOk"); if (x) x.remove(); } });
