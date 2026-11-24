@@ -51,6 +51,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "24 November 2026", title: "Empire of Coins", items: [
+    "🐭 <b>New pet: Pip the painter!</b> Become 😊 Friendly with the Lumerians in 🌌 Space Logistics and adopt him for 10 paintings. He lives at the top of the 🎮 Mini-games page and paints a 🟡 Normal painting (85–95% match) every 15 minutes for your collection, even while the game is closed. Rename him on the 🐾 Pet page.",
     "🎨 <b>Art Gallery update!</b> New tiers: 🟢 Easy (kid-style drawings), 🟡 Normal (detailed scenes) and the new 🏛️ <b>Masterpiece</b> tier: copy 10 famous paintings like The Starry Night, The Great Wave, Mona Lisa and The Scream (opens after 10 Normal paintings). The old 3-shape tier is retired.",
     "🖌️ New drawing tools: ➖ Line, 💧 Eyedropper and 🪞 Mirror mode. After you submit, a 🔥 heatmap shows where your copy differs from the original.",
     "🎨 8 new colours in the Art studio palette (24 in all): slate, tan, maroon, salmon, ochre, olive, turquoise and lavender. Every painting now uses them.",

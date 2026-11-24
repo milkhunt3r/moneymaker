@@ -1098,6 +1098,52 @@ Object.assign(ES, { "Masterpieces": "Obras maestras", "Vincent van Gogh": "Vince
   "Leonardo da Vinci": "Leonardo da Vinci", "Johannes Vermeer": "Johannes Vermeer", "Claude Monet": "Claude Monet",
   "Simplified versions of famous old paintings (all old enough to be free for everyone to use), drawn in the game's 24 colours": "Versiones simplificadas de cuadros antiguos famosos (todos tan antiguos que cualquiera puede usarlos), dibujadas con los 24 colores del juego" });
 rx(String.raw`Normal unlocks after you submit \(sell or keep\) (\d+) Easy paintings; 🏛️ Masterpiece unlocks after (\d+) Normal paintings\.`, "Normal se desbloquea al entregar (vender o guardar) $1 cuadros fáciles; 🏛️ Obra maestra, tras $2 cuadros normales.");
+// 🐭🎨 Pip the painter pet
+Object.assign(ES, { "A painter wants to join you": "Un pintor quiere vivir contigo", "Adopt Pip": "Adoptar a Pip", "Adopt": "Adoptar", "Pip joined you!": "¡Pip se ha unido a ti!",
+  "He set up his easel at the top of the 🎮 Mini-games page. Every 15 minutes he paints a 🟡 Normal painting for your collection (he naps in between).":
+    "Ha montado su caballete arriba del todo en la página de 🎮 Minijuegos. Cada 15 minutos pinta un cuadro 🟡 Normal para tu colección (entre medias, se echa la siesta).",
+  "Go and see him": "Ir a verlo", "Later": "Más tarde", "Painted": "Pintados", "Auto-sold": "Vendidos solos", "Last": "Último", "Disturbed": "Molestado",
+  "Click him to pet him (he doesn't like it while he's painting!).": "Haz clic en él para acariciarlo (¡no le gusta nada mientras pinta!).",
+  "What he does": "Qué hace", "Another pet is out there": "Hay otra mascota por ahí",
+  "Lives at the top of the Mini-games page, next to his easel.": "Vive arriba del todo en la página de Minijuegos, junto a su caballete.",
+  "Every 15 minutes he paints a 🟡 Normal painting: 14 minutes asleep, then 1 minute of painting. His copies are 85–95% matches.":
+    "Cada 15 minutos pinta un cuadro 🟡 Normal: 14 minutos dormido y después 1 minuto pintando. Sus copias tienen un parecido del 85–95 %.",
+  "The painting goes to your collection. If it's full, he sells it right away. Both count for 🏆 achievements.":
+    "El cuadro va a tu colección. Si está llena, lo vende al momento. Ambas cosas cuentan para los 🏆 logros.",
+  "He keeps painting while the game is closed (up to 24 hours).": "Sigue pintando con el juego cerrado (hasta 24 horas).",
+  "Click him while he sleeps to pet him. Don't poke him while he's painting: he gets a bit grumpy!": "Haz clic en él mientras duerme para acariciarlo. No lo molestes mientras pinta: ¡se pone un poco gruñón!",
+  "Pip the painter": "Pip, el pintor",
+  "A young alien painter from the Lumerians (🌌 Space Logistics). Once you are 😊 Friendly with them, you can adopt him for 10 paintings from your collection (they count as sold for 🏆 achievements).":
+    "Un joven pintor alienígena de los lumerianos (🌌 Logística espacial). Cuando llegues al nivel 😊 Amistosa con ellos, podrás adoptarlo a cambio de 10 cuadros de tu colección (cuentan como vendidos para los 🏆 logros).",
+  "He lives at the top of the Mini-games page, next to his easel.": "Vive arriba del todo en la página de Minijuegos, junto a su caballete.",
+  "Every 15 minutes he paints a 🟡 Normal painting: 14 minutes asleep, then 1 minute of painting. His copies are 85–95% matches, worth that part of 100M.":
+    "Cada 15 minutos pinta un cuadro 🟡 Normal: 14 minutos dormido y después 1 minuto pintando. Sus copias tienen un parecido del 85–95 % y valen esa parte de 100 M.",
+  "The painting goes to your collection; if it's full, he sells it right away. Both count for 🏆 achievements.":
+    "El cuadro va a tu colección; si está llena, lo vende al momento. Ambas cosas cuentan para los 🏆 logros.",
+  "He keeps painting while the game is closed (up to 24 hours of paintings).": "Sigue pintando con el juego cerrado (hasta 24 horas de cuadros).",
+  "Click him while he sleeps to pet him. If you poke him while he's painting, he gets a bit grumpy. Rename him on the 🐾 Pet page.":
+    "Haz clic en él mientras duerme para acariciarlo. Si lo molestas mientras pinta, se pone un poco gruñón. Cámbiale el nombre en la página 🐾 Mascota.",
+  "Rumour has it an art-loving alien race has a painter who'd love a new home. New friends will also join in future updates.":
+    "Se rumorea que una raza alienígena amante del arte tiene un pintor que busca un nuevo hogar. También se unirán nuevos amigos en próximas actualizaciones.",
+  "A painter from the stars": "Un pintor de las estrellas" });
+H("Become <b>😊 Friendly</b> with the Lumerians and one of their painters may want to come and live with you.",
+  "Logra el nivel <b>😊 Amistosa</b> con los lumerianos y puede que uno de sus pintores quiera venirse a vivir contigo.");
+H("Pip, a young Lumerian painter, would love to live with you and paint for you. The Lumerians ask <b>10 paintings</b> in return.",
+  "A Pip, un joven pintor lumeriano, le encantaría vivir contigo y pintar para ti. Los lumerianos piden <b>10 cuadros</b> a cambio.");
+rx(String.raw`Adopt Pip · 🖼️ (\d+) paintings`, "Adoptar a Pip · 🖼️ $1 cuadros");
+const pipNumEs = (n) => n.replace(".", ",");
+hrx(String.raw`😴 <b>Asleep\.<\/b> Next painting starts in <b>([\d:]+)<\/b>`, "😴 <b>Dormido.</b> El próximo cuadro empieza en <b>$1</b>");
+hrx(String.raw`🎨 <b>Painting…<\/b> done in <b>([\d:]+)<\/b>`, "🎨 <b>Pintando…</b> termina en <b>$1</b>");
+hrx(String.raw`💰 Auto-sold: <b>([\d.,]+)<\/b> \((.+)\)`, "💰 Vendidos solos: <b>$1</b> ($2)");
+rx(String.raw`(\d+(?:\.\d)?)%`, (m, n) => `${pipNumEs(n)} %`);
+rx(String.raw`(.+) finished a painting \((\d+\.\d)% match, worth (.+)\)\. It's in your 🖼️ collection\.`, (m, n, sc, v) => `${n} ha terminado un cuadro (parecido del ${pipNumEs(sc)} %, vale ${v}). Ya está en tu 🖼️ colección.`);
+rx(String.raw`(.+) finished a painting \((\d+\.\d)%\)\. Your collection is full, so he sold it for (.+)\.`, (m, n, sc, v) => `${n} ha terminado un cuadro (${pipNumEs(sc)} %). Tu colección está llena, así que lo ha vendido por ${v}.`);
+rx(String.raw`While you were away, (.+) painted (\d+) paintings?: (\d+) went to your 🖼️ collection(?:, (\d+) sold for (.+))?\.`, (m, n, c, k, sd, v) =>
+  `Mientras no estabas, ${n} ha pintado ${c} cuadro${c === "1" ? "" : "s"}: ${k} a tu 🖼️ colección${sd ? `, ${sd} vendido${sd === "1" ? "" : "s"} por ${v}` : ""}.`);
+rx(String.raw`Your Lumerian painter( · together since (.+))?`, (m, a, d) => `Tu pintor lumeriano${a ? ` · juntos desde el ${d}` : ""}`);
+ES["❌ Pip couldn't be adopted."] = "❌ No se ha podido adoptar a Pip.";
+H("🐭 <b>New pet: Pip the painter!</b> Become 😊 Friendly with the Lumerians in 🌌 Space Logistics and adopt him for 10 paintings. He lives at the top of the 🎮 Mini-games page and paints a 🟡 Normal painting (85–95% match) every 15 minutes for your collection, even while the game is closed. Rename him on the 🐾 Pet page.",
+  "🐭 <b>Nueva mascota: ¡Pip, el pintor!</b> Logra el nivel 😊 Amistosa con los lumerianos en 🌌 Logística espacial y adóptalo a cambio de 10 cuadros. Vive arriba del todo en la página de 🎮 Minijuegos y pinta un cuadro 🟡 Normal (parecido del 85–95 %) cada 15 minutos para tu colección, incluso con el juego cerrado. Cámbiale el nombre en la página 🐾 Mascota.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

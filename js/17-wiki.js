@@ -280,7 +280,14 @@ function wikiPet() {
     <ul><li>⚡ It buys the energy drink by itself when it's ready and you can afford it.</li>
       <li>👆 While the drink is active, it taps the coin for you: 10 clicks per second, worth the same as yours (they count for 🏆 achievements).</li>
       <li>😴 During the cooldown it sleeps, and wakes up 10 seconds before the next drink.</li>
-      <li>❤️ Click it to pet it. On the 🐾 Pet page you can rename it or hide it.</li></ul>`;
+      <li>❤️ Click it to pet it. On the 🐾 Pet page you can rename it or hide it.</li></ul>
+    <h3>🐭 Pip the painter</h3>
+    <p>A young alien painter from the Lumerians (🌌 Space Logistics). Once you are 😊 Friendly with them, you can adopt him for 10 paintings from your collection (they count as sold for 🏆 achievements).</p>
+    <ul><li>🎮 He lives at the top of the Mini-games page, next to his easel.</li>
+      <li>🎨 Every 15 minutes he paints a 🟡 Normal painting: 14 minutes asleep, then 1 minute of painting. His copies are 85–95% matches, worth that part of 100M.</li>
+      <li>🖼️ The painting goes to your collection; if it's full, he sells it right away. Both count for 🏆 achievements.</li>
+      <li>🌙 He keeps painting while the game is closed (up to 24 hours of paintings).</li>
+      <li>❤️ Click him while he sleeps to pet him. If you poke him while he's painting, he gets a bit grumpy. Rename him on the 🐾 Pet page.</li></ul>`;
 }
 
 function wikiArt() {
