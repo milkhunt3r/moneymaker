@@ -1144,6 +1144,10 @@ rx(String.raw`Your Lumerian painter( · together since (.+))?`, (m, a, d) => `Tu
 ES["❌ Pip couldn't be adopted."] = "❌ No se ha podido adoptar a Pip.";
 H("🐭 <b>New pet: Pip the painter!</b> Become 😊 Friendly with the Lumerians in 🌌 Space Logistics and adopt him for 10 paintings. He lives at the top of the 🎮 Mini-games page and paints a 🟡 Normal painting (85–95% match) every 15 minutes for your collection, even while the game is closed. Rename him on the 🐾 Pet page.",
   "🐭 <b>Nueva mascota: ¡Pip, el pintor!</b> Logra el nivel 😊 Amistosa con los lumerianos en 🌌 Logística espacial y adóptalo a cambio de 10 cuadros. Vive arriba del todo en la página de 🎮 Minijuegos y pinta un cuadro 🟡 Normal (parecido del 85–95 %) cada 15 minutos para tu colección, incluso con el juego cerrado. Cámbiale el nombre en la página 🐾 Mascota.");
+Object.assign(ES, { "A painter in the family": "Un pintor en la familia", "Adopt Pip from the Lumerians": "Adopta a Pip de los lumerianos",
+  "Little artist": "Pequeño artista", "Let Pip paint 5 paintings": "Deja que Pip pinte 5 cuadros", "Prolific painter": "Pintor prolífico", "Let Pip paint 50 paintings": "Deja que Pip pinte 50 cuadros",
+  "Muse": "Musa", "Pet Pip 100 times": "Acaricia a Pip 100 veces",
+  "🏆 4 new 🖼️ Art Gallery achievements for Pip: 🐭 A painter in the family, 🖌️ Little artist, 🎨 Prolific painter and 💜 Muse.": "🏆 4 logros nuevos de 🖼️ Galería de arte para Pip: 🐭 Un pintor en la familia, 🖌️ Pequeño artista, 🎨 Pintor prolífico y 💜 Musa." });
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
