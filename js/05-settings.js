@@ -58,6 +58,8 @@ function showSettings(fromMenu) {
   showModal(`<div class="orPanel">
       <div class="orRibbon"><span>Settings</span></div>
       <button class="orClose" data-modal="close" aria-label="Close">✕</button>
+      <div class="orSec">Game</div>
+      ${row("save", "Save game")}
       <div class="orSec">Display</div>
       <div class="orRow slider">${orIcon("bright")}<span class="grow">Background brightness</span><span class="orVal" id="orBrightVal">${bgBright()}%</span>
         <input type="range" class="orRange" id="orBright" min="20" max="100" step="5" value="${bgBright()}" style="--p:${(bgBright() - 20) / 0.8}%" aria-label="Background brightness"></div>
@@ -68,8 +70,8 @@ function showSettings(fromMenu) {
       ${row("tipsReset", "Show all tips again")}
       ${row("tutorial", "Replay the guided start")}
       <button class="orRow" data-or="donate">${orIcon("cup")}<span class="grow">Support the game</span><span class="orArrow">›</span></button>
-      <div class="orRow orLegal">${typeof legalLinks === "function" ? legalLinks() : ""}</div>
       <button class="orRow" data-or="bug">${orIcon("bug")}<span class="grow">Report a bug</span><span class="orArrow">›</span></button>
+      <div class="orRow orLegal">${typeof legalLinks === "function" ? legalLinks() : ""}</div>
       <div class="orNote" id="orNote">${SETTINGS_NOTE}</div>
       <div class="orBtns">
         ${fromMenu ? "" : `<button class="orBtn orBlue" data-or="menu"><span>${orIcon("menu")}Main menu</span></button>`}
