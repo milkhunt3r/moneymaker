@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🗂️ ONE TAB AT A TIME
    Two tabs running the game would each keep their own copy of the progress and overwrite each other's save

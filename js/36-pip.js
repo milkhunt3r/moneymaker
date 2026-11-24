@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🐭🎨 PIP, the painter pet (an alien mouse from the Lumerians).
    - Adopt him in 🌌 Space Logistics → Lumerians, once you are 😊 Friendly, for 10 paintings from your collection.

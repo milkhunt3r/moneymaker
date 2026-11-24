@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🗺️ WORLD MAP: shows every truck, tanker and plane. Moving ones travel along their route
    (trucks: straight roads, tankers: sea lanes, planes: curved flight paths). Hover an icon for details.

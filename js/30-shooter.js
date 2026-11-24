@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🚀 NEBULA STRIKE (🎮 Mini-games): a side-scrolling space shooter.
    - Unlock: build the 🚀 Space Mission Center once. It stays unlocked for good (also after a prestige).

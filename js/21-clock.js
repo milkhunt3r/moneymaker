@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    ⏱️ GAME CLOCK + OFFLINE EARNINGS
    The game runs one game second (gameTick + freeTick) for every REAL second that passed, measured with Date.now().

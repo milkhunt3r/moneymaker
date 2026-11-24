@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🧬 GENE CASCADE: the maths (no screen code, so it can also be simulated outside the game)
    Our own cluster slot: 7×7 grid, clusters of 5+ touching specimens (up/down/left/right) pay,

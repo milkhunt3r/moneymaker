@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🧬 GENE SPLICER (🎮 Mini-games, secret: opens once the 🧬 Genetics Laboratory is bought, after the 2nd prestige).
    Start with 5 DNA samples (Human, Fish, Lizard, Spider, Plant). Put two in the splicer: if they make a species,

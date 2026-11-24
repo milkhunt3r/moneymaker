@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🌐 ESPAÑOL (España), session 2: the rule texts in Investing, Logistics and Live trading, every casino game,
    the mini-games, achievement names and descriptions, and the Shop / reward items.

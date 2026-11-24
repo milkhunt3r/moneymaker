@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    INCOME: runs once per second for each company
    Order: Copycats pick a trait -> base -> Motivator, Friendship, Bully, Hard worker, Night owl

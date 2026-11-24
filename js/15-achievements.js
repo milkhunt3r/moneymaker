@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    ACHIEVEMENTS: checked every second. Each one has a goal and a function that
    measures your progress. Unlocked ones are saved with the time you got them.

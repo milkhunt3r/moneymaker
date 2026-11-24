@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🏛️ MASTERPIECES (Art Gallery top tier): our own simplified versions of 10 famous public-domain paintings,
    drawn with simple shapes in the game's 24 colours (no photos, no copies of the real brushwork).

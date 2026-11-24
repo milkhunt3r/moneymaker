@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🎴 BACCARAT (Punto Banco, standard casino rules, 8-deck shoe). Unlocks at Gambler level 20.
    Bet on which hand ends closer to 9: Player or Banker (or a Tie). Cards: A = 1, 2–9 face value, 10/J/Q/K = 0,

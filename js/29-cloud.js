@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    ☁️ CLOUD SAVE (Supabase): optional Google login; your progress is copied to your account.
    · Playing without an account works exactly as before (the save stays in this browser).

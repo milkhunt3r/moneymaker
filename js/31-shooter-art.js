@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🚀 NEBULA STRIKE: pictures.
    Ships and bosses are painted (assets/shooter/*.webp). Enemies, shots, pick-ups and the space

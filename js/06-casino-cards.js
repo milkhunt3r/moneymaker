@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    BLACKJACK
    Rules: 6-deck shoe, dealer stands on soft 17, blackjack pays 3:2,

@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    CASINO WALLET: move money in and out as chips
    ===================================================================== */

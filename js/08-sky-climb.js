@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    SKY CLIMB (our take on a ball-draw climbing game)
    28 balls: 19 green, 8 red, 1 gold. Balls are NOT put back during a round.

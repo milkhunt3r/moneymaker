@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🐾 PET PAGE (top tab, where the Shop used to be). Room for more pets later.
    - Your pet: picture, name, show on the Income page, what it does, and its stats.

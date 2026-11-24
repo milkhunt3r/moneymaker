@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    ENERGY DRINK: costs 50, clicks are worth x5 for 30 seconds
    ===================================================================== */

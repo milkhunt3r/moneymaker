@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🔞 AGE AND ENTERTAINMENT NOTICE
    Shown the first time someone presses ▶ Play on this device (guests and signed-in players alike).

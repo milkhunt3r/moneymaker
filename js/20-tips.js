@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    💡 TIPS + GUIDED START (Settings → 💡 Show tips)
    · Guided start: 5 small steps for new players; each highlights something and waits until you do it.

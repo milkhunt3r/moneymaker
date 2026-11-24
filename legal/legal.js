@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 // 🌐 English / Español switch for the Terms of Use and Privacy Policy pages.
 // Language: ?lang=es|en from the game link, otherwise the game's own setting (localStorage "eoc-lang"), otherwise English.
 (function () {

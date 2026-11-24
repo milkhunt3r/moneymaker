@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    LOGISTICS: tankers and semi-trucks share one "fleet" system.
    A free vehicle gets 4 contract offers (different routes, random time in the route's range).

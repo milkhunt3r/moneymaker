@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    📱 PHONE MODE: screens up to PHONE_MAX px wide (phones, small tablets in portrait).
    Adds the "phone" class to <body>; css/style.css (📱 PHONE MODE section) does the layout:

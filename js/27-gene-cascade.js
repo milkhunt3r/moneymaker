@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🧬 GENE CASCADE: the slot screen (the maths is in js/26-slot-engine.js)
    Two tables (High rollers and Super high rollers limits). 🔒 Unlocks after the 1st prestige at Gambler level 40. A whole paid spin, free spins included, is decided at once and its

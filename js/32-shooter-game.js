@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🚀 NEBULA STRIKE: the game (canvas 960 × 540, fixed 60 steps per second).
    - A level is a stream of enemy waves (picked at random from the level's list, closer together as it goes on),

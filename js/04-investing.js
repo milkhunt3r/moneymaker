@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    INVESTING
    Investor level: XP for every minute you have money invested (same level curve as the casino).

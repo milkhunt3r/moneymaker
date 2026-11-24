@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🐞 REPORT A BUG (⚙️ Settings → Report a bug)
    A short form; "Send by email" opens the player's email app with a ready report addressed to

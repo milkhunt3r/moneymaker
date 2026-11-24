@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🏠 MAIN MENU (start page)
    Shown every time the game opens. The picture (1672 × 941) has the logo and buttons painted in;

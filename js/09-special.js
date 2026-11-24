@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    SPECIAL BUSINESSES
    🏢 Real estate agency: needs 100k all-time real estate profit, costs 1M, only one.

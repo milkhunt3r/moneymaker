@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🖼️ ART GALLERY: copy a painting as closely as you can.
    Unlock: 500k. Tiers: Easy (1 scoin), Medium (10 scoin), Hard (100 scoin): you earn match% of the value.

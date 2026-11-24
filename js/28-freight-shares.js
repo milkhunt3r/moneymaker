@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🚚 GLOBAL FREIGHT CO. SHARES (📈 Investing): a share price that follows your logistics deliveries.
    Every 10 game seconds: deliveries in the last 20 seconds (n) vs the 20 seconds before (m).

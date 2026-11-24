@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🌐 ESPAÑOL (España), session 3: the 📖 Wiki, the ⭐ prestige screens and the special business details.
    Loaded after js/i18n-es-2.js. The generic fallbacks at the end must stay the last rules.

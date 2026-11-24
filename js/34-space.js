@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🌌 SPACE LOGISTICS (🚢 Logistics → 🌌 Space). Release 1: the star map, exploring and friendship.
    - Opens with the 🚀 Space Mission Center (1 ship). More ships: 🛸 Orbital Space Station +1, 🌕 Moon Base +2, 🔴 Mars Base +2.

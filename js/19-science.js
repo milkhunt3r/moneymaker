@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🔬 SCIENCE (Income tab → Science). Unlocks at Logistics 50, Investor 50 and Gambler 25.
    🎓 University (100 scoin): 1 scientist every 2 min, up to 50. Costs 5 / sec per empty scientist place

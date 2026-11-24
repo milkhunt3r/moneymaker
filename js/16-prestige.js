@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    ⭐ PRESTIGE: at 1 / 5 / 10 / 20 gcoin in your main money (1st / 2nd / 3rd / 4th prestige) you can reset the game for a Legacy bonus.
    Every prestige gives a 10-minute tax holiday afterwards (no tax inspections), whatever bonus is chosen.

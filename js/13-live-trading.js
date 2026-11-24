@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    📡 LIVE CRYPTO MARKET: real prices (1 USD = 1 bcoin) for Bitcoin, Ethereum and Solana.
    Data: Binance public market stream (no API key needed); Coinbase public feed as a backup.

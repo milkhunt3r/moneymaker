@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    📖 WIKI: how to play, with tables built from the game's own data (always up to date).
    ===================================================================== */

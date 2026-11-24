@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    PLINKO: 12 rows of pegs, ball always dropped from the top centre.
    At each peg it bounces left or right (50/50), landing in one of 13 slots.

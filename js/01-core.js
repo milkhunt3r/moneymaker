@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    SETTINGS: change these numbers to balance the game
    ===================================================================== */

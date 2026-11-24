@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🌐 ESPAÑOL (España): translations of the game's English text. Used only when the language is Español.
    ES: exact text → text · ES_RX: text with numbers or names (regex → replacement)

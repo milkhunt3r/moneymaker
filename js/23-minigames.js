@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🎮 MINI-GAMES: a hub tab with one card per game.
    - 🖼️ Art Gallery (js/18-art.js) opens from here (state.gamePage = "art").

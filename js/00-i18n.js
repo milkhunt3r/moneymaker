@@ -1,3 +1,4 @@
+/* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    🌐 LANGUAGES: English (the game's own text) and Español (Spain).
    The game is written in English. In Spanish, everything shown on screen is translated as it appears:
