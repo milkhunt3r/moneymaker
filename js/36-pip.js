@@ -9,7 +9,7 @@
    - Click him: while asleep he enjoys it; while painting he gets a bit annoyed.
    ===================================================================== */
 const PIP_CYCLE = 15 * 60e3, PIP_PAINT = 60e3, PIP_TIER = "hard", PIP_COST = 10, PIP_LV = 3, PIP_CATCHUP = 96;
-const PIP_V = "1";   // bump when a Pip picture changes (browser cache)
+const PIP_V = "2";   // bump when a Pip picture changes (browser cache)
 const PIP_FRAMES = ["paint-1", "paint-2", "paint-3", "paint-4", "tada", "sleep-1", "sleep-2", "sleeppet-1", "sleeppet-2", "sleeppet-3", "annoyed-1", "annoyed-2", "annoyed-3"];
 const pipSrc = (f) => `assets/pip/pip-${f}.webp?v=${PIP_V}`;
 const pipOwned = () => !!(state.pip && state.pip.owned);

@@ -18610,7 +18610,7 @@ __eocLoaded = 44;
    - Click him: while asleep he enjoys it; while painting he gets a bit annoyed.
    ===================================================================== */
 var PIP_CYCLE = 15 * 60e3, PIP_PAINT = 60e3, PIP_TIER = "hard", PIP_COST = 10, PIP_LV = 3, PIP_CATCHUP = 96;
-var PIP_V = "1";   // bump when a Pip picture changes (browser cache)
+var PIP_V = "2";   // bump when a Pip picture changes (browser cache)
 var PIP_FRAMES = ["paint-1", "paint-2", "paint-3", "paint-4", "tada", "sleep-1", "sleep-2", "sleeppet-1", "sleeppet-2", "sleeppet-3", "annoyed-1", "annoyed-2", "annoyed-3"];
 var pipSrc = (f) => `assets/pip/pip-${f}.webp?v=${PIP_V}`;
 var pipOwned = () => !!(state.pip && state.pip.owned);
