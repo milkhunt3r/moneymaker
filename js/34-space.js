@@ -396,7 +396,7 @@ function spMapHtml() {
   const nodes = Object.entries(SP_RACES).map(([k, R]) => {
     const r = SP.races[k], vis = spVisible(k), L = spLevel(k);
     const img = r.found ? `sys-${k}` : "sys-unknown";
-    const lbl = r.found ? `${R.name}<small>${spLvI(L, "spI tiny")} ${SP_LEVELS[L].name}</small>` : vis ? `Unknown signal<small>❓ Explore</small>` : `<small>🔒 Uncharted</small>`;
+    const rt = r.found && spRouteOf(k), lbl = r.found ? `${R.name}<small>${SP_LEVELS[L].name}</small>${rt && !rt.stop ? `<small class="spRtLbl">🛣️ Active trade route</small>` : ""}` : vis ? `Unknown signal<small>❓ Explore</small>` : `<small>🔒 Uncharted</small>`;
     return `<button class="spNode ${r.found ? "found" : vis ? "fog" : "hidden"} ${spSel === k ? "sel" : ""}" data-sp="${k}" style="left:${R.pos[0]}%;top:${R.pos[1]}%">
       <img src="assets/space/${img}.webp" alt="" draggable="false"><span class="spLbl">${lbl}</span>${SP.sos && SP.sos.k === k ? `<i class="spSosPin">🆘</i>` : ""}${r.found && r.req && spFree() && !spTripTo(k, "gift") && spCanPay(r.req) ? `<i class="spPing">🎁</i>` : ""}</button>`; }).join("");
   const ships = SP.trips.map(tr => `<img class="spShip ${tr.k}" data-trip="${tr.id}" src="assets/space/ship-explorer.webp" alt="" draggable="false" style="${spShipCss(spShipPos(tr, now))}">`).join("");

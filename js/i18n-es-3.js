@@ -1158,6 +1158,7 @@ rx(String.raw`Bought (\S+) (\d+) (${SP_RX_GOOD}) for (.+)\.`, (m, e, n, g, x) =>
 rx(String.raw`You need (.+) to buy (\d+) (${SP_RX_GOOD})\.`, (m, x, n, g) => `Necesitas ${x} para comprar ${n} ${spG(g)}.`);
 ES["🏪 Alien market: once you are 💖 Allies with a race, you can also buy its goods there (handy for gifts to other races). Buying always costs more than selling."] =
   "🏪 Mercado alienígena: cuando seas 💖 Aliada de una raza, también podrás comprar allí sus bienes (útil para regalos a otras razas). Comprar siempre cuesta más que vender.";
+ES["Active trade route"] = "Ruta comercial activa";
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
