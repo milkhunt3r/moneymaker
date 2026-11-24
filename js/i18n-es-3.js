@@ -1192,6 +1192,12 @@ rx(String.raw`Change · (.+)`, "Cambiar · $1");
 hrx(String.raw`Changing your nickname costs <b>(.+?)<\/b>\.( You have (.+)\.)?`, (m, c, y, h) => `Cambiar tu apodo cuesta <b>${c}</b>.${y ? ` Tienes ${h}.` : ""}`);
 rx(String.raw`You need (.+) to change your nickname\.`, "Necesitas $1 para cambiar tu apodo.");
 rx(String.raw`Nickname changed \(−(.+)\)\.`, "Apodo cambiado (−$1).");
+ES["You can change your nickname only once a day. Please try again tomorrow."] = "Solo puedes cambiar tu apodo una vez al día. Inténtalo de nuevo mañana.";
+Object.assign(ES, { "Your save couldn't be loaded": "No se ha podido cargar tu partida", "Your cloud save couldn't be loaded": "No se ha podido cargar tu partida en la nube",
+  "The saved game in this browser was changed outside the game, so it was not loaded.": "La partida guardada en este navegador se ha modificado fuera del juego, así que no se ha cargado.",
+  "Your last automatic backup was loaded instead.": "En su lugar se ha cargado tu última copia de seguridad automática.",
+  "A new game was started. If you play with a Google account, sign in (👤 Profile) to get your ☁️ cloud save back.": "Se ha empezado una partida nueva. Si juegas con una cuenta de Google, inicia sesión (👤 Perfil) para recuperar tu partida de la ☁️ nube.",
+  "The cloud save was changed outside the game, so it was not loaded. This device's progress is kept and saved to the cloud again.": "La partida en la nube se ha modificado fuera del juego, así que no se ha cargado. Se conserva el progreso de este dispositivo y se vuelve a guardar en la nube." });
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

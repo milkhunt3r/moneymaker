@@ -276,20 +276,76 @@ async function imgDo(mode, fn) {   // run one request on the pictures store; nul
     } catch (e) { res(null); }
   });
 }
+/* 🔐 The save is scrambled and signed, so it can't simply be edited in the browser:
+   "EOC2:" + signature + ":" + the progress (JSON, XOR-scrambled, base64). The signature is a hash of the JSON with a
+   secret salt; a save whose signature doesn't match was changed outside the game and is not loaded (see loadGame).
+   Old plain-JSON saves still load once and are written in the new format at the next save.
+   (Not unbreakable: the code runs in the player's browser. It only stops casual editing.) */
+const SAVE_TAG = "EOC2:", SAVE_BAK = SAVE_KEY + "Bak", SAVE_BAD = SAVE_KEY + "Bad", SAVE_SALT = "eoc\u00b7v2\u00b7Kz7#qL9w!mR2";
+function saveHash(str) {   // 53-bit hash (cyrb53) of the salted text, as hex
+  let h1 = 0xdeadbeef ^ 0x9e37, h2 = 0x41c6ce57 ^ 0x79b9;
+  const t = SAVE_SALT + str + SAVE_SALT;
+  for (let i = 0; i < t.length; i++) { const c = t.charCodeAt(i); h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677); }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+}
+function saveXor(bytes) {   // the same scramble both ways
+  let x = 0x2545f491;
+  for (let i = 0; i < bytes.length; i++) { x ^= x << 13; x ^= x >>> 17; x ^= x << 5; bytes[i] ^= x & 255; }
+  return bytes;
+}
+function saveEncode(progress) {
+  const json = JSON.stringify(progress), b = saveXor(new TextEncoder().encode(json));
+  let bin = ""; for (let i = 0; i < b.length; i += 0x8000) bin += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000));
+  return SAVE_TAG + saveHash(json) + ":" + btoa(bin);
+}
+function saveDecode(raw) {   // -> { data, ok } (ok false: edited or broken)
+  if (!raw) return { data: null, ok: true };
+  if (raw[0] === "{") { try { return { data: JSON.parse(raw), ok: true, legacy: true }; } catch (e) { return { data: null, ok: false }; } }
+  try {
+    if (!raw.startsWith(SAVE_TAG)) return { data: null, ok: false };
+    const k = raw.indexOf(":", SAVE_TAG.length), sig = raw.slice(SAVE_TAG.length, k), bin = atob(raw.slice(k + 1));
+    const b = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) b[i] = bin.charCodeAt(i);
+    const json = new TextDecoder().decode(saveXor(b));
+    if (saveHash(json) !== sig) return { data: null, ok: false };
+    return { data: JSON.parse(json), ok: true };
+  } catch (e) { return { data: null, ok: false }; }
+}
+// ☁️ the cloud copy carries a signature too (over a key-sorted copy, because the database reorders keys)
+const saveCanon = (v) => v && typeof v === "object" ? (Array.isArray(v) ? "[" + v.map(saveCanon).join(",") + "]"
+  : "{" + Object.keys(v).sort().filter(k => k !== "_sig" && v[k] !== undefined).map(k => JSON.stringify(k) + ":" + saveCanon(v[k])).join(",") + "}") : JSON.stringify(v === undefined ? null : v);
+const saveSign = (progress) => saveHash("cloud" + saveCanon(progress));
+let saveTamper = null;   // set when this device's save was refused (shown once the page is ready)
+let saveBakAt = 0;
 const storage = {
   loadGame() {
     try {
       const raw = localStorage.getItem(SAVE_KEY);
-      if (raw) return JSON.parse(raw);
+      if (raw) {
+        const r = saveDecode(raw);
+        if (r.ok) return r.data;
+        // ✋ edited outside the game: keep it aside, fall back to the last good backup (or a new game)
+        try { localStorage.setItem(SAVE_BAD, raw); } catch (e) {}
+        const bak = saveDecode(localStorage.getItem(SAVE_BAK));
+        saveTamper = { backup: !!(bak.ok && bak.data) };
+        if (bak.ok && bak.data) return bak.data;
+        try { localStorage.removeItem("eoc-local-at"); localStorage.removeItem("eoc-cloud"); } catch (e) {}   // a new game: the ☁️ cloud save (if any) loads after signing in
+        return null;
+      }
       const old = localStorage.getItem("coinClickerMoney");   // the very first version only saved money
       return old ? { money: parseInt(old, 10) || 0 } : null;
     } catch (e) { return null; }
   },
-  saveGame(progress) { localStorage.setItem(SAVE_KEY, JSON.stringify(progress)); },
+  saveGame(progress) {
+    const raw = saveEncode(progress);
+    localStorage.setItem(SAVE_KEY, raw);
+    if (Date.now() - saveBakAt > 10 * 60e3) { saveBakAt = Date.now(); try { localStorage.setItem(SAVE_BAK, raw); } catch (e) {} }   // a backup every 10 minutes
+  },
   loadPrefs() { try { return JSON.parse(localStorage.getItem(PREFS_KEY) || "{}") || {}; } catch (e) { return {}; } },
   savePrefs(prefs) { try { localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); } catch (e) {} },
   clearGame() {
-    try { localStorage.removeItem(SAVE_KEY); localStorage.removeItem("coinClickerMoney"); localStorage.removeItem(PREFS_KEY); } catch (e) {}
+    try { [SAVE_KEY, SAVE_BAK, "coinClickerMoney", PREFS_KEY].forEach(k => localStorage.removeItem(k)); } catch (e) {}
     try { indexedDB.deleteDatabase(IMG_DB); } catch (e) {}
   },
   images: {
@@ -318,7 +374,7 @@ function cleanSave(v, depth = 0) {
 }
 // Load the save: progress first, then this device's screen preferences on top
 const loadedSave = cleanSave(storage.loadGame());
-if (loadedSave) Object.assign(state, loadedSave);
+if (loadedSave) { delete loadedSave._sig; Object.assign(state, loadedSave); }
 Object.assign(state, cleanSave(storage.loadPrefs()) || {});
 
 // Fix up saves from the previous version: old workers had no income roll

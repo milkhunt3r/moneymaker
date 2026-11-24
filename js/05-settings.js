@@ -120,24 +120,4 @@ $("settingsMenu").addEventListener("click", (e) => {
   }
 });
 
-// Load a progress file: check it, store it, restart with it
-$("loadFile").addEventListener("change", () => {
-  const file = $("loadFile").files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    try {
-      const data = JSON.parse(reader.result);
-      if (typeof data.money !== "number" || !Array.isArray(data.companies)) throw new Error("not a save");
-      stopSaving = true;
-      const { progress, prefs } = splitState(data);
-      storage.saveGame(progress);
-      storage.savePrefs({ ...storage.loadPrefs(), ...prefs });
-      location.reload();
-    } catch (err) {
-      settingsNote("❌ That file is not an Empire of Coins save.");
-    }
-    $("loadFile").value = "";
-  };
-  reader.readAsText(file);
-});
+// (loading a progress file was removed: saves are protected against editing, see 💾 STORAGE in js/01-core.js)

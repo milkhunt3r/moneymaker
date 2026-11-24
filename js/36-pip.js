@@ -197,3 +197,4 @@ const pipRenderGamesOrig = renderGames;
 renderGames = function () { pipRenderGamesOrig(); renderPipCorner(); };
 document.addEventListener("visibilitychange", () => { if (!document.hidden && pipOwned()) pipProcess(false); });
 if (pipOwned()) pipProcess(true);
+if (state.view === "games" && !state.gamePage) renderPipCorner();   // the page opened straight on 🎮 Mini-games

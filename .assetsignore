@@ -1,0 +1,8 @@
+# Files the website never serves (Cloudflare skips them when deploying)
+.git
+.assetsignore
+dev.html
+tools
+docs
+js
+README.md

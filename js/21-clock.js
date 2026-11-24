@@ -144,8 +144,11 @@ if (!state.gameOver && Date.now() - state.lastTick > CATCHUP_MAX * 1000) {
 }
 setInterval(gameClock, 250);
 
-// Make the game state reachable from the browser console (F12) for testing
-window.state = state;
+// ✋ a save edited outside the game was refused (💾 STORAGE in js/01-core.js): tell the player once
+if (saveTamper) setTimeout(() => showModal(`<h2>⚠️ Your save couldn't be loaded</h2>
+  <p>The saved game in this browser was changed outside the game, so it was not loaded.</p>
+  <p>${saveTamper.backup ? "Your last automatic backup was loaded instead." : "A new game was started. If you play with a Google account, sign in (👤 Profile) to get your ☁️ cloud save back."}</p>
+  <div class="row" style="justify-content:center"><button class="btn big" data-modal="close">OK</button></div>`), 1500);
 
 // Start
 updateCounter();

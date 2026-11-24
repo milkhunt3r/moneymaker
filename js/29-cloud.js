@@ -50,7 +50,7 @@ const whenText = (ms) => ms ? new Date(ms).toLocaleString(LANG === "es" ? "es-ES
 const localIsFresh = () => !hadLocalAt && !(state.legacy && state.legacy.count) && state.companies.length === 0 && state.money < 10000;
 
 async function cloudFetch() {
-  const { data, error } = await cloud.sb.from("saves").select("data, saved_at").eq("user_id", cloud.user.id).maybeSingle();
+  const { data, error } = await cloud.sb.from("saves").select("data, saved_at, updated_at").eq("user_id", cloud.user.id).maybeSingle();
   if (error) throw error;
   return data;   // null when there is no cloud save yet
 }
@@ -72,11 +72,11 @@ async function cloudUploadNow(force) {
     const known = meta && meta.user === cloud.user.id ? meta.cloudAt : null;
     let ok = false;
     if (force || known == null) {
-      const { error } = await cloud.sb.from("saves").upsert({ user_id: cloud.user.id, data: progress, saved_at: now });
+      const { error } = await cloud.sb.from("saves").upsert({ user_id: cloud.user.id, data: { ...progress, _sig: saveSign(progress) }, saved_at: now });
       if (error) throw error;
       ok = true;
     } else {
-      const { data, error } = await cloud.sb.from("saves").update({ data: progress, saved_at: now })
+      const { data, error } = await cloud.sb.from("saves").update({ data: { ...progress, _sig: saveSign(progress) }, saved_at: now })
         .eq("user_id", cloud.user.id).eq("saved_at", known).select("saved_at");
       if (error) throw error;
       ok = data && data.length > 0;
@@ -97,8 +97,22 @@ async function cloudUploadNow(force) {
     return false;
   } finally { cloud.busy = false; updateCloudUi(); }
 }
+// 🔐 a cloud save must carry the game's signature (saves uploaded before signatures existed are still accepted)
+const CLOUD_SIG_FROM = Date.parse("2026-11-25T00:00:00Z");
+function cloudRowOk(row) {
+  if (!row || !row.data || typeof row.data !== "object") return false;
+  if (row.data._sig) return row.data._sig === saveSign(row.data);
+  return !!row.updated_at && Date.parse(row.updated_at) < CLOUD_SIG_FROM;
+}
 // replace this device's save with the cloud one and restart
 function cloudLoad(row) {
+  if (!cloudRowOk(row)) {   // changed outside the game: keep this device's progress and put it back in the cloud
+    cloud.conflict = false;
+    showModal(`<h2>⚠️ Your cloud save couldn't be loaded</h2><p>The cloud save was changed outside the game, so it was not loaded. This device's progress is kept and saved to the cloud again.</p>
+      <div class="row" style="justify-content:center"><button class="btn big" data-modal="close">OK</button></div>`);
+    cloudUpload(true);
+    return;
+  }
   cloud.loading = true; cloud.conflict = false;
   stopSaving = true;
   _saveGameLocal(row.data);

@@ -65,6 +65,7 @@ async function profLoad() {
 function profDbError(e) {
   const c = e && e.code;
   if (c === "23505") return "That nickname is already taken. Try another one.";
+  if (e && /nickname_cooldown/.test(e.message || "")) return "You can change your nickname only once a day. Please try again tomorrow.";
   if (c === "23514") return "That nickname isn't allowed. Please choose a friendly one.";
   if (c === "42P01" || c === "PGRST205") return "Profiles aren't switched on yet. Please try again later.";
   return "Something went wrong. Please try again.";
@@ -105,6 +106,7 @@ let profPushing = false;
 async function profPushStats() {
   if (!profSignedIn() || !prof.row || profPushing || prof.user !== cloud.user.id) return;
   const st = profStats();
+  st.prestige = Math.min(st.prestige, (prof.row.prestige || 0) + 1);   // the database accepts one prestige step per upload
   if (st.ach_done === prof.row.ach_done && st.ach_total === prof.row.ach_total && st.prestige === prof.row.prestige) return;
   profPushing = true;
   try { const { error } = await cloud.sb.from("profiles").update(st).eq("user_id", cloud.user.id); if (!error) { Object.assign(prof.row, st); profCache(); } }
