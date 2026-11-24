@@ -66,7 +66,7 @@ async function profLoad() {
     const { data, error } = await cloud.sb.from("profiles").select("*").eq("user_id", cloud.user.id).maybeSingle();
     if (error) throw error;
     if (data) { prof.friendsOn = "friend_code" in data; prof.moneyOn = "money" in data; }
-    prof.row = data; prof.user = cloud.user.id; profCache();
+    prof.row = data; prof.user = cloud.user.id; prof.fetched = cloud.user.id; profCache();
   } catch (e) { console.warn("Profile load failed:", e); prof.err = e && (e.code === "42P01" || e.code === "PGRST205") ? profDbError(e) : "load"; }
   prof.loading = false;
   profUi(); profPushStats();
@@ -150,6 +150,7 @@ function renderProfile() {
     return;
   }
   if (prof.user !== cloud.user.id && !prof.loading) { prof.row = null; profLoad(); }
+  else if (prof.fetched !== cloud.user.id && !prof.loading && !prof.err) profLoad();
   const row = prof.user === cloud.user.id ? prof.row : null;
   const inc = typeof frIncoming === "function" ? frIncoming() : 0;
   // 👈 Profile / Friends on the left, like the other pages (.subLayout)
@@ -235,6 +236,7 @@ updateCloudUi = function () {
   profCloudUiOrig();   // also refreshes the ☁️ Account rows (#cloudRows) on the profile page
   const id = profSignedIn() ? cloud.user.id : null, key = (typeof cloud === "object" && cloud.sb ? "sb" : "-") + (id || "");
   if (id && prof.user !== id) { prof.row = null; prof.user = null; profLoad(); }
+  else if (id && prof.fetched !== id && !prof.loading) profLoad();   // the saved copy is only for a quick first look: always fetch the real profile once
   if (key !== profAuthSeen) { profAuthSeen = key; profUi(); }
 };
 profUi();
