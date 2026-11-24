@@ -17763,7 +17763,7 @@ function renderPetPage() {
   const since = has && P.at ? new Date(P.at).toLocaleDateString() : "";
   const mine = has ? `<div class="card petCard">
       <div class="petHero"><img class="petHeroPic" src="assets/pet/pet-portrait.webp" alt="">
-        <div class="petHeroInfo"><h2 style="margin:0" data-noi18n><img class="petNameIco" src="assets/icons/tab-pet.webp" alt="">${petCleanName(P.name) || "Mochi"}</h2>
+        <div class="petHeroInfo"><h2 style="margin:0" data-noi18n><img class="petNameIco" src="assets/icons/tab-pet.webp" alt="" style="width:1.2em;height:1.2em;object-fit:contain;vertical-align:-0.22em;margin-right:6px;display:inline-block">${petCleanName(P.name) || "Mochi"}</h2>
           <div class="muted">Your baby dragon-moth${since ? ` · together since ${since}` : ""}</div>
           <div class="petStats"><span>❤️ Petted: <b>${(P.pets || 0).toLocaleString()}</b></span><span>👆 Coin taps: <b>${(P.taps || 0).toLocaleString()}</b></span><span>⚡ Energy drinks: <b>${(P.drinks || 0).toLocaleString()}</b></span></div></div></div>
       <div class="orRow petSetRow"><span class="grow">Show on the 💰 Income page</span>
@@ -17782,7 +17782,7 @@ function renderPetPage() {
   const pip = typeof pipOwned === "function" && pipOwned(), Q = state.pip || {};
   const pipCard = pip ? `<div class="card petCard">
       <div class="petHero"><img class="petHeroPic" src="assets/pip/pip-portrait.webp" alt="">
-        <div class="petHeroInfo"><h2 style="margin:0" data-noi18n><img class="petNameIco" src="assets/icons/tab-pet.webp" alt="">${escapeHtml(pipName())}</h2>
+        <div class="petHeroInfo"><h2 style="margin:0" data-noi18n><img class="petNameIco" src="assets/icons/tab-pet.webp" alt="" style="width:1.2em;height:1.2em;object-fit:contain;vertical-align:-0.22em;margin-right:6px;display:inline-block">${escapeHtml(pipName())}</h2>
           <div class="muted">Your Lumerian painter${Q.at ? ` · together since ${new Date(Q.at).toLocaleDateString()}` : ""}</div>
           <div class="petStats"><span>🖼️ Paintings: <b>${(Q.painted || 0).toLocaleString()}</b></span><span>💰 Auto-sold: <b>${(Q.sold || 0).toLocaleString()}</b> (${fmt(Q.earned || 0)})</span><span>❤️ Petted: <b>${(Q.pets || 0).toLocaleString()}</b></span><span>😤 Disturbed: <b>${(Q.pokes || 0).toLocaleString()}</b></span></div></div></div>
       <div class="orRow slider"><span class="grow">Name</span><input class="petNameInput" id="pipName" maxlength="16" value="${pipName()}" aria-label="Pip's name" data-noi18n></div>
@@ -18789,7 +18789,7 @@ function pipTick(force) {
   const at = (pipUI.walk ? pipUI.walk.to : pipUI.pos) === "easel";
   if (sp && sp.classList.contains("atEasel") !== at) sp.classList.toggle("atEasel", at);
   pipDrawEasel(ph, now);
-  const t = $("pipTitle"), tn = pipName(); if (t && t.dataset.n !== tn) { t.dataset.n = tn; t.innerHTML = `<img class="petNameIco" src="assets/icons/tab-pet.webp" alt="">${escapeHtml(tn)}`; }
+  const t = $("pipTitle"), tn = pipName(); if (t && t.dataset.n !== tn) { t.dataset.n = tn; t.innerHTML = `<img class="petNameIco" src="assets/icons/tab-pet.webp" alt="" style="width:1.2em;height:1.2em;object-fit:contain;vertical-align:-0.22em;margin-right:6px;display:inline-block">${escapeHtml(tn)}`; }
   const s = $("pipStatus");
   if (s) s.innerHTML = ph.painting ? `🎨 <b>Painting…</b> done in <b>${clockMs(ph.next - now)}</b>`
     : `😴 <b>Asleep.</b> Next painting starts in <b>${clockMs(ph.next - PIP_PAINT - now)}</b>`;

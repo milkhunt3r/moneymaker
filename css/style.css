@@ -2157,4 +2157,4 @@ body.phone .frMini { display: none; }
 .profMoney { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 18px; color: #ffd34d; }
 .profCoinI { width: 30px; height: 30px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
 .profPets { display: flex; gap: 8px; margin-top: 8px; } .profPets img { width: 56px; height: 56px; object-fit: contain; border-radius: 12px; background: rgba(255,255,255,0.06); }
-.petNameIco { width: 1.15em; height: 1.15em; object-fit: contain; vertical-align: -0.2em; margin-right: 6px; }
+.petNameIco { width: 1.2em !important; height: 1.2em !important; object-fit: contain; vertical-align: -0.22em; margin-right: 6px; display: inline-block; }

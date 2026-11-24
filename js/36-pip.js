@@ -177,7 +177,7 @@ function pipTick(force) {
   const at = (pipUI.walk ? pipUI.walk.to : pipUI.pos) === "easel";
   if (sp && sp.classList.contains("atEasel") !== at) sp.classList.toggle("atEasel", at);
   pipDrawEasel(ph, now);
-  const t = $("pipTitle"), tn = pipName(); if (t && t.dataset.n !== tn) { t.dataset.n = tn; t.innerHTML = `<img class="petNameIco" src="assets/icons/tab-pet.webp" alt="">${escapeHtml(tn)}`; }
+  const t = $("pipTitle"), tn = pipName(); if (t && t.dataset.n !== tn) { t.dataset.n = tn; t.innerHTML = `<img class="petNameIco" src="assets/icons/tab-pet.webp" alt="" style="width:1.2em;height:1.2em;object-fit:contain;vertical-align:-0.22em;margin-right:6px;display:inline-block">${escapeHtml(tn)}`; }
   const s = $("pipStatus");
   if (s) s.innerHTML = ph.painting ? `🎨 <b>Painting…</b> done in <b>${clockMs(ph.next - now)}</b>`
     : `😴 <b>Asleep.</b> Next painting starts in <b>${clockMs(ph.next - PIP_PAINT - now)}</b>`;
