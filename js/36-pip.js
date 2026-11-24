@@ -158,6 +158,8 @@ function pipTick(force) {
   const now = Date.now(), ph = pipPhase(now), p = state.pip;
   const f = pipFrame(now, ph), img = document.querySelector("#pipSprite img");
   if (img && f !== pipUI.lastFrame) { img.src = pipSrc(f); pipUI.lastFrame = f; }
+  const sp = $("pipSprite"), near = !/^sleep/.test(f);   // 🎨 awake: he steps up to the easel; asleep: back to his corner
+  if (sp && sp.classList.contains("atEasel") !== near) sp.classList.toggle("atEasel", near);
   pipDrawEasel(ph, now);
   const t = $("pipTitle"); if (t) t.textContent = `🐭 ${pipName()}`;
   const s = $("pipStatus");
