@@ -2206,3 +2206,7 @@ body.phone .duHand { width: 130px; } body.phone .duDie { width: 54px; height: 54
 body.phone .duScore { font-size: 26px; } body.phone .duPl b { display: none; } body.phone .duGiveUp { position: static; align-self: center; margin-top: 8px; }
 .coinUnitSel { flex: none; padding: 6px 4px; border-radius: 8px; border: 1px solid rgba(255,211,77,0.5); background: #1b1730; color: #ffd34d; font-weight: 700; font-size: 13px; cursor: pointer; margin-left: -2px; }
 .coinUnitSel:focus { outline: 2px solid #ffd34d; }
+.spFreeBadge { display: inline-flex; align-items: baseline; gap: 6px; padding: 6px 14px; border-radius: 14px; background: rgba(61,220,106,0.15); border: 2px solid #3ddc6a; color: #e8ffe9; font-size: 16px; font-weight: 700; }
+.spFreeBadge b { font-size: 28px; line-height: 1; color: #3ddc6a; } .spFreeBadge small { font-size: 16px; color: #cfd3ff; }
+.spFreeBadge.none { background: rgba(255,120,120,0.12); border-color: #ff7b7b; } .spFreeBadge.none b { color: #ff7b7b; }
+body.phone .spFreeBadge { font-size: 13px; padding: 4px 10px; } body.phone .spFreeBadge b { font-size: 22px; }
