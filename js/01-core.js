@@ -246,7 +246,7 @@ const staffIco = (key, o, cls = "staffI") => STAFF_PICS.includes(key) ? ico("st-
 // 👽 alliance bonuses from 🌌 Space (js/34-space.js loads later)
 const alienBonus = (key) => (typeof spAllyBonus === "function" ? spAllyBonus(key) : 0);
 const geneBonus = (cat) => (typeof geneCatCount === "function" ? geneCatCount(cat) * 0.01 : 0);
-const PREF_KEYS = ["view", "casinoPage", "logiPage", "rewardType", "rewardState", "gamePage", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage",
+const PREF_KEYS = ["view", "coinUnit", "casinoPage", "logiPage", "rewardType", "rewardState", "gamePage", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage",
                    "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage"];
 function splitState(st) {   // -> { progress, prefs }
   const progress = {}, prefs = {};

@@ -2656,6 +2656,8 @@ Object.assign(ES, {
   "A challenge expires after 60 seconds.": "Un reto caduca a los 60 segundos." });
 H("On the left of the Casino, <b>Online casino</b> lets you play against your friends (👤 Profile → 👥 Friends). Pick ✊ Rock Paper Scissors or 🎲 Dice Battle, choose a bet and challenge a friend who is 🟢 online; both of you need at least the bet in money.",
   "A la izquierda del Casino, el <b>Casino online</b> te permite jugar contra tus amigos (👤 Perfil → 👥 Amigos). Elige ✊ piedra, papel o tijera o 🎲 batalla de dados, decide la apuesta y reta a un amigo que esté 🟢 en línea; los dos necesitáis tener al menos esa cantidad de dinero.");
+ES["🪙 Every box where you type an amount of money now has a coin switch (bcoin, scoin or gcoin), so you don't have to count zeros. Your choice is remembered."] =
+  "🪙 Todas las casillas donde escribes una cantidad de dinero tienen ahora un selector de moneda (bcoin, scoin o gcoin), para que no tengas que contar ceros. Se recuerda tu elección.";
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -2976,7 +2978,7 @@ var staffIco = (key, o, cls = "staffI") => STAFF_PICS.includes(key) ? ico("st-" 
 // 👽 alliance bonuses from 🌌 Space (js/34-space.js loads later)
 var alienBonus = (key) => ((__eocLoaded >= 43 && typeof spAllyBonus === "function") ? spAllyBonus(key) : 0);
 var geneBonus = (cat) => (typeof geneCatCount === "function" ? geneCatCount(cat) * 0.01 : 0);
-var PREF_KEYS = ["view", "casinoPage", "logiPage", "rewardType", "rewardState", "gamePage", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage",
+var PREF_KEYS = ["view", "coinUnit", "casinoPage", "logiPage", "rewardType", "rewardState", "gamePage", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage",
                    "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage"];
 function splitState(st) {   // -> { progress, prefs }
   const progress = {}, prefs = {};
@@ -13103,6 +13105,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "24 November 2026", title: "Empire of Coins", items: [
+    "🪙 Every box where you type an amount of money now has a coin switch (bcoin, scoin or gcoin), so you don't have to count zeros. Your choice is remembered.",
     "⚔️ <b>Online casino!</b> In 🎰 Casino → ⚔️ Online casino, challenge a friend who is online to ✊ Rock Paper Scissors or 🎲 Dice Battle and choose your bet. Best of 3: the winner takes the other player's bet. 6 new achievements.",
     "👥 <b>Friends!</b> In 👤 Profile → 👥 Friends, find players by nickname or by their friend code, send requests, and see who is 🟢 online. Click a friend to see their avatar, achievements, prestige and pets.",
     "👤 <b>Player profiles!</b> Click the round 👤 button next to ⚙️ Settings, sign in with Google and choose a nickname and an avatar (the emblem of one of your 🎁 reward collections). Other players will see your nickname, avatar, achievements and prestige count.",
@@ -19608,5 +19611,53 @@ setInterval(() => {
   const every = DU.out || duVisible() ? 2500 : 6000;   // faster while waiting for an answer or looking at the page
   if (Date.now() - DU.pendAt >= every - 100) duPending();
 }, 1000);
+
+// ===== js/40-coin-input.js =====
+__eocLoaded = 48;
+/* =====================================================================
+   🪙 COIN UNIT SWITCH next to every money box: type the amount in bcoin, scoin (1M) or gcoin (1M scoin),
+   instead of counting zeros. The rest of the game is not changed: each money box still reports its amount
+   in bcoin through .value (and code that fills the box, like the 10% buttons, still writes bcoin).
+   · The chosen unit is remembered (state.coinUnit, a screen preference); "auto" picks it from your money.
+   ===================================================================== */
+var COIN_UNITS = { bcoin: 1, scoin: SCOIN, gcoin: GCOIN };
+var COIN_BOXES = "#buyAmount, #reAmount, #etfAmount, #etfSellAmount, #goldAmount, #goldSellAmount, #petfAmount, #gfcAmount, #gfcSellAmount, [id^='cbuy-'], #duBet";
+var NATIVE_VALUE = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value");
+var coinUnit = () => COIN_UNITS[state.coinUnit] ? state.coinUnit : state.money >= GCOIN ? "gcoin" : state.money >= SCOIN ? "scoin" : "bcoin";
+var coinNice = (n) => String(Math.round(n * 1e6) / 1e6);   // up to 6 decimals, no float noise
+function coinBox(el) {
+  if (el.dataset.coinUnit) return;
+  const raw = NATIVE_VALUE.get.call(el);   // anything already in the box (e.g. from the page's HTML) is bcoin
+  el.dataset.coinUnit = "1";
+  const minB = Number(el.getAttribute("min")) || 0;
+  Object.defineProperty(el, "value", {
+    configurable: true,
+    get() { const v = NATIVE_VALUE.get.call(this); return v === "" ? "" : String(Math.round(Number(v) * COIN_UNITS[this.dataset.u || "bcoin"])); },
+    set(v) { NATIVE_VALUE.set.call(this, v === "" || v == null || isNaN(Number(v)) ? "" : coinNice(Number(v) / COIN_UNITS[this.dataset.u || "bcoin"])); },
+  });
+  const fit = () => { el.dataset.u = coinUnit(); const m = COIN_UNITS[el.dataset.u]; el.step = m > 1 ? "any" : "1"; if (minB) el.min = coinNice(minB / m); };
+  el.coinFit = fit; fit();
+  if (raw !== "") el.value = raw;   // (fit() has set the unit, so this converts the bcoin amount)
+  const sel = document.createElement("select");
+  sel.className = "coinUnitSel"; sel.setAttribute("aria-label", "Coin");
+  sel.innerHTML = Object.keys(COIN_UNITS).map(u => `<option value="${u}">${u}</option>`).join("");
+  sel.value = coinUnit();
+  sel.setAttribute("data-noi18n", "");
+  el.insertAdjacentElement("afterend", sel);
+}
+// switching the unit converts what is typed in every money box, and all switches follow
+document.addEventListener("change", (e) => {
+  if (!e.target.classList || !e.target.classList.contains("coinUnitSel")) return;
+  const boxes = [...document.querySelectorAll("[data-coin-unit]")], keep = boxes.map(b => b.value);   // in bcoin
+  state.coinUnit = e.target.value; save();
+  boxes.forEach((b, i) => { b.coinFit(); b.value = keep[i]; b.dispatchEvent(new Event("input", { bubbles: true })); });
+  document.querySelectorAll(".coinUnitSel").forEach(s => { s.value = coinUnit(); });
+});
+document.querySelectorAll(COIN_BOXES).forEach(coinBox);
+new MutationObserver(() => { document.querySelectorAll(COIN_BOXES).forEach(el => { if (!el.dataset.coinUnit) coinBox(el); }); })
+  .observe(document.body, { childList: true, subtree: true });
+// "auto" follows your money: keep the switches showing the unit in use
+setInterval(() => { if (state.coinUnit) return; const u = coinUnit();
+  document.querySelectorAll(".coinUnitSel").forEach(s => { if (s.value !== u) { const b = s.previousElementSibling, keep = b && b.value; s.value = u; if (b && b.coinFit) { b.coinFit(); b.value = keep; } } }); }, 2000);
 
 })();

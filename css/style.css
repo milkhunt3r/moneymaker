@@ -2204,3 +2204,5 @@ body.phone .frMini { display: none; }
 body.phone .duGames { grid-template-columns: 1fr; } body.phone .duMatch { min-height: 420px; }
 body.phone .duHand { width: 130px; } body.phone .duDie { width: 54px; height: 54px; } body.phone .duPick { width: 92px; } body.phone .duPick img { width: 80px; }
 body.phone .duScore { font-size: 26px; } body.phone .duPl b { display: none; } body.phone .duGiveUp { position: static; align-self: center; margin-top: 8px; }
+.coinUnitSel { flex: none; padding: 6px 4px; border-radius: 8px; border: 1px solid rgba(255,211,77,0.5); background: #1b1730; color: #ffd34d; font-weight: 700; font-size: 13px; cursor: pointer; margin-left: -2px; }
+.coinUnitSel:focus { outline: 2px solid #ffd34d; }
