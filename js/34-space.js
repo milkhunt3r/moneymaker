@@ -719,7 +719,7 @@ function spRenderPick() {
     body = `<div class="spArtGrid">${state.art.items.map(it => `<button class="spArt ${P.sel.includes(it.id) ? "on" : ""}" data-spa="${it.id}">
       <img src="${typeof artImgOf === "function" ? artImgOf(it) : ""}" alt=""><small>${fmt(it.value)}</small></button>`).join("")}</div>`;
   }
-  showModal(`<h2>${P.pip ? "🐭 Adopt Pip" : `🎁 Gift for the ${R.name}`}</h2>
+  showModal(`<h2>${P.pip ? "🐾 Adopt Pip" : `🎁 Gift for the ${R.name}`}</h2>
     <p>Choose <b>${P.need}</b> ${P.kind === "dna" ? "DNA samples" : "paintings"} to send: <b>${got} / ${P.need}</b> chosen.</p>
     ${P.kind === "art" ? `<p class="muted">Paintings you give away leave your collection (they count as sold for 🏆 achievements).</p>` : `<p class="muted">Samples refill over time in the Gene Splicer.</p>`}
     ${body}

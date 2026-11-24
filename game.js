@@ -2473,7 +2473,7 @@ Object.assign(ES, { "Masterpieces": "Obras maestras", "Vincent van Gogh": "Vince
   "Leonardo da Vinci": "Leonardo da Vinci", "Johannes Vermeer": "Johannes Vermeer", "Claude Monet": "Claude Monet",
   "Simplified versions of famous old paintings (all old enough to be free for everyone to use), drawn in the game's 24 colours": "Versiones simplificadas de cuadros antiguos famosos (todos tan antiguos que cualquiera puede usarlos), dibujadas con los 24 colores del juego" });
 rx(String.raw`Normal unlocks after you submit \(sell or keep\) (\d+) Easy paintings; 🏛️ Masterpiece unlocks after (\d+) Normal paintings\.`, "Normal se desbloquea al entregar (vender o guardar) $1 cuadros fáciles; 🏛️ Obra maestra, tras $2 cuadros normales.");
-// 🐭🎨 Pip the painter pet
+// 🐾🎨 Pip the painter pet
 Object.assign(ES, { "A painter wants to join you": "Un pintor quiere vivir contigo", "Adopt Pip": "Adoptar a Pip", "Adopt": "Adoptar", "Pip joined you!": "¡Pip se ha unido a ti!",
   "He set up his easel at the top of the 🎮 Mini-games page. Every 15 minutes he paints a 🟡 Normal painting for your collection (he naps in between).":
     "Ha montado su caballete arriba del todo en la página de 🎮 Minijuegos. Cada 15 minutos pinta un cuadro 🟡 Normal para tu colección (entre medias, se echa la siesta).",
@@ -2517,12 +2517,12 @@ rx(String.raw`While you were away, (.+) painted (\d+) paintings?: (\d+) went to 
   `Mientras no estabas, ${n} ha pintado ${c} cuadro${c === "1" ? "" : "s"}: ${k} a tu 🖼️ colección${sd ? `, ${sd} vendido${sd === "1" ? "" : "s"} por ${v}` : ""}.`);
 rx(String.raw`Your Lumerian painter( · together since (.+))?`, (m, a, d) => `Tu pintor lumeriano${a ? ` · juntos desde el ${d}` : ""}`);
 ES["❌ Pip couldn't be adopted."] = "❌ No se ha podido adoptar a Pip.";
-H("🐭 <b>New pet: Pip the painter!</b> Become 😊 Friendly with the Lumerians in 🌌 Space Logistics and adopt him for 10 paintings. He lives at the top of the 🎮 Mini-games page and paints a 🟡 Normal painting (85–95% match) every 15 minutes for your collection, even while the game is closed. Rename him on the 🐾 Pet page.",
-  "🐭 <b>Nueva mascota: ¡Pip, el pintor!</b> Logra el nivel 😊 Amistosa con los lumerianos en 🌌 Logística espacial y adóptalo a cambio de 10 cuadros. Vive arriba del todo en la página de 🎮 Minijuegos y pinta un cuadro 🟡 Normal (parecido del 85–95 %) cada 15 minutos para tu colección, incluso con el juego cerrado. Cámbiale el nombre en la página 🐾 Mascota.");
+H("🐾 <b>New pet: Pip the painter!</b> Become 😊 Friendly with the Lumerians in 🌌 Space Logistics and adopt him for 10 paintings. He lives at the top of the 🎮 Mini-games page and paints a 🟡 Normal painting (85–95% match) every 15 minutes for your collection, even while the game is closed. Rename him on the 🐾 Pet page.",
+  "🐾 <b>Nueva mascota: ¡Pip, el pintor!</b> Logra el nivel 😊 Amistosa con los lumerianos en 🌌 Logística espacial y adóptalo a cambio de 10 cuadros. Vive arriba del todo en la página de 🎮 Minijuegos y pinta un cuadro 🟡 Normal (parecido del 85–95 %) cada 15 minutos para tu colección, incluso con el juego cerrado. Cámbiale el nombre en la página 🐾 Mascota.");
 Object.assign(ES, { "A painter in the family": "Un pintor en la familia", "Adopt Pip from the Lumerians": "Adopta a Pip de los lumerianos",
   "Little artist": "Pequeño artista", "Let Pip paint 5 paintings": "Deja que Pip pinte 5 cuadros", "Prolific painter": "Pintor prolífico", "Let Pip paint 50 paintings": "Deja que Pip pinte 50 cuadros",
   "Muse": "Musa", "Pet Pip 100 times": "Acaricia a Pip 100 veces",
-  "🏆 4 new 🖼️ Art Gallery achievements for Pip: 🐭 A painter in the family, 🖌️ Little artist, 🎨 Prolific painter and 💜 Muse.": "🏆 4 logros nuevos de 🖼️ Galería de arte para Pip: 🐭 Un pintor en la familia, 🖌️ Pequeño artista, 🎨 Pintor prolífico y 💜 Musa." });
+  "🏆 4 new 🖼️ Art Gallery achievements for Pip: 🐾 A painter in the family, 🖌️ Little artist, 🎨 Prolific painter and 💜 Muse.": "🏆 4 logros nuevos de 🖼️ Galería de arte para Pip: 🐾 Un pintor en la familia, 🖌️ Pequeño artista, 🎨 Pintor prolífico y 💜 Musa." });
 // 🏪 buying alien goods at 💖 Allies
 ES["Sell the goods your ships bring home. Prices move every 30 minutes: sell when they are high. The further away a race lives, the more its goods are worth. Once you are 💖 Allies with a race, you can buy its goods here too."] =
   "Vende los bienes que traen tus naves. Los precios cambian cada 30 minutos: vende cuando estén altos. Cuanto más lejos vive una raza, más valen sus bienes. Cuando seas 💖 Aliada de una raza, también podrás comprar aquí sus bienes.";
@@ -9953,8 +9953,8 @@ var ACHIEVEMENTS = [
   { id: "artsold50", cat: "art", icon: "💰", name: "Art dealer", desc: "Sell 50 paintings", goal: 50, get: () => state.stats.artSold || 0 },
   { id: "artsold100", cat: "art", icon: "💰", name: "Gallery regular", desc: "Sell 100 paintings", goal: 100, get: () => state.stats.artSold || 0 },
   { id: "artsold1000", cat: "art", icon: "💰", name: "Art market mogul", desc: "Sell 200 paintings", goal: 200, get: () => state.stats.artSold || 0 },
-  // 🐭🎨 Pip the painter (js/36-pip.js)
-  { id: "pipGet",   cat: "art", icon: "🐭", name: "A painter in the family", desc: "Adopt Pip from the Lumerians", goal: 1, get: () => state.pip && state.pip.owned ? 1 : 0 },
+  // 🐾🎨 Pip the painter (js/36-pip.js)
+  { id: "pipGet",   cat: "art", icon: "🐾", name: "A painter in the family", desc: "Adopt Pip from the Lumerians", goal: 1, get: () => state.pip && state.pip.owned ? 1 : 0 },
   { id: "pip5",     cat: "art", icon: "🖌️", name: "Little artist",        desc: "Let Pip paint 5 paintings",  goal: 5,   get: () => (state.pip && state.pip.painted) || 0 },
   { id: "pip50",    cat: "art", icon: "🎨", name: "Prolific painter",     desc: "Let Pip paint 50 paintings", goal: 50,  get: () => (state.pip && state.pip.painted) || 0 },
   { id: "pipLove",  cat: "art", icon: "💜", name: "Muse",                 desc: "Pet Pip 100 times",          goal: 100, get: () => (state.pip && state.pip.pets) || 0 },
@@ -10294,7 +10294,7 @@ function doPrestige(id) {
     genetics: state.genetics,   // 🧬 Gene Splicer: everything stays (species, DNA, hints)
     shooter: state.shooter,     // 🚀 Nebula Strike: levels, ships, upgrades and stardust stay
     pet: state.pet,             // 🐾 the pet from the pirate loot box stays
-    pip: state.pip,             // 🐭 Pip the painter stays too
+    pip: state.pip,             // 🐾 Pip the painter stays too
     taxHoliday: TAX_HOLIDAY,   // 🛡️ no tax inspections for the first 10 minutes
     recruitPlan: state.recruitPlan,   // 🧑‍💼 the Recruitment Agency's staffing plan (the building itself resets)
     // 🖼️ Art Gallery: stays unlocked and keeps its bought slots and all kept paintings
@@ -10829,7 +10829,7 @@ function wikiPet() {
       <li>👆 While the drink is active, it taps the coin for you: 10 clicks per second, worth the same as yours (they count for 🏆 achievements).</li>
       <li>😴 During the cooldown it sleeps, and wakes up 10 seconds before the next drink.</li>
       <li>❤️ Click it to pet it. On the 🐾 Pet page you can rename it or hide it.</li></ul>
-    <h3>🐭 Pip the painter</h3>
+    <h3>🐾 Pip the painter</h3>
     <p>A young alien painter from the Lumerians (🌌 Space Logistics). Once you are 😊 Friendly with them, you can adopt him for 10 paintings from your collection (they count as sold for 🏆 achievements).</p>
     <ul><li>🎮 He lives at the top of the Mini-games page, next to his easel.</li>
       <li>🎨 Every 15 minutes he paints a 🟡 Normal painting: 14 minutes asleep, then 1 minute of painting. His copies are 85–95% matches, worth that part of 100M.</li>
@@ -13035,8 +13035,8 @@ var PATCH_NOTES = [
   { date: "24 November 2026", title: "Empire of Coins", items: [
     "👥 <b>Friends!</b> In 👤 Profile → 👥 Friends, find players by nickname or by their friend code, send requests, and see who is 🟢 online. Click a friend to see their avatar, achievements, prestige and pets.",
     "👤 <b>Player profiles!</b> Click the round 👤 button next to ⚙️ Settings, sign in with Google and choose a nickname and an avatar (the emblem of one of your 🎁 reward collections). Other players will see your nickname, avatar, achievements and prestige count.",
-    "🐭 <b>New pet: Pip the painter!</b> Become 😊 Friendly with the Lumerians in 🌌 Space Logistics and adopt him for 10 paintings. He lives at the top of the 🎮 Mini-games page and paints a 🟡 Normal painting (85–95% match) every 15 minutes for your collection, even while the game is closed. Rename him on the 🐾 Pet page.",
-    "🏆 4 new 🖼️ Art Gallery achievements for Pip: 🐭 A painter in the family, 🖌️ Little artist, 🎨 Prolific painter and 💜 Muse.",
+    "🐾 <b>New pet: Pip the painter!</b> Become 😊 Friendly with the Lumerians in 🌌 Space Logistics and adopt him for 10 paintings. He lives at the top of the 🎮 Mini-games page and paints a 🟡 Normal painting (85–95% match) every 15 minutes for your collection, even while the game is closed. Rename him on the 🐾 Pet page.",
+    "🏆 4 new 🖼️ Art Gallery achievements for Pip: 🐾 A painter in the family, 🖌️ Little artist, 🎨 Prolific painter and 💜 Muse.",
     "🏪 Alien market: once you are 💖 Allies with a race, you can also buy its goods there (handy for gifts to other races). Buying always costs more than selling.",
     "🎨 <b>Art Gallery update!</b> New tiers: 🟢 Easy (kid-style drawings), 🟡 Normal (detailed scenes) and the new 🏛️ <b>Masterpiece</b> tier: copy 10 famous paintings like The Starry Night, The Great Wave, Mona Lisa and The Scream (opens after 10 Normal paintings). The old 3-shape tier is retired.",
     "🖌️ New drawing tools: ➖ Line, 💧 Eyedropper and 🪞 Mirror mode. After you submit, a 🔥 heatmap shows where your copy differs from the original.",
@@ -17761,7 +17761,7 @@ function renderPetPage() {
   const since = has && P.at ? new Date(P.at).toLocaleDateString() : "";
   const mine = has ? `<div class="card petCard">
       <div class="petHero"><img class="petHeroPic" src="assets/pet/pet-portrait.webp" alt="">
-        <div class="petHeroInfo"><h2 style="margin:0">🐾 ${petCleanName(P.name) || "Mochi"}</h2>
+        <div class="petHeroInfo"><h2 style="margin:0" data-noi18n><img class="petNameIco" src="assets/icons/tab-pet.webp" alt="">${petCleanName(P.name) || "Mochi"}</h2>
           <div class="muted">Your baby dragon-moth${since ? ` · together since ${since}` : ""}</div>
           <div class="petStats"><span>❤️ Petted: <b>${(P.pets || 0).toLocaleString()}</b></span><span>👆 Coin taps: <b>${(P.taps || 0).toLocaleString()}</b></span><span>⚡ Energy drinks: <b>${(P.drinks || 0).toLocaleString()}</b></span></div></div></div>
       <div class="orRow petSetRow"><span class="grow">Show on the 💰 Income page</span>
@@ -17780,7 +17780,7 @@ function renderPetPage() {
   const pip = typeof pipOwned === "function" && pipOwned(), Q = state.pip || {};
   const pipCard = pip ? `<div class="card petCard">
       <div class="petHero"><img class="petHeroPic" src="assets/pip/pip-portrait.webp" alt="">
-        <div class="petHeroInfo"><h2 style="margin:0" data-noi18n>🐭 ${pipName()}</h2>
+        <div class="petHeroInfo"><h2 style="margin:0" data-noi18n><img class="petNameIco" src="assets/icons/tab-pet.webp" alt="">${escapeHtml(pipName())}</h2>
           <div class="muted">Your Lumerian painter${Q.at ? ` · together since ${new Date(Q.at).toLocaleDateString()}` : ""}</div>
           <div class="petStats"><span>🖼️ Paintings: <b>${(Q.painted || 0).toLocaleString()}</b></span><span>💰 Auto-sold: <b>${(Q.sold || 0).toLocaleString()}</b> (${fmt(Q.earned || 0)})</span><span>❤️ Petted: <b>${(Q.pets || 0).toLocaleString()}</b></span><span>😤 Disturbed: <b>${(Q.pokes || 0).toLocaleString()}</b></span></div></div></div>
       <div class="orRow slider"><span class="grow">Name</span><input class="petNameInput" id="pipName" maxlength="16" value="${pipName()}" aria-label="Pip's name" data-noi18n></div>
@@ -18522,7 +18522,7 @@ function spRenderPick() {
     body = `<div class="spArtGrid">${state.art.items.map(it => `<button class="spArt ${P.sel.includes(it.id) ? "on" : ""}" data-spa="${it.id}">
       <img src="${typeof artImgOf === "function" ? artImgOf(it) : ""}" alt=""><small>${fmt(it.value)}</small></button>`).join("")}</div>`;
   }
-  showModal(`<h2>${P.pip ? "🐭 Adopt Pip" : `🎁 Gift for the ${R.name}`}</h2>
+  showModal(`<h2>${P.pip ? "🐾 Adopt Pip" : `🎁 Gift for the ${R.name}`}</h2>
     <p>Choose <b>${P.need}</b> ${P.kind === "dna" ? "DNA samples" : "paintings"} to send: <b>${got} / ${P.need}</b> chosen.</p>
     ${P.kind === "art" ? `<p class="muted">Paintings you give away leave your collection (they count as sold for 🏆 achievements).</p>` : `<p class="muted">Samples refill over time in the Gene Splicer.</p>`}
     ${body}
@@ -18610,7 +18610,7 @@ spProcess();
 // ===== js/36-pip.js =====
 __eocLoaded = 44;
 /* =====================================================================
-   🐭🎨 PIP, the painter pet (an alien mouse from the Lumerians).
+   🐾🎨 PIP, the painter pet (an alien mouse from the Lumerians).
    - Adopt him in 🌌 Space Logistics → Lumerians, once you are 😊 Friendly, for 10 paintings from your collection.
    - He lives at the top of the 🎮 Mini-games page, next to his easel.
    - Every 15 minutes: 14 min asleep, then 1 min painting a 🟡 Normal painting (85–95% match, worth match% of 100M).
@@ -18695,7 +18695,7 @@ function pipOfferHtml(k) {
   if (k !== "art" || pipOwned()) return "";
   const L = spLevel("art"), have = (state.art.items || []).length;
   return `<div class="pipOffer ${L >= PIP_LV ? "" : "locked"}"><img src="${pipSrc("tada")}" alt="">
-    <div><b>🐭 A painter wants to join you</b>
+    <div><b>🐾 A painter wants to join you</b>
       <div>${L >= PIP_LV ? `Pip, a young Lumerian painter, would love to live with you and paint for you. The Lumerians ask <b>${PIP_COST} paintings</b> in return.`
         : `Become <b>😊 Friendly</b> with the Lumerians and one of their painters may want to come and live with you.`}</div>
       ${L >= PIP_LV ? `<button class="btn" data-pip="adopt" ${have >= PIP_COST ? "" : "disabled"}>🎨 Adopt Pip · 🖼️ ${PIP_COST} paintings</button>
@@ -18711,7 +18711,7 @@ function pipAdopt(ids) {
   state.pip = { owned: true, name: "Pip", at: Date.now(), start: Date.now(), base: 1 + secureRandomInt(2 ** 30), done: 0, painted: 0, kept: 0, sold: 0, earned: 0, pets: 0, pokes: 0 };
   save();
   showModal(`<div style="text-align:center"><img src="${pipSrc("tada")}" alt="" style="width:180px;height:180px;object-fit:contain">
-    <h2>🐭 Pip joined you!</h2>
+    <h2>🐾 Pip joined you!</h2>
     <p>He set up his easel at the top of the 🎮 Mini-games page. Every 15 minutes he paints a 🟡 Normal painting for your collection (he naps in between).</p>
     <div class="row" style="justify-content:center;gap:10px"><button class="btn big" data-pip="visit">🎮 Go and see him</button><button class="btn ghost" data-modal="close">Later</button></div></div>`);
   if ((__eocLoaded >= 43 && typeof renderSpace === "function") && state.view === "logistics") renderSpace();
@@ -18787,7 +18787,7 @@ function pipTick(force) {
   const at = (pipUI.walk ? pipUI.walk.to : pipUI.pos) === "easel";
   if (sp && sp.classList.contains("atEasel") !== at) sp.classList.toggle("atEasel", at);
   pipDrawEasel(ph, now);
-  const t = $("pipTitle"); if (t) t.textContent = `🐭 ${pipName()}`;
+  const t = $("pipTitle"), tn = pipName(); if (t && t.dataset.n !== tn) { t.dataset.n = tn; t.innerHTML = `<img class="petNameIco" src="assets/icons/tab-pet.webp" alt="">${escapeHtml(tn)}`; }
   const s = $("pipStatus");
   if (s) s.innerHTML = ph.painting ? `🎨 <b>Painting…</b> done in <b>${clockMs(ph.next - now)}</b>`
     : `😴 <b>Asleep.</b> Next painting starts in <b>${clockMs(ph.next - PIP_PAINT - now)}</b>`;

@@ -182,8 +182,8 @@ const ACHIEVEMENTS = [
   { id: "artsold50", cat: "art", icon: "💰", name: "Art dealer", desc: "Sell 50 paintings", goal: 50, get: () => state.stats.artSold || 0 },
   { id: "artsold100", cat: "art", icon: "💰", name: "Gallery regular", desc: "Sell 100 paintings", goal: 100, get: () => state.stats.artSold || 0 },
   { id: "artsold1000", cat: "art", icon: "💰", name: "Art market mogul", desc: "Sell 200 paintings", goal: 200, get: () => state.stats.artSold || 0 },
-  // 🐭🎨 Pip the painter (js/36-pip.js)
-  { id: "pipGet",   cat: "art", icon: "🐭", name: "A painter in the family", desc: "Adopt Pip from the Lumerians", goal: 1, get: () => state.pip && state.pip.owned ? 1 : 0 },
+  // 🐾🎨 Pip the painter (js/36-pip.js)
+  { id: "pipGet",   cat: "art", icon: "🐾", name: "A painter in the family", desc: "Adopt Pip from the Lumerians", goal: 1, get: () => state.pip && state.pip.owned ? 1 : 0 },
   { id: "pip5",     cat: "art", icon: "🖌️", name: "Little artist",        desc: "Let Pip paint 5 paintings",  goal: 5,   get: () => (state.pip && state.pip.painted) || 0 },
   { id: "pip50",    cat: "art", icon: "🎨", name: "Prolific painter",     desc: "Let Pip paint 50 paintings", goal: 50,  get: () => (state.pip && state.pip.painted) || 0 },
   { id: "pipLove",  cat: "art", icon: "💜", name: "Muse",                 desc: "Pet Pip 100 times",          goal: 100, get: () => (state.pip && state.pip.pets) || 0 },

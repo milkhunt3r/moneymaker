@@ -1099,7 +1099,7 @@ Object.assign(ES, { "Masterpieces": "Obras maestras", "Vincent van Gogh": "Vince
   "Leonardo da Vinci": "Leonardo da Vinci", "Johannes Vermeer": "Johannes Vermeer", "Claude Monet": "Claude Monet",
   "Simplified versions of famous old paintings (all old enough to be free for everyone to use), drawn in the game's 24 colours": "Versiones simplificadas de cuadros antiguos famosos (todos tan antiguos que cualquiera puede usarlos), dibujadas con los 24 colores del juego" });
 rx(String.raw`Normal unlocks after you submit \(sell or keep\) (\d+) Easy paintings; 🏛️ Masterpiece unlocks after (\d+) Normal paintings\.`, "Normal se desbloquea al entregar (vender o guardar) $1 cuadros fáciles; 🏛️ Obra maestra, tras $2 cuadros normales.");
-// 🐭🎨 Pip the painter pet
+// 🐾🎨 Pip the painter pet
 Object.assign(ES, { "A painter wants to join you": "Un pintor quiere vivir contigo", "Adopt Pip": "Adoptar a Pip", "Adopt": "Adoptar", "Pip joined you!": "¡Pip se ha unido a ti!",
   "He set up his easel at the top of the 🎮 Mini-games page. Every 15 minutes he paints a 🟡 Normal painting for your collection (he naps in between).":
     "Ha montado su caballete arriba del todo en la página de 🎮 Minijuegos. Cada 15 minutos pinta un cuadro 🟡 Normal para tu colección (entre medias, se echa la siesta).",
@@ -1143,12 +1143,12 @@ rx(String.raw`While you were away, (.+) painted (\d+) paintings?: (\d+) went to 
   `Mientras no estabas, ${n} ha pintado ${c} cuadro${c === "1" ? "" : "s"}: ${k} a tu 🖼️ colección${sd ? `, ${sd} vendido${sd === "1" ? "" : "s"} por ${v}` : ""}.`);
 rx(String.raw`Your Lumerian painter( · together since (.+))?`, (m, a, d) => `Tu pintor lumeriano${a ? ` · juntos desde el ${d}` : ""}`);
 ES["❌ Pip couldn't be adopted."] = "❌ No se ha podido adoptar a Pip.";
-H("🐭 <b>New pet: Pip the painter!</b> Become 😊 Friendly with the Lumerians in 🌌 Space Logistics and adopt him for 10 paintings. He lives at the top of the 🎮 Mini-games page and paints a 🟡 Normal painting (85–95% match) every 15 minutes for your collection, even while the game is closed. Rename him on the 🐾 Pet page.",
-  "🐭 <b>Nueva mascota: ¡Pip, el pintor!</b> Logra el nivel 😊 Amistosa con los lumerianos en 🌌 Logística espacial y adóptalo a cambio de 10 cuadros. Vive arriba del todo en la página de 🎮 Minijuegos y pinta un cuadro 🟡 Normal (parecido del 85–95 %) cada 15 minutos para tu colección, incluso con el juego cerrado. Cámbiale el nombre en la página 🐾 Mascota.");
+H("🐾 <b>New pet: Pip the painter!</b> Become 😊 Friendly with the Lumerians in 🌌 Space Logistics and adopt him for 10 paintings. He lives at the top of the 🎮 Mini-games page and paints a 🟡 Normal painting (85–95% match) every 15 minutes for your collection, even while the game is closed. Rename him on the 🐾 Pet page.",
+  "🐾 <b>Nueva mascota: ¡Pip, el pintor!</b> Logra el nivel 😊 Amistosa con los lumerianos en 🌌 Logística espacial y adóptalo a cambio de 10 cuadros. Vive arriba del todo en la página de 🎮 Minijuegos y pinta un cuadro 🟡 Normal (parecido del 85–95 %) cada 15 minutos para tu colección, incluso con el juego cerrado. Cámbiale el nombre en la página 🐾 Mascota.");
 Object.assign(ES, { "A painter in the family": "Un pintor en la familia", "Adopt Pip from the Lumerians": "Adopta a Pip de los lumerianos",
   "Little artist": "Pequeño artista", "Let Pip paint 5 paintings": "Deja que Pip pinte 5 cuadros", "Prolific painter": "Pintor prolífico", "Let Pip paint 50 paintings": "Deja que Pip pinte 50 cuadros",
   "Muse": "Musa", "Pet Pip 100 times": "Acaricia a Pip 100 veces",
-  "🏆 4 new 🖼️ Art Gallery achievements for Pip: 🐭 A painter in the family, 🖌️ Little artist, 🎨 Prolific painter and 💜 Muse.": "🏆 4 logros nuevos de 🖼️ Galería de arte para Pip: 🐭 Un pintor en la familia, 🖌️ Pequeño artista, 🎨 Pintor prolífico y 💜 Musa." });
+  "🏆 4 new 🖼️ Art Gallery achievements for Pip: 🐾 A painter in the family, 🖌️ Little artist, 🎨 Prolific painter and 💜 Muse.": "🏆 4 logros nuevos de 🖼️ Galería de arte para Pip: 🐾 Un pintor en la familia, 🖌️ Pequeño artista, 🎨 Pintor prolífico y 💜 Musa." });
 // 🏪 buying alien goods at 💖 Allies
 ES["Sell the goods your ships bring home. Prices move every 30 minutes: sell when they are high. The further away a race lives, the more its goods are worth. Once you are 💖 Allies with a race, you can buy its goods here too."] =
   "Vende los bienes que traen tus naves. Los precios cambian cada 30 minutos: vende cuando estén altos. Cuanto más lejos vive una raza, más valen sus bienes. Cuando seas 💖 Aliada de una raza, también podrás comprar aquí sus bienes.";

@@ -1,6 +1,6 @@
 /* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
-   🐭🎨 PIP, the painter pet (an alien mouse from the Lumerians).
+   🐾🎨 PIP, the painter pet (an alien mouse from the Lumerians).
    - Adopt him in 🌌 Space Logistics → Lumerians, once you are 😊 Friendly, for 10 paintings from your collection.
    - He lives at the top of the 🎮 Mini-games page, next to his easel.
    - Every 15 minutes: 14 min asleep, then 1 min painting a 🟡 Normal painting (85–95% match, worth match% of 100M).
@@ -85,7 +85,7 @@ function pipOfferHtml(k) {
   if (k !== "art" || pipOwned()) return "";
   const L = spLevel("art"), have = (state.art.items || []).length;
   return `<div class="pipOffer ${L >= PIP_LV ? "" : "locked"}"><img src="${pipSrc("tada")}" alt="">
-    <div><b>🐭 A painter wants to join you</b>
+    <div><b>🐾 A painter wants to join you</b>
       <div>${L >= PIP_LV ? `Pip, a young Lumerian painter, would love to live with you and paint for you. The Lumerians ask <b>${PIP_COST} paintings</b> in return.`
         : `Become <b>😊 Friendly</b> with the Lumerians and one of their painters may want to come and live with you.`}</div>
       ${L >= PIP_LV ? `<button class="btn" data-pip="adopt" ${have >= PIP_COST ? "" : "disabled"}>🎨 Adopt Pip · 🖼️ ${PIP_COST} paintings</button>
@@ -101,7 +101,7 @@ function pipAdopt(ids) {
   state.pip = { owned: true, name: "Pip", at: Date.now(), start: Date.now(), base: 1 + secureRandomInt(2 ** 30), done: 0, painted: 0, kept: 0, sold: 0, earned: 0, pets: 0, pokes: 0 };
   save();
   showModal(`<div style="text-align:center"><img src="${pipSrc("tada")}" alt="" style="width:180px;height:180px;object-fit:contain">
-    <h2>🐭 Pip joined you!</h2>
+    <h2>🐾 Pip joined you!</h2>
     <p>He set up his easel at the top of the 🎮 Mini-games page. Every 15 minutes he paints a 🟡 Normal painting for your collection (he naps in between).</p>
     <div class="row" style="justify-content:center;gap:10px"><button class="btn big" data-pip="visit">🎮 Go and see him</button><button class="btn ghost" data-modal="close">Later</button></div></div>`);
   if (typeof renderSpace === "function" && state.view === "logistics") renderSpace();
@@ -177,7 +177,7 @@ function pipTick(force) {
   const at = (pipUI.walk ? pipUI.walk.to : pipUI.pos) === "easel";
   if (sp && sp.classList.contains("atEasel") !== at) sp.classList.toggle("atEasel", at);
   pipDrawEasel(ph, now);
-  const t = $("pipTitle"); if (t) t.textContent = `🐭 ${pipName()}`;
+  const t = $("pipTitle"), tn = pipName(); if (t && t.dataset.n !== tn) { t.dataset.n = tn; t.innerHTML = `<img class="petNameIco" src="assets/icons/tab-pet.webp" alt="">${escapeHtml(tn)}`; }
   const s = $("pipStatus");
   if (s) s.innerHTML = ph.painting ? `🎨 <b>Painting…</b> done in <b>${clockMs(ph.next - now)}</b>`
     : `😴 <b>Asleep.</b> Next painting starts in <b>${clockMs(ph.next - PIP_PAINT - now)}</b>`;
