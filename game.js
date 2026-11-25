@@ -7373,7 +7373,7 @@ function renderClimb(mixing = false) {
     const step = i + 1;
     const cls = step === climb.step && (climb.active || !climb.crashed) && climb.step > 0 ? "current" : step < climb.step ? "passed" : "";
     const amount = (climb.active ? climb.stake : climb.bet || climb.min) * m;
-    return `<div class="rung ${cls} ${step === 20 ? "top" : ""}">${cls === "current" ? `<img class="rungMark" src="assets/climb/balloon-${climb.shield ? "shield" : step === 20 ? "top" : "g"}.webp" alt="">` : ""}<span>${step}. ${m.toLocaleString()}×</span><span>${shortNum(Math.floor(amount))}</span></div>`;
+    return `<div class="rung ${cls} ${step === 20 ? "top" : ""}">${cls === "current" ? `<img class="rungMark" src="assets/climb/balloon-${climb.shield ? "shield" : step === 20 ? "top" : "g"}.webp" alt="">` : ""}<span class="rStep">${step}</span><span class="rMult">${m.toLocaleString()}×</span><span class="rAmt">${coins(Math.floor(amount))}</span></div>`;
   }).join("");
 
   const popNow = climb.crashed && !climb.active;   // the balloon just popped

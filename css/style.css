@@ -2279,3 +2279,7 @@ body.phone .climbSky .decision:not(.main) { width: 74px; height: 74px; font-size
 body.phone .climbSky .climbTable { gap: 6px; }
 @media (max-width: 760px) { .machBalls { top: 26%; } .climbSky .ball { width: 14px; height: 14px; } }
 body.phone .machBalls { top: 26%; } body.phone .climbSky .ball { width: 14px; height: 14px; }
+.climbWrap .rung { display: grid; grid-template-columns: 22px 1fr auto; align-items: center; gap: 6px; }
+.rStep { font-size: 11px; opacity: 0.65; text-align: left; } .rMult { text-align: center; font-weight: 800; font-size: 14px; } .rAmt { text-align: right; font-size: 12px; white-space: nowrap; }
+.climbWrap { grid-template-columns: 1fr 260px; }
+@media (max-width: 760px) { .climbWrap { grid-template-columns: 1fr; } }
