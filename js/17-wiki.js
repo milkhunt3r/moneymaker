@@ -22,7 +22,7 @@ function wikiGeneral() {
     <h3>The tabs</h3>
     ${wt(["Tab", "What you do there"], [
       ["💰 Income", "Click the coin, buy businesses and special businesses, hire workers, use boosters"],
-      ["🎰 Casino", "Move money into casino chips and play table games"],
+      ["🎰 Casino", "Bet your money on table games"],
       ["📈 Investing", "Real estate, ETFs, gold, Broker ETF and live crypto trading"],
       ["🚢 Logistics", "Trucks, oil tankers and cargo planes on contracts, with a world map"],
       ["🎮 Mini-games", "🖼️ Art Gallery: copy paintings and sell them or keep them · ⛏️ Gold Mine Dig: dig for ore (needs a gold mine) · 🚀 Nebula Strike: space shooter (needs the Space Mission Center)"],
@@ -134,14 +134,14 @@ function wikiCasino() {
   const vpRows = VP_HANDS.slice(1).reverse().map(h => [h.name, h.pays + "×", h.jackpot ? `+${h.jackpot * 100}% of the jackpot (× your bet / max bet)` : ""]);
   const pk = (map) => Object.keys(map).map(Number).sort((a, b) => b - a).map(c => [PK_NAMES[c], map[c] === 1.5 ? "3:2" : map[c] + ":1"]);
   return `<h2>🎰 Casino</h2>
-    <p>Move money into <b>casino chips</b> at the top of the Casino tab, play, then cash out. Most games have Classic, High roller and Super high roller tables.
+    <p>You bet straight from your money: wins go straight back to it. Most games have Classic, High roller and Super high roller tables.
       Bets give <b>Gambler XP</b> (bet × the table's XP multiplier) and you get <b>cashback</b> on lost bets (0.1% per Gambler level, +5% per Criminal defense lawyer).
       Random results use your browser's secure random generator.</p>
     <h3>⚔️ Online casino</h3>
     <p>On the left of the Casino, <b>Online casino</b> lets you play against your friends (👤 Profile → 👥 Friends). Pick a game (✊ Rock Paper Scissors, 🎲 Dice Battle, 💰 Bluff Chest or 🏁 Race to 21), choose a bet and challenge a friend who is 🟢 online; both of you need at least the bet in money.</p>
     <ul><li>Rock Paper Scissors and Dice Battle: best of 3 rounds; a tie is played again. In Dice Battle both roll 2 dice and the higher total wins the round.</li>
       <li>You have 15 seconds per move: no pick in time means a random one. Leaving the duel for 30 seconds loses it.</li>
-      <li>The winner takes both bets minus a 2% fee, so a win pays +96% of the bet and a loss costs the bet (paid from your money, not casino chips). The server keeps picks secret and rolls the dice, so nobody can cheat.</li>
+      <li>The winner takes both bets minus a 2% fee, so a win pays +96% of the bet and a loss costs the bet (paid from your money). The server keeps picks secret and rolls the dice, so nobody can cheat.</li>
       <li>A challenge expires after 60 seconds.</li></ul>
     <p>💰 <b>Bluff Chest</b>: each round one player hides the coin in one of 3 chests and the other guesses (roles swap every round). Found: the guesser scores; missed: the hider scores. First to 3 wins.</p>
     <p>🏁 <b>Race to 21</b>: take turns. On your turn, roll the die as often as you like and press <b>Bank</b> to add the turn's points to your total. Rolling a 1 loses this turn's points and ends your turn. The first to 21 wins. If your 15 seconds run out, you bank automatically.</p>
@@ -159,7 +159,7 @@ function wikiCasino() {
       The bonus grows with your 🎲 Gambler level: <b>+10</b> (levels 1–49), <b>+20</b> from level 50, <b>+40</b> from level 75 (you get +${hotBonus()} now; High roller Blackjack ×4 becomes ×${4 + hotBonus()}). The hot game is chosen at random and is never the same twice in a row. The timer is shown under your Gambler level, together with the next hot game.</p>
     <h3>🎁 Free bet chips</h3>
     <p>From Gambler level 5 you get free chips on timers (see the frame under the Gambler level). Use them at Roulette, Blackjack, Baccarat, Video Poker and Hold'em (not Plinko, Sky Climb or Gene Cascade).
-      A free chip is a bet: whatever it wins goes to your casino chips. At Hold'em, a free Ante needs 2 chips (Ante + Blind).</p>
+      A free chip is a bet: whatever it wins goes to your money. At Hold'em, a free Ante needs 2 chips (Ante + Blind).</p>
     ${wt(["Gambler level", "Free chip"], FREE_CHIP_TYPES.map(c => [c.level, "Free " + chipLabel(c.value) + " chip"]).concat([[45, "All timers 20 → 15 min"], [85, "All timers 15 → 10 min"]]).sort((x, y) => x[0] - y[0]))}
 
     <h3>🎡 Roulette (European, 0–36)</h3>

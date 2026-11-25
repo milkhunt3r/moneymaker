@@ -43,7 +43,7 @@ const climbValue = () => climb.stake * CLIMB_LADDER[climb.step];
 async function climbStart() {
   if (climb.active || climb.busy) return;
   if (climb.bet < climb.min) return climbMsg("Minimum bet is " + fmt(climb.min) + ".");
-  if (climb.bet > state.casinoChips) return climbMsg("Not enough chips. Add money to the casino first.");
+  if (climb.bet > state.casinoChips) return climbMsg("Not enough money.");
   state.casinoChips -= climb.bet;
   casinoRecord(climb.bet, 0);
   countPlay("climb");

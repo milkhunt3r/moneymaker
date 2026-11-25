@@ -244,3 +244,5 @@ updateCloudUi = function () {
 profUi();
 if (state.view === "profile") renderProfile();
 setInterval(() => { const m = $("profMoney"); if (m) { const t = fmt(state.money); if (m.textContent !== t) m.textContent = t; } }, 1000);   // 💰 the money on your profile card stays live
+// 🪙 the coin-skin pictures next to "your money" (Casino) follow the coin you use
+setInterval(() => { const src = profCoinImg(profCoin()).match(/src="([^"]+)"/)[1]; document.querySelectorAll(".coinSkinImg").forEach(i => { if (i.getAttribute("src") !== src) i.setAttribute("src", src); }); }, 1000);

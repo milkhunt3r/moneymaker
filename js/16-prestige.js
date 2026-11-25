@@ -55,8 +55,8 @@ function showPrestigeOffer() {
 function showPrestigeConfirm(id) {
   const c = PRESTIGE_CHOICES.find(x => x.id === id);
   let lost = id === "empire" || state.legacy.empire > 0
-    ? "your money, casino chips, businesses, workers, other special businesses and investments"
-    : "your money, casino chips, businesses, workers, special businesses, investments and logistics fleet";
+    ? "your money, businesses, workers, other special businesses and investments"
+    : "your money, businesses, workers, special businesses, investments and logistics fleet";
   lost += id === "tycoon" || state.legacy.tycoon > 0 ? " (your 🔬 Science buildings are kept, the 🛰️ satellite is not)" : " and 🔬 Science";
   showModal(`<h2>${c.icon} ${c.name}</h2>
     <p>Are you sure? This <b>resets</b> ${lost}.</p>
@@ -225,7 +225,7 @@ function freeChipRow(t, selectedFree) {
   return `<div class="chipsRow freeRow"><span class="muted">🎁 Free:</span>
     ${owned.map(v => `<button class="chip free ${selectedFree && t.chip === v ? "selected" : ""}" data-freechip="${v}"
         style="background:${CHIP_COLORS[v].bg}; color:${CHIP_COLORS[v].text}">${chipLabel(v)}<i>×${state.freeChips[v]}</i></button>`).join("")}
-    <span class="muted">Free bet chips: what the bet pays goes to your casino chips.${freePlacedSum(t.id) ? ` On the table now: ${fmt(freePlacedSum(t.id))} free.` : ""}</span></div>`;
+    <span class="muted">Free bet chips: what the bet pays goes to your money.${freePlacedSum(t.id) ? ` On the table now: ${fmt(freePlacedSum(t.id))} free.` : ""}</span></div>`;
 }
 vipReady = true;
 

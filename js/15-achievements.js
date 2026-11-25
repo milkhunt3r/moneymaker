@@ -33,13 +33,13 @@ const matchingSet = () => COLLECTIONS_IDS().some(col =>
 const COLLECTIONS_IDS = () => [...new Set(COSMETICS.map(c => c.collection))];
 const ACHIEVEMENTS = [
   // General
-  { id: "cash1s",     cat: "general", icon: "💵", name: "Millionaire",        desc: "Have 1 scoin on hand (not in casino chips)",   goal: SC,       get: () => state.money, money: true },
-  { id: "cash10s",    cat: "general", icon: "💰", name: "Multi-millionaire",  desc: "Have 10 scoin on hand (not in casino chips)",  goal: 10 * SC,  get: () => state.money, money: true },
-  { id: "cash100s",   cat: "general", icon: "🏦", name: "Swimming in coins",  desc: "Have 100 scoin on hand (not in casino chips)", goal: 100 * SC, get: () => state.money, money: true },
-  { id: "cash1g",     cat: "general", icon: "👑", name: "Billionaire",        desc: "Have 1 gcoin on hand (not in casino chips)",   goal: 1e12,     get: () => state.money, money: true },
-  { id: "cash5g",     cat: "general", icon: "💎", name: "Gold baron",         desc: "Have 5 gcoin on hand (not in casino chips)",   goal: 5e12,     get: () => state.money, money: true },
-  { id: "cash10g",    cat: "general", icon: "🏰", name: "Coin emperor",       desc: "Have 10 gcoin on hand (not in casino chips)",  goal: 10e12,    get: () => state.money, money: true },
-  { id: "cash20g",    cat: "general", icon: "🌍", name: "Empire of Coins",    desc: "Have 20 gcoin on hand (not in casino chips)",  goal: 20e12,    get: () => state.money, money: true },
+  { id: "cash1s",     cat: "general", icon: "💵", name: "Millionaire",        desc: "Have 1 scoin on hand",   goal: SC,       get: () => state.money, money: true },
+  { id: "cash10s",    cat: "general", icon: "💰", name: "Multi-millionaire",  desc: "Have 10 scoin on hand",  goal: 10 * SC,  get: () => state.money, money: true },
+  { id: "cash100s",   cat: "general", icon: "🏦", name: "Swimming in coins",  desc: "Have 100 scoin on hand", goal: 100 * SC, get: () => state.money, money: true },
+  { id: "cash1g",     cat: "general", icon: "👑", name: "Billionaire",        desc: "Have 1 gcoin on hand",   goal: 1e12,     get: () => state.money, money: true },
+  { id: "cash5g",     cat: "general", icon: "💎", name: "Gold baron",         desc: "Have 5 gcoin on hand",   goal: 5e12,     get: () => state.money, money: true },
+  { id: "cash10g",    cat: "general", icon: "🏰", name: "Coin emperor",       desc: "Have 10 gcoin on hand",  goal: 10e12,    get: () => state.money, money: true },
+  { id: "cash20g",    cat: "general", icon: "🌍", name: "Empire of Coins",    desc: "Have 20 gcoin on hand",  goal: 20e12,    get: () => state.money, money: true },
   { id: "prestige1",  cat: "general", icon: "⭐", name: "A fresh start",      desc: "Prestige for the first time",         goal: 1, get: () => state.legacy.count },
   { id: "prestige2",  cat: "general", icon: "🌟", name: "Second wind",        desc: "Prestige twice",                    goal: 2, get: () => state.legacy.count },
   { id: "prestige4",  cat: "general", icon: "🏆", name: "Legend",             desc: "Prestige 4 times and finish the game", goal: 4, get: () => state.legacy.count },

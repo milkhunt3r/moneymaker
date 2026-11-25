@@ -1,12 +1,17 @@
 /* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
-   CASINO WALLET: move money in and out as chips
+   CASINO WALLET: you play straight from your money.
+   (There used to be separate casino chips: old chips are moved back into your money, and
+   state.casinoChips is now just another name for state.money, so every game keeps working.)
    ===================================================================== */
-if (typeof state.casinoChips !== "number") state.casinoChips = 0;
+{ const oldChips = Number(state.casinoChips) || 0;
+  delete state.casinoChips;
+  if (oldChips > 0) state.money += oldChips;
+  Object.defineProperty(state, "casinoChips", { configurable: true, enumerable: false, get() { return state.money; }, set(v) { state.money = v; } }); }
 
 /* ----- 🎟️ VIP coins (Legacy bonus): a separate purse for the Super high roller tables.
    With "VIP mode" on at a table, every bet there is paid from VIP coins (and unplayed bets go back to them).
-   Whatever a round pays out goes to normal casino chips. ----- */
+   Whatever a round pays out goes to your money. ----- */
 if (!state.legacy) state.legacy = { count: 0, tycoon: 0, empire: 0, vip: 0, history: [] };
 if (!state.vip) state.vip = { coins: 0, timer: 0 };
 if (!state.vipMode) state.vipMode = {};
@@ -53,34 +58,9 @@ function freeRebet(id, need) {
 }
 function freeDone(id, which = "inPlay") { freeTbl(id)[which] = []; }   // played: they are used up
 const purse = (id) => vipOn(id) ? state.vip.coins : state.casinoChips;
-const purseName = (id) => vipOn(id) ? "VIP coins" : "chips";
+const purseName = (id) => vipOn(id) ? "VIP coins" : "money";
 function payFrom(id, x) { if (vipOn(id)) state.vip.coins -= x; else state.casinoChips -= x; }
 function refundTo(id, x) { if (vipOn(id)) state.vip.coins += x; else state.casinoChips += x; }
-
-document.querySelectorAll("[data-pct]").forEach(btn => {
-  btn.addEventListener("click", () => {
-    $("buyAmount").value = Math.floor(state.money * Number(btn.dataset.pct));
-  });
-});
-
-$("buyIn").addEventListener("click", () => {
-  if (isPaused()) return;
-  const amount = Math.floor(Number($("buyAmount").value));
-  if (!(amount > 0)) return casinoMessage("Enter how much money to bring in.");
-  if (amount > state.money) return casinoMessage("You don't have that much money.");
-  state.money -= amount;
-  state.casinoChips += amount;
-  $("buyAmount").value = "";
-  casinoMessage("");
-  updateCounter(); save();
-});
-
-$("cashOut").addEventListener("click", () => {
-  if (isPaused() || anyTableSpinning()) return;
-  state.money += state.casinoChips;
-  state.casinoChips = 0;
-  updateCounter(); save();
-});
 
 function casinoMessage(text) {
   const el = $("casinoMsg");

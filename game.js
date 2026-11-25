@@ -2696,6 +2696,17 @@ H("🏁 <b>Race to 21</b>: take turns. On your turn, roll the die as often as yo
 Object.assign(ES, { "Pick a starter avatar or the emblem of one of your 🎁 reward collections. Unlock more collections (🏆 Achievements → 🎁 Rewards) to get more avatars.": "Elige un avatar inicial o el emblema de una de tus colecciones de 🎁 recompensas. Desbloquea más colecciones (🏆 Logros → 🎁 Recompensas) para tener más avatares.",
   "Painter mouse": "Ratón pintor", "Lucky cat": "Gato de la suerte", "Penguin banker": "Pingüino banquero", "Coin turtle": "Tortuga de monedas", "Bunny gambler": "Conejo apostador",
   "👤 6 new starter avatars for your profile: everyone can pick them, even without unlocked rewards.": "👤 6 avatares iniciales nuevos para tu perfil: todos pueden elegirlos, aunque no tengan recompensas desbloqueadas." });
+// 🎰 casino: playing straight from your money
+Object.assign(ES, { "Bet your money on table games": "Apuesta tu dinero en juegos de mesa", "money": "dinero",
+  "Your money: you bet straight from it": "Tu dinero: apuestas directamente con él",
+  "🎰 No more casino chips: you now bet straight from your money, and wins go straight back to it. Any chips you had were turned back into money.": "🎰 Se acabaron las fichas del casino: ahora apuestas directamente con tu dinero y las ganancias vuelven directamente a él. Las fichas que tenías se han convertido en dinero." });
+rx(String.raw`Not enough money to repeat \((${NUM}) needed\)\.`, "No tienes suficiente dinero para repetir (hacen falta $1).");
+rx(String.raw`Not enough money \(Ante \+ Blind = (${NUM})\)\.`, "No tienes suficiente dinero (ante + ciega = $1).");
+rx(String.raw`Not enough money to raise (${NUM})\.`, "No tienes suficiente dinero para subir $1.");
+rx(String.raw`Not enough money to buy the bonus \((${NUM})\)\.`, "No tienes suficiente dinero para comprar el bono ($1).");
+rx(String.raw`Have (\d+) (scoin|gcoin) on hand`, "Ten $1 $2 en mano");
+Object.assign(ES, { "Shield active": "Escudo activo", "Gold ball! You climbed and got a shield against the next red ball.": "¡Bola dorada! Has subido y tienes un escudo contra la próxima bola roja." });
+rx(String.raw`Red: ([\d.,]+)% \(blocked\)`, "Roja: $1 % (bloqueada)");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -3765,7 +3776,6 @@ function updateCounterNow() {
     ? "= " + asScoin + " scoin"
     : (unit === "gcoin" ? "= " + asScoin + " scoin\n" : "") + "= " + Math.floor(state.money).toLocaleString() + " bcoin";
   $("casinoMoney").textContent = fmt(state.money);
-  $("casinoChips").textContent = fmt(state.casinoChips || 0);
   updateVipBar();
   $("investMoney").textContent = fmt(state.money);
   $("logiMoney").textContent = fmt(state.money);
@@ -4320,13 +4330,18 @@ document.querySelectorAll(".debtBanner").forEach(b => b.addEventListener("click"
 // ===== js/03-casino.js =====
 __eocLoaded = 8;
 /* =====================================================================
-   CASINO WALLET: move money in and out as chips
+   CASINO WALLET: you play straight from your money.
+   (There used to be separate casino chips: old chips are moved back into your money, and
+   state.casinoChips is now just another name for state.money, so every game keeps working.)
    ===================================================================== */
-if (typeof state.casinoChips !== "number") state.casinoChips = 0;
+{ const oldChips = Number(state.casinoChips) || 0;
+  delete state.casinoChips;
+  if (oldChips > 0) state.money += oldChips;
+  Object.defineProperty(state, "casinoChips", { configurable: true, enumerable: false, get() { return state.money; }, set(v) { state.money = v; } }); }
 
 /* ----- 🎟️ VIP coins (Legacy bonus): a separate purse for the Super high roller tables.
    With "VIP mode" on at a table, every bet there is paid from VIP coins (and unplayed bets go back to them).
-   Whatever a round pays out goes to normal casino chips. ----- */
+   Whatever a round pays out goes to your money. ----- */
 if (!state.legacy) state.legacy = { count: 0, tycoon: 0, empire: 0, vip: 0, history: [] };
 if (!state.vip) state.vip = { coins: 0, timer: 0 };
 if (!state.vipMode) state.vipMode = {};
@@ -4373,34 +4388,9 @@ function freeRebet(id, need) {
 }
 function freeDone(id, which = "inPlay") { freeTbl(id)[which] = []; }   // played: they are used up
 var purse = (id) => vipOn(id) ? state.vip.coins : state.casinoChips;
-var purseName = (id) => vipOn(id) ? "VIP coins" : "chips";
+var purseName = (id) => vipOn(id) ? "VIP coins" : "money";
 function payFrom(id, x) { if (vipOn(id)) state.vip.coins -= x; else state.casinoChips -= x; }
 function refundTo(id, x) { if (vipOn(id)) state.vip.coins += x; else state.casinoChips += x; }
-
-document.querySelectorAll("[data-pct]").forEach(btn => {
-  btn.addEventListener("click", () => {
-    $("buyAmount").value = Math.floor(state.money * Number(btn.dataset.pct));
-  });
-});
-
-$("buyIn").addEventListener("click", () => {
-  if (isPaused()) return;
-  const amount = Math.floor(Number($("buyAmount").value));
-  if (!(amount > 0)) return casinoMessage("Enter how much money to bring in.");
-  if (amount > state.money) return casinoMessage("You don't have that much money.");
-  state.money -= amount;
-  state.casinoChips += amount;
-  $("buyAmount").value = "";
-  casinoMessage("");
-  updateCounter(); save();
-});
-
-$("cashOut").addEventListener("click", () => {
-  if (isPaused() || anyTableSpinning()) return;
-  state.money += state.casinoChips;
-  state.casinoChips = 0;
-  updateCounter(); save();
-});
 
 function casinoMessage(text) {
   const el = $("casinoMsg");
@@ -7283,7 +7273,7 @@ var climbValue = () => climb.stake * CLIMB_LADDER[climb.step];
 async function climbStart() {
   if (climb.active || climb.busy) return;
   if (climb.bet < climb.min) return climbMsg("Minimum bet is " + fmt(climb.min) + ".");
-  if (climb.bet > state.casinoChips) return climbMsg("Not enough chips. Add money to the casino first.");
+  if (climb.bet > state.casinoChips) return climbMsg("Not enough money.");
   state.casinoChips -= climb.bet;
   casinoRecord(climb.bet, 0);
   countPlay("climb");
@@ -9904,13 +9894,13 @@ var matchingSet = () => COLLECTIONS_IDS().some(col =>
 var COLLECTIONS_IDS = () => [...new Set(COSMETICS.map(c => c.collection))];
 var ACHIEVEMENTS = [
   // General
-  { id: "cash1s",     cat: "general", icon: "💵", name: "Millionaire",        desc: "Have 1 scoin on hand (not in casino chips)",   goal: SC,       get: () => state.money, money: true },
-  { id: "cash10s",    cat: "general", icon: "💰", name: "Multi-millionaire",  desc: "Have 10 scoin on hand (not in casino chips)",  goal: 10 * SC,  get: () => state.money, money: true },
-  { id: "cash100s",   cat: "general", icon: "🏦", name: "Swimming in coins",  desc: "Have 100 scoin on hand (not in casino chips)", goal: 100 * SC, get: () => state.money, money: true },
-  { id: "cash1g",     cat: "general", icon: "👑", name: "Billionaire",        desc: "Have 1 gcoin on hand (not in casino chips)",   goal: 1e12,     get: () => state.money, money: true },
-  { id: "cash5g",     cat: "general", icon: "💎", name: "Gold baron",         desc: "Have 5 gcoin on hand (not in casino chips)",   goal: 5e12,     get: () => state.money, money: true },
-  { id: "cash10g",    cat: "general", icon: "🏰", name: "Coin emperor",       desc: "Have 10 gcoin on hand (not in casino chips)",  goal: 10e12,    get: () => state.money, money: true },
-  { id: "cash20g",    cat: "general", icon: "🌍", name: "Empire of Coins",    desc: "Have 20 gcoin on hand (not in casino chips)",  goal: 20e12,    get: () => state.money, money: true },
+  { id: "cash1s",     cat: "general", icon: "💵", name: "Millionaire",        desc: "Have 1 scoin on hand",   goal: SC,       get: () => state.money, money: true },
+  { id: "cash10s",    cat: "general", icon: "💰", name: "Multi-millionaire",  desc: "Have 10 scoin on hand",  goal: 10 * SC,  get: () => state.money, money: true },
+  { id: "cash100s",   cat: "general", icon: "🏦", name: "Swimming in coins",  desc: "Have 100 scoin on hand", goal: 100 * SC, get: () => state.money, money: true },
+  { id: "cash1g",     cat: "general", icon: "👑", name: "Billionaire",        desc: "Have 1 gcoin on hand",   goal: 1e12,     get: () => state.money, money: true },
+  { id: "cash5g",     cat: "general", icon: "💎", name: "Gold baron",         desc: "Have 5 gcoin on hand",   goal: 5e12,     get: () => state.money, money: true },
+  { id: "cash10g",    cat: "general", icon: "🏰", name: "Coin emperor",       desc: "Have 10 gcoin on hand",  goal: 10e12,    get: () => state.money, money: true },
+  { id: "cash20g",    cat: "general", icon: "🌍", name: "Empire of Coins",    desc: "Have 20 gcoin on hand",  goal: 20e12,    get: () => state.money, money: true },
   { id: "prestige1",  cat: "general", icon: "⭐", name: "A fresh start",      desc: "Prestige for the first time",         goal: 1, get: () => state.legacy.count },
   { id: "prestige2",  cat: "general", icon: "🌟", name: "Second wind",        desc: "Prestige twice",                    goal: 2, get: () => state.legacy.count },
   { id: "prestige4",  cat: "general", icon: "🏆", name: "Legend",             desc: "Prestige 4 times and finish the game", goal: 4, get: () => state.legacy.count },
@@ -10377,8 +10367,8 @@ function showPrestigeOffer() {
 function showPrestigeConfirm(id) {
   const c = PRESTIGE_CHOICES.find(x => x.id === id);
   let lost = id === "empire" || state.legacy.empire > 0
-    ? "your money, casino chips, businesses, workers, other special businesses and investments"
-    : "your money, casino chips, businesses, workers, special businesses, investments and logistics fleet";
+    ? "your money, businesses, workers, other special businesses and investments"
+    : "your money, businesses, workers, special businesses, investments and logistics fleet";
   lost += id === "tycoon" || state.legacy.tycoon > 0 ? " (your 🔬 Science buildings are kept, the 🛰️ satellite is not)" : " and 🔬 Science";
   showModal(`<h2>${c.icon} ${c.name}</h2>
     <p>Are you sure? This <b>resets</b> ${lost}.</p>
@@ -10547,7 +10537,7 @@ function freeChipRow(t, selectedFree) {
   return `<div class="chipsRow freeRow"><span class="muted">🎁 Free:</span>
     ${owned.map(v => `<button class="chip free ${selectedFree && t.chip === v ? "selected" : ""}" data-freechip="${v}"
         style="background:${CHIP_COLORS[v].bg}; color:${CHIP_COLORS[v].text}">${chipLabel(v)}<i>×${state.freeChips[v]}</i></button>`).join("")}
-    <span class="muted">Free bet chips: what the bet pays goes to your casino chips.${freePlacedSum(t.id) ? ` On the table now: ${fmt(freePlacedSum(t.id))} free.` : ""}</span></div>`;
+    <span class="muted">Free bet chips: what the bet pays goes to your money.${freePlacedSum(t.id) ? ` On the table now: ${fmt(freePlacedSum(t.id))} free.` : ""}</span></div>`;
 }
 vipReady = true;
 
@@ -10683,7 +10673,7 @@ function wikiGeneral() {
     <h3>The tabs</h3>
     ${wt(["Tab", "What you do there"], [
       ["💰 Income", "Click the coin, buy businesses and special businesses, hire workers, use boosters"],
-      ["🎰 Casino", "Move money into casino chips and play table games"],
+      ["🎰 Casino", "Bet your money on table games"],
       ["📈 Investing", "Real estate, ETFs, gold, Broker ETF and live crypto trading"],
       ["🚢 Logistics", "Trucks, oil tankers and cargo planes on contracts, with a world map"],
       ["🎮 Mini-games", "🖼️ Art Gallery: copy paintings and sell them or keep them · ⛏️ Gold Mine Dig: dig for ore (needs a gold mine) · 🚀 Nebula Strike: space shooter (needs the Space Mission Center)"],
@@ -10795,14 +10785,14 @@ function wikiCasino() {
   const vpRows = VP_HANDS.slice(1).reverse().map(h => [h.name, h.pays + "×", h.jackpot ? `+${h.jackpot * 100}% of the jackpot (× your bet / max bet)` : ""]);
   const pk = (map) => Object.keys(map).map(Number).sort((a, b) => b - a).map(c => [PK_NAMES[c], map[c] === 1.5 ? "3:2" : map[c] + ":1"]);
   return `<h2>🎰 Casino</h2>
-    <p>Move money into <b>casino chips</b> at the top of the Casino tab, play, then cash out. Most games have Classic, High roller and Super high roller tables.
+    <p>You bet straight from your money: wins go straight back to it. Most games have Classic, High roller and Super high roller tables.
       Bets give <b>Gambler XP</b> (bet × the table's XP multiplier) and you get <b>cashback</b> on lost bets (0.1% per Gambler level, +5% per Criminal defense lawyer).
       Random results use your browser's secure random generator.</p>
     <h3>⚔️ Online casino</h3>
     <p>On the left of the Casino, <b>Online casino</b> lets you play against your friends (👤 Profile → 👥 Friends). Pick a game (✊ Rock Paper Scissors, 🎲 Dice Battle, 💰 Bluff Chest or 🏁 Race to 21), choose a bet and challenge a friend who is 🟢 online; both of you need at least the bet in money.</p>
     <ul><li>Rock Paper Scissors and Dice Battle: best of 3 rounds; a tie is played again. In Dice Battle both roll 2 dice and the higher total wins the round.</li>
       <li>You have 15 seconds per move: no pick in time means a random one. Leaving the duel for 30 seconds loses it.</li>
-      <li>The winner takes both bets minus a 2% fee, so a win pays +96% of the bet and a loss costs the bet (paid from your money, not casino chips). The server keeps picks secret and rolls the dice, so nobody can cheat.</li>
+      <li>The winner takes both bets minus a 2% fee, so a win pays +96% of the bet and a loss costs the bet (paid from your money). The server keeps picks secret and rolls the dice, so nobody can cheat.</li>
       <li>A challenge expires after 60 seconds.</li></ul>
     <p>💰 <b>Bluff Chest</b>: each round one player hides the coin in one of 3 chests and the other guesses (roles swap every round). Found: the guesser scores; missed: the hider scores. First to 3 wins.</p>
     <p>🏁 <b>Race to 21</b>: take turns. On your turn, roll the die as often as you like and press <b>Bank</b> to add the turn's points to your total. Rolling a 1 loses this turn's points and ends your turn. The first to 21 wins. If your 15 seconds run out, you bank automatically.</p>
@@ -10820,7 +10810,7 @@ function wikiCasino() {
       The bonus grows with your 🎲 Gambler level: <b>+10</b> (levels 1–49), <b>+20</b> from level 50, <b>+40</b> from level 75 (you get +${hotBonus()} now; High roller Blackjack ×4 becomes ×${4 + hotBonus()}). The hot game is chosen at random and is never the same twice in a row. The timer is shown under your Gambler level, together with the next hot game.</p>
     <h3>🎁 Free bet chips</h3>
     <p>From Gambler level 5 you get free chips on timers (see the frame under the Gambler level). Use them at Roulette, Blackjack, Baccarat, Video Poker and Hold'em (not Plinko, Sky Climb or Gene Cascade).
-      A free chip is a bet: whatever it wins goes to your casino chips. At Hold'em, a free Ante needs 2 chips (Ante + Blind).</p>
+      A free chip is a bet: whatever it wins goes to your money. At Hold'em, a free Ante needs 2 chips (Ante + Blind).</p>
     ${wt(["Gambler level", "Free chip"], FREE_CHIP_TYPES.map(c => [c.level, "Free " + chipLabel(c.value) + " chip"]).concat([[45, "All timers 20 → 15 min"], [85, "All timers 15 → 10 min"]]).sort((x, y) => x[0] - y[0]))}
 
     <h3>🎡 Roulette (European, 0–36)</h3>
@@ -12799,7 +12789,7 @@ var TIPS = {
   staff:     { icon: "🧮", title: "Hiring staff", wiki: "income", text: "Bigger businesses need an accountant and an HR manager before they can hire workers. Pick the ones whose bonus suits you; you can't change them later." },
   special:   { icon: "⭐", title: "Special businesses", wiki: "income", text: "Special businesses need no workers. Most have a requirement first; they show 🔒 until you meet it, so check this page as you grow." },
   taxes:     { icon: "🧾", title: "Taxes", wiki: "general", text: "Your income is taxed. When a tax bill comes you have time to pay it; unpaid bills become debt that grows. Pay with the red banner at the top." },
-  casino:    { icon: "🎰", title: "The casino", wiki: "casino", text: "Move money into casino chips first, then pick a table. Bets give Gambler XP, and every Gambler level gives cashback on lost bets." },
+  casino:    { icon: "🎰", title: "The casino", wiki: "casino", text: "Pick a table and bet straight from your money. Bets give Gambler XP, and every Gambler level gives cashback on lost bets." },
   hot:       { icon: "🔥", title: "Hot Tables", wiki: "casino", text: "Right now one game gets +10 on its XP multiplier for 10 minutes (+20 from Gambler level 50, +40 from level 75). The card under your Gambler level shows which game and how long." },
   freeChips: { icon: "🎁", title: "Free bet chips", wiki: "casino", text: "You earn free chips on a timer. Place them on Roulette, Blackjack, Video Poker or Hold'em: you keep what they win, not the chip itself." },
   invest:    { icon: "📈", title: "Investing", wiki: "investing", text: "Real estate pays rent and can be sold for profit, ETFs grow (and dip) over time, gold is a safe store of value. Money invested also earns Investor XP." },
@@ -13157,6 +13147,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "25 November 2026", title: "Empire of Coins", items: [
+    "🎰 No more casino chips: you now bet straight from your money, and wins go straight back to it. Any chips you had were turned back into money.",
     "👤 6 new starter avatars for your profile: everyone can pick them, even without unlocked rewards.",
     "⚔️ <b>2 new online casino games!</b> 💰 <b>Bluff Chest</b>: hide the coin in one of 3 chests or find your friend's (first to 3). 🏁 <b>Race to 21</b>: roll as often as you dare, but a 1 loses the turn's points. 6 new achievements.",
     "⚔️ Online casino: duels now have a 2% fee. The winner takes both bets minus 2% (a win pays +96% of the bet, a loss costs the bet).",
@@ -15246,7 +15237,7 @@ async function gcSpin(buy = false) {
   if (gcBusy || st.pending || !gcUnlocked()) return;
   const bet = st.bet, cost = buy ? bet * SL_BUY : bet;
   if (bet < t.min || bet > t.max) return gcMsg(`Bets here are ${fmt(t.min)} – ${fmt(t.max)}.`);
-  if (state.casinoChips < cost) return gcMsg(`Not enough chips${buy ? ` to buy the bonus (${fmt(cost)})` : ""}. Add money to the casino first.`);
+  if (state.casinoChips < cost) return gcMsg(`Not enough money${buy ? ` to buy the bonus (${fmt(cost)})` : ""}.`);
   state.casinoChips -= cost;
   const round = buy ? slBuyRound(gcRand) : slRound(gcRand);
   const win = Math.floor(round.total * bet);
@@ -19205,6 +19196,8 @@ updateCloudUi = function () {
 profUi();
 if (state.view === "profile") renderProfile();
 setInterval(() => { const m = $("profMoney"); if (m) { const t = fmt(state.money); if (m.textContent !== t) m.textContent = t; } }, 1000);   // 💰 the money on your profile card stays live
+// 🪙 the coin-skin pictures next to "your money" (Casino) follow the coin you use
+setInterval(() => { const src = profCoinImg(profCoin()).match(/src="([^"]+)"/)[1]; document.querySelectorAll(".coinSkinImg").forEach(i => { if (i.getAttribute("src") !== src) i.setAttribute("src", src); }); }, 1000);
 
 // ===== js/38-friends.js =====
 __eocLoaded = 46;

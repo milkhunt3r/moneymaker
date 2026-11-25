@@ -1322,6 +1322,17 @@ H("🏁 <b>Race to 21</b>: take turns. On your turn, roll the die as often as yo
 Object.assign(ES, { "Pick a starter avatar or the emblem of one of your 🎁 reward collections. Unlock more collections (🏆 Achievements → 🎁 Rewards) to get more avatars.": "Elige un avatar inicial o el emblema de una de tus colecciones de 🎁 recompensas. Desbloquea más colecciones (🏆 Logros → 🎁 Recompensas) para tener más avatares.",
   "Painter mouse": "Ratón pintor", "Lucky cat": "Gato de la suerte", "Penguin banker": "Pingüino banquero", "Coin turtle": "Tortuga de monedas", "Bunny gambler": "Conejo apostador",
   "👤 6 new starter avatars for your profile: everyone can pick them, even without unlocked rewards.": "👤 6 avatares iniciales nuevos para tu perfil: todos pueden elegirlos, aunque no tengan recompensas desbloqueadas." });
+// 🎰 casino: playing straight from your money
+Object.assign(ES, { "Bet your money on table games": "Apuesta tu dinero en juegos de mesa", "money": "dinero",
+  "Your money: you bet straight from it": "Tu dinero: apuestas directamente con él",
+  "🎰 No more casino chips: you now bet straight from your money, and wins go straight back to it. Any chips you had were turned back into money.": "🎰 Se acabaron las fichas del casino: ahora apuestas directamente con tu dinero y las ganancias vuelven directamente a él. Las fichas que tenías se han convertido en dinero." });
+rx(String.raw`Not enough money to repeat \((${NUM}) needed\)\.`, "No tienes suficiente dinero para repetir (hacen falta $1).");
+rx(String.raw`Not enough money \(Ante \+ Blind = (${NUM})\)\.`, "No tienes suficiente dinero (ante + ciega = $1).");
+rx(String.raw`Not enough money to raise (${NUM})\.`, "No tienes suficiente dinero para subir $1.");
+rx(String.raw`Not enough money to buy the bonus \((${NUM})\)\.`, "No tienes suficiente dinero para comprar el bono ($1).");
+rx(String.raw`Have (\d+) (scoin|gcoin) on hand`, "Ten $1 $2 en mano");
+Object.assign(ES, { "Shield active": "Escudo activo", "Gold ball! You climbed and got a shield against the next red ball.": "¡Bola dorada! Has subido y tienes un escudo contra la próxima bola roja." });
+rx(String.raw`Red: ([\d.,]+)% \(blocked\)`, "Roja: $1 % (bloqueada)");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

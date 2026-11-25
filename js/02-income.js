@@ -379,7 +379,6 @@ function updateCounterNow() {
     ? "= " + asScoin + " scoin"
     : (unit === "gcoin" ? "= " + asScoin + " scoin\n" : "") + "= " + Math.floor(state.money).toLocaleString() + " bcoin";
   $("casinoMoney").textContent = fmt(state.money);
-  $("casinoChips").textContent = fmt(state.casinoChips || 0);
   updateVipBar();
   $("investMoney").textContent = fmt(state.money);
   $("logiMoney").textContent = fmt(state.money);

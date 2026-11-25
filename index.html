@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
   <meta property="og:image" content="assets/logo/share.jpg">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="stylesheet" href="css/style.css?v=40cc86cb0d">
+  <link rel="stylesheet" href="css/style.css?v=0f3b4dbf02">
 </head>
 <body>
   <!-- ===== Loading screen (removed when the game has started) ===== -->
@@ -182,22 +182,9 @@
       <div class="freeGrid" id="freeChipsGrid"></div>
     </div>
     <div class="card wallet">
-      <div class="stat"><div class="label">💰 Your money</div><div class="value" id="casinoMoney">0</div></div>
-      <div class="stat"><div class="label">🎟️ Casino chips</div><div class="value chips" id="casinoChips">0</div></div>
+      <div class="duMoney casinoMoneyBox" title="Your money: you bet straight from it"><img class="duMoneyI coinSkinImg" src="assets/coin.webp" alt=""><b id="casinoMoney">0</b></div>
       <div class="stat" id="vipStat" hidden><div class="label">🎫 VIP coins</div><div class="value" id="vipCoins" style="color:#ffd34d">0</div>
         <div class="muted" id="vipTimer"></div></div>
-    </div>
-    <div class="card">
-      <div class="muted">Move money into the casino to play. You can add more at any time.</div>
-      <div class="moneyRow">
-        <input id="buyAmount" type="number" min="1" placeholder="Amount">
-        <button class="btn ghost small" data-pct="0.1">10%</button>
-        <button class="btn ghost small" data-pct="0.25">25%</button>
-        <button class="btn ghost small" data-pct="0.5">50%</button>
-        <button class="btn ghost small" data-pct="1">All</button>
-        <button class="btn" id="buyIn">Add to casino</button>
-        <button class="btn ghost" id="cashOut">Cash out all chips</button>
-      </div>
     </div>
     <div id="vipBar" class="card" hidden></div>
     <div id="casinoGame"></div>
@@ -614,6 +601,6 @@
   <div id="tipCard" hidden role="status"></div>
   <div id="tutBubble" hidden role="dialog" aria-label="Guided start"></div>
   <!-- Game code, split by section. Files share one global scope and must load in this order. -->
-  <script src="game.js?v=69669f2b36"></script>
+  <script src="game.js?v=195675e1fc"></script>
 </body>
 </html>

@@ -184,22 +184,9 @@
       <div class="freeGrid" id="freeChipsGrid"></div>
     </div>
     <div class="card wallet">
-      <div class="stat"><div class="label">💰 Your money</div><div class="value" id="casinoMoney">0</div></div>
-      <div class="stat"><div class="label">🎟️ Casino chips</div><div class="value chips" id="casinoChips">0</div></div>
+      <div class="duMoney casinoMoneyBox" title="Your money: you bet straight from it"><img class="duMoneyI coinSkinImg" src="assets/coin.webp" alt=""><b id="casinoMoney">0</b></div>
       <div class="stat" id="vipStat" hidden><div class="label">🎫 VIP coins</div><div class="value" id="vipCoins" style="color:#ffd34d">0</div>
         <div class="muted" id="vipTimer"></div></div>
-    </div>
-    <div class="card">
-      <div class="muted">Move money into the casino to play. You can add more at any time.</div>
-      <div class="moneyRow">
-        <input id="buyAmount" type="number" min="1" placeholder="Amount">
-        <button class="btn ghost small" data-pct="0.1">10%</button>
-        <button class="btn ghost small" data-pct="0.25">25%</button>
-        <button class="btn ghost small" data-pct="0.5">50%</button>
-        <button class="btn ghost small" data-pct="1">All</button>
-        <button class="btn" id="buyIn">Add to casino</button>
-        <button class="btn ghost" id="cashOut">Cash out all chips</button>
-      </div>
     </div>
     <div id="vipBar" class="card" hidden></div>
     <div id="casinoGame"></div>

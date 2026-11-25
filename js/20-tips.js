@@ -11,7 +11,7 @@ const TIPS = {
   staff:     { icon: "🧮", title: "Hiring staff", wiki: "income", text: "Bigger businesses need an accountant and an HR manager before they can hire workers. Pick the ones whose bonus suits you; you can't change them later." },
   special:   { icon: "⭐", title: "Special businesses", wiki: "income", text: "Special businesses need no workers. Most have a requirement first; they show 🔒 until you meet it, so check this page as you grow." },
   taxes:     { icon: "🧾", title: "Taxes", wiki: "general", text: "Your income is taxed. When a tax bill comes you have time to pay it; unpaid bills become debt that grows. Pay with the red banner at the top." },
-  casino:    { icon: "🎰", title: "The casino", wiki: "casino", text: "Move money into casino chips first, then pick a table. Bets give Gambler XP, and every Gambler level gives cashback on lost bets." },
+  casino:    { icon: "🎰", title: "The casino", wiki: "casino", text: "Pick a table and bet straight from your money. Bets give Gambler XP, and every Gambler level gives cashback on lost bets." },
   hot:       { icon: "🔥", title: "Hot Tables", wiki: "casino", text: "Right now one game gets +10 on its XP multiplier for 10 minutes (+20 from Gambler level 50, +40 from level 75). The card under your Gambler level shows which game and how long." },
   freeChips: { icon: "🎁", title: "Free bet chips", wiki: "casino", text: "You earn free chips on a timer. Place them on Roulette, Blackjack, Video Poker or Hold'em: you keep what they win, not the chip itself." },
   invest:    { icon: "📈", title: "Investing", wiki: "investing", text: "Real estate pays rent and can be sold for profit, ETFs grow (and dip) over time, gold is a safe store of value. Money invested also earns Investor XP." },

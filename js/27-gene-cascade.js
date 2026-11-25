@@ -45,7 +45,7 @@ async function gcSpin(buy = false) {
   if (gcBusy || st.pending || !gcUnlocked()) return;
   const bet = st.bet, cost = buy ? bet * SL_BUY : bet;
   if (bet < t.min || bet > t.max) return gcMsg(`Bets here are ${fmt(t.min)} – ${fmt(t.max)}.`);
-  if (state.casinoChips < cost) return gcMsg(`Not enough chips${buy ? ` to buy the bonus (${fmt(cost)})` : ""}. Add money to the casino first.`);
+  if (state.casinoChips < cost) return gcMsg(`Not enough money${buy ? ` to buy the bonus (${fmt(cost)})` : ""}.`);
   state.casinoChips -= cost;
   const round = buy ? slBuyRound(gcRand) : slRound(gcRand);
   const win = Math.floor(round.total * bet);
