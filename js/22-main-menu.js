@@ -52,6 +52,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "25 November 2026", title: "Empire of Coins", items: [
+    "👤 6 new starter avatars for your profile: everyone can pick them, even without unlocked rewards.",
     "⚔️ <b>2 new online casino games!</b> 💰 <b>Bluff Chest</b>: hide the coin in one of 3 chests or find your friend's (first to 3). 🏁 <b>Race to 21</b>: roll as often as you dare, but a 1 loses the turn's points. 6 new achievements.",
     "⚔️ Online casino: duels now have a 2% fee. The winner takes both bets minus 2% (a win pays +96% of the bet, a loss costs the bet).",
   ] },

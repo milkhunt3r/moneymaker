@@ -2693,6 +2693,9 @@ H("💰 <b>Bluff Chest</b>: each round one player hides the coin in one of 3 che
   "💰 <b>Cofre farol</b>: en cada ronda un jugador esconde la moneda en uno de los 3 cofres y el otro adivina (los papeles se cambian cada ronda). Si la encuentra, puntúa quien adivina; si falla, puntúa quien la esconde. Gana quien llegue a 3.");
 H("🏁 <b>Race to 21</b>: take turns. On your turn, roll the die as often as you like and press <b>Bank</b> to add the turn's points to your total. Rolling a 1 loses this turn's points and ends your turn. The first to 21 wins. If your 15 seconds run out, you bank automatically.",
   "🏁 <b>Carrera a 21</b>: por turnos. En tu turno, tira el dado tantas veces como quieras y pulsa <b>Guardar</b> para sumar los puntos del turno a tu total. Si sacas un 1, pierdes los puntos de ese turno y se acaba tu turno. Gana quien llegue a 21. Si se acaban tus 15 segundos, se guardan automáticamente.");
+Object.assign(ES, { "Pick a starter avatar or the emblem of one of your 🎁 reward collections. Unlock more collections (🏆 Achievements → 🎁 Rewards) to get more avatars.": "Elige un avatar inicial o el emblema de una de tus colecciones de 🎁 recompensas. Desbloquea más colecciones (🏆 Logros → 🎁 Recompensas) para tener más avatares.",
+  "Painter mouse": "Ratón pintor", "Lucky cat": "Gato de la suerte", "Penguin banker": "Pingüino banquero", "Coin turtle": "Tortuga de monedas", "Bunny gambler": "Conejo apostador",
+  "👤 6 new starter avatars for your profile: everyone can pick them, even without unlocked rewards.": "👤 6 avatares iniciales nuevos para tu perfil: todos pueden elegirlos, aunque no tengan recompensas desbloqueadas." });
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -13154,6 +13157,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "25 November 2026", title: "Empire of Coins", items: [
+    "👤 6 new starter avatars for your profile: everyone can pick them, even without unlocked rewards.",
     "⚔️ <b>2 new online casino games!</b> 💰 <b>Bluff Chest</b>: hide the coin in one of 3 chests or find your friend's (first to 3). 🏁 <b>Race to 21</b>: roll as often as you dare, but a 1 loses the turn's points. 6 new achievements.",
     "⚔️ Online casino: duels now have a 2% fee. The winner takes both bets minus 2% (a win pays +96% of the bet, a loss costs the bet).",
   ] },
@@ -19003,9 +19007,11 @@ function profNickError(n) {
 var profStats = () => ({ ach_done: achDone(), ach_total: achShown().length, prestige: (state.legacy && state.legacy.count) || 0 });
 // avatars: the emblems of the 🎁 reward collections you have unlocked (assets/col/<id>.webp)
 var profColOpen = (col) => COSMETICS.some(c => c.collection === col.id && state.cosmetics.owned[c.id]) || (() => { const p = rewardProgress(col); return p.total > 0 && p.done >= p.total; })();
-var profAvatarIds = () => COLLECTIONS.filter(c => c.reward && COL_EMBLEMS.has(c.id) && !(c.hidden && c.hidden()) && profColOpen(c)).map(c => c.id);
-var profAvName = (id) => { const c = COLLECTIONS.find(x => x.id === id); return c ? c.name.replace(/^\S+\s/, "") : ""; };
-var profAvatarImg = (id, cls = "") => id && COL_EMBLEMS.has(id) ? `<img class="${cls}" src="assets/col/${id}.webp" alt="">` : `<span class="${cls} profNoAv">👤</span>`;
+// 🐾 starter avatars every player can pick (assets/avatars/<name>.webp), shown before the collection emblems
+var PROF_STARTERS = { "s-dragonmoth": "Baby dragon-moth", "s-pipmouse": "Painter mouse", "s-luckycat": "Lucky cat", "s-penguin": "Penguin banker", "s-turtle": "Coin turtle", "s-bunny": "Bunny gambler" };
+var profAvatarIds = () => Object.keys(PROF_STARTERS).concat(COLLECTIONS.filter(c => c.reward && COL_EMBLEMS.has(c.id) && !(c.hidden && c.hidden()) && profColOpen(c)).map(c => c.id));
+var profAvName = (id) => { if (PROF_STARTERS[id]) return PROF_STARTERS[id]; const c = COLLECTIONS.find(x => x.id === id); return c ? c.name.replace(/^\S+\s/, "") : ""; };
+var profAvatarImg = (id, cls = "") => PROF_STARTERS[id] ? `<img class="${cls}" src="assets/avatars/${id.slice(2)}.webp" alt="">` : id && COL_EMBLEMS.has(id) ? `<img class="${cls}" src="assets/col/${id}.webp" alt="">` : `<span class="${cls} profNoAv">👤</span>`;
 // 🐾 pets other players see on your profile
 var PROF_PETS = { mochi: { pic: "assets/pet/pet-portrait.webp", name: "Baby dragon-moth" }, pip: { pic: "assets/pip/pip-portrait.webp", name: "Pip the painter" } };
 var profPets = () => [state.pet && state.pet.owned && !state.pet.pending ? "mochi" : null, state.pip && state.pip.owned ? "pip" : null].filter(Boolean);
@@ -19134,7 +19140,7 @@ function renderProfile() {
       ${prof.err ? `<div class="profErr">❌ ${errText}</div>` : ""}
       ${prof.msg ? `<div class="profOk">${prof.msg}</div>` : ""}</div>` : ""}
     <div class="card profWrap"><h3 style="margin-top:0">🖼️ Avatar</h3>
-      <p class="muted">Pick the emblem of one of your 🎁 reward collections. Unlock more collections (🏆 Achievements → 🎁 Rewards) to get more avatars.</p>
+      <p class="muted">Pick a starter avatar or the emblem of one of your 🎁 reward collections. Unlock more collections (🏆 Achievements → 🎁 Rewards) to get more avatars.</p>
       ${ids.length ? `<div class="profAvGrid">${shown.map(id => {
         return `<button class="profAvPick ${id === cur ? "on" : ""}" data-prof-av="${id}" title="${escapeHtml(profAvName(id))}">${profAvatarImg(id)}</button>`; }).join("")}</div>
         ${ids.length > shown.length ? `<button class="btn ghost small" data-prof="all">Show all ${ids.length}</button>` : ""}`

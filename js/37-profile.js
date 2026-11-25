@@ -46,9 +46,11 @@ function profNickError(n) {
 const profStats = () => ({ ach_done: achDone(), ach_total: achShown().length, prestige: (state.legacy && state.legacy.count) || 0 });
 // avatars: the emblems of the 🎁 reward collections you have unlocked (assets/col/<id>.webp)
 const profColOpen = (col) => COSMETICS.some(c => c.collection === col.id && state.cosmetics.owned[c.id]) || (() => { const p = rewardProgress(col); return p.total > 0 && p.done >= p.total; })();
-const profAvatarIds = () => COLLECTIONS.filter(c => c.reward && COL_EMBLEMS.has(c.id) && !(c.hidden && c.hidden()) && profColOpen(c)).map(c => c.id);
-const profAvName = (id) => { const c = COLLECTIONS.find(x => x.id === id); return c ? c.name.replace(/^\S+\s/, "") : ""; };
-const profAvatarImg = (id, cls = "") => id && COL_EMBLEMS.has(id) ? `<img class="${cls}" src="assets/col/${id}.webp" alt="">` : `<span class="${cls} profNoAv">👤</span>`;
+// 🐾 starter avatars every player can pick (assets/avatars/<name>.webp), shown before the collection emblems
+const PROF_STARTERS = { "s-dragonmoth": "Baby dragon-moth", "s-pipmouse": "Painter mouse", "s-luckycat": "Lucky cat", "s-penguin": "Penguin banker", "s-turtle": "Coin turtle", "s-bunny": "Bunny gambler" };
+const profAvatarIds = () => Object.keys(PROF_STARTERS).concat(COLLECTIONS.filter(c => c.reward && COL_EMBLEMS.has(c.id) && !(c.hidden && c.hidden()) && profColOpen(c)).map(c => c.id));
+const profAvName = (id) => { if (PROF_STARTERS[id]) return PROF_STARTERS[id]; const c = COLLECTIONS.find(x => x.id === id); return c ? c.name.replace(/^\S+\s/, "") : ""; };
+const profAvatarImg = (id, cls = "") => PROF_STARTERS[id] ? `<img class="${cls}" src="assets/avatars/${id.slice(2)}.webp" alt="">` : id && COL_EMBLEMS.has(id) ? `<img class="${cls}" src="assets/col/${id}.webp" alt="">` : `<span class="${cls} profNoAv">👤</span>`;
 // 🐾 pets other players see on your profile
 const PROF_PETS = { mochi: { pic: "assets/pet/pet-portrait.webp", name: "Baby dragon-moth" }, pip: { pic: "assets/pip/pip-portrait.webp", name: "Pip the painter" } };
 const profPets = () => [state.pet && state.pet.owned && !state.pet.pending ? "mochi" : null, state.pip && state.pip.owned ? "pip" : null].filter(Boolean);
@@ -177,7 +179,7 @@ function renderProfile() {
       ${prof.err ? `<div class="profErr">❌ ${errText}</div>` : ""}
       ${prof.msg ? `<div class="profOk">${prof.msg}</div>` : ""}</div>` : ""}
     <div class="card profWrap"><h3 style="margin-top:0">🖼️ Avatar</h3>
-      <p class="muted">Pick the emblem of one of your 🎁 reward collections. Unlock more collections (🏆 Achievements → 🎁 Rewards) to get more avatars.</p>
+      <p class="muted">Pick a starter avatar or the emblem of one of your 🎁 reward collections. Unlock more collections (🏆 Achievements → 🎁 Rewards) to get more avatars.</p>
       ${ids.length ? `<div class="profAvGrid">${shown.map(id => {
         return `<button class="profAvPick ${id === cur ? "on" : ""}" data-prof-av="${id}" title="${escapeHtml(profAvName(id))}">${profAvatarImg(id)}</button>`; }).join("")}</div>
         ${ids.length > shown.length ? `<button class="btn ghost small" data-prof="all">Show all ${ids.length}</button>` : ""}`
