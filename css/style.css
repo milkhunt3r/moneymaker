@@ -2233,3 +2233,47 @@ body.phone .duDie.big { width: 70px; height: 70px; } body.phone .duBust { width:
 .duMoney { margin-left: auto; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 14px; background: rgba(255,211,77,0.12); border: 1px solid rgba(255,211,77,0.5); }
 .duMoney b { font-size: 24px; color: #ffd34d; white-space: nowrap; } .duMoneyI { width: 34px; height: 34px; object-fit: contain; }
 body.phone .duHead { flex-wrap: wrap; } body.phone .duMoney { margin-left: 0; width: 100%; justify-content: center; } body.phone .duMoney b { font-size: 20px; }
+/* 🎈 Sky Climb art (assets/climb) */
+.climbSky { background: url("../assets/climb/bg-sky.webp") center 30% / cover no-repeat; box-shadow: inset 0 0 0 2px rgba(255,211,77,0.35); }
+.climbSky.crash { background: linear-gradient(rgba(140,20,20,0.55), rgba(140,20,20,0.55)), url("../assets/climb/bg-sky.webp") center 30% / cover no-repeat; }
+.climbStage { display: flex; justify-content: center; align-items: flex-end; gap: 10px; }
+.climbSky .machine { width: 260px; height: 260px; border: 0; background: none; box-shadow: none; padding: 0; display: block; border-radius: 0; flex: none; }
+.machImg { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 8px 14px rgba(0,0,0,0.35)); }
+.machBalls { position: absolute; left: 24%; top: 19%; width: 44%; height: 42%; display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: 2px; }
+.climbSky .ball { width: 19px; height: 19px; background: center / contain no-repeat; box-shadow: none; border-radius: 50%; }
+.climbSky .ball.g { background-image: url("../assets/climb/ball-g.webp"); }
+.climbSky .ball.r { background-image: url("../assets/climb/ball-r.webp"); }
+.climbSky .ball.d { background-image: url("../assets/climb/ball-d.webp"); box-shadow: 0 0 8px #ffd34d; }
+.balloonStage { position: relative; width: 120px; height: 260px; flex: none; }
+.bigBalloon { position: absolute; left: 0; width: 120px; transition: bottom 0.8s ease-out; animation: duBob 2.4s ease-in-out infinite; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.3)); }
+.bigBalloon.pop { animation: duPop 0.4s ease-out; }
+.climbSky .balloon { width: 30px; height: 30px; margin-bottom: 0; border-radius: 50%; box-shadow: none; background: center / contain no-repeat !important; }
+.climbSky .balloon::before, .climbSky .balloon::after { display: none; }
+.climbSky .balloon.g { background-image: url("../assets/climb/ball-g.webp") !important; }
+.climbSky .balloon.r { background-image: url("../assets/climb/ball-r.webp") !important; }
+.climbSky .balloon.d { background-image: url("../assets/climb/ball-d.webp") !important; box-shadow: 0 0 10px #ffd34d; }
+.climbSky .balloon.popped { filter: drop-shadow(0 0 8px #ff3d3d); transform: scale(1.15); }
+.climbSky .balloonRow { min-height: 34px; margin-top: 8px; gap: 5px; }
+.climbSky .climbInfo { margin-top: 6px; }
+.climbSky .climbInfo .big { font-size: 34px; color: #fff; -webkit-text-stroke: 1px rgba(40,20,80,0.5); text-shadow: 0 3px 0 rgba(60,30,120,0.6), 0 4px 12px rgba(0,0,0,0.4); }
+.climbSky .climbInfo > div { text-shadow: 0 1px 4px rgba(0,0,0,0.6); }
+.climbSky .odds span { background: rgba(20,14,60,0.6); border: 1px solid rgba(255,255,255,0.25); }
+.decIco { display: block; width: 40px; height: 40px; margin: -2px auto 2px; object-fit: contain; }
+.decision.main .decIco { display: inline-block; width: 30px; height: 30px; vertical-align: -9px; margin: 0 6px 0 0; }
+.climbSky .decision { width: 104px; height: 104px; border: 3px solid #fff3c4; }
+.climbSky .decision.main { width: 190px; height: 56px; font-size: 16px; }
+.betChipImg { width: 54px; height: 54px; object-fit: contain; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4)); }
+.climbSky .betCircle { background: rgba(20,14,60,0.55); }
+.climbWrap .ladder { padding: 10px 10px 34px; border-radius: 14px; background: url("../assets/climb/bg-tower.webp") center / cover no-repeat; box-shadow: inset 0 0 0 2px rgba(255,211,77,0.35); gap: 4px; }
+.climbWrap .rung { position: relative; background: rgba(255,255,255,0.82); color: #2b3a6b; font-weight: 700; border-radius: 999px; box-shadow: 0 2px 4px rgba(0,0,0,0.15); padding: 3px 12px; border: 1px solid #ffd34d; }
+.climbWrap .rung.passed { background: rgba(200,255,210,0.92); color: #146b2f; }
+.climbWrap .rung.current { background: linear-gradient(#ffe680, #ffc928); color: #3e2b00; box-shadow: 0 0 14px rgba(255,211,77,0.9); }
+.climbWrap .rung.top { background: linear-gradient(#fff3b0, #ffd34d); color: #5a3a00; }
+.rungMark { position: absolute; left: -22px; top: 50%; width: 34px; transform: translateY(-55%); animation: duBob 1.6s ease-in-out infinite; }
+@media (max-width: 760px) { .climbSky .machine { width: 200px; height: 200px; } .balloonStage { width: 90px; height: 200px; } .bigBalloon { width: 90px; }
+  .climbSky .ball { width: 14px; height: 14px; } .climbSky .decision { width: 86px; height: 86px; } .decIco { width: 30px; height: 30px; } }
+@media (max-width: 760px) { .climbSky .climbTable { gap: 6px; } .climbSky .decision:not(.main) { width: 74px; height: 74px; font-size: 11px; padding: 4px; }
+  .climbSky .decision small { font-size: 10px; } .climbSky .betCircle { width: 90px; height: 90px; } .betChipImg { width: 40px; height: 40px; }
+  .decIco { width: 24px; height: 24px; } .climbSky .decision.main { width: 170px; height: 50px; font-size: 15px; } .climbSky { padding: 12px 8px; } }
+body.phone .climbSky .decision:not(.main) { width: 74px; height: 74px; font-size: 11px; padding: 4px; } body.phone .climbSky .betCircle { width: 90px; height: 90px; }
+body.phone .climbSky .climbTable { gap: 6px; }

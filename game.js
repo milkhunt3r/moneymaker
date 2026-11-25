@@ -7373,9 +7373,10 @@ function renderClimb(mixing = false) {
     const step = i + 1;
     const cls = step === climb.step && (climb.active || !climb.crashed) && climb.step > 0 ? "current" : step < climb.step ? "passed" : "";
     const amount = (climb.active ? climb.stake : climb.bet || climb.min) * m;
-    return `<div class="rung ${cls} ${step === 20 ? "top" : ""}"><span>${step}. ${m.toLocaleString()}×</span><span>${shortNum(Math.floor(amount))}</span></div>`;
+    return `<div class="rung ${cls} ${step === 20 ? "top" : ""}">${cls === "current" ? `<img class="rungMark" src="assets/climb/balloon-${climb.shield ? "shield" : step === 20 ? "top" : "g"}.webp" alt="">` : ""}<span>${step}. ${m.toLocaleString()}×</span><span>${shortNum(Math.floor(amount))}</span></div>`;
   }).join("");
 
+  const popNow = climb.crashed && !climb.active;   // the balloon just popped
   // shuffle the display order of balls so the machine looks mixed
   const shown = left.map((b, i) => ({ b, k: (i * 7919) % 97 })).sort((a, b) => a.k - b.k);
   let center;
@@ -7391,10 +7392,10 @@ function renderClimb(mixing = false) {
   if (climb.active) {
     const can = !climb.busy && climb.step > 0;
     table = `
-      <button class="decision" data-climb="cash" ${can ? "" : "disabled"}>💰 Cash out<small>${climb.step > 0 ? fmt(climbValue()) : "—"}</small></button>
-      <div class="betCircle live">${chipMark(climb.stake)}<b>${fmt(climb.stake)}</b><span>riding</span></div>
-      <button class="decision" data-climb="half" ${can && !climb.tookHalf ? "" : "disabled"}>👐 Take half<small>${climb.step > 0 && !climb.tookHalf ? fmt(climbValue() / 2) : climb.tookHalf ? "used" : "—"}</small></button>
-      <button class="decision main" data-climb="draw" ${climb.busy ? "disabled" : ""}>🎈 Draw a ball</button>`;
+      <button class="decision" data-climb="cash" ${can ? "" : "disabled"}><img class="decIco" src="assets/climb/ico-cash.webp" alt="">Cash out<small>${climb.step > 0 ? fmt(climbValue()) : "—"}</small></button>
+      <div class="betCircle live"><img class="betChipImg" src="assets/climb/ico-chip.webp" alt=""><b>${fmt(climb.stake)}</b><span>riding</span></div>
+      <button class="decision" data-climb="half" ${can && !climb.tookHalf ? "" : "disabled"}><img class="decIco" src="assets/climb/ico-half.webp" alt="">Take half<small>${climb.step > 0 && !climb.tookHalf ? fmt(climbValue() / 2) : climb.tookHalf ? "used" : "—"}</small></button>
+      <button class="decision main" data-climb="draw" ${climb.busy ? "disabled" : ""}><img class="decIco" src="assets/climb/ico-draw.webp" alt="">Draw a ball</button>`;
   } else {
     table = `
       <button class="decision" data-climb="clear" ${climb.bet ? "" : "disabled"}>✖ Clear<small>bet</small></button>
@@ -7410,7 +7411,12 @@ function renderClimb(mixing = false) {
         <button class="btn ghost small" data-back="1" ${climb.active ? "disabled" : ""}>← All games</button></div>
       <div class="climbWrap">
         <div class="climbSky ${climb.crashed && !climb.active ? "crash" : ""}">
-          <div class="machine ${mixing ? "mixing" : ""}">${shown.map(x => `<div class="ball ${x.b}"></div>`).join("")}</div>
+          <div class="climbStage">
+            <div class="machine ${mixing ? "mixing" : ""}"><img class="machImg" src="assets/climb/machine.webp" alt="" draggable="false">
+              <div class="machBalls">${shown.map(x => `<div class="ball ${x.b}"></div>`).join("")}</div></div>
+            <div class="balloonStage"><img class="bigBalloon ${popNow ? "pop" : ""}" style="bottom:${Math.min(climb.step, 20) / 20 * 62}%"
+              src="assets/climb/balloon-${popNow ? "pop" : climb.step >= 20 ? "top" : climb.shield ? "shield" : "g"}.webp" alt=""></div>
+          </div>
           <div class="balloonRow">${climb.drawn.map((x, i) => {
             const popped = x.b === "r" && !x.absorbed;   // the red one that ended the round
             return `<div class="balloon ${x.b} ${x.fresh ? "new" : ""} ${x.absorbed ? "absorbed" : ""} ${popped ? "popped" : ""}"
