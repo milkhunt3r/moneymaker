@@ -2230,3 +2230,6 @@ button.duChest:hover:not(:disabled) { transform: translateY(-6px) scale(1.04); }
 .duBankBtn { font-size: 20px; padding: 12px 28px; background: linear-gradient(#3ddc6a, #239b47); color: #fff; } .duBankBtn .ico { width: 28px; height: 28px; vertical-align: -7px; }
 .duSay div + div { font-size: 17px; margin-top: 4px; }
 body.phone .duDie.big { width: 70px; height: 70px; } body.phone .duBust { width: 90px; }
+.duMoney { margin-left: auto; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 14px; background: rgba(255,211,77,0.12); border: 1px solid rgba(255,211,77,0.5); }
+.duMoney b { font-size: 24px; color: #ffd34d; white-space: nowrap; } .duMoneyI { width: 34px; height: 34px; object-fit: contain; }
+body.phone .duHead { flex-wrap: wrap; } body.phone .duMoney { margin-left: 0; width: 100%; justify-content: center; } body.phone .duMoney b { font-size: 20px; }

@@ -275,10 +275,12 @@ function renderDuels() {
   else if (DU.cur) body = duMatchHtml(DU.cur);
   else { if (typing) return; body = duLobbyHtml(); }
   const html = `<div class="card duHead"><img src="assets/duel/ico-duel.webp" alt=""><div><h2 style="margin:0">Online casino</h2>
-      <div class="muted">Play against your friends. The winner takes both bets minus a 2% fee.</div></div></div>
+      <div class="muted">Play against your friends. The winner takes both bets minus a 2% fee.</div></div>
+      <div class="duMoney" title="Your money">${profCoinImg(profCoin(), "duMoneyI")}<b id="duMoney" data-noi18n></b></div></div>
     ${DU.err ? `<div class="card profErr">❌ ${DU.err}</div>` : ""}${body}`;
   if (html === DU.html && box.firstChild) return;   // nothing changed: don't redraw (keeps the dice and hands from popping again)
   DU.html = html; box.innerHTML = html;
+  duMoneyTick();
   box.querySelectorAll("[data-du-t]").forEach(el => { el.textContent = Math.max(0, Math.ceil((Number(el.dataset.duT) - Date.now()) / 1000)); });
 }
 // ⏱️ the countdowns on the page tick by themselves
@@ -345,3 +347,6 @@ setInterval(() => {
   const every = DU.out || duVisible() ? 2500 : 6000;   // faster while waiting for an answer or looking at the page
   if (Date.now() - DU.pendAt >= every - 100) duPending();
 }, 1000);
+// 💰 your money, live, at the top of the online casino (filled in here so the page itself doesn't redraw every second)
+function duMoneyTick() { const m = $("duMoney"); if (m) { const t = fmt(state.money); if (m.textContent !== t) m.textContent = t; } }
+setInterval(duMoneyTick, 500);
