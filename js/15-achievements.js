@@ -281,6 +281,12 @@ ACHIEVEMENTS.push(...[
   { id: "duelDice1",  icon: "🎲", name: "Lucky roll",         desc: "Win a Dice Battle against a friend",              goal: 1,  get: () => ((state.duels || {}).dice || {}).w || 0 },
   { id: "duelDice5",  icon: "🎲", name: "High roller duel",   desc: "Win 5 Dice Battles",                              goal: 5,  get: () => ((state.duels || {}).dice || {}).w || 0 },
   { id: "duelDice20", icon: "👑", name: "Dice king",          desc: "Win 20 Dice Battles",                             goal: 20, get: () => ((state.duels || {}).dice || {}).w || 0 },
+  { id: "duelChest1",  icon: "💰", name: "Treasure hunter",   desc: "Win a Bluff Chest duel against a friend",          goal: 1,  get: () => ((state.duels || {}).chest || {}).w || 0 },
+  { id: "duelChest5",  icon: "💰", name: "Master of bluff",   desc: "Win 5 Bluff Chest duels",                          goal: 5,  get: () => ((state.duels || {}).chest || {}).w || 0 },
+  { id: "duelChest20", icon: "👑", name: "Pirate king",       desc: "Win 20 Bluff Chest duels",                         goal: 20, get: () => ((state.duels || {}).chest || {}).w || 0 },
+  { id: "duelRace1",   icon: "🏁", name: "Off the line",      desc: "Win a Race to 21 against a friend",                goal: 1,  get: () => ((state.duels || {}).race || {}).w || 0 },
+  { id: "duelRace5",   icon: "🏁", name: "Risk taker",        desc: "Win 5 Races to 21",                                goal: 5,  get: () => ((state.duels || {}).race || {}).w || 0 },
+  { id: "duelRace20",  icon: "🏆", name: "Race champion",     desc: "Win 20 Races to 21",                               goal: 20, get: () => ((state.duels || {}).race || {}).w || 0 },
 ].map(a => ({ ...a, cat: "online" })));
 
 if (!state.stats) state.stats = {};
@@ -306,7 +312,7 @@ const ACH_PICS = new Set(["cash1s", "cash10s", "cash100s", "cash1g", "cash5g", "
   // built from existing art in a badge rim (bronze rim = the first step, gold = the bigger one)
   "astro", "station", "wash3", "repair3", "salon3", "casino2", "hotel2", "warehouse5", "law10", "agents100", "mine1", "mine4", "port", "recruit", "artbiz", "sciUni", "sciLab", "parks2", "boost-energy-10", "boost-energy-100", "boost-pill-10", "boost-pill-100", "boost-influence-10", "boost-influence-100", "mineCoal", "mineSilver", "mineGold", "mineDiamond", "mineChest1", "mineLift1", "mineLift20", "gene10", "gene50", "satellite", "play-roulette-100", "play-roulette-1000", "play-blackjack-100", "play-blackjack-1000", "play-plinko-100", "play-plinko-1000", "play-climb-100", "play-climb-1000", "play-vp-100", "play-vp-1000", "play-uth-100", "play-uth-1000", "bac50", "bac100", "bac500", "bacStreak3", "gc50", "gc100", "gc500", "gcFree", "gcBuy",
   // 🚀 Nebula Strike
-  "duelRps1", "duelRps5", "duelRps20", "duelDice1", "duelDice5", "duelDice20", "spMeet1", "spMeet6", "spFriend", "spAlly", "spGifts50", "spMeet9", "spAllies3", "spRoute1", "spSold1k",
+  "duelRps1", "duelRps5", "duelRps20", "duelDice1", "duelDice5", "duelDice20", "duelChest1", "duelChest5", "duelChest20", "duelRace1", "duelRace5", "duelRace20", "spMeet1", "spMeet6", "spFriend", "spAlly", "spGifts50", "spMeet9", "spAllies3", "spRoute1", "spSold1k",
   "shLv1", "shLv2", "shLv3", "shLv4", "shLv5", "shLoot10", "petLove", "petTaps", "shPet", "shPerfect", "shBlock50", "shKill1k", "shWins10", "shFleet", "shMaxShip", "shDust5k"]);
 const achIcon = (a, cls = "") => {
   if (!ACH_PICS.has(a.id)) return a.icon;

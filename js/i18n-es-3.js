@@ -1262,7 +1262,7 @@ hrx(String.raw`🎲 Dice Battle: <b>(\d+)<\/b> won · <b>(\d+)<\/b> lost`, "🎲
 hrx(String.raw`💰 Won <b>(.+?)<\/b> · lost <b>(.+?)<\/b>`, "💰 Ganado <b>$1</b> · perdido <b>$2</b>");
 hrx(String.raw`⏳ Waiting for <span>(.+?)<\/span> to accept…`, "⏳ Esperando a que <span>$1</span> acepte…");
 hrx(String.raw`⏳ Waiting for <span>(.+?)<\/span>…`, "⏳ Esperando a <span>$1</span>…");
-hrx(String.raw`(Rock Paper Scissors|Dice Battle) · bet (.+) · expires in <span>(\d*)<\/span> s`, (m, g, b, t) => `${duGameEs(g)} · apuesta ${b} · caduca en <span>${t}</span> s`);
+hrx(String.raw`(Rock Paper Scissors|Dice Battle|Bluff Chest|Race to 21) · bet (.+) · expires in <span>(\d*)<\/span> s`, (m, g, b, t) => `${duGameEs(g)} · apuesta ${b} · caduca en <span>${t}</span> s`);
 rx(String.raw`Round (\d+) · Bet (.+)`, "Ronda $1 · Apuesta $2");
 rx(String.raw`You won the duel! \+(.+)`, "¡Has ganado el duelo! +$1");
 rx(String.raw`You lost the duel\. −(.+)`, "Has perdido el duelo. −$1");
@@ -1271,17 +1271,17 @@ rx(String.raw`(Best of 3\. .+?) The winner gets the other player's bet\.`, (m, r
 hrx(String.raw`You need (.+?) to accept \(you have (.+?)\)\.`, "Necesitas $1 para aceptar (tienes $2).");
 hrx(String.raw`Your friend wins the duel and your bet of <b>(.+?)<\/b>\.`, "Tu amigo gana el duelo y tu apuesta de <b>$1</b>.");
 rx(String.raw`Your duel with (.+) has started!`, "¡Tu duelo con $1 ha empezado!");
-rx(String.raw`You won your (Rock Paper Scissors|Dice Battle) duel against (.+): \+(.+)!`, (m, g, n, x) => `Has ganado tu duelo de ${duGameEs(g).toLowerCase()} contra ${n}: +${x}!`);
-rx(String.raw`You lost your (Rock Paper Scissors|Dice Battle) duel against (.+): −(.+)\.`, (m, g, n, x) => `Has perdido tu duelo de ${duGameEs(g).toLowerCase()} contra ${n}: −${x}.`);
+rx(String.raw`You won your (Rock Paper Scissors|Dice Battle|Bluff Chest|Race to 21) duel against (.+): \+(.+)!`, (m, g, n, x) => `Has ganado tu duelo de ${duGameEs(g).toLowerCase()} contra ${n}: +${x}!`);
+rx(String.raw`You lost your (Rock Paper Scissors|Dice Battle|Bluff Chest|Race to 21) duel against (.+): −(.+)\.`, (m, g, n, x) => `Has perdido tu duelo de ${duGameEs(g).toLowerCase()} contra ${n}: −${x}.`);
 H("⚔️ <b>Online casino!</b> In 🎰 Casino → ⚔️ Online casino, challenge a friend who is online to ✊ Rock Paper Scissors or 🎲 Dice Battle and choose your bet. Best of 3: the winner takes the other player's bet. 6 new achievements.",
   "⚔️ <b>¡Casino online!</b> En 🎰 Casino → ⚔️ Casino online, reta a un amigo que esté en línea a ✊ piedra, papel o tijera o a 🎲 batalla de dados y elige tu apuesta. Al mejor de 3: el ganador se lleva la apuesta del otro. 6 logros nuevos.");
 Object.assign(ES, {
-  "Best of 3 rounds; a tie is played again. In Dice Battle both roll 2 dice and the higher total wins the round.": "Al mejor de 3 rondas; un empate se vuelve a jugar. En la batalla de dados ambos tiran 2 dados y gana la ronda el total más alto.",
-  "You have 15 seconds per round: no pick in time means a random one. Leaving the duel for 30 seconds loses it.": "Tienes 15 segundos por ronda: si no eliges a tiempo, se elige al azar. Si abandonas el duelo 30 segundos, lo pierdes.",
+  "Rock Paper Scissors and Dice Battle: best of 3 rounds; a tie is played again. In Dice Battle both roll 2 dice and the higher total wins the round.": "Piedra, papel o tijera y batalla de dados: al mejor de 3 rondas; un empate se vuelve a jugar. En la batalla de dados ambos tiran 2 dados y gana la ronda el total más alto.",
+  "You have 15 seconds per move: no pick in time means a random one. Leaving the duel for 30 seconds loses it.": "Tienes 15 segundos por jugada: si no eliges a tiempo, se elige al azar. Si abandonas el duelo 30 segundos, lo pierdes.",
   "The winner gets the other player's bet (paid from your money, not casino chips). The server keeps picks secret and rolls the dice, so nobody can cheat.": "El ganador se lleva la apuesta del otro (se paga con tu dinero, no con fichas del casino). El servidor mantiene en secreto las elecciones y tira los dados, así que nadie puede hacer trampas.",
   "A challenge expires after 60 seconds.": "Un reto caduca a los 60 segundos." });
-H("On the left of the Casino, <b>Online casino</b> lets you play against your friends (👤 Profile → 👥 Friends). Pick ✊ Rock Paper Scissors or 🎲 Dice Battle, choose a bet and challenge a friend who is 🟢 online; both of you need at least the bet in money.",
-  "A la izquierda del Casino, el <b>Casino online</b> te permite jugar contra tus amigos (👤 Perfil → 👥 Amigos). Elige ✊ piedra, papel o tijera o 🎲 batalla de dados, decide la apuesta y reta a un amigo que esté 🟢 en línea; los dos necesitáis tener al menos esa cantidad de dinero.");
+H("On the left of the Casino, <b>Online casino</b> lets you play against your friends (👤 Profile → 👥 Friends). Pick a game (✊ Rock Paper Scissors, 🎲 Dice Battle, 💰 Bluff Chest or 🏁 Race to 21), choose a bet and challenge a friend who is 🟢 online; both of you need at least the bet in money.",
+  "A la izquierda del Casino, el <b>Casino online</b> te permite jugar contra tus amigos (👤 Perfil → 👥 Amigos). Elige un juego (✊ piedra, papel o tijera, 🎲 batalla de dados, 💰 cofre farol o 🏁 carrera a 21), decide la apuesta y reta a un amigo que esté 🟢 en línea; los dos necesitáis tener al menos esa cantidad de dinero.");
 ES["🪙 Every box where you type an amount of money now has a coin switch (bcoin, scoin or gcoin), so you don't have to count zeros. Your choice is remembered."] =
   "🪙 Todas las casillas donde escribes una cantidad de dinero tienen ahora un selector de moneda (bcoin, scoin o gcoin), para que no tengas que contar ceros. Se recuerda tu elección.";
 Object.assign(ES, { "ship free": "nave libre", "ships free": "naves libres", "Free ships": "Naves libres" });
@@ -1290,8 +1290,35 @@ Object.assign(ES, { "Play against your friends. The winner takes both bets minus
   "⚔️ Online casino: duels now have a 2% fee. The winner takes both bets minus 2% (a win pays +96% of the bet, a loss costs the bet).": "⚔️ Casino online: los duelos tienen ahora una comisión del 2 %. El ganador se lleva las dos apuestas menos el 2 % (ganar paga +96 % de la apuesta y perder cuesta la apuesta).",
   "The winner takes both bets minus a 2% fee, so a win pays +96% of the bet and a loss costs the bet (paid from your money, not casino chips). The server keeps picks secret and rolls the dice, so nobody can cheat.": "El ganador se lleva las dos apuestas menos una comisión del 2 %, así que ganar paga +96 % de la apuesta y perder cuesta la apuesta (se paga con tu dinero, no con fichas del casino). El servidor mantiene en secreto las elecciones y tira los dados, así que nadie puede hacer trampas." });
 rx(String.raw`You have (.+)\. Your friend must have at least the same\. The winner takes both bets minus a 2% fee\.`, "Tienes $1. Tu amigo debe tener al menos lo mismo. El ganador se lleva las dos apuestas menos una comisión del 2 %.");
-rx(String.raw`(Best of 3\. .+?) The winner takes both bets minus a 2% fee\.`, (m, r) => `${ES[r] || r} El ganador se lleva las dos apuestas menos una comisión del 2 %.`);
+rx(String.raw`((?:Best of 3\.|First to 3\.|Take turns) .+?) The winner takes both bets minus a 2% fee\.`, (m, r) => `${ES[r] || r} El ganador se lleva las dos apuestas menos una comisión del 2 %.`);
 hrx(String.raw`🏆 Win: <b>(.+?)<\/b> · 💸 Lose: <b>(.+?)<\/b>`, "🏆 Si ganas: <b>$1</b> · 💸 Si pierdes: <b>$2</b>");
+// 💰 Bluff Chest & 🏁 Race to 21
+Object.assign(ES, { "Bluff Chest": "Cofre farol", "Race to 21": "Carrera a 21",
+  "First to 3. Take turns hiding the coin in one of 3 chests while the other guesses. Found: the guesser scores. Missed: the hider scores.": "Gana quien llegue a 3. Por turnos, uno esconde la moneda en uno de los 3 cofres y el otro adivina. Si la encuentra, puntúa quien adivina; si falla, puntúa quien la esconde.",
+  "Take turns rolling a die as often as you dare, then Bank your points. Rolling a 1 loses this turn's points. First to 21 wins.": "Por turnos, tira el dado tantas veces como te atrevas y después guarda tus puntos. Si sacas un 1, pierdes los puntos de ese turno. Gana quien llegue a 21.",
+  "Hide your coin: pick a chest!": "Esconde tu moneda: ¡elige un cofre!", "Find the coin: pick a chest!": "Encuentra la moneda: ¡elige un cofre!",
+  "They found your coin!": "¡Han encontrado tu moneda!", "You found the coin!": "¡Has encontrado la moneda!", "They missed: your coin stays hidden!": "Han fallado: ¡tu moneda sigue escondida!", "Empty! The coin was elsewhere.": "¡Vacío! La moneda estaba en otro cofre.",
+  "Your turn: roll the die!": "Tu turno: ¡tira el dado!", "Bank": "Guardar",
+  "Treasure hunter": "Cazatesoros", "Win a Bluff Chest duel against a friend": "Gana un duelo de cofre farol contra un amigo", "Master of bluff": "Maestro del farol", "Win 5 Bluff Chest duels": "Gana 5 duelos de cofre farol",
+  "Pirate king": "Rey pirata", "Win 20 Bluff Chest duels": "Gana 20 duelos de cofre farol", "Off the line": "Buena salida", "Win a Race to 21 against a friend": "Gana una carrera a 21 contra un amigo",
+  "Risk taker": "Amante del riesgo", "Win 5 Races to 21": "Gana 5 carreras a 21", "Race champion": "Campeón de carreras", "Win 20 Races to 21": "Gana 20 carreras a 21" });
+hrx(String.raw`💰 Bluff Chest: <b>(\d+)<\/b> won · <b>(\d+)<\/b> lost`, "💰 Cofre farol: <b>$1</b> ganados · <b>$2</b> perdidos");
+hrx(String.raw`🏁 Race to 21: <b>(\d+)<\/b> won · <b>(\d+)<\/b> lost`, "🏁 Carrera a 21: <b>$1</b> ganadas · <b>$2</b> perdidas");
+rx(String.raw`First to 21 · Bet (.+)`, "Gana quien llegue a 21 · Apuesta $1");
+hrx(String.raw`🎲 This turn: <b>(\d+)<\/b> points\. Roll again or Bank\?`, "🎲 Este turno: <b>$1</b> puntos. ¿Tiras otra vez o guardas?");
+hrx(String.raw`⏳ <span>(.+?)<\/span>'s turn: <b>(\d+)<\/b> points this turn…`, "⏳ Turno de <span>$1</span>: <b>$2</b> puntos este turno…");
+hrx(String.raw`⏳ <span>(.+?)<\/span>'s turn…`, "⏳ Turno de <span>$1</span>…");
+rx(String.raw`You rolled a 1 and lost (\d+) points!`, "¡Has sacado un 1 y has perdido $1 puntos!");
+hrx(String.raw`💥 <span>(.+?)<\/span> rolled a 1 and lost (\d+) points!`, "💥 <span>$1</span> ha sacado un 1 y ha perdido $2 puntos!");
+rx(String.raw`You banked (\d+) points\.`, "Has guardado $1 puntos.");
+hrx(String.raw`💰 <span>(.+?)<\/span> banked (\d+) points\.`, "💰 <span>$1</span> ha guardado $2 puntos.");
+rx(String.raw`Bank \+(\d+)`, "Guardar +$1");
+H("⚔️ <b>2 new online casino games!</b> 💰 <b>Bluff Chest</b>: hide the coin in one of 3 chests or find your friend's (first to 3). 🏁 <b>Race to 21</b>: roll as often as you dare, but a 1 loses the turn's points. 6 new achievements.",
+  "⚔️ <b>¡2 juegos nuevos en el casino online!</b> 💰 <b>Cofre farol</b>: esconde la moneda en uno de 3 cofres o encuentra la de tu amigo (gana quien llegue a 3). 🏁 <b>Carrera a 21</b>: tira tantas veces como te atrevas, pero un 1 te hace perder los puntos del turno. 6 logros nuevos.");
+H("💰 <b>Bluff Chest</b>: each round one player hides the coin in one of 3 chests and the other guesses (roles swap every round). Found: the guesser scores; missed: the hider scores. First to 3 wins.",
+  "💰 <b>Cofre farol</b>: en cada ronda un jugador esconde la moneda en uno de los 3 cofres y el otro adivina (los papeles se cambian cada ronda). Si la encuentra, puntúa quien adivina; si falla, puntúa quien la esconde. Gana quien llegue a 3.");
+H("🏁 <b>Race to 21</b>: take turns. On your turn, roll the die as often as you like and press <b>Bank</b> to add the turn's points to your total. Rolling a 1 loses this turn's points and ends your turn. The first to 21 wins. If your 15 seconds run out, you bank automatically.",
+  "🏁 <b>Carrera a 21</b>: por turnos. En tu turno, tira el dado tantas veces como quieras y pulsa <b>Guardar</b> para sumar los puntos del turno a tu total. Si sacas un 1, pierdes los puntos de ese turno y se acaba tu turno. Gana quien llegue a 21. Si se acaban tus 15 segundos, se guardan automáticamente.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

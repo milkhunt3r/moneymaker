@@ -1,7 +1,8 @@
 /* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
    ⚔️ ONLINE CASINO: duels against friends (🎰 Casino → ⚔️ Online casino on the left).
-   · ✊✋✌️ Rock Paper Scissors and 🎲 Dice Battle (2 dice each, higher total wins the round). Best of 3; a tie is played again.
+   · ✊✋✌️ Rock Paper Scissors and 🎲 Dice Battle (2 dice each, higher total wins the round): best of 3; a tie is played again.
+   · 💰 Bluff Chest (hide the coin in 1 of 3 chests / guess, roles swap, first to 3) and 🏁 Race to 21 (push-your-luck dice, a 1 busts the turn).
    · Challenge a friend who is 🟢 online, with a bet of your choice (both must have it). The winner gets both bets minus a 2% fee
      (so a win pays +96% of the bet, a loss costs the bet: friends can't pass money around for free).
    · The database is the referee (docs/supabase-duels.sql): picks stay secret until both chose, it rolls the dice,
@@ -17,9 +18,14 @@ const DU_GAMES = {
     rules: "Best of 3. Rock beats scissors, scissors beat paper, paper beats rock. A tie is played again." },
   dice: { name: "Dice Battle", ico: "assets/duel/ico-dice.webp", bg: "assets/duel/bg-table.webp",
     rules: "Best of 3. Both roll 2 dice: the higher total wins the round. A tie is rolled again." },
+  chest: { name: "Bluff Chest", ico: "assets/duel/ico-chest.webp", bg: "assets/duel/bg-cave.webp",
+    rules: "First to 3. Take turns hiding the coin in one of 3 chests while the other guesses. Found: the guesser scores. Missed: the hider scores." },
+  race: { name: "Race to 21", ico: "assets/duel/ico-race.webp", bg: "assets/duel/bg-race.webp",
+    rules: "Take turns rolling a die as often as you dare, then Bank your points. Rolling a 1 loses this turn's points. First to 21 wins." },
 };
+const DU_NEED = { rps: 2, dice: 2, chest: 3, race: 21 };
 if (!state.duels || typeof state.duels !== "object") state.duels = {};
-["rps", "dice"].forEach(g => { state.duels[g] = state.duels[g] || { w: 0, l: 0 }; });
+Object.keys(DU_GAMES).forEach(g => { state.duels[g] = state.duels[g] || { w: 0, l: 0 }; });
 state.duels.won = state.duels.won || 0; state.duels.lost = state.duels.lost || 0;
 const DU = { game: "rps", bet: "", cur: null, out: null, invites: {}, shownInvite: null, busy: false, err: "",
   res: null, lastLog: 0, ticking: false, pendAt: 0, final: null };
@@ -81,7 +87,7 @@ async function duLoop() {   // once a second during a duel: "still here" + timer
 function duUpdate(v) {
   if (!v || !DU.cur || v.id !== DU.cur.id) return;
   const n = (v.log || []).length;
-  if (n > DU.lastLog) { DU.res = { e: v.log[n - 1], until: Date.now() + 3000 }; DU.lastLog = n; }
+  if (n > DU.lastLog) { DU.res = { e: v.log[n - 1], until: Date.now() + (v.game === "race" ? 1200 : 3000) }; DU.lastLog = n; }
   DU.cur = v;
   if (v.status === "done") { DU.final = v; duSettle(v); }
   else if (v.status !== "active") { DU.cur = null; }
@@ -177,7 +183,48 @@ function duLobbyHtml() {
         <button class="btn ghost small" data-du="cancel" data-id="${DU.out.id}">Cancel</button></div>` : ""}
     <div class="card"><h3 style="margin-top:0">3. Challenge a friend</h3>${duFriendsHtml()}</div>
     <div class="card duStats"><span>✊ Rock Paper Scissors: <b>${st.rps.w}</b> won · <b>${st.rps.l}</b> lost</span><span>🎲 Dice Battle: <b>${st.dice.w}</b> won · <b>${st.dice.l}</b> lost</span>
+      <span>💰 Bluff Chest: <b>${st.chest.w}</b> won · <b>${st.chest.l}</b> lost</span><span>🏁 Race to 21: <b>${st.race.w}</b> won · <b>${st.race.l}</b> lost</span>
       <span>💰 Won <b>${fmt(st.won)}</b> · lost <b>${fmt(st.lost)}</b></span></div>`;
+}
+// 💰 Bluff Chest: odd rounds a hides and b guesses, even rounds the other way round
+const duChestRole = (v) => ((v.round % 2 === 1) === (v.me === "a") ? "hide" : "guess");
+function duChestStage(v, last, fin, showing) {
+  const role = duChestRole(v);
+  if (last) {   // the result of the last round: the coin's chest opens with the coin, a wrong guess opens empty
+    const hider = last.r % 2 === 1 ? "a" : "b", guesser = hider === "a" ? "b" : "a", coin = last[hider], guess = last[guesser];
+    return `<div class="duChests">${["1", "2", "3"].map(k => `<div class="duChest ${k === guess ? "guess" : ""}"><img src="assets/duel/chest-${k === coin ? "coin" : k === guess ? "empty" : "closed"}.webp" alt="">
+      ${k === guess ? `<img class="duGlass" src="assets/duel/chest-glass.webp" alt="">` : ""}</div>`).join("")}</div>`;
+  }
+  return `<div class="duChests">${["1", "2", "3"].map(k => `<button class="duChest ${v.my_pick === k ? "on" : ""}" data-du="pick" data-k="${k}" ${v.my_pick || DU.busy || fin ? "disabled" : ""}>
+      <img src="assets/duel/chest-closed.webp" alt="">${v.my_pick === k ? `<img class="duMark" src="assets/duel/chest-${role === "hide" ? "gold" : "glass"}.webp" alt="">` : ""}</button>`).join("")}</div>`;
+}
+function duChestSay(v, showing) {
+  if (showing) { const hider = showing.r % 2 === 1 ? "a" : "b", found = showing[hider] === showing[hider === "a" ? "b" : "a"];
+    return found ? (hider === v.me ? "🔍 They found your coin!" : "🎉 You found the coin!") : (hider === v.me ? "😏 They missed: your coin stays hidden!" : "💨 Empty! The coin was elsewhere."); }
+  if (v.my_pick) return null;
+  return duChestRole(v) === "hide" ? "🙈 Hide your coin: pick a chest!" : "🔍 Find the coin: pick a chest!";
+}
+// 🏁 Race to 21: totals are the scores, st = {turn, tp}
+function duRaceHtml(v, fin) {
+  const p = duPerson(v), me = prof.row || {}, st = v.st || {}, mine = st.turn === v.me, ev = (v.log || [])[(v.log || []).length - 1];
+  const lane = (who, total, name, av) => `<div class="duLane"><div class="duRunner" style="left:calc(${Math.min(100, total / 21 * 100)}% - 22px)">${profAvatarImg(av, "frAv")}</div>
+    <span class="duLaneName" data-noi18n>${escapeHtml(name)}</span><b class="duLaneTot">${total}</b><img class="duFlag" src="assets/duel/race-flag.webp" alt=""></div>`;
+  const mineName = me.nickname || "You";
+  let pic = "", say;
+  if (ev && ev.bust) pic = `<img class="duBust" src="assets/duel/race-bust.webp" alt="">`;
+  else if (ev && ev.roll) pic = `<img class="duDie big" src="assets/duel/die-${ev.roll}.webp" alt="${ev.roll}">`;
+  else if (ev && "bank" in ev) pic = `<img class="duBank" src="assets/duel/race-bank.webp" alt="">`;
+  const whoEv = ev ? (ev.who === v.me ? "You" : p.nick) : "";
+  const evWho = (txt) => whoEv === "You" ? txt.you : `<span data-noi18n>${escapeHtml(whoEv)}</span> ${txt.them}`;
+  const parts = [];
+  if (!fin && ev && ev.bust && !st.tp) parts.push(`💥 ${evWho({ you: "You rolled a 1 and lost", them: "rolled a 1 and lost" })} ${ev.lost} points!`);
+  if (!fin && ev && "bank" in ev && !st.tp) parts.push(`💰 ${evWho({ you: "You banked", them: "banked" })} ${ev.bank} points.`);
+  if (!fin) parts.push(mine ? (st.tp ? `🎲 This turn: <b>${st.tp}</b> points. Roll again or Bank?` : "🎲 Your turn: roll the die!")
+    : `⏳ <span data-noi18n>${escapeHtml(p.nick)}</span>'s turn${st.tp ? `: <b>${st.tp}</b> points this turn` : ""}…`);
+  say = parts.length ? parts.map(x => `<div>${x}</div>`).join("") : null;
+  const controls = fin ? "" : `<div class="duPicks"><button class="btn big duRoll" data-du="roll" ${mine && !DU.busy ? "" : "disabled"}>🎲 Roll</button>
+    <button class="btn big duBankBtn" data-du="bank" ${mine && !DU.busy ? "" : "disabled"}><img class="ico" src="assets/duel/race-bank.webp" alt="">Bank${st.tp && mine ? ` +${st.tp}` : ""}</button></div>`;
+  return { stage: `<div class="duRace">${lane("me", v.my_score, mineName, me.avatar)}${lane("opp", v.opp_score, p.nick, p.avatar)}<div class="duRacePic">${pic}</div></div>`, say, controls };
 }
 function duMatchHtml(v) {
   const g = DU_GAMES[v.game], p = duPerson(v), me = prof.row || {}, now = Date.now();
@@ -186,25 +233,31 @@ function duMatchHtml(v) {
   const mine = last ? last[v.me] : v.my_pick, theirs = last ? last[v.me === "a" ? "b" : "a"] : (v.opp_moved ? "?" : null);
   let say;
   if (fin) say = v.won ? `🏆 You won the duel! +${fmt(duWinAmt(v.bet))}` : `💸 You lost the duel. −${fmt(v.bet)}`;
+  else if (v.game === "race") say = null;
+  else if (showing && v.game === "chest") say = duChestSay(v, showing);
   else if (showing) say = !showing.w ? (v.game === "rps" ? "🤝 Draw! Play again." : "🤝 Same total! Roll again.") : showing.w === v.me ? "✅ You win this round!" : "❌ They win this round.";
+  else if (v.game === "chest" && !v.my_pick) say = duChestSay(v, null);
   else if (v.my_pick) say = `⏳ Waiting for <span data-noi18n>${escapeHtml(p.nick)}</span>…`;
   else say = v.game === "rps" ? "Pick your hand!" : "Roll your dice!";
   const tk = v.id + ":" + v.round + ":" + v.status;   // the end of this round's timer, fixed once (so the page only changes when something happens)
   if (DU.tKey !== tk) { DU.tKey = tk; DU.tEnd = now + (v.secs_left || 0) * 1000; }
-  const left = fin || showing ? "" : `<span class="duTimer">⏱️ <b data-du-t="${DU.tEnd}"></b></span>`;
-  const stage = v.game === "rps"
+  const left = fin || (showing && v.game !== "race") ? "" : `<span class="duTimer">⏱️ <b data-du-t="${DU.tEnd}"></b></span>`;
+  const race = v.game === "race" ? duRaceHtml(v, fin) : null;
+  if (race && race.say) say = race.say;
+  const stage = race ? race.stage : v.game === "chest" ? duChestStage(v, last, fin, showing) : v.game === "rps"
     ? `<div class="duSide">${duHand(mine)}</div><div class="duVs">VS</div><div class="duSide">${duHand(theirs, true)}</div>`
     : `<div class="duSide duDice">${duDice(mine)}${mine && /,/.test(mine) ? `<b class="duSum">${duSum(mine)}</b>` : ""}</div><div class="duVs">VS</div>
        <div class="duSide duDice">${duDice(theirs !== "?" ? theirs : null)}${theirs && /,/.test(theirs) ? `<b class="duSum">${duSum(theirs)}</b>` : theirs === "?" ? `<b class="duSum">✔️</b>` : ""}</div>`;
   const controls = fin
     ? `<div class="duEnd">${v.reason === "left" ? `<p>${v.won ? "Your friend left the duel." : "You were away for too long."}</p>` : v.reason === "resign" ? `<p>${v.won ? "Your friend gave up." : "You gave up."}</p>` : ""}
         <button class="btn big" data-du="back">⚔️ Back to the online casino</button></div>`
+    : race ? race.controls : v.game === "chest" ? ""
     : v.game === "rps"
       ? `<div class="duPicks">${DU_PICKS.map(k => `<button class="duPick ${v.my_pick === k ? "on" : ""}" data-du="pick" data-k="${k}" ${v.my_pick || showing || DU.busy ? "disabled" : ""}><img src="assets/duel/hand-${k}.webp" alt=""><span>${k[0].toUpperCase() + k.slice(1)}</span></button>`).join("")}</div>`
       : `<div class="duPicks"><button class="btn big duRoll" data-du="roll" ${v.my_pick || showing || DU.busy ? "disabled" : ""}>🎲 Roll</button></div>`;
   return `<div class="card duMatch ${v.game}" style="background-image:url('${g.bg}')">
     <div class="duTop"><div class="duPl">${profAvatarImg(me.avatar, "frAv")}<b data-noi18n>${escapeHtml(me.nickname || "You")}</b><span class="duScore">${v.my_score}</span></div>
-      <div class="duMid"><b>${g.name}</b><span>Round ${v.round} · Bet ${fmt(v.bet)}</span>${left}</div>
+      <div class="duMid"><b>${g.name}</b><span>${v.game === "race" ? `First to 21 · Bet ${fmt(v.bet)}` : `Round ${v.round} · Bet ${fmt(v.bet)}`}</span>${left}</div>
       <div class="duPl r"><span class="duScore">${v.opp_score}</span><b data-noi18n>${escapeHtml(p.nick)}</b>${profAvatarImg(p.avatar, "frAv")}</div></div>
     <div class="duStage">${stage}</div>
     <div class="duSay ${fin ? (v.won ? "win" : "lose") : ""}">${say}</div>
@@ -251,6 +304,7 @@ document.addEventListener("click", (e) => {
   }
   if (k === "pick" && DU.cur) duDo("duel_move", { p_id: DU.cur.id, p_pick: b.dataset.k }, duUpdate);
   if (k === "roll" && DU.cur) duDo("duel_move", { p_id: DU.cur.id, p_pick: "roll" }, duUpdate);
+  if (k === "bank" && DU.cur) duDo("duel_move", { p_id: DU.cur.id, p_pick: "bank" }, duUpdate);
   if (k === "resign" && DU.cur) showModal(`<h2>Give up?</h2><p>Your friend wins the duel and your bet of <b>${fmt(DU.cur.bet)}</b>.</p>
     <div class="row" style="justify-content:center;gap:10px"><button class="btn ghost" data-modal="close">Keep playing</button><button class="btn dangerBtn" data-du="resignYes">Give up</button></div>`);
   if (k === "resignYes" && DU.cur) { hideModal(); duDo("duel_cancel", { p_id: DU.cur.id }, duUpdate); }

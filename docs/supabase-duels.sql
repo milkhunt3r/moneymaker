@@ -1,4 +1,4 @@
--- ⚔️ Empire of Coins: online casino duels between friends (✊ Rock Paper Scissors, 🎲 Dice Battle).
+-- ⚔️ Empire of Coins: online casino duels between friends (✊ Rock Paper Scissors, 🎲 Dice Battle, 💰 Bluff Chest, 🏁 Race to 21).
 -- Run AFTER supabase-friends.sql and supabase-profiles-money.sql.
 -- Paste all of this into Supabase → SQL Editor → New query, and click "Run". It is safe to run again.
 --
@@ -8,7 +8,7 @@
 
 create table if not exists public.duels (
   id         bigint generated always as identity primary key,
-  game       text not null check (game in ('rps', 'dice')),
+  game       text not null,
   a          uuid not null references public.profiles (user_id) on delete cascade,   -- who challenged
   b          uuid not null references public.profiles (user_id) on delete cascade,   -- who was challenged
   bet        double precision not null check (bet > 0 and bet < 1e300),
@@ -28,6 +28,10 @@ create table if not exists public.duels (
   ended_at   timestamptz,
   check (a <> b)
 );
+-- (added later, kept safe to run again on an existing table)
+alter table public.duels add column if not exists st jsonb not null default '{}';   -- 🏁 Race to 21: {"turn": "a"/"b", "tp": points this turn}
+alter table public.duels drop constraint if exists duels_game_check;
+alter table public.duels add constraint duels_game_check check (game in ('rps', 'dice', 'chest', 'race'));
 create index if not exists duels_a_idx on public.duels (a, status);
 create index if not exists duels_b_idx on public.duels (b, status);
 
@@ -51,6 +55,7 @@ revoke all on public.duel_moves from anon, authenticated;
 -- ---------- helpers (not callable by players) ----------
 create or replace function public.duel_rand_pick(g text) returns text language sql volatile set search_path = '' as $$
   select case when g = 'rps' then (array['rock', 'paper', 'scissors'])[1 + floor(random() * 3)::int]
+              when g = 'chest' then (1 + floor(random() * 3)::int)::text
               else (1 + floor(random() * 6)::int)::text || ',' || (1 + floor(random() * 6)::int)::text end;
 $$;
 
@@ -62,7 +67,7 @@ begin
   select pick into mine from public.duel_moves where duel_id = d.id and round = d.round and player = me;
   opp_moved := exists (select 1 from public.duel_moves where duel_id = d.id and round = d.round and player = opp);
   return jsonb_build_object(
-    'id', d.id, 'game', d.game, 'status', d.status, 'bet', d.bet, 'round', d.round, 'log', d.log,
+    'id', d.id, 'game', d.game, 'status', d.status, 'bet', d.bet, 'round', d.round, 'log', d.log, 'st', d.st,
     'me', case when me = d.a then 'a' else 'b' end,
     'my_score', case when me = d.a then d.score_a else d.score_b end,
     'opp_score', case when me = d.a then d.score_b else d.score_a end,
@@ -74,12 +79,47 @@ begin
                       when d.deadline is null then null else greatest(0, extract(epoch from d.deadline - now())) end);
 end; $$;
 
+-- 🏁 Race to 21: one action of the player whose turn it is ('roll' or 'bank'). Totals live in score_a / score_b.
+create or replace function public.duel_race(p_id bigint, who text, act text) returns void language plpgsql security definer set search_path = '' as $$
+declare d public.duels; tp int; r int; total int; other text;
+begin
+  select * into d from public.duels where id = p_id;
+  if d.status <> 'active' or d.game <> 'race' or d.st->>'turn' <> who then return; end if;
+  tp := coalesce((d.st->>'tp')::int, 0);
+  other := case when who = 'a' then 'b' else 'a' end;
+  total := case when who = 'a' then d.score_a else d.score_b end;
+  if act = 'roll' then
+    r := 1 + floor(random() * 6)::int;
+    if r = 1 then   -- 💥 bust: this turn's points are lost, the other player goes
+      update public.duels set log = log || jsonb_build_array(jsonb_build_object('who', who, 'roll', 1, 'bust', true, 'lost', tp)),
+        st = jsonb_build_object('turn', other, 'tp', 0), round = round + 1, deadline = now() + interval '17 seconds' where id = d.id;
+    elsif total + tp + r >= 21 then   -- 🏁 reached 21: banked and won
+      update public.duels set log = log || jsonb_build_array(jsonb_build_object('who', who, 'roll', r, 'win', true)),
+        score_a = score_a + case when who = 'a' then tp + r else 0 end, score_b = score_b + case when who = 'b' then tp + r else 0 end,
+        st = jsonb_build_object('turn', who, 'tp', 0), status = 'done', reason = 'score', ended_at = now(), deadline = null,
+        winner = case when who = 'a' then d.a else d.b end where id = d.id;
+    else
+      update public.duels set log = log || jsonb_build_array(jsonb_build_object('who', who, 'roll', r)),
+        st = jsonb_build_object('turn', who, 'tp', tp + r), deadline = now() + interval '15 seconds' where id = d.id;
+    end if;
+  elsif act = 'bank' then   -- 💰 keep this turn's points, the other player goes
+    update public.duels set log = log || jsonb_build_array(jsonb_build_object('who', who, 'bank', tp)),
+      score_a = score_a + case when who = 'a' then tp else 0 end, score_b = score_b + case when who = 'b' then tp else 0 end,
+      st = jsonb_build_object('turn', other, 'tp', 0), round = round + 1, deadline = now() + interval '17 seconds' where id = d.id;
+  end if;
+end; $$;
+revoke all on function public.duel_race(bigint, text, text) from public, anon, authenticated;
+
 -- play the current round if both have picked (or the time is up: missing picks are made at random)
 create or replace function public.duel_step(p_id bigint) returns void language plpgsql security definer set search_path = '' as $$
 declare d public.duels; pa text; pb text; w text; sa int; sb int;
 begin
   select * into d from public.duels where id = p_id;
   if d.status <> 'active' then return; end if;
+  if d.game = 'race' then   -- 🏁 time's up: the player whose turn it is banks what they have
+    if now() >= d.deadline then perform public.duel_race(p_id, d.st->>'turn', 'bank'); end if;
+    return;
+  end if;
   select pick into pa from public.duel_moves where duel_id = d.id and round = d.round and player = d.a;
   select pick into pb from public.duel_moves where duel_id = d.id and round = d.round and player = d.b;
   if (pa is null or pb is null) and now() < d.deadline then return; end if;
@@ -88,18 +128,21 @@ begin
   if d.game = 'rps' then
     w := case when pa = pb then null
               when (pa, pb) in (('rock', 'scissors'), ('paper', 'rock'), ('scissors', 'paper')) then 'a' else 'b' end;
-  else
+  elsif d.game = 'dice' then
     sa := split_part(pa, ',', 1)::int + split_part(pa, ',', 2)::int;
     sb := split_part(pb, ',', 1)::int + split_part(pb, ',', 2)::int;
     w := case when sa = sb then null when sa > sb then 'a' else 'b' end;
+  end if;
+  if d.game = 'chest' then   -- 💰 odd rounds: a hides, b guesses; even rounds the other way round. Found = the guesser scores, missed = the hider scores
+    w := case when d.round % 2 = 1 then (case when pa = pb then 'b' else 'a' end) else (case when pa = pb then 'a' else 'b' end) end;
   end if;
   update public.duels set
     log = log || jsonb_build_array(jsonb_build_object('r', round, 'a', pa, 'b', pb, 'w', w)),
     score_a = score_a + coalesce((w = 'a')::int, 0), score_b = score_b + coalesce((w = 'b')::int, 0)
   where id = d.id returning * into d;
-  if d.score_a >= 2 or d.score_b >= 2 then
+  if d.score_a >= (case when d.game = 'chest' then 3 else 2 end) or d.score_b >= (case when d.game = 'chest' then 3 else 2 end) then
     update public.duels set status = 'done', reason = 'score', ended_at = now(), deadline = null,
-      winner = case when d.score_a >= 2 then d.a else d.b end where id = d.id;
+      winner = case when d.score_a > d.score_b then d.a else d.b end where id = d.id;
   else
     update public.duels set round = round + 1, deadline = now() + interval '18 seconds' where id = d.id;   -- 3 s to see the result, 15 s to pick
   end if;
@@ -113,7 +156,7 @@ language plpgsql security definer set search_path = '' as $$
 declare me uuid := auth.uid(); new_id bigint;
 begin
   if me is null or p_opp is null or me = p_opp then raise exception 'bad_player' using errcode = 'P0001'; end if;
-  if p_game not in ('rps', 'dice') then raise exception 'bad_game' using errcode = 'P0001'; end if;
+  if p_game not in ('rps', 'dice', 'chest', 'race') then raise exception 'bad_game' using errcode = 'P0001'; end if;
   if p_bet is null or p_bet < 1 or p_bet >= 1e300 then raise exception 'bad_bet' using errcode = 'P0001'; end if;
   if not exists (select 1 from public.friendships f where f.status = 'accepted'
                  and ((f.requester = me and f.addressee = p_opp) or (f.requester = p_opp and f.addressee = me))) then
@@ -147,7 +190,8 @@ begin
     update public.duels set status = 'declined', ended_at = now() where id = d.id returning * into d;
   else
     if exists (select 1 from public.duels where status = 'active' and me in (a, b)) then raise exception 'busy' using errcode = 'P0001'; end if;
-    update public.duels set status = 'active', round = 1, deadline = now() + interval '15 seconds', seen_a = now(), seen_b = now()
+    update public.duels set status = 'active', round = 1, deadline = now() + interval '15 seconds', seen_a = now(), seen_b = now(),
+      st = case when d.game = 'race' then jsonb_build_object('turn', case when random() < 0.5 then 'a' else 'b' end, 'tp', 0) else '{}'::jsonb end
       where id = d.id returning * into d;
   end if;
   return public.duel_view(d, me);
@@ -161,10 +205,16 @@ begin
   select * into d from public.duels where id = p_id for update;
   if d.id is null or me not in (d.a, d.b) then raise exception 'not_yours' using errcode = 'P0001'; end if;
   if d.status = 'active' then
-    if d.game = 'rps' and p_pick not in ('rock', 'paper', 'scissors') then raise exception 'bad_pick' using errcode = 'P0001'; end if;
-    if d.game = 'dice' then p_pick := public.duel_rand_pick('dice'); end if;
-    insert into public.duel_moves values (d.id, d.round, me, p_pick) on conflict do nothing;
-    perform public.duel_step(d.id);
+    if d.game = 'race' then
+      if p_pick not in ('roll', 'bank') then raise exception 'bad_pick' using errcode = 'P0001'; end if;
+      perform public.duel_race(d.id, case when me = d.a then 'a' else 'b' end, p_pick);   -- ignored when it isn't your turn
+    else
+      if d.game = 'rps' and p_pick not in ('rock', 'paper', 'scissors') then raise exception 'bad_pick' using errcode = 'P0001'; end if;
+      if d.game = 'chest' and p_pick not in ('1', '2', '3') then raise exception 'bad_pick' using errcode = 'P0001'; end if;
+      if d.game = 'dice' then p_pick := public.duel_rand_pick('dice'); end if;
+      insert into public.duel_moves values (d.id, d.round, me, p_pick) on conflict do nothing;
+      perform public.duel_step(d.id);
+    end if;
   end if;
   select * into d from public.duels where id = p_id;
   return public.duel_view(d, me);

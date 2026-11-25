@@ -2162,7 +2162,8 @@ body.phone .frMini { display: none; }
 #casinoView.onlineMode #casMain > :not(#onlineCasino) { display: none !important; }
 #onlineCasino > .card:first-child { margin-top: 0; }
 .duHead { display: flex; gap: 14px; align-items: center; } .duHead img { width: 64px; height: 64px; object-fit: contain; }
-.duGames { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.duGames { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+@media (max-width: 1100px) { .duGames { grid-template-columns: 1fr 1fr; } }
 .duGame { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px; border-radius: 16px; border: 2px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); color: inherit; cursor: pointer; text-align: center; font: inherit; }
 .duGame img { width: 96px; height: 96px; object-fit: contain; } .duGame b { font-size: 17px; } .duGame span { font-size: 12px; color: #b9b9d0; }
 .duGame.on { border-color: #ffd34d; background: rgba(255,211,77,0.12); box-shadow: 0 0 14px rgba(255,211,77,0.35); }
@@ -2211,3 +2212,21 @@ body.phone .duScore { font-size: 26px; } body.phone .duPl b { display: none; } b
 .spFreeBadge.none { background: rgba(255,120,120,0.12); border-color: #ff7b7b; } .spFreeBadge.none b { color: #ff7b7b; }
 body.phone .spFreeBadge { font-size: 13px; padding: 4px 10px; } body.phone .spFreeBadge b { font-size: 22px; }
 .duOdds { margin-top: 6px; font-size: 15px; color: #ffd34d; min-height: 20px; }
+/* 💰 Bluff Chest & 🏁 Race to 21 */
+.duChests { display: flex; justify-content: center; align-items: flex-end; gap: 4%; width: 100%; }
+.duChest { position: relative; width: 26%; max-width: 200px; padding: 0; border: 0; background: none; cursor: pointer; filter: drop-shadow(0 8px 10px rgba(0,0,0,0.55)); transition: transform 0.15s; }
+.duChest img { width: 100%; display: block; animation: duPop 0.35s ease-out; }
+button.duChest:hover:not(:disabled) { transform: translateY(-6px) scale(1.04); } button.duChest:disabled { cursor: default; }
+.duChest.on { transform: translateY(-6px); filter: drop-shadow(0 0 16px rgba(255,211,77,0.9)); }
+.duMark, .duGlass { position: absolute; width: 42% !important; right: -6%; top: -14%; animation: duBob 1.2s ease-in-out infinite !important; }
+.duRace { width: 100%; display: flex; flex-direction: column; gap: 22px; padding: 0 4%; }
+.duLane { position: relative; height: 54px; border-radius: 27px; background: rgba(0,0,0,0.35); border: 2px solid rgba(255,211,77,0.45); }
+.duRunner { position: absolute; top: 5px; transition: left 0.8s ease-out; z-index: 2; } .duRunner .frAv { width: 44px; height: 44px; }
+.duLaneName { position: absolute; left: 16px; top: -20px; font-size: 13px; font-weight: 700; text-shadow: 0 1px 3px #000; }
+.duLaneTot { position: absolute; right: 52px; top: 10px; font-size: 26px; color: #ffd34d; text-shadow: 0 2px 4px #000; }
+.duFlag { position: absolute; right: 4px; top: -14px; width: 44px; }
+.duRacePic { display: flex; justify-content: center; min-height: 100px; }
+.duDie.big { width: 100px; height: 100px; } .duBust { width: 130px; animation: duPop 0.35s ease-out; } .duBank { width: 100px; animation: duPop 0.35s ease-out; }
+.duBankBtn { font-size: 20px; padding: 12px 28px; background: linear-gradient(#3ddc6a, #239b47); color: #fff; } .duBankBtn .ico { width: 28px; height: 28px; vertical-align: -7px; }
+.duSay div + div { font-size: 17px; margin-top: 4px; }
+body.phone .duDie.big { width: 70px; height: 70px; } body.phone .duBust { width: 90px; }
