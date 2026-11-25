@@ -208,7 +208,8 @@ begin
   return public.duel_view(d, me);
 end; $$;
 
--- collect your result once: returns +bet (you won), -bet (you lost) or null (nothing to collect)
+-- collect your result once: returns +0.96 × bet (you won: both bets minus a 2% fee = 1.96 × bet back, of which 1 bet was yours),
+-- -bet (you lost) or null (nothing to collect)
 create or replace function public.duel_settle(p_id bigint) returns double precision
 language plpgsql security definer set search_path = '' as $$
 declare me uuid := auth.uid(); d public.duels;
@@ -217,7 +218,7 @@ begin
   if d.id is null or me not in (d.a, d.b) or d.status <> 'done' then return null; end if;
   if (me = d.a and d.settled_a) or (me = d.b and d.settled_b) then return null; end if;
   if me = d.a then update public.duels set settled_a = true where id = d.id; else update public.duels set settled_b = true where id = d.id; end if;
-  return case when d.winner = me then d.bet else -d.bet end;
+  return case when d.winner = me then floor(d.bet * 0.96) else -d.bet end;
 end; $$;
 
 -- everything that needs your attention: challenges for you, your open challenge, your duel, results to collect

@@ -1285,6 +1285,13 @@ H("On the left of the Casino, <b>Online casino</b> lets you play against your fr
 ES["🪙 Every box where you type an amount of money now has a coin switch (bcoin, scoin or gcoin), so you don't have to count zeros. Your choice is remembered."] =
   "🪙 Todas las casillas donde escribes una cantidad de dinero tienen ahora un selector de moneda (bcoin, scoin o gcoin), para que no tengas que contar ceros. Se recuerda tu elección.";
 Object.assign(ES, { "ship free": "nave libre", "ships free": "naves libres", "Free ships": "Naves libres" });
+// ⚔️ duel fee
+Object.assign(ES, { "Play against your friends. The winner takes both bets minus a 2% fee.": "Juega contra tus amigos. El ganador se lleva las dos apuestas menos una comisión del 2 %.",
+  "⚔️ Online casino: duels now have a 2% fee. The winner takes both bets minus 2% (a win pays +96% of the bet, a loss costs the bet).": "⚔️ Casino online: los duelos tienen ahora una comisión del 2 %. El ganador se lleva las dos apuestas menos el 2 % (ganar paga +96 % de la apuesta y perder cuesta la apuesta).",
+  "The winner takes both bets minus a 2% fee, so a win pays +96% of the bet and a loss costs the bet (paid from your money, not casino chips). The server keeps picks secret and rolls the dice, so nobody can cheat.": "El ganador se lleva las dos apuestas menos una comisión del 2 %, así que ganar paga +96 % de la apuesta y perder cuesta la apuesta (se paga con tu dinero, no con fichas del casino). El servidor mantiene en secreto las elecciones y tira los dados, así que nadie puede hacer trampas." });
+rx(String.raw`You have (.+)\. Your friend must have at least the same\. The winner takes both bets minus a 2% fee\.`, "Tienes $1. Tu amigo debe tener al menos lo mismo. El ganador se lleva las dos apuestas menos una comisión del 2 %.");
+rx(String.raw`(Best of 3\. .+?) The winner takes both bets minus a 2% fee\.`, (m, r) => `${ES[r] || r} El ganador se lleva las dos apuestas menos una comisión del 2 %.`);
+hrx(String.raw`🏆 Win: <b>(.+?)<\/b> · 💸 Lose: <b>(.+?)<\/b>`, "🏆 Si ganas: <b>$1</b> · 💸 Si pierdes: <b>$2</b>");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

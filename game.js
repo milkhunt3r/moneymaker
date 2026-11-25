@@ -2659,6 +2659,13 @@ H("On the left of the Casino, <b>Online casino</b> lets you play against your fr
 ES["🪙 Every box where you type an amount of money now has a coin switch (bcoin, scoin or gcoin), so you don't have to count zeros. Your choice is remembered."] =
   "🪙 Todas las casillas donde escribes una cantidad de dinero tienen ahora un selector de moneda (bcoin, scoin o gcoin), para que no tengas que contar ceros. Se recuerda tu elección.";
 Object.assign(ES, { "ship free": "nave libre", "ships free": "naves libres", "Free ships": "Naves libres" });
+// ⚔️ duel fee
+Object.assign(ES, { "Play against your friends. The winner takes both bets minus a 2% fee.": "Juega contra tus amigos. El ganador se lleva las dos apuestas menos una comisión del 2 %.",
+  "⚔️ Online casino: duels now have a 2% fee. The winner takes both bets minus 2% (a win pays +96% of the bet, a loss costs the bet).": "⚔️ Casino online: los duelos tienen ahora una comisión del 2 %. El ganador se lleva las dos apuestas menos el 2 % (ganar paga +96 % de la apuesta y perder cuesta la apuesta).",
+  "The winner takes both bets minus a 2% fee, so a win pays +96% of the bet and a loss costs the bet (paid from your money, not casino chips). The server keeps picks secret and rolls the dice, so nobody can cheat.": "El ganador se lleva las dos apuestas menos una comisión del 2 %, así que ganar paga +96 % de la apuesta y perder cuesta la apuesta (se paga con tu dinero, no con fichas del casino). El servidor mantiene en secreto las elecciones y tira los dados, así que nadie puede hacer trampas." });
+rx(String.raw`You have (.+)\. Your friend must have at least the same\. The winner takes both bets minus a 2% fee\.`, "Tienes $1. Tu amigo debe tener al menos lo mismo. El ganador se lleva las dos apuestas menos una comisión del 2 %.");
+rx(String.raw`(Best of 3\. .+?) The winner takes both bets minus a 2% fee\.`, (m, r) => `${ES[r] || r} El ganador se lleva las dos apuestas menos una comisión del 2 %.`);
+hrx(String.raw`🏆 Win: <b>(.+?)<\/b> · 💸 Lose: <b>(.+?)<\/b>`, "🏆 Si ganas: <b>$1</b> · 💸 Si pierdes: <b>$2</b>");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -10753,7 +10760,7 @@ function wikiCasino() {
     <p>On the left of the Casino, <b>Online casino</b> lets you play against your friends (👤 Profile → 👥 Friends). Pick ✊ Rock Paper Scissors or 🎲 Dice Battle, choose a bet and challenge a friend who is 🟢 online; both of you need at least the bet in money.</p>
     <ul><li>Best of 3 rounds; a tie is played again. In Dice Battle both roll 2 dice and the higher total wins the round.</li>
       <li>You have 15 seconds per round: no pick in time means a random one. Leaving the duel for 30 seconds loses it.</li>
-      <li>The winner gets the other player's bet (paid from your money, not casino chips). The server keeps picks secret and rolls the dice, so nobody can cheat.</li>
+      <li>The winner takes both bets minus a 2% fee, so a win pays +96% of the bet and a loss costs the bet (paid from your money, not casino chips). The server keeps picks secret and rolls the dice, so nobody can cheat.</li>
       <li>A challenge expires after 60 seconds.</li></ul>
     ${wt(["Game", "Classic", "High rollers", "Super high rollers"], [
       ["🎡 Roulette", "×" + XP_TABLE_MULT.rouletteLow, "×" + XP_TABLE_MULT.rouletteHigh, "×" + XP_TABLE_MULT.rouletteSuper],
@@ -13105,6 +13112,9 @@ addEventListener("resize", fitBrand); fitBrand();
 
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
+  { date: "25 November 2026", title: "Empire of Coins", items: [
+    "⚔️ Online casino: duels now have a 2% fee. The winner takes both bets minus 2% (a win pays +96% of the bet, a loss costs the bet).",
+  ] },
   { date: "24 November 2026", title: "Empire of Coins", items: [
     "🪙 Every box where you type an amount of money now has a coin switch (bcoin, scoin or gcoin), so you don't have to count zeros. Your choice is remembered.",
     "⚔️ <b>Online casino!</b> In 🎰 Casino → ⚔️ Online casino, challenge a friend who is online to ✊ Rock Paper Scissors or 🎲 Dice Battle and choose your bet. Best of 3: the winner takes the other player's bet. 6 new achievements.",
@@ -19332,12 +19342,15 @@ __eocLoaded = 47;
 /* =====================================================================
    ⚔️ ONLINE CASINO: duels against friends (🎰 Casino → ⚔️ Online casino on the left).
    · ✊✋✌️ Rock Paper Scissors and 🎲 Dice Battle (2 dice each, higher total wins the round). Best of 3; a tie is played again.
-   · Challenge a friend who is 🟢 online, with a bet of your choice (both must have it). The winner gets the other's bet.
+   · Challenge a friend who is 🟢 online, with a bet of your choice (both must have it). The winner gets both bets minus a 2% fee
+     (so a win pays +96% of the bet, a loss costs the bet: friends can't pass money around for free).
    · The database is the referee (docs/supabase-duels.sql): picks stay secret until both chose, it rolls the dice,
      runs the 15-second timers (no pick = a random one) and decides the winner. Leaving for 30 s = losing.
    · Money: nothing is taken at the start. When the duel ends, each player collects their result once
      (duel_settle): +bet for the winner, −bet for the loser (never below 0 money).
    ===================================================================== */
+var DU_WIN = 0.96;   // the winner gets both bets minus a 2% fee: +96% of the bet (docs/supabase-duels.sql, duel_settle)
+var duWinAmt = (bet) => Math.floor(bet * DU_WIN);
 var DU_PICKS = ["rock", "paper", "scissors"];
 var DU_GAMES = {
   rps: { name: "Rock Paper Scissors", ico: "assets/duel/ico-rps.webp", bg: "assets/duel/bg-arena.webp",
@@ -19461,7 +19474,8 @@ function duShowInvite() {
     <h2>⚔️ You've been challenged!</h2>
     <div class="duInvWho">${profAvatarImg(p.avatar, "frAv")}<b data-noi18n>${escapeHtml(p.nick)}</b></div>
     <p>challenges you to <b>${g.name}</b> for <b>${fmt(v.bet)}</b>.</p>
-    <p class="muted">${g.rules} The winner gets the other player's bet.</p>
+    <p class="muted">${g.rules} The winner takes both bets minus a 2% fee.</p>
+    <p>🏆 Win: <b>+${fmt(duWinAmt(v.bet))}</b> · 💸 Lose: <b>−${fmt(v.bet)}</b></p>
     ${can ? "" : `<p class="profErr">You need ${fmt(v.bet)} to accept (you have ${fmt(state.money)}).</p>`}
     <p class="muted">Expires in <b id="duInvT">${Math.ceil(v.secs_left || 0)}</b> s</p>
     <div class="row" style="justify-content:center;gap:10px"><button class="btn ghost" data-du="decline" data-id="${v.id}">Decline</button>
@@ -19483,6 +19497,10 @@ function duFriendsHtml() {
       ${"money" in p ? `<span class="frMini">${profCoinImg(p.coin, "duCoinS")} ${fmt(Number(p.money) || 0)}</span>` : ""}</span>
     <span class="frBtns">${frOnline(p) ? `<button class="btn small" data-du="challenge" data-id="${p.user_id}" ${DU.busy || DU.out ? "disabled" : ""}><img class="ico" src="assets/duel/ico-duel.webp" alt="">Challenge</button>` : `<span class="muted">Offline</span>`}</span></div>`).join("")}</div>`;
 }
+function duOddsHtml() {   // what this bet wins or loses
+  const b = Math.floor(Number(DU.bet));
+  return b >= 1 ? `🏆 Win: <b>+${fmt(duWinAmt(b))}</b> · 💸 Lose: <b>−${fmt(b)}</b>` : "";
+}
 function duLobbyHtml() {
   const st = state.duels, typed = DU.bet;   // the box keeps DU.bet up to date (input event)
   const games = Object.entries(DU_GAMES).map(([k, g]) => `<button class="duGame ${DU.game === k ? "on" : ""}" data-du="game" data-g="${k}"><img src="${g.ico}" alt=""><b>${g.name}</b><span>${g.rules}</span>
@@ -19492,7 +19510,8 @@ function duLobbyHtml() {
       <div class="moneyRow"><input id="duBet" type="number" min="1" placeholder="Amount" value="${escapeHtml(typed || "")}" aria-label="Bet">
         <button class="btn ghost small" data-du="pct" data-p="0.01">1%</button><button class="btn ghost small" data-du="pct" data-p="0.1">10%</button>
         <button class="btn ghost small" data-du="pct" data-p="0.25">25%</button><button class="btn ghost small" data-du="pct" data-p="0.5">50%</button></div>
-      <div class="muted">You have ${fmt(state.money)}. Your friend must have at least the same. The winner gets the other player's bet.</div></div>
+      <div class="muted">You have ${fmt(state.money)}. Your friend must have at least the same. The winner takes both bets minus a 2% fee.</div>
+      <div class="duOdds" id="duOdds">${duOddsHtml()}</div></div>
     ${DU.out ? `<div class="card duWait"><img src="${DU_GAMES[DU.out.game].ico}" alt=""><div><b>⏳ Waiting for <span data-noi18n>${escapeHtml(duPerson(DU.out).nick)}</span> to accept…</b>
         <div class="muted">${DU_GAMES[DU.out.game].name} · bet ${fmt(DU.out.bet)} · expires in <span data-du-t="${Date.now() + (DU.out.secs_left || 0) * 1000}">${Math.ceil(DU.out.secs_left || 0)}</span> s</div></div>
         <button class="btn ghost small" data-du="cancel" data-id="${DU.out.id}">Cancel</button></div>` : ""}
@@ -19506,7 +19525,7 @@ function duMatchHtml(v) {
   const last = fin ? (v.log || [])[(v.log || []).length - 1] : showing;
   const mine = last ? last[v.me] : v.my_pick, theirs = last ? last[v.me === "a" ? "b" : "a"] : (v.opp_moved ? "?" : null);
   let say;
-  if (fin) say = v.won ? `🏆 You won the duel! +${fmt(v.bet)}` : `💸 You lost the duel. −${fmt(v.bet)}`;
+  if (fin) say = v.won ? `🏆 You won the duel! +${fmt(duWinAmt(v.bet))}` : `💸 You lost the duel. −${fmt(v.bet)}`;
   else if (showing) say = !showing.w ? (v.game === "rps" ? "🤝 Draw! Play again." : "🤝 Same total! Roll again.") : showing.w === v.me ? "✅ You win this round!" : "❌ They win this round.";
   else if (v.my_pick) say = `⏳ Waiting for <span data-noi18n>${escapeHtml(p.nick)}</span>…`;
   else say = v.game === "rps" ? "Pick your hand!" : "Roll your dice!";
@@ -19543,7 +19562,7 @@ function renderDuels() {
   else if (DU.cur) body = duMatchHtml(DU.cur);
   else { if (typing) return; body = duLobbyHtml(); }
   const html = `<div class="card duHead"><img src="assets/duel/ico-duel.webp" alt=""><div><h2 style="margin:0">Online casino</h2>
-      <div class="muted">Play against your friends. The winner takes the other player's bet.</div></div></div>
+      <div class="muted">Play against your friends. The winner takes both bets minus a 2% fee.</div></div></div>
     ${DU.err ? `<div class="card profErr">❌ ${DU.err}</div>` : ""}${body}`;
   if (html === DU.html && box.firstChild) return;   // nothing changed: don't redraw (keeps the dice and hands from popping again)
   DU.html = html; box.innerHTML = html;
@@ -19577,7 +19596,7 @@ document.addEventListener("click", (e) => {
   if (k === "resignYes" && DU.cur) { hideModal(); duDo("duel_cancel", { p_id: DU.cur.id }, duUpdate); }
   if (k === "back") { DU.final = null; DU.cur = null; DU.res = null; duPending(); renderDuels(); }
 });
-document.addEventListener("input", (e) => { if (e.target.id === "duBet") { DU.bet = e.target.value; if (DU.err) { DU.err = ""; } } });
+document.addEventListener("input", (e) => { if (e.target.id === "duBet") { DU.bet = e.target.value; if (DU.err) { DU.err = ""; } const o = $("duOdds"); if (o) o.innerHTML = duOddsHtml(); } });
 
 /* ----- 🎰 the page switch on the left of the Casino ----- */
 function duApplyPage() {

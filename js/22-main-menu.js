@@ -51,6 +51,9 @@ addEventListener("resize", fitBrand); fitBrand();
 
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
+  { date: "25 November 2026", title: "Empire of Coins", items: [
+    "⚔️ Online casino: duels now have a 2% fee. The winner takes both bets minus 2% (a win pays +96% of the bet, a loss costs the bet).",
+  ] },
   { date: "24 November 2026", title: "Empire of Coins", items: [
     "🪙 Every box where you type an amount of money now has a coin switch (bcoin, scoin or gcoin), so you don't have to count zeros. Your choice is remembered.",
     "⚔️ <b>Online casino!</b> In 🎰 Casino → ⚔️ Online casino, challenge a friend who is online to ✊ Rock Paper Scissors or 🎲 Dice Battle and choose your bet. Best of 3: the winner takes the other player's bet. 6 new achievements.",
