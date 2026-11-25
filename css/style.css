@@ -2237,10 +2237,10 @@ body.phone .duHead { flex-wrap: wrap; } body.phone .duMoney { margin-left: 0; wi
 .climbSky { background: url("../assets/climb/bg-sky.webp") center 30% / cover no-repeat; box-shadow: inset 0 0 0 2px rgba(255,211,77,0.35); }
 .climbSky.crash { background: linear-gradient(rgba(140,20,20,0.55), rgba(140,20,20,0.55)), url("../assets/climb/bg-sky.webp") center 30% / cover no-repeat; }
 .climbStage { display: flex; justify-content: center; align-items: flex-end; gap: 10px; }
-.climbSky .machine { width: 260px; height: 260px; border: 0; background: none; box-shadow: none; padding: 0; display: block; border-radius: 0; flex: none; }
+.climbSky .machine { width: 273px; height: 273px; border: 0; background: none; box-shadow: none; padding: 0; display: block; border-radius: 0; flex: none; }
 .machImg { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 8px 14px rgba(0,0,0,0.35)); }
 .machBalls { position: absolute; left: 24%; top: 19%; width: 44%; height: 42%; display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: 2px; }
-.climbSky .ball { width: 19px; height: 19px; background: center / contain no-repeat; box-shadow: none; border-radius: 50%; }
+.climbSky .ball { width: 20px; height: 20px; background: center / contain no-repeat; box-shadow: none; border-radius: 50%; }
 .climbSky .ball.g { background-image: url("../assets/climb/ball-g.webp"); }
 .climbSky .ball.r { background-image: url("../assets/climb/ball-r.webp"); }
 .climbSky .ball.d { background-image: url("../assets/climb/ball-d.webp"); box-shadow: 0 0 8px #ffd34d; }
@@ -2270,8 +2270,8 @@ body.phone .duHead { flex-wrap: wrap; } body.phone .duMoney { margin-left: 0; wi
 .climbWrap .rung.current { background: linear-gradient(#ffe680, #ffc928); color: #3e2b00; box-shadow: 0 0 14px rgba(255,211,77,0.9); }
 .climbWrap .rung.top { background: linear-gradient(#fff3b0, #ffd34d); color: #5a3a00; }
 .rungMark { position: absolute; left: -22px; top: 50%; width: 34px; transform: translateY(-55%); animation: duBob 1.6s ease-in-out infinite; }
-@media (max-width: 760px) { .climbSky .machine { width: 200px; height: 200px; } .balloonStage { width: 90px; height: 200px; } .bigBalloon { width: 90px; }
-  .climbSky .ball { width: 14px; height: 14px; } .climbSky .decision { width: 86px; height: 86px; } .decIco { width: 30px; height: 30px; } }
+@media (max-width: 760px) { .climbSky .machine { width: 210px; height: 210px; } .balloonStage { width: 90px; height: 200px; } .bigBalloon { width: 90px; }
+  .climbSky .ball { width: 15px; height: 15px; } .climbSky .decision { width: 86px; height: 86px; } .decIco { width: 30px; height: 30px; } }
 @media (max-width: 760px) { .climbSky .climbTable { gap: 6px; } .climbSky .decision:not(.main) { width: 74px; height: 74px; font-size: 11px; padding: 4px; }
   .climbSky .decision small { font-size: 10px; } .climbSky .betCircle { width: 90px; height: 90px; } .betChipImg { width: 40px; height: 40px; }
   .decIco { width: 24px; height: 24px; } .climbSky .decision.main { width: 170px; height: 50px; font-size: 15px; } .climbSky { padding: 12px 8px; } }
