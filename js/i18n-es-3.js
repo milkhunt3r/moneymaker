@@ -1601,6 +1601,13 @@ H("🎰 Shorter tables: empty Blackjack and Hold'em tables take less room betwee
 hrx(String.raw`(\{i\}|<img[^>]*>)?<span>(.+?)<\/span>&nbsp;in ([\d:]+)`, (m, i, g, t) => `${i || ""}<span>${ES[g] || g}</span>&nbsp;en ${t}`);
 hrx(String.raw`(\{i\}|<img[^>]*>)?<span>(.+?)<\/span> in ([\d:]+)`, (m, i, g, t) => `${i || ""}<span>${ES[g] || g}</span> en ${t}`);
 rx(String.raw`in ([\d:]+)`, "en $1");
+// 🏢 compact businesses
+Object.assign(ES, { "free worker slots earn nothing": "las plazas de trabajador libres no ganan nada", "Show ›": "Ver ›", "Full": "Completo", "Details": "Detalles", "▴ Fold": "▴ Plegar" });
+rx(String.raw`(\d+) (business needs|businesses need) staff`, (m, n, x) => `${n} ${x.startsWith("business ") ? "negocio necesita" : "negocios necesitan"} personal`);
+rx(String.raw`(\d+) (business|businesses) · (\d+) \/ (\d+) workers`, (m, n, x, a, b) => `${n} ${x === "business" ? "negocio" : "negocios"} · ${a} / ${b} trabajadores`);
+rx(String.raw`Hire · (\d+) free`, "Contratar · $1 libres");
+H("🏢 Businesses are easier to manage: the shop is wider on big screens, each business is one compact row (2 per line) with its workers bar, and a gold banner takes you straight to businesses that still have free worker slots. Tap <b>👷 Hire</b> or <b>Details</b> to open one.",
+  "🏢 Los negocios son más fáciles de gestionar: la tienda es más ancha en pantallas grandes, cada negocio es una fila compacta (2 por línea) con su barra de trabajadores, y un aviso dorado te lleva directamente a los negocios que aún tienen plazas libres. Pulsa <b>👷 Contratar</b> o <b>Detalles</b> para abrir uno.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

@@ -2975,6 +2975,13 @@ H("🎰 Shorter tables: empty Blackjack and Hold'em tables take less room betwee
 hrx(String.raw`(\{i\}|<img[^>]*>)?<span>(.+?)<\/span>&nbsp;in ([\d:]+)`, (m, i, g, t) => `${i || ""}<span>${ES[g] || g}</span>&nbsp;en ${t}`);
 hrx(String.raw`(\{i\}|<img[^>]*>)?<span>(.+?)<\/span> in ([\d:]+)`, (m, i, g, t) => `${i || ""}<span>${ES[g] || g}</span> en ${t}`);
 rx(String.raw`in ([\d:]+)`, "en $1");
+// 🏢 compact businesses
+Object.assign(ES, { "free worker slots earn nothing": "las plazas de trabajador libres no ganan nada", "Show ›": "Ver ›", "Full": "Completo", "Details": "Detalles", "▴ Fold": "▴ Plegar" });
+rx(String.raw`(\d+) (business needs|businesses need) staff`, (m, n, x) => `${n} ${x.startsWith("business ") ? "negocio necesita" : "negocios necesitan"} personal`);
+rx(String.raw`(\d+) (business|businesses) · (\d+) \/ (\d+) workers`, (m, n, x, a, b) => `${n} ${x === "business" ? "negocio" : "negocios"} · ${a} / ${b} trabajadores`);
+rx(String.raw`Hire · (\d+) free`, "Contratar · $1 libres");
+H("🏢 Businesses are easier to manage: the shop is wider on big screens, each business is one compact row (2 per line) with its workers bar, and a gold banner takes you straight to businesses that still have free worker slots. Tap <b>👷 Hire</b> or <b>Details</b> to open one.",
+  "🏢 Los negocios son más fáciles de gestionar: la tienda es más ancha en pantallas grandes, cada negocio es una fila compacta (2 por línea) con su barra de trabajadores, y un aviso dorado te lleva directamente a los negocios que aún tienen plazas libres. Pulsa <b>👷 Contratar</b> o <b>Detalles</b> para abrir uno.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -3876,7 +3883,10 @@ function render() {
     <button class="incomeTab ${page === "biz" ? "active" : ""}" data-ipage="biz">${ico("business")}Businesses</button>
     <button class="incomeTab ${page === "special" ? "active" : ""}" data-ipage="special">${ico("special")}Special</button>
     <button class="incomeTab ${page === "science" ? "active" : ""}" data-ipage="science">${sciOpen ? "" : ico("lock")}${ico("science")}Science</button></nav>`;
-  let html = `<div ${page === "biz" ? "" : "hidden"} id="incBiz"><h2>🏢 Businesses</h2>`;
+  // ⚠️ businesses that need you: a free worker slot, or no accountant / HR yet
+  const needYou = state.companies.map((c, ci) => ({ c, ci })).filter(x => !staffReady(x.c) || x.c.workers.length < maxWorkers(x.c));
+  let html = `<div ${page === "biz" ? "" : "hidden"} id="incBiz"><h2>🏢 Businesses</h2>${needYou.length ? `<button class="card bizNeed" data-action="jumpFree" data-company="${needYou[0].ci}">
+    👷 <b>${needYou.length} ${needYou.length === 1 ? "business needs" : "businesses need"} staff</b> <span class="muted">· free worker slots earn nothing</span> <span class="bizNeedGo">Show ›</span></button>` : ""}`;
 
   // One owned company as a card
   const companyCard = (c, ci) => {
@@ -3885,14 +3895,23 @@ function render() {
     // Number them: Car Wash #1, #2, #3 (only when you can own more than one)
     const number = state.companies.slice(0, ci + 1).filter(x => x.typeId === c.typeId).length;
     const title = t.maxOwned > 1 ? `${t.name} #${number}` : t.name;
-    html += `<div class="card">
+    // 📋 a running company is one compact row; tap it (or "Hire") to open workers and hiring
+    if (staffReady(c) && !c.open) {
+      const free = maxWorkers(c) - c.workers.length;
+      return `<div class="card bizUnit compact ${free ? "needs" : ""}" id="c-card-${ci}">
+        <div class="row"><h3>${bizIco(t.id)}${title}</h3><span class="income" id="c-income-${ci}">+0 / sec</span></div>
+        <div class="bizUnitLine">${t.noStaff ? "" : `${staffIco(c.accountant, ACCOUNTANTS[c.accountant])}${staffIco(c.hr, HR_OPTIONS[c.hr])}`}
+          <span class="bizSlots"><i style="width:${c.workers.length / maxWorkers(c) * 100}%"></i></span><span class="muted">${c.workers.length} / ${maxWorkers(c)} workers</span>
+          ${free ? `<button class="btn small" data-action="toggle" data-company="${ci}">👷 Hire · ${free} free</button>` : `<span class="bizFull">✅ Full</span><button class="btn ghost small" data-action="toggle" data-company="${ci}">▸ Details</button>`}</div></div>`;
+    }
+    html += `<div class="card bizUnit ${staffReady(c) ? "open" : "open setup"}" id="c-card-${ci}">
       <div class="row">
         <h3>${bizIco(t.id)}${title}</h3>
         <span class="row">
           <span class="income" id="c-income-${ci}">+0 / sec</span>
           ${staffReady(c)
             ? `<button class="btn ghost small" data-action="toggle" data-company="${ci}"
-                 title="${c.collapsed ? "Show workers" : "Hide workers"}">${c.collapsed ? "▸ Show" : "▾ Hide"}</button>`
+                 title="Fold">▴ Fold</button>`
             : ""}
         </span>
       </div>
@@ -3920,12 +3939,6 @@ function render() {
                    <b>${staffIco(key, h, "staffI pick")}${h.name}</b><small>${h.desc}</small></button>`;
       }
       html += `</div></div>`;
-      return html;
-    }
-
-    // Minimized: just a one-line summary
-    if (c.collapsed) {
-      html += `<div class="muted">${t.noStaff ? "" : `${staffIco(c.accountant, ACCOUNTANTS[c.accountant])}${staffIco(c.hr, HR_OPTIONS[c.hr])}· `}${c.workers.length} / ${maxWorkers(c)} workers</div></div>`;
       return html;
     }
 
@@ -3987,9 +4000,9 @@ function render() {
             <button class="btn ghost small" data-action="toggleGroup" data-type="${t.id}">${collapsed ? "▸ Show all" : "▾ Minimize all"}</button>
           </span>
         </div>
-        ${collapsed ? `<div class="muted">${owned} ${owned === 1 ? "business" : "businesses"} · ${workers} workers</div>` : ""}
+        <div class="muted">${owned} ${owned === 1 ? "business" : "businesses"} · ${workers} / ${mine.reduce((a, x) => a + maxWorkers(x.c), 0)} workers</div>
       </div>`;
-      if (!collapsed) mine.forEach(x => { html += companyCard(x.c, x.ci); });
+      if (!collapsed) { html += `<div class="bizUnits">`; mine.forEach(x => { html += companyCard(x.c, x.ci); }); html += `</div>`; }
     }
 
     if (owned >= t.maxOwned) return;
@@ -4076,7 +4089,13 @@ $("shop").addEventListener("click", (event) => {
     state.money -= price;
     state.companies.push({ typeId: t.id, accountant: null, hr: null, workers: [], candidates: null });
   }
-  if (action === "toggle") company.collapsed = !company.collapsed;
+  if (action === "toggle") company.open = !company.open;
+  if (action === "jumpFree") {   // open the first business that needs staff and scroll to it
+    const ci = Number(btn.dataset.company), c = state.companies[ci];
+    if (c) { c.open = true; state.groupCollapsed = state.groupCollapsed || {}; state.groupCollapsed[c.typeId] = false;
+      render(); save(); setTimeout(() => { const el = $("c-card-" + ci); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); }, 30); }
+    return;
+  }
   if (action === "buySpecial" && btn.dataset.special === "law") {
     if (state.special.law || state.money < LAW_PRICE) return;
     state.money -= LAW_PRICE;
@@ -4206,6 +4225,7 @@ $("shop").addEventListener("click", (event) => {
     state.money -= cost;
     company.workers.push(cand);
     company.candidates = null;
+    if (company.workers.length >= maxWorkers(company)) company.open = false;   // full: fold it back to one row
   }
 
   if (action === "fire") company.workers.splice(Number(btn.dataset.worker), 1);
@@ -13556,6 +13576,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "🏢 Businesses are easier to manage: the shop is wider on big screens, each business is one compact row (2 per line) with its workers bar, and a gold banner takes you straight to businesses that still have free worker slots. Tap <b>👷 Hire</b> or <b>Details</b> to open one.",
     "🎰 Shorter tables: empty Blackjack and Hold'em tables take less room between rounds, and the Video Poker and Hold'em payout tables start folded after your first 3 rounds (📋 Show opens them again).",
     "🎰 New casino lobby: one card per game with a quick table switch (Classic, High rollers, Super high rollers), a <b>▶ Continue playing</b> row with the 🔥 hot game and your last tables, and a table switch in the bar while you play.",
     "🎰 Casino tables are easier to play: while a game is open, one slim bar shows your level, money, Hot Tables timer and free chips, so the table starts higher. Every chip table (Roulette, Blackjack, Baccarat, Hold'em) now has the same buttons in the same order, with <b>↶ Undo</b> everywhere; on phones they stay at the bottom of the screen.",

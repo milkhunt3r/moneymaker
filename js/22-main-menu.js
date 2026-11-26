@@ -52,6 +52,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "🏢 Businesses are easier to manage: the shop is wider on big screens, each business is one compact row (2 per line) with its workers bar, and a gold banner takes you straight to businesses that still have free worker slots. Tap <b>👷 Hire</b> or <b>Details</b> to open one.",
     "🎰 Shorter tables: empty Blackjack and Hold'em tables take less room between rounds, and the Video Poker and Hold'em payout tables start folded after your first 3 rounds (📋 Show opens them again).",
     "🎰 New casino lobby: one card per game with a quick table switch (Classic, High rollers, Super high rollers), a <b>▶ Continue playing</b> row with the 🔥 hot game and your last tables, and a table switch in the bar while you play.",
     "🎰 Casino tables are easier to play: while a game is open, one slim bar shows your level, money, Hot Tables timer and free chips, so the table starts higher. Every chip table (Roulette, Blackjack, Baccarat, Hold'em) now has the same buttons in the same order, with <b>↶ Undo</b> everywhere; on phones they stay at the bottom of the screen.",

@@ -209,7 +209,10 @@ function render() {
     <button class="incomeTab ${page === "biz" ? "active" : ""}" data-ipage="biz">${ico("business")}Businesses</button>
     <button class="incomeTab ${page === "special" ? "active" : ""}" data-ipage="special">${ico("special")}Special</button>
     <button class="incomeTab ${page === "science" ? "active" : ""}" data-ipage="science">${sciOpen ? "" : ico("lock")}${ico("science")}Science</button></nav>`;
-  let html = `<div ${page === "biz" ? "" : "hidden"} id="incBiz"><h2>🏢 Businesses</h2>`;
+  // ⚠️ businesses that need you: a free worker slot, or no accountant / HR yet
+  const needYou = state.companies.map((c, ci) => ({ c, ci })).filter(x => !staffReady(x.c) || x.c.workers.length < maxWorkers(x.c));
+  let html = `<div ${page === "biz" ? "" : "hidden"} id="incBiz"><h2>🏢 Businesses</h2>${needYou.length ? `<button class="card bizNeed" data-action="jumpFree" data-company="${needYou[0].ci}">
+    👷 <b>${needYou.length} ${needYou.length === 1 ? "business needs" : "businesses need"} staff</b> <span class="muted">· free worker slots earn nothing</span> <span class="bizNeedGo">Show ›</span></button>` : ""}`;
 
   // One owned company as a card
   const companyCard = (c, ci) => {
@@ -218,14 +221,23 @@ function render() {
     // Number them: Car Wash #1, #2, #3 (only when you can own more than one)
     const number = state.companies.slice(0, ci + 1).filter(x => x.typeId === c.typeId).length;
     const title = t.maxOwned > 1 ? `${t.name} #${number}` : t.name;
-    html += `<div class="card">
+    // 📋 a running company is one compact row; tap it (or "Hire") to open workers and hiring
+    if (staffReady(c) && !c.open) {
+      const free = maxWorkers(c) - c.workers.length;
+      return `<div class="card bizUnit compact ${free ? "needs" : ""}" id="c-card-${ci}">
+        <div class="row"><h3>${bizIco(t.id)}${title}</h3><span class="income" id="c-income-${ci}">+0 / sec</span></div>
+        <div class="bizUnitLine">${t.noStaff ? "" : `${staffIco(c.accountant, ACCOUNTANTS[c.accountant])}${staffIco(c.hr, HR_OPTIONS[c.hr])}`}
+          <span class="bizSlots"><i style="width:${c.workers.length / maxWorkers(c) * 100}%"></i></span><span class="muted">${c.workers.length} / ${maxWorkers(c)} workers</span>
+          ${free ? `<button class="btn small" data-action="toggle" data-company="${ci}">👷 Hire · ${free} free</button>` : `<span class="bizFull">✅ Full</span><button class="btn ghost small" data-action="toggle" data-company="${ci}">▸ Details</button>`}</div></div>`;
+    }
+    html += `<div class="card bizUnit ${staffReady(c) ? "open" : "open setup"}" id="c-card-${ci}">
       <div class="row">
         <h3>${bizIco(t.id)}${title}</h3>
         <span class="row">
           <span class="income" id="c-income-${ci}">+0 / sec</span>
           ${staffReady(c)
             ? `<button class="btn ghost small" data-action="toggle" data-company="${ci}"
-                 title="${c.collapsed ? "Show workers" : "Hide workers"}">${c.collapsed ? "▸ Show" : "▾ Hide"}</button>`
+                 title="Fold">▴ Fold</button>`
             : ""}
         </span>
       </div>
@@ -253,12 +265,6 @@ function render() {
                    <b>${staffIco(key, h, "staffI pick")}${h.name}</b><small>${h.desc}</small></button>`;
       }
       html += `</div></div>`;
-      return html;
-    }
-
-    // Minimized: just a one-line summary
-    if (c.collapsed) {
-      html += `<div class="muted">${t.noStaff ? "" : `${staffIco(c.accountant, ACCOUNTANTS[c.accountant])}${staffIco(c.hr, HR_OPTIONS[c.hr])}· `}${c.workers.length} / ${maxWorkers(c)} workers</div></div>`;
       return html;
     }
 
@@ -320,9 +326,9 @@ function render() {
             <button class="btn ghost small" data-action="toggleGroup" data-type="${t.id}">${collapsed ? "▸ Show all" : "▾ Minimize all"}</button>
           </span>
         </div>
-        ${collapsed ? `<div class="muted">${owned} ${owned === 1 ? "business" : "businesses"} · ${workers} workers</div>` : ""}
+        <div class="muted">${owned} ${owned === 1 ? "business" : "businesses"} · ${workers} / ${mine.reduce((a, x) => a + maxWorkers(x.c), 0)} workers</div>
       </div>`;
-      if (!collapsed) mine.forEach(x => { html += companyCard(x.c, x.ci); });
+      if (!collapsed) { html += `<div class="bizUnits">`; mine.forEach(x => { html += companyCard(x.c, x.ci); }); html += `</div>`; }
     }
 
     if (owned >= t.maxOwned) return;
@@ -409,7 +415,13 @@ $("shop").addEventListener("click", (event) => {
     state.money -= price;
     state.companies.push({ typeId: t.id, accountant: null, hr: null, workers: [], candidates: null });
   }
-  if (action === "toggle") company.collapsed = !company.collapsed;
+  if (action === "toggle") company.open = !company.open;
+  if (action === "jumpFree") {   // open the first business that needs staff and scroll to it
+    const ci = Number(btn.dataset.company), c = state.companies[ci];
+    if (c) { c.open = true; state.groupCollapsed = state.groupCollapsed || {}; state.groupCollapsed[c.typeId] = false;
+      render(); save(); setTimeout(() => { const el = $("c-card-" + ci); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); }, 30); }
+    return;
+  }
   if (action === "buySpecial" && btn.dataset.special === "law") {
     if (state.special.law || state.money < LAW_PRICE) return;
     state.money -= LAW_PRICE;
@@ -539,6 +551,7 @@ $("shop").addEventListener("click", (event) => {
     state.money -= cost;
     company.workers.push(cand);
     company.candidates = null;
+    if (company.workers.length >= maxWorkers(company)) company.open = false;   // full: fold it back to one row
   }
 
   if (action === "fire") company.workers.splice(Number(btn.dataset.worker), 1);
