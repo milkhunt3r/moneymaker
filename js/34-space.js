@@ -98,13 +98,17 @@ if (!state.space) state.space = {};
 const SP = state.space;
 SP.races = SP.races || {}; SP.goods = SP.goods || {}; SP.trips = SP.trips || []; SP.stats = SP.stats || { explored: 0, gifts: 0, goods: 0 };
 SP.nextId = SP.nextId || 1;
+// 🔬 space research (js/34d-space-research.js): levels 0–3 per line
+SP.research = SP.research || {};
+const spRL = (k) => SP.research[k] || 0;
+const SP_R_SHIPS = [0, 1, 2, 3], SP_R_CARGO = [0, 10, 20, 35], SP_R_ENGINE = [0, 0.05, 0.10, 0.20];
 Object.keys(SP_RACES).forEach(k => { SP.races[k] = SP.races[k] || { found: false, pts: 0 }; });
 let spSel = SP.sel || "sol";
 
 const spSci = () => state.science || {};
 // 🚀 ship slots come from the space buildings
 const SP_SLOTS = [["space", 1, "🚀 Space Mission Center"], ["station", 1, "🛸 Orbital Space Station"], ["moon", 2, "🌕 Moon Base"], ["mars", 2, "🔴 Mars Base"]];
-const spShips = () => { const n = SP_SLOTS.reduce((a, [k, n]) => a + (spSci()[k] ? n : 0), 0); return n ? n + spAllyBonus("ship") : 0; };
+const spShips = () => { const n = SP_SLOTS.reduce((a, [k, n]) => a + (spSci()[k] ? n : 0), 0); return n ? n + spAllyBonus("ship") + SP_R_SHIPS[spRL("ships")] : 0; };
 const spFree = () => Math.max(0, spShips() - SP.trips.length);
 const spRouteOf = (k) => SP.trips.find(tr => tr.to === k && tr.k === "route");
 const spRouteMs = (k) => spMs(k) * SP_ROUTE_SPEED[Math.max(SP_ROUTE_LV, spLevel(k))] * (1 - spAllyBonus("route"));
@@ -115,7 +119,9 @@ const spVisible = (k) => { const R = SP_RACES[k];
   if (R.viaTrusted) return spTrustedCount() >= R.viaTrusted;
   return !R.via || spLevel(R.via) >= (R.viaLv || 2); };
 const spTripTo = (k, kind) => SP.trips.find(tr => tr.to === k && (!kind || tr.k === kind));
-const spMs = (k) => SP_RACES[k].min * 60e3;   // one way
+const spMs = (k) => SP_RACES[k].min * 60e3 * (1 - SP_R_ENGINE[spRL("engine")]);   // one way (🔧 engine research makes it shorter)
+const spMin = (k) => Math.max(1, Math.round(spMs(k) / 60e3));   // one way, in minutes, for the texts
+const spRouteGoods = (L) => SP_ROUTE_GOODS[Math.max(SP_ROUTE_LV, L)] + SP_R_CARGO[spRL("cargo")];   // 📦 cargo research adds to every trip
 const spClock = (ms) => { const s = Math.max(0, Math.ceil(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60);
   return h ? `${h}:${String(m).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}` : `${m}:${String(s % 60).padStart(2, "0")}`; };
 const spGI = (g, cls = "spGi") => `<img class="${cls}" src="assets/space/good-${g}.webp" alt="${SP_GOODS[g].emoji}">`;   // painted good icon
@@ -184,7 +190,7 @@ function spCanPay(q) {
   if (q.kind === "goods") return Object.entries(q.goods).every(([g, n]) => (SP.goods[g] || 0) >= n);
   return false;
 }
-const spReturnGoods = (L) => 2 + L;
+const spReturnGoods = (L) => 2 + L + SP_R_CARGO[spRL("cargo")];
 
 /* ----- ☄️ events on the way (rolled when a ship leaves; they happen halfway out) -----
    ☄️ asteroid field: the trip takes longer · 🛸 lost ship: you rescue it (+100 friendship with a race you know, gifts and exploring only)
@@ -257,7 +263,7 @@ function spExplore(k) {
   if (isPaused() || !spFree() || SP.races[k].found || !spVisible(k) || spTripTo(k) || spSci2() < SP_EXPLORE_SCI) return;
   spendScientists(SP_EXPLORE_SCI);
   spLaunch(k, "explore");
-  showNotice(`🚀 A ship is on its way to explore an unknown system (${SP_RACES[k].min} min there, ${SP_RACES[k].min} min back).`);
+  showNotice(`🚀 A ship is on its way to explore an unknown system (${spMin(k)} min there, ${spMin(k)} min back).`);
 }
 function spRouteStart(k) {
   if (isPaused() || !spFree() || spLevel(k) < SP_ROUTE_LV || spRouteOf(k)) return;
@@ -296,7 +302,7 @@ function spSendGift(k, pick) {
   r.req = null;
   spLaunch(k, "gift", { kind: q.kind, fav: q.fav, pts: spReqPts(q), special: !!q.special, text: what });
   updateCounter();
-  showNotice(`🎁 Gift on its way to the ${SP_RACES[k].name} (${SP_RACES[k].min} min).`);
+  showNotice(`🎁 Gift on its way to the ${SP_RACES[k].name} (${spMin(k)} min).`);
   return true;
 }
 // ⏱️ arrivals and returns (also catches up on everything that happened while the game was closed)
@@ -311,7 +317,7 @@ function spProcess() {
       let n = 0;
       while (now >= tr.t2 && n < 500) {
         n++; changed = true;
-        const got = tr.lost ? 0 : SP_ROUTE_GOODS[Math.max(SP_ROUTE_LV, spLevel(tr.to))];
+        const got = tr.lost ? 0 : spRouteGoods(spLevel(tr.to));
         SP.goods[R.good] = (SP.goods[R.good] || 0) + got; SP.stats.goods += got; tr.got = (tr.got || 0) + got; tr.loops = (tr.loops || 0) + 1;
         SP.stats.routeTrips = (SP.stats.routeTrips || 0) + 1;
         if (typeof addLogiXp === "function") addLogiXp("ship", (tr.t2 - tr.t0) / 1000);
@@ -363,6 +369,7 @@ function spProcess() {
       spMakeReq(k, r.req && r.req.kind); changed = true;
     }
   }
+  if (typeof spResTick === "function" && spResTick(now, msgs)) changed = true;
   if (typeof spConTick === "function") { const n0 = SP.con.offers.length + SP.con.active.length; spCoolTick(now, msgs); spConTick(now, msgs);
     if (n0 !== SP.con.offers.length + SP.con.active.length) changed = true; }
   if (msgs.length > 3) showNotice(`🌌 Space: ${msgs.length} updates while you were away. See 🚢 Logistics → 🌌 Space.`);
@@ -371,7 +378,7 @@ function spProcess() {
 }
 
 /* ----- 🖼️ page ----- */
-const spPageOn = () => state.logiPage === "space" || state.logiPage === "market" || state.logiPage === "contracts";
+const spPageOn = () => ["space", "market", "contracts", "research"].includes(state.logiPage);
 const spShown = () => state.view === "logistics" && spPageOn() && !$("logisticsView").hidden;
 // 🛰️ flight paths are gentle curves bending away from the middle; a ship flies from the edge of Home to the edge of the system
 const spAsp = () => { const m = document.querySelector(".spMap"); return m && m.clientHeight ? m.clientWidth / m.clientHeight : 16 / 9; };
@@ -490,7 +497,7 @@ function spPanelHtml() {
   if (!spVisible(spSel)) return R.viaTrusted ? `<h3>🔒 Uncharted system</h3><p>Only the most trusted traders may visit this system. Become <b>💛 Trusted</b> with <b>${R.viaTrusted}</b> races (you have ${spTrustedCount()}).</p>`
     : `<h3>🔒 Uncharted system</h3><p>Your scanners can't find this system yet. Become <b>${R.viaLv === 3 ? "😊 Friendly" : "Acquainted"}</b> with ${SP.races[R.via].found ? `the <b>${SP_RACES[R.via].name}</b>` : "a nearby race"} and they will tell you where it is.</p>`;
   if (!r.found) return `<h3 class="spH">${spI("explore", "spI big")} Unknown signal</h3>
-    <p>Something is out there. Send a ship to explore it: <b>${R.min} min</b> there and <b>${R.min} min</b> back.</p>
+    <p>Something is out there. Send a ship to explore it: <b>${spMin(spSel)} min</b> there and <b>${spMin(spSel)} min</b> back.</p>
     ${trip ? spTripLine(trip) : `<button class="btn big" data-spx="explore" ${spFree() && spSci2() >= SP_EXPLORE_SCI ? "" : "disabled"}>${spI("explore", "spI btnI")}Explore · 🔬 ${SP_EXPLORE_SCI} scientists</button>
       ${!spFree() ? `<div class="muted">All your ships are busy.</div>` : spSci2() < SP_EXPLORE_SCI ? `<div class="muted">You need ${SP_EXPLORE_SCI} scientists (you have ${spSci2()}).</div>` : ""}`}`;
   const next = SP_LEVELS[L + 1], pct = next ? Math.min(100, (r.pts - SP_LEVELS[L].pts) / (next.pts - SP_LEVELS[L].pts) * 100) : 100;
@@ -507,14 +514,14 @@ function spPanelHtml() {
       : `<div class="spRow">${spI("fav")}<span><b>Favourite:</b> ${spKindName(R.wants[0])} <span class="muted">(+${SP_FAV_PTS} friendship)</span></span></div>
       <div class="spRow">${spI("likes")}<span><b>Also likes:</b> ${spKindName(R.wants[1])} <span class="muted">(+${SP_PTS})</span></span></div>`}
       <div class="spRow">${spI("sendback")}<span><b>They send back:</b> ${spGood(R.good)} <span class="muted">(${spReturnGoods(L)} per gift, more when you level up)</span></span></div>
-      <div class="spRow">${spI("distance")}<span><b>Distance:</b> ${R.min} min each way</span></div></div>
+      <div class="spRow">${spI("distance")}<span><b>Distance:</b> ${spMin(spSel)} min each way</span></div></div>
     ${typeof spPoliticsHtml === "function" ? spPoliticsHtml(spSel) : ""}
     ${trip ? spTripLine(trip) : q ? `<div class="spReq ${q.special ? "special" : ""}">${q.special ? `<div class="spSpecial spRow">${spI("special")}<span>Special request! Bring it in time for extra friendship and goods, or they will be offended (−${SP_SPECIAL.offend}).</span></div>` : ""}<div class="spRow">${spI("request")}<span><b>Their request:</b> ${spReqText(q)}</span></div>
         <div class="muted">+${spReqPts(q)} friendship${q.fav ? " (their favourite!)" : ""} · ${q.special ? "time left" : "a new request in"} <span data-spt="${q.until}">${spClock(q.until - Date.now())}</span></div>
         <div class="spBtns"><button class="btn big" data-spx="gift" ${can && spFree() ? "" : "disabled"}>${spI("gift", "spI btnI")}Send gift</button>
           <button class="btn ghost" data-spx="reroll" ${rerollLeft > 0 ? "disabled" : ""}>${spI("reroll", "spI btnI")}Ask for something else${rerollLeft > 0 ? ` (${spClock(rerollLeft)})` : ""}</button></div>
         ${!spFree() ? `<div class="muted">All your ships are busy.</div>` : !can ? `<div class="muted">You don't have enough for this gift yet.</div>` : ""}</div>` : ""}
-    ${typeof pipOfferHtml === "function" ? pipOfferHtml(spSel) : ""}${spRouteHtml(spSel)}${spBonusHtml(spSel)}`;
+    ${typeof pipOfferHtml === "function" ? pipOfferHtml(spSel) : ""}${spRouteHtml(spSel)}${typeof spOutpostHtml === "function" ? spOutpostHtml(spSel) : ""}${spBonusHtml(spSel)}`;
 }
 function spBonusHtml(k) {
   const B = SP_BONUS[k], L = spLevel(k);
@@ -529,7 +536,7 @@ function spBonusList() {
 function spRouteHtml(k) {
   const R = SP_RACES[k], L = spLevel(k), rt = spRouteOf(k);
   if (L < SP_ROUTE_LV) return `<div class="spRoute locked spRow">${spI("route")}<span><b>Trade route:</b> opens when you are <b>😊 Friendly</b> with the ${R.name}.</span></div>`;
-  const goods = SP_ROUTE_GOODS[L], mins = Math.round(spRouteMs(k) * 2 / 60e3);
+  const goods = spRouteGoods(L), mins = Math.round(spRouteMs(k) * 2 / 60e3);
   if (rt) return `<div class="spRoute on"><div class="spRow">${spI("route")}<span><b>Trade route open</b> · ${spGI(R.good)} <b>${goods}</b> ${SP_GOODS[R.good].name} every trip (${mins} min round trip)</span></div>
     ${spTripLine(rt)}<div class="muted">Trips so far: ${rt.loops || 0} · goods brought home: ${(rt.got || 0).toLocaleString()}</div>
     <div class="spBtns">${rt.stop ? `<span class="muted">⏹️ Stops when the ship gets home.</span> <button class="btn ghost small" data-spx="rgo">▶ Keep it running</button>` : `<button class="btn ghost" data-spx="rstop">⏹️ Stop the route</button>`}</div></div>`;
@@ -548,7 +555,8 @@ function spResHtml() {
   const goods = Object.keys(SP_GOODS).filter(g => SP.goods[g]);
   return `<div class="spResRow"><span class="spResLbl">Money:</span>${it("💰", fmt(state.money), "Money")}</div>
     <div class="spResRow"><span class="spResLbl">Earth resources:</span>${earth.join("")}</div>
-    <div class="spResRow"><span class="spResLbl">Space resources:</span>${goods.length ? goods.map(g => it(spGI(g), SP.goods[g].toLocaleString(), SP_GOODS[g].name)).join("") : `<span class="muted">none yet</span>`}</div>`;
+    <div class="spResRow"><span class="spResLbl">Space resources:</span>${goods.length ? goods.map(g => it(spGI(g), SP.goods[g].toLocaleString(), SP_GOODS[g].name)).join("") : `<span class="muted">none yet</span>`}</div>
+    ${typeof SP_CRAFT !== "undefined" && Object.keys(SP_CRAFT).some(c => SP.crafted[c]) ? `<div class="spResRow"><span class="spResLbl">Crafted:</span>${Object.keys(SP_CRAFT).filter(c => SP.crafted[c]).map(c => it(SP_CRAFT[c].emoji, SP.crafted[c].toLocaleString(), SP_CRAFT[c].name)).join("")}</div>` : ""}`;
 }
 /* ----- 🆘 alien emergency ----- */
 const spSosOn = () => !!SP.sos;
@@ -676,6 +684,7 @@ function renderSpace() {
   if (!spOpen()) { box.innerHTML = `<div class="card" style="text-align:center"><h2>🔒 🌌 Space</h2><p>Explore the galaxy, meet alien races and trade with them.</p>
     <p><b>Opens when you build the 🚀 Space Mission Center</b> (💰 Income → 🔬 Science).</p></div>`; return; }
   if (state.logiPage === "market") { box.innerHTML = spSosHtml() + spMarketHtml(); return; }
+  if (state.logiPage === "research" && typeof spResearchHtml === "function") { box.innerHTML = spSosHtml() + spResearchHtml(); return; }
   if (state.logiPage === "contracts" && typeof spContractsHtml === "function") { box.innerHTML = spSosHtml() + spContractsHtml(); return; }
   box.innerHTML = `${spSosHtml()}<div class="card spResBar" id="spResBar">${spResHtml()}</div><div class="card spMapCard"><div class="row"><h2 style="margin:0">🌌 Star map</h2><span class="spFreeBadge ${spFree() ? "" : "none"}" title="Free ships">🚀 <b>${spFree()}</b><small>/ ${spShips()}</small><span>${spFree() === 1 ? "ship free" : "ships free"}</span></span></div>${spMapHtml()}</div>
     <div class="card spPanel">${spPanelHtml()}</div>`;
@@ -702,7 +711,7 @@ function spOpenGift(k) {
   if (!q || !spCanPay(q) || !spFree()) return;
   if (q.kind !== "dna" && q.kind !== "art") {
     showModal(`<h2>🎁 Gift for the ${SP_RACES[k].name}</h2><p>Send ${spReqText(q)}?</p>
-      <p class="muted">Your ship flies ${SP_RACES[k].min} min there and ${SP_RACES[k].min} min back, and brings their goods home.</p>
+      <p class="muted">Your ship flies ${spMin(k)} min there and ${spMin(k)} min back, and brings their goods home.</p>
       <div class="row" style="justify-content:center;gap:10px"><button class="btn big" data-spg="send">🚀 Send</button><button class="btn ghost" data-modal="close">Cancel</button></div>`);
     spPick = { k, kind: q.kind }; return;
   }
@@ -791,7 +800,7 @@ function spApplyPage() {
   const view = $("logisticsView");
   if (!$("logiTabs")) {   // left-side page menu (like Investing): everything after the lock card moves into the main column
     const layout = document.createElement("div"); layout.className = "subLayout"; layout.id = "logiLayout";
-    layout.innerHTML = `<nav class="subNav" id="logiTabs"><button class="subTab" data-logipage="earth"><img class="ico" src="assets/icons/ico-lg-earth.webp" alt="">Earth</button><button class="subTab" data-logipage="space"><img class="ico" src="assets/icons/ico-lg-space.webp" alt="">Space</button><button class="subTab subSub" data-logipage="market"><img class="ico" src="assets/icons/ico-lg-market.webp" alt="">Market</button><button class="subTab subSub" data-logipage="contracts"><span class="ico">📜</span>Contracts</button></nav><div class="subMain" id="logiMain"></div>`;
+    layout.innerHTML = `<nav class="subNav" id="logiTabs"><button class="subTab" data-logipage="earth"><img class="ico" src="assets/icons/ico-lg-earth.webp" alt="">Earth</button><button class="subTab" data-logipage="space"><img class="ico" src="assets/icons/ico-lg-space.webp" alt="">Space</button><button class="subTab subSub" data-logipage="market"><img class="ico" src="assets/icons/ico-lg-market.webp" alt="">Market</button><button class="subTab subSub" data-logipage="contracts"><span class="ico">📜</span>Contracts</button><button class="subTab subSub" data-logipage="research"><span class="ico">🔬</span>Research</button></nav><div class="subMain" id="logiMain"></div>`;
     const main = layout.querySelector("#logiMain");
     [...view.children].filter(el => !el.classList.contains("debtBanner") && el.id !== "logiLocked").forEach(el => main.appendChild(el));
     const sv = document.createElement("div"); sv.id = "spaceView"; sv.hidden = true; main.appendChild(sv);

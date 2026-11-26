@@ -2773,6 +2773,56 @@ H("🎡 Roulette: new <b>↶ Undo last bet</b> button. It takes back your last c
   "🎡 Ruleta: nuevo botón <b>↶ Deshacer última apuesta</b>. Retira tu última ficha (o tu último ↺ Repetir últimas apuestas), y puedes pulsarlo una y otra vez.");
 ES["Free bet chips: what the bet pays goes to your money."] = "Fichas de apuesta gratis: lo que pague la apuesta va a tu dinero.";
 rx(String.raw`On the table now: (${NUM}) free\.`, "En la mesa ahora: $1 gratis.");
+// 🔬 space research & crafting (js/34d-space-research.js)
+var SP_ES_CRAFT = { "Resonance Prisms": "Prismas de resonancia", "Voidsteel Ingots": "Lingotes de acero del vacío", "Star Sails": "Velas estelares", "Chrono Chips": "Cronochips" };
+var SP_RX_CRAFT = Object.keys(SP_ES_CRAFT).join("|"), spC = (c) => SP_ES_CRAFT[c] || c;
+var SP_ES_RES = { "Space crafting": "Artesanía espacial", "Extra ship slots": "Hangares extra", "Cargo holds": "Bodegas de carga", "Ship engines": "Motores de nave", "Outposts": "Puestos avanzados",
+  "Unlocks crafting: 60 s per unit": "Desbloquea la artesanía: 60 s por unidad", "Crafting: 45 s per unit": "Artesanía: 45 s por unidad", "Crafting: 30 s per unit": "Artesanía: 30 s por unidad",
+  "+1 ship": "+1 nave", "+1 ship (2 in total)": "+1 nave (2 en total)", "+1 ship (3 in total)": "+1 nave (3 en total)",
+  "+10 goods on every trip": "+10 bienes en cada viaje", "+10 goods on every trip (+20 in total)": "+10 bienes en cada viaje (+20 en total)", "+15 goods on every trip (+35 in total)": "+15 bienes en cada viaje (+35 en total)",
+  "−5% trip time": "−5 % de tiempo de viaje", "−5% trip time (−10% in total)": "−5 % de tiempo de viaje (−10 % en total)", "−10% trip time (−20% in total)": "−10 % de tiempo de viaje (−20 % en total)",
+  "+1 outpost": "+1 puesto avanzado", "+1 outpost (2 in total)": "+1 puesto avanzado (2 en total)", "+1 outpost (3 in total)": "+1 puesto avanzado (3 en total)" };
+var SP_RX_RES = Object.keys(SP_ES_RES).map(k => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"), spRs = (x) => SP_ES_RES[x] || x;
+Object.assign(ES, SP_ES_CRAFT, SP_ES_RES, { "Research": "Investigación", "Space research": "Investigación espacial", "scientists": "científicos", "Crafting": "Artesanía", "Crafted": "Fabricado",
+  "Each level costs 🔬 scientists, money and space resources. The last levels need resources you craft yourself.": "Cada nivel cuesta 🔬 científicos, dinero y recursos espaciales. Los últimos niveles necesitan recursos que fabricas tú.",
+  "to unlock crafting.": "para desbloquear la artesanía.", "Fully researched": "Investigado del todo", "Cancel (get your goods back)": "Cancelar (recuperas tus bienes)",
+  "No outposts yet.": "Todavía no hay puestos avanzados.", "Outpost": "Puesto avanzado", "Build outpost": "Construir puesto avanzado", "Close the outpost": "Cerrar el puesto avanzado",
+  "Close this outpost?": "¿Cerrar este puesto avanzado?", "Close it": "Cerrarlo", "It stops making goods, and you can build it again in another system.": "Deja de producir bienes, y podrás construirlo de nuevo en otro sistema.",
+  "Crafting cancelled. Your goods are back.": "Artesanía cancelada. Has recuperado tus bienes.",
+  "a base in this system that makes": "una base en este sistema que produce", "makes": "produce",
+  "Pick a system on the 🌌 star map you are 😊 Friendly with and build an outpost there. Each one makes 20 of that race's goods an hour.": "Elige en el 🌌 mapa estelar un sistema con el que tengas una amistad 😊 Amistosa y construye allí un puesto avanzado. Cada uno produce 20 bienes de esa raza por hora.",
+});
+rx(String.raw`Research level (\d)`, "Investigar nivel $1");
+hrx(String.raw`<span class="ico">🔬<\/span>Research`, `<span class="ico">🔬</span>Investigación`); hrx(String.raw`<span>🔬<\/span>Research`, "<span>🔬</span>Investigación");
+hrx(String.raw`🔒 Research <b>🛠️ Space crafting<\/b> to unlock crafting\.`, "🔒 Investiga <b>🛠️ Artesanía espacial</b> para desbloquear la artesanía.");
+hrx(String.raw`<b>Level (\d):<\/b> (${SP_RX_RES})`, (m, n, x) => `<b>Nivel ${n}:</b> ${spRs(x)}`);
+rx(String.raw`(✅ )?Now: (${SP_RX_RES})`, (m, e, x) => `${e || ""}Ahora: ${spRs(x)}`);
+rx(String.raw`(🔬 )?Research done: (\S+) <b>(${SP_RX_RES}) (\d)<\/b> · (${SP_RX_RES})\.`, (m, e, i, nm, n, x) => `${e || ""}Investigación terminada: ${i} <b>${spRs(nm)} ${n}</b> · ${spRs(x)}.`);
+rx(String.raw`(🛠️ )?Crafting done: (\S+) (\d+) (${SP_RX_CRAFT})\.`, (m, e, i, n, c) => `${e || ""}Artesanía terminada: ${i} ${n} ${spC(c)}.`);
+hrx(String.raw`Crafting <b>(\d+)<\/b> (${SP_RX_CRAFT}) · ready in <b>([\d:]+)<\/b>`, (m, n, c, t) => `Fabricando <b>${n}</b> ${spC(c)} · listo en <b>${t}</b>`);
+rx(String.raw`(${SP_RX_CRAFT}) · ready in`, (m, c) => `${spC(c)} · listo en`);
+rx(String.raw`Mix 2 \+ 2 alien goods into 1 crafted resource, in batches of 25, 50, 75 or 100\. One batch at a time: (\d+) seconds a unit\. It keeps going while the game is closed\.`,
+  "Combina 2 + 2 bienes alienígenas en 1 recurso fabricado, en lotes de 25, 50, 75 o 100. Un lote a la vez: $1 segundos por unidad. Sigue funcionando con el juego cerrado.");
+rx(String.raw`(🏗️ )?Outposts \((\d+) \/ (\d+)\)`, (m, e, a, b) => `${e || ""}Puestos avanzados (${a} / ${b})`);
+rx(String.raw`Outposts: (\d+) \/ (\d+) built( · research more 🏗️ Outposts or close one to build here)?\.`, (m, a, b, x) => `Puestos avanzados: ${a} / ${b} construidos${x ? " · investiga más 🏗️ Puestos avanzados o cierra uno para construir aquí" : ""}.`);
+rx(String.raw`Goods made so far: ([\d.,]+)`, "Bienes producidos hasta ahora: $1");
+rx(String.raw`(${SP_RX_GOOD}) an hour, no ship needed\. One per system\.`, (m, g) => `${spG(g)} por hora, sin necesidad de nave. Uno por sistema.`);
+rx(String.raw`(${SP_RX_GOOD}) an hour, even while the game is closed\.`, (m, g) => `${spG(g)} por hora, incluso con el juego cerrado.`);
+rx(String.raw`(🏗️ )?Outpost built at the (${SP_RX_NAME})! It makes (\d+) (${SP_RX_GOOD}) an hour\.`, (m, e, n, x, g) => `${e || ""}¡Puesto avanzado construido en los ${spN(n)}! Produce ${x} ${spG(g)} por hora.`);
+hrx(String.raw`<b>Outpost:<\/b> you can build one here when you are <b>😊 Friendly<\/b> with the (${SP_RX_NAME})\.`, (m, n) => `<b>Puesto avanzado:</b> podrás construir uno aquí cuando tu amistad con los ${spN(n)} sea <b>😊 Amistosa</b>.`);
+rx(String.raw`(\S+) (${SP_RX_NAME}): (\S+) (\d+) (${SP_RX_GOOD}) an hour · ([\d.,]+) made`, (m, e, n, i, x, g, k) => `${e} ${spN(n)}: ${i} ${x} ${spG(g)} por hora · ${k} producidos`);
+H("🔬 <b>Research</b> (🌌 Space → Research): 5 research lines with 3 levels each. Every level costs 🔬 scientists (10/20/30), money (250,000/500,000/750,000 scoin) and space resources; the last levels need crafted resources. 🛠️ Space crafting unlocks crafting (60/45/30 s per unit), 🚀 Extra ship slots give +1 ship each, 📦 Cargo holds add +10/+10/+15 goods to every gift and trade route trip, 🔥 Ship engines cut trip times by 5%/5%/10%, and 🏗️ Outposts let you build +1 outpost each.",
+  "🔬 <b>Investigación</b> (🌌 Espacio → Investigación): 5 líneas de investigación con 3 niveles cada una. Cada nivel cuesta 🔬 científicos (10/20/30), dinero (250.000/500.000/750.000 scoin) y recursos espaciales; los últimos niveles necesitan recursos fabricados. 🛠️ Artesanía espacial desbloquea la artesanía (60/45/30 s por unidad), 🚀 Hangares extra da +1 nave por nivel, 📦 Bodegas de carga suma +10/+10/+15 bienes a cada viaje de regalo y de ruta comercial, 🔥 Motores de nave reduce los viajes un 5 %/5 %/10 %, y 🏗️ Puestos avanzados te deja construir +1 puesto avanzado por nivel.");
+H("🛠️ <b>Crafting:</b> mix 2 + 2 alien goods into 1 crafted resource, in batches of 25, 50, 75 or 100 (one batch at a time; it keeps going while the game is closed). 🔷 Resonance Prisms = Star Crystals + Echo Pearls · 🔩 Voidsteel Ingots = Nebula Cores + Void Gold · ⛵ Star Sails = Pirate Charts + Living Silk · 💾 Chrono Chips = Time Shards + Nano Parts.",
+  "🛠️ <b>Artesanía:</b> combina 2 + 2 bienes alienígenas en 1 recurso fabricado, en lotes de 25, 50, 75 o 100 (un lote a la vez; sigue funcionando con el juego cerrado). 🔷 Prismas de resonancia = Cristales estelares + Perlas de eco · 🔩 Lingotes de acero del vacío = Núcleos de nebulosa + Oro del vacío · ⛵ Velas estelares = Cartas piratas + Seda viva · 💾 Cronochips = Fragmentos del tiempo + Nanopiezas.");
+H("🏗️ <b>Outposts:</b> build one in a system you are 😊 Friendly with (one per system). It makes 20 of that race's goods an hour, even while the game is closed. Close it any time to build it somewhere else.",
+  "🏗️ <b>Puestos avanzados:</b> construye uno en un sistema con el que tengas una amistad 😊 Amistosa (uno por sistema). Produce 20 bienes de esa raza por hora, incluso con el juego cerrado. Ciérralo cuando quieras para construirlo en otro sitio.");
+H("🔬 New in 🌌 Space: <b>Research</b>! 5 research lines (crafting, extra ships, cargo holds, engines and outposts), each with 3 levels.",
+  "🔬 Novedad en 🌌 Espacio: ¡<b>Investigación</b>! 5 líneas de investigación (artesanía, naves extra, bodegas de carga, motores y puestos avanzados), cada una con 3 niveles.");
+H("🛠️ Space <b>crafting</b>: mix alien goods into 4 new resources (🔷 Resonance Prisms, 🔩 Voidsteel Ingots, ⛵ Star Sails and 💾 Chrono Chips), in batches of 25 to 100. You need them for the top research levels.",
+  "🛠️ <b>Artesanía</b> espacial: combina bienes alienígenas en 4 recursos nuevos (🔷 Prismas de resonancia, 🔩 Lingotes de acero del vacío, ⛵ Velas estelares y 💾 Cronochips), en lotes de 25 a 100. Los necesitas para los niveles más altos de investigación.");
+H("🏗️ <b>Outposts</b>: build a base in a friendly system and it makes that race's goods on its own, no ship needed.",
+  "🏗️ <b>Puestos avanzados</b>: construye una base en un sistema amistoso y producirá los bienes de esa raza por sí sola, sin necesidad de nave.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -4375,7 +4425,7 @@ function showView(view) {
   $("achievementsView").hidden = view !== "achievements";
   $("wikiView").hidden = view !== "wiki";
   if ($("profileView")) $("profileView").hidden = view !== "profile";
-  if (view === "profile" && (__eocLoaded >= 46 && typeof renderProfile === "function")) renderProfile();
+  if (view === "profile" && (__eocLoaded >= 47 && typeof renderProfile === "function")) renderProfile();
   if ($("profileBtn")) $("profileBtn").classList.toggle("on", view === "profile");
   // 🎮 Mini-games: the hub, or one game page (state.gamePage: null = hub, "art", "mine")
   const gp = view === "games" ? (state.gamePage || null) : undefined;
@@ -11023,6 +11073,9 @@ function wikiLogistics() {
     <p>❄️ <b>Keeping friends:</b> once a race has been 💛 Trusted, it cools off after ${SP_COOL.after / 3600e3} hours without a gift, a contract or a rescue: −${SP_COOL.perHour} friendship an hour, never below 😊 Friendly. A running trade route keeps them warm.</p>
     <p>📉 <b>Supply and demand:</b> selling a lot of one good at once floods the market: every unit pays a little less, and the price shows how flooded it is. It recovers by itself (half of the drop is gone after ${SP_SAT.half / 3600e3} hours).</p>
     <p>📜 <b>Contracts</b> (🌌 Space → Contracts): races you are Acquainted with post jobs: bring some goods from other worlds within a few hours. Accept up to ${SP_CON.maxActive}, then send a ship with the goods: money and +${SP_CON.pts} friendship. Late: half pay and no friendship. Missing the deadline or giving up: −${SP_CON.fail} friendship. A new offer comes every hour (up to ${SP_CON.board}).</p>
+    <p>🔬 <b>Research</b> (🌌 Space → Research): 5 research lines with 3 levels each. Every level costs 🔬 scientists (10/20/30), money (250,000/500,000/750,000 scoin) and space resources; the last levels need crafted resources. 🛠️ Space crafting unlocks crafting (60/45/30 s per unit), 🚀 Extra ship slots give +1 ship each, 📦 Cargo holds add +10/+10/+15 goods to every gift and trade route trip, 🔥 Ship engines cut trip times by 5%/5%/10%, and 🏗️ Outposts let you build +1 outpost each.</p>
+    <p>🛠️ <b>Crafting:</b> mix 2 + 2 alien goods into 1 crafted resource, in batches of 25, 50, 75 or 100 (one batch at a time; it keeps going while the game is closed). 🔷 Resonance Prisms = Star Crystals + Echo Pearls · 🔩 Voidsteel Ingots = Nebula Cores + Void Gold · ⛵ Star Sails = Pirate Charts + Living Silk · 💾 Chrono Chips = Time Shards + Nano Parts.</p>
+    <p>🏗️ <b>Outposts:</b> build one in a system you are 😊 Friendly with (one per system). It makes 20 of that race's goods an hour, even while the game is closed. Close it any time to build it somewhere else.</p>
     <p>⭐ <b>Special requests:</b> sometimes a race asks for 50% more within 12 hours, for ${SP_SPECIAL.pts}× friendship and extra goods. Let it run out and they are offended (−${SP_SPECIAL.offend} friendship).</p>
     <p>☄️ <b>On the way:</b> an asteroid field can make a trip ${SP_EV.delay * 100}% longer; your ship may rescue a lost alien ship (+${SP_EV.rescue} friendship); and pirates may stop it: pay a toll (${SP_EV.toll} min of income) or run for it (50% chance to lose the cargo). Pirates leave you alone once the Void Corsairs are 💛 Trusted.</p>
     ${wt(["Race", "💛 Trusted", "💖 Allies"], Object.entries(SP_BONUS).map(([k, B]) => [SP.races[k].found ? `${SP_RACES[k].emoji} ${SP_RACES[k].name}` : "❓ Unknown", B.text(B.val[0], 0), B.text(B.val[1], 1)]))}
@@ -13257,6 +13310,9 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "🔬 New in 🌌 Space: <b>Research</b>! 5 research lines (crafting, extra ships, cargo holds, engines and outposts), each with 3 levels.",
+    "🛠️ Space <b>crafting</b>: mix alien goods into 4 new resources (🔷 Resonance Prisms, 🔩 Voidsteel Ingots, ⛵ Star Sails and 💾 Chrono Chips), in batches of 25 to 100. You need them for the top research levels.",
+    "🏗️ <b>Outposts</b>: build a base in a friendly system and it makes that race's goods on its own, no ship needed.",
     "🎡 Roulette: new <b>↶ Undo last bet</b> button. It takes back your last chip (or your last ↺ Repeat last bets), and you can press it again and again.",
     "🌌 Space politics: races now have ⚔️ <b>rivals</b> (helping one makes its rival a little jealous), 💖 old allies slowly cool off unless you send a gift or keep a trade route running (never below 😊 Friendly), and selling lots of one good 📉 lowers its price for a few hours.",
     "📜 New in 🌌 Space: the <b>Contracts board</b>. Races post timed jobs: bring them goods from other worlds before the deadline for money and friendship.",
@@ -18139,13 +18195,17 @@ if (!state.space) state.space = {};
 var SP = state.space;
 SP.races = SP.races || {}; SP.goods = SP.goods || {}; SP.trips = SP.trips || []; SP.stats = SP.stats || { explored: 0, gifts: 0, goods: 0 };
 SP.nextId = SP.nextId || 1;
+// 🔬 space research (js/34d-space-research.js): levels 0–3 per line
+SP.research = SP.research || {};
+var spRL = (k) => SP.research[k] || 0;
+var SP_R_SHIPS = [0, 1, 2, 3], SP_R_CARGO = [0, 10, 20, 35], SP_R_ENGINE = [0, 0.05, 0.10, 0.20];
 Object.keys(SP_RACES).forEach(k => { SP.races[k] = SP.races[k] || { found: false, pts: 0 }; });
 var spSel = SP.sel || "sol";
 
 var spSci = () => state.science || {};
 // 🚀 ship slots come from the space buildings
 var SP_SLOTS = [["space", 1, "🚀 Space Mission Center"], ["station", 1, "🛸 Orbital Space Station"], ["moon", 2, "🌕 Moon Base"], ["mars", 2, "🔴 Mars Base"]];
-var spShips = () => { const n = SP_SLOTS.reduce((a, [k, n]) => a + (spSci()[k] ? n : 0), 0); return n ? n + spAllyBonus("ship") : 0; };
+var spShips = () => { const n = SP_SLOTS.reduce((a, [k, n]) => a + (spSci()[k] ? n : 0), 0); return n ? n + spAllyBonus("ship") + SP_R_SHIPS[spRL("ships")] : 0; };
 var spFree = () => Math.max(0, spShips() - SP.trips.length);
 var spRouteOf = (k) => SP.trips.find(tr => tr.to === k && tr.k === "route");
 var spRouteMs = (k) => spMs(k) * SP_ROUTE_SPEED[Math.max(SP_ROUTE_LV, spLevel(k))] * (1 - spAllyBonus("route"));
@@ -18156,7 +18216,9 @@ var spVisible = (k) => { const R = SP_RACES[k];
   if (R.viaTrusted) return spTrustedCount() >= R.viaTrusted;
   return !R.via || spLevel(R.via) >= (R.viaLv || 2); };
 var spTripTo = (k, kind) => SP.trips.find(tr => tr.to === k && (!kind || tr.k === kind));
-var spMs = (k) => SP_RACES[k].min * 60e3;   // one way
+var spMs = (k) => SP_RACES[k].min * 60e3 * (1 - SP_R_ENGINE[spRL("engine")]);   // one way (🔧 engine research makes it shorter)
+var spMin = (k) => Math.max(1, Math.round(spMs(k) / 60e3));   // one way, in minutes, for the texts
+var spRouteGoods = (L) => SP_ROUTE_GOODS[Math.max(SP_ROUTE_LV, L)] + SP_R_CARGO[spRL("cargo")];   // 📦 cargo research adds to every trip
 var spClock = (ms) => { const s = Math.max(0, Math.ceil(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60);
   return h ? `${h}:${String(m).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}` : `${m}:${String(s % 60).padStart(2, "0")}`; };
 var spGI = (g, cls = "spGi") => `<img class="${cls}" src="assets/space/good-${g}.webp" alt="${SP_GOODS[g].emoji}">`;   // painted good icon
@@ -18225,7 +18287,7 @@ function spCanPay(q) {
   if (q.kind === "goods") return Object.entries(q.goods).every(([g, n]) => (SP.goods[g] || 0) >= n);
   return false;
 }
-var spReturnGoods = (L) => 2 + L;
+var spReturnGoods = (L) => 2 + L + SP_R_CARGO[spRL("cargo")];
 
 /* ----- ☄️ events on the way (rolled when a ship leaves; they happen halfway out) -----
    ☄️ asteroid field: the trip takes longer · 🛸 lost ship: you rescue it (+100 friendship with a race you know, gifts and exploring only)
@@ -18298,7 +18360,7 @@ function spExplore(k) {
   if (isPaused() || !spFree() || SP.races[k].found || !spVisible(k) || spTripTo(k) || spSci2() < SP_EXPLORE_SCI) return;
   spendScientists(SP_EXPLORE_SCI);
   spLaunch(k, "explore");
-  showNotice(`🚀 A ship is on its way to explore an unknown system (${SP_RACES[k].min} min there, ${SP_RACES[k].min} min back).`);
+  showNotice(`🚀 A ship is on its way to explore an unknown system (${spMin(k)} min there, ${spMin(k)} min back).`);
 }
 function spRouteStart(k) {
   if (isPaused() || !spFree() || spLevel(k) < SP_ROUTE_LV || spRouteOf(k)) return;
@@ -18337,7 +18399,7 @@ function spSendGift(k, pick) {
   r.req = null;
   spLaunch(k, "gift", { kind: q.kind, fav: q.fav, pts: spReqPts(q), special: !!q.special, text: what });
   updateCounter();
-  showNotice(`🎁 Gift on its way to the ${SP_RACES[k].name} (${SP_RACES[k].min} min).`);
+  showNotice(`🎁 Gift on its way to the ${SP_RACES[k].name} (${spMin(k)} min).`);
   return true;
 }
 // ⏱️ arrivals and returns (also catches up on everything that happened while the game was closed)
@@ -18352,7 +18414,7 @@ function spProcess() {
       let n = 0;
       while (now >= tr.t2 && n < 500) {
         n++; changed = true;
-        const got = tr.lost ? 0 : SP_ROUTE_GOODS[Math.max(SP_ROUTE_LV, spLevel(tr.to))];
+        const got = tr.lost ? 0 : spRouteGoods(spLevel(tr.to));
         SP.goods[R.good] = (SP.goods[R.good] || 0) + got; SP.stats.goods += got; tr.got = (tr.got || 0) + got; tr.loops = (tr.loops || 0) + 1;
         SP.stats.routeTrips = (SP.stats.routeTrips || 0) + 1;
         if ((__eocLoaded >= 18 && typeof addLogiXp === "function")) addLogiXp("ship", (tr.t2 - tr.t0) / 1000);
@@ -18404,6 +18466,7 @@ function spProcess() {
       spMakeReq(k, r.req && r.req.kind); changed = true;
     }
   }
+  if ((__eocLoaded >= 45 && typeof spResTick === "function") && spResTick(now, msgs)) changed = true;
   if ((__eocLoaded >= 44 && typeof spConTick === "function")) { const n0 = SP.con.offers.length + SP.con.active.length; spCoolTick(now, msgs); spConTick(now, msgs);
     if (n0 !== SP.con.offers.length + SP.con.active.length) changed = true; }
   if (msgs.length > 3) showNotice(`🌌 Space: ${msgs.length} updates while you were away. See 🚢 Logistics → 🌌 Space.`);
@@ -18412,7 +18475,7 @@ function spProcess() {
 }
 
 /* ----- 🖼️ page ----- */
-var spPageOn = () => state.logiPage === "space" || state.logiPage === "market" || state.logiPage === "contracts";
+var spPageOn = () => ["space", "market", "contracts", "research"].includes(state.logiPage);
 var spShown = () => state.view === "logistics" && spPageOn() && !$("logisticsView").hidden;
 // 🛰️ flight paths are gentle curves bending away from the middle; a ship flies from the edge of Home to the edge of the system
 var spAsp = () => { const m = document.querySelector(".spMap"); return m && m.clientHeight ? m.clientWidth / m.clientHeight : 16 / 9; };
@@ -18531,7 +18594,7 @@ function spPanelHtml() {
   if (!spVisible(spSel)) return R.viaTrusted ? `<h3>🔒 Uncharted system</h3><p>Only the most trusted traders may visit this system. Become <b>💛 Trusted</b> with <b>${R.viaTrusted}</b> races (you have ${spTrustedCount()}).</p>`
     : `<h3>🔒 Uncharted system</h3><p>Your scanners can't find this system yet. Become <b>${R.viaLv === 3 ? "😊 Friendly" : "Acquainted"}</b> with ${SP.races[R.via].found ? `the <b>${SP_RACES[R.via].name}</b>` : "a nearby race"} and they will tell you where it is.</p>`;
   if (!r.found) return `<h3 class="spH">${spI("explore", "spI big")} Unknown signal</h3>
-    <p>Something is out there. Send a ship to explore it: <b>${R.min} min</b> there and <b>${R.min} min</b> back.</p>
+    <p>Something is out there. Send a ship to explore it: <b>${spMin(spSel)} min</b> there and <b>${spMin(spSel)} min</b> back.</p>
     ${trip ? spTripLine(trip) : `<button class="btn big" data-spx="explore" ${spFree() && spSci2() >= SP_EXPLORE_SCI ? "" : "disabled"}>${spI("explore", "spI btnI")}Explore · 🔬 ${SP_EXPLORE_SCI} scientists</button>
       ${!spFree() ? `<div class="muted">All your ships are busy.</div>` : spSci2() < SP_EXPLORE_SCI ? `<div class="muted">You need ${SP_EXPLORE_SCI} scientists (you have ${spSci2()}).</div>` : ""}`}`;
   const next = SP_LEVELS[L + 1], pct = next ? Math.min(100, (r.pts - SP_LEVELS[L].pts) / (next.pts - SP_LEVELS[L].pts) * 100) : 100;
@@ -18548,14 +18611,14 @@ function spPanelHtml() {
       : `<div class="spRow">${spI("fav")}<span><b>Favourite:</b> ${spKindName(R.wants[0])} <span class="muted">(+${SP_FAV_PTS} friendship)</span></span></div>
       <div class="spRow">${spI("likes")}<span><b>Also likes:</b> ${spKindName(R.wants[1])} <span class="muted">(+${SP_PTS})</span></span></div>`}
       <div class="spRow">${spI("sendback")}<span><b>They send back:</b> ${spGood(R.good)} <span class="muted">(${spReturnGoods(L)} per gift, more when you level up)</span></span></div>
-      <div class="spRow">${spI("distance")}<span><b>Distance:</b> ${R.min} min each way</span></div></div>
+      <div class="spRow">${spI("distance")}<span><b>Distance:</b> ${spMin(spSel)} min each way</span></div></div>
     ${(__eocLoaded >= 44 && typeof spPoliticsHtml === "function") ? spPoliticsHtml(spSel) : ""}
     ${trip ? spTripLine(trip) : q ? `<div class="spReq ${q.special ? "special" : ""}">${q.special ? `<div class="spSpecial spRow">${spI("special")}<span>Special request! Bring it in time for extra friendship and goods, or they will be offended (−${SP_SPECIAL.offend}).</span></div>` : ""}<div class="spRow">${spI("request")}<span><b>Their request:</b> ${spReqText(q)}</span></div>
         <div class="muted">+${spReqPts(q)} friendship${q.fav ? " (their favourite!)" : ""} · ${q.special ? "time left" : "a new request in"} <span data-spt="${q.until}">${spClock(q.until - Date.now())}</span></div>
         <div class="spBtns"><button class="btn big" data-spx="gift" ${can && spFree() ? "" : "disabled"}>${spI("gift", "spI btnI")}Send gift</button>
           <button class="btn ghost" data-spx="reroll" ${rerollLeft > 0 ? "disabled" : ""}>${spI("reroll", "spI btnI")}Ask for something else${rerollLeft > 0 ? ` (${spClock(rerollLeft)})` : ""}</button></div>
         ${!spFree() ? `<div class="muted">All your ships are busy.</div>` : !can ? `<div class="muted">You don't have enough for this gift yet.</div>` : ""}</div>` : ""}
-    ${(__eocLoaded >= 45 && typeof pipOfferHtml === "function") ? pipOfferHtml(spSel) : ""}${spRouteHtml(spSel)}${spBonusHtml(spSel)}`;
+    ${(__eocLoaded >= 46 && typeof pipOfferHtml === "function") ? pipOfferHtml(spSel) : ""}${spRouteHtml(spSel)}${(__eocLoaded >= 45 && typeof spOutpostHtml === "function") ? spOutpostHtml(spSel) : ""}${spBonusHtml(spSel)}`;
 }
 function spBonusHtml(k) {
   const B = SP_BONUS[k], L = spLevel(k);
@@ -18570,7 +18633,7 @@ function spBonusList() {
 function spRouteHtml(k) {
   const R = SP_RACES[k], L = spLevel(k), rt = spRouteOf(k);
   if (L < SP_ROUTE_LV) return `<div class="spRoute locked spRow">${spI("route")}<span><b>Trade route:</b> opens when you are <b>😊 Friendly</b> with the ${R.name}.</span></div>`;
-  const goods = SP_ROUTE_GOODS[L], mins = Math.round(spRouteMs(k) * 2 / 60e3);
+  const goods = spRouteGoods(L), mins = Math.round(spRouteMs(k) * 2 / 60e3);
   if (rt) return `<div class="spRoute on"><div class="spRow">${spI("route")}<span><b>Trade route open</b> · ${spGI(R.good)} <b>${goods}</b> ${SP_GOODS[R.good].name} every trip (${mins} min round trip)</span></div>
     ${spTripLine(rt)}<div class="muted">Trips so far: ${rt.loops || 0} · goods brought home: ${(rt.got || 0).toLocaleString()}</div>
     <div class="spBtns">${rt.stop ? `<span class="muted">⏹️ Stops when the ship gets home.</span> <button class="btn ghost small" data-spx="rgo">▶ Keep it running</button>` : `<button class="btn ghost" data-spx="rstop">⏹️ Stop the route</button>`}</div></div>`;
@@ -18589,7 +18652,8 @@ function spResHtml() {
   const goods = Object.keys(SP_GOODS).filter(g => SP.goods[g]);
   return `<div class="spResRow"><span class="spResLbl">Money:</span>${it("💰", fmt(state.money), "Money")}</div>
     <div class="spResRow"><span class="spResLbl">Earth resources:</span>${earth.join("")}</div>
-    <div class="spResRow"><span class="spResLbl">Space resources:</span>${goods.length ? goods.map(g => it(spGI(g), SP.goods[g].toLocaleString(), SP_GOODS[g].name)).join("") : `<span class="muted">none yet</span>`}</div>`;
+    <div class="spResRow"><span class="spResLbl">Space resources:</span>${goods.length ? goods.map(g => it(spGI(g), SP.goods[g].toLocaleString(), SP_GOODS[g].name)).join("") : `<span class="muted">none yet</span>`}</div>
+    ${typeof SP_CRAFT !== "undefined" && Object.keys(SP_CRAFT).some(c => SP.crafted[c]) ? `<div class="spResRow"><span class="spResLbl">Crafted:</span>${Object.keys(SP_CRAFT).filter(c => SP.crafted[c]).map(c => it(SP_CRAFT[c].emoji, SP.crafted[c].toLocaleString(), SP_CRAFT[c].name)).join("")}</div>` : ""}`;
 }
 /* ----- 🆘 alien emergency ----- */
 var spSosOn = () => !!SP.sos;
@@ -18717,6 +18781,7 @@ function renderSpace() {
   if (!spOpen()) { box.innerHTML = `<div class="card" style="text-align:center"><h2>🔒 🌌 Space</h2><p>Explore the galaxy, meet alien races and trade with them.</p>
     <p><b>Opens when you build the 🚀 Space Mission Center</b> (💰 Income → 🔬 Science).</p></div>`; return; }
   if (state.logiPage === "market") { box.innerHTML = spSosHtml() + spMarketHtml(); return; }
+  if (state.logiPage === "research" && (__eocLoaded >= 45 && typeof spResearchHtml === "function")) { box.innerHTML = spSosHtml() + spResearchHtml(); return; }
   if (state.logiPage === "contracts" && (__eocLoaded >= 44 && typeof spContractsHtml === "function")) { box.innerHTML = spSosHtml() + spContractsHtml(); return; }
   box.innerHTML = `${spSosHtml()}<div class="card spResBar" id="spResBar">${spResHtml()}</div><div class="card spMapCard"><div class="row"><h2 style="margin:0">🌌 Star map</h2><span class="spFreeBadge ${spFree() ? "" : "none"}" title="Free ships">🚀 <b>${spFree()}</b><small>/ ${spShips()}</small><span>${spFree() === 1 ? "ship free" : "ships free"}</span></span></div>${spMapHtml()}</div>
     <div class="card spPanel">${spPanelHtml()}</div>`;
@@ -18743,7 +18808,7 @@ function spOpenGift(k) {
   if (!q || !spCanPay(q) || !spFree()) return;
   if (q.kind !== "dna" && q.kind !== "art") {
     showModal(`<h2>🎁 Gift for the ${SP_RACES[k].name}</h2><p>Send ${spReqText(q)}?</p>
-      <p class="muted">Your ship flies ${SP_RACES[k].min} min there and ${SP_RACES[k].min} min back, and brings their goods home.</p>
+      <p class="muted">Your ship flies ${spMin(k)} min there and ${spMin(k)} min back, and brings their goods home.</p>
       <div class="row" style="justify-content:center;gap:10px"><button class="btn big" data-spg="send">🚀 Send</button><button class="btn ghost" data-modal="close">Cancel</button></div>`);
     spPick = { k, kind: q.kind }; return;
   }
@@ -18832,7 +18897,7 @@ function spApplyPage() {
   const view = $("logisticsView");
   if (!$("logiTabs")) {   // left-side page menu (like Investing): everything after the lock card moves into the main column
     const layout = document.createElement("div"); layout.className = "subLayout"; layout.id = "logiLayout";
-    layout.innerHTML = `<nav class="subNav" id="logiTabs"><button class="subTab" data-logipage="earth"><img class="ico" src="assets/icons/ico-lg-earth.webp" alt="">Earth</button><button class="subTab" data-logipage="space"><img class="ico" src="assets/icons/ico-lg-space.webp" alt="">Space</button><button class="subTab subSub" data-logipage="market"><img class="ico" src="assets/icons/ico-lg-market.webp" alt="">Market</button><button class="subTab subSub" data-logipage="contracts"><span class="ico">📜</span>Contracts</button></nav><div class="subMain" id="logiMain"></div>`;
+    layout.innerHTML = `<nav class="subNav" id="logiTabs"><button class="subTab" data-logipage="earth"><img class="ico" src="assets/icons/ico-lg-earth.webp" alt="">Earth</button><button class="subTab" data-logipage="space"><img class="ico" src="assets/icons/ico-lg-space.webp" alt="">Space</button><button class="subTab subSub" data-logipage="market"><img class="ico" src="assets/icons/ico-lg-market.webp" alt="">Market</button><button class="subTab subSub" data-logipage="contracts"><span class="ico">📜</span>Contracts</button><button class="subTab subSub" data-logipage="research"><span class="ico">🔬</span>Research</button></nav><div class="subMain" id="logiMain"></div>`;
     const main = layout.querySelector("#logiMain");
     [...view.children].filter(el => !el.classList.contains("debtBanner") && el.id !== "logiLocked").forEach(el => main.appendChild(el));
     const sv = document.createElement("div"); sv.id = "spaceView"; sv.hidden = true; main.appendChild(sv);
@@ -18951,7 +19016,7 @@ function spConSend(id) {
   Object.entries(c.need).forEach(([g, n]) => { SP.goods[g] -= n; });
   c.sent = true;
   spLaunch(c.to, "contract", { cid: c.id });
-  showNotice(`📜 Contract cargo on its way to the ${SP_RACES[c.to].name} (${SP_RACES[c.to].min} min).`);
+  showNotice(`📜 Contract cargo on its way to the ${SP_RACES[c.to].name} (${spMin(c.to)} min).`);
 }
 function spConDrop(id) {
   const C = SP.con, c = C.active.find(x => x.id === id);
@@ -18987,7 +19052,7 @@ function spContractsHtml() {
       <div class="spConBody"><div class="spConTo"><b>${R.name}</b> <span class="muted">· ${R.title}</span></div>
         <div class="spConNeed">${spNeedHtml(c.need, sent)}</div>
         <div class="spConPay">💰 <b>${fmt(c.pay)}</b> · 💞 +${c.pts} friendship</div>
-        <div class="muted">${active ? (sent ? (trip ? `🚀 On its way · arrives in <b data-spt="${trip.t1}">${spClock(trip.t1 - now)}</b> · deadline in <b data-spt="${c.deadline}">${spClock(c.deadline - now)}</b>` : "🚀 Delivered") : `⏳ Deliver within <b data-spt="${c.deadline}">${spClock(c.deadline - now)}</b> (the ship needs ${R.min} min to get there)`)
+        <div class="muted">${active ? (sent ? (trip ? `🚀 On its way · arrives in <b data-spt="${trip.t1}">${spClock(trip.t1 - now)}</b> · deadline in <b data-spt="${c.deadline}">${spClock(c.deadline - now)}</b>` : "🚀 Delivered") : `⏳ Deliver within <b data-spt="${c.deadline}">${spClock(c.deadline - now)}</b> (the ship needs ${spMin(c.to)} min to get there)`)
           : `⏱️ ${c.hours} h to deliver once accepted · offer ends in <b data-spt="${c.until}">${spClock(c.until - now)}</b>`}</div></div>
       <div class="spConBtns">${active ? (sent ? "" : `<button class="btn" data-spc="send" data-id="${c.id}" ${spFree() && spConHave(c) ? "" : "disabled"}>${spI("gift", "spI btnI")}Deliver</button>
           <button class="btn ghost small" data-spc="drop" data-id="${c.id}">Give up</button>${!spConHave(c) ? `<div class="muted">Not enough goods yet.</div>` : !spFree() ? `<div class="muted">All ships are busy.</div>` : ""}`)
@@ -19024,8 +19089,175 @@ function spPoliticsHtml(k) {
   return `<div class="spPolitics">${rival}${warm}</div>`;
 }
 
-// ===== js/36-pip.js =====
+// ===== js/34d-space-research.js =====
 __eocLoaded = 45;
+/* =====================================================================
+   🔬 SPACE RESEARCH & CRAFTING (loaded after js/34c-space-politics.js) · 🚢 Logistics → 🌌 Space → 🔬 Research
+   · 5 research lines with 3 levels each. A level costs 🔬 scientists, money and space resources
+     (10/20/30 scientists, 250k/500k/750k scoin, ~100/200/300 goods). Later levels need crafted resources.
+   · 🛠️ Crafting (after the first Space crafting level): 2 + 2 alien goods → 1 crafted resource,
+     in batches of 25/50/75/100. One batch at a time, 60/45/30 seconds a unit. Keeps going while the game is closed.
+   · 🏗️ Outposts: a base in a system you are 😊 Friendly with. It makes that race's goods on its own (no ship).
+   ===================================================================== */
+var SP_CRAFT = {
+  prism: { name: "Resonance Prisms", emoji: "🔷", from: ["crystal", "pearl"] },
+  alloy: { name: "Voidsteel Ingots", emoji: "🔩", from: ["core", "vgold"] },
+  sail:  { name: "Star Sails", emoji: "⛵", from: ["chart", "silk"] },
+  chip:  { name: "Chrono Chips", emoji: "💾", from: ["shard", "nano"] },
+};
+var SP_CRAFT_EACH = 2, SP_CRAFT_SIZES = [25, 50, 75, 100], SP_CRAFT_SEC = [0, 60, 45, 30];
+var SP_OUTPOST_RATE = 20, SP_OUTPOST_LV = 3;   // goods an hour · needs 😊 Friendly
+var SP_R_SCI = [10, 20, 30], SP_R_MONEY = [250e3, 500e3, 750e3].map(n => n * SCOIN);
+var SP_RESEARCH = {
+  craft:   { name: "Space crafting", icon: "🛠️", lv: ["Unlocks crafting: 60 s per unit", "Crafting: 45 s per unit", "Crafting: 30 s per unit"],
+             cost: [{ crystal: 50, vgold: 50 }, { pearl: 100, core: 100 }, { c_prism: 150, c_alloy: 150 }] },
+  ships:   { name: "Extra ship slots", icon: "🚀", lv: ["+1 ship", "+1 ship (2 in total)", "+1 ship (3 in total)"],
+             cost: [{ vgold: 50, silk: 50 }, { chart: 100, crystal: 100 }, { c_sail: 150, c_chip: 150 }] },
+  cargo:   { name: "Cargo holds", icon: "📦", lv: ["+10 goods on every trip", "+10 goods on every trip (+20 in total)", "+15 goods on every trip (+35 in total)"],
+             cost: [{ silk: 50, pearl: 50 }, { core: 100, chart: 100 }, { c_sail: 150, c_prism: 150 }] },
+  engine:  { name: "Ship engines", icon: "🔥", lv: ["−5% trip time", "−5% trip time (−10% in total)", "−10% trip time (−20% in total)"],
+             cost: [{ crystal: 50, chart: 50 }, { c_chip: 100, c_alloy: 100 }, { c_chip: 150, c_prism: 150 }] },
+  outpost: { name: "Outposts", icon: "🏗️", lv: ["+1 outpost", "+1 outpost (2 in total)", "+1 outpost (3 in total)"],
+             cost: [{ c_prism: 50, c_alloy: 50 }, { c_sail: 100, c_chip: 100 }, { c_alloy: 150, c_sail: 150 }] },
+};
+SP.crafted = SP.crafted || {};
+SP.outposts = SP.outposts || {};
+if (SP.craft === undefined) SP.craft = null;
+
+// a cost key is an alien good ("crystal") or a crafted resource ("c_prism")
+var spHave = (key) => key.startsWith("c_") ? SP.crafted[key.slice(2)] || 0 : SP.goods[key] || 0;
+var spCI = (c) => `<span class="spCi">${SP_CRAFT[c].emoji}</span>`;
+var spCostIco = (key) => key.startsWith("c_") ? spCI(key.slice(2)) : spGI(key);
+var spCostLbl = (key) => key.startsWith("c_") ? SP_CRAFT[key.slice(2)].name : SP_GOODS[key].name;
+function spResCost(k) { const L = spRL(k); if (L >= 3) return null; return { sci: SP_R_SCI[L], money: SP_R_MONEY[L], goods: SP_RESEARCH[k].cost[L] }; }
+var spResCan = (c) => c && spSci2() >= c.sci && state.money >= c.money && Object.entries(c.goods).every(([g, n]) => spHave(g) >= n);
+function spResearch(k) {
+  const c = spResCost(k);
+  if (isPaused() || !spResCan(c)) return;
+  spendScientists(c.sci); state.money -= c.money;
+  Object.entries(c.goods).forEach(([g, n]) => { if (g.startsWith("c_")) SP.crafted[g.slice(2)] -= n; else SP.goods[g] -= n; });
+  SP.research[k] = spRL(k) + 1;
+  SP.stats.research = (SP.stats.research || 0) + 1;
+  showNotice(`🔬 Research done: ${SP_RESEARCH[k].icon} <b>${SP_RESEARCH[k].name} ${spRL(k)}</b> · ${SP_RESEARCH[k].lv[spRL(k) - 1]}.`);
+  updateCounter(); save(); renderSpace();
+}
+
+/* ----- 🛠️ crafting ----- */
+var spCraftSec = () => SP_CRAFT_SEC[spRL("craft")];
+var spCraftCan = (c, n) => spRL("craft") > 0 && !SP.craft && SP_CRAFT[c].from.every(g => (SP.goods[g] || 0) >= n * SP_CRAFT_EACH);
+function spCraftStart(c, n) {
+  if (isPaused() || !SP_CRAFT_SIZES.includes(n) || !spCraftCan(c, n)) return;
+  SP_CRAFT[c].from.forEach(g => { SP.goods[g] -= n * SP_CRAFT_EACH; });
+  const now = Date.now();
+  SP.craft = { c, n, t0: now, t1: now + n * spCraftSec() * 1000 };
+  save(); renderSpace();
+}
+function spCraftCancel() {
+  const J = SP.craft; if (!J) return;
+  SP_CRAFT[J.c].from.forEach(g => { SP.goods[g] = (SP.goods[g] || 0) + J.n * SP_CRAFT_EACH; });
+  SP.craft = null;
+  showNotice("🛠️ Crafting cancelled. Your goods are back.");
+  save(); renderSpace();
+}
+
+/* ----- 🏗️ outposts ----- */
+var spOutpostCount = () => Object.keys(SP.outposts).length;
+var spOutpostFree = () => spRL("outpost") - spOutpostCount();
+function spOutpostBuild(k) {
+  if (isPaused() || SP.outposts[k] || spOutpostFree() <= 0 || spLevel(k) < SP_OUTPOST_LV) return;
+  SP.outposts[k] = { t: Date.now(), got: 0 };
+  showNotice(`🏗️ Outpost built at the ${SP_RACES[k].name}! It makes ${SP_OUTPOST_RATE} ${SP_GOODS[SP_RACES[k].good].name} an hour.`);
+  save(); renderSpace();
+}
+function spOutpostClose(k) { if (!SP.outposts[k]) return; delete SP.outposts[k]; hideModal(); save(); renderSpace(); }
+function spOutpostHtml(k) {
+  if (!spRL("outpost")) return "";
+  const R = SP_RACES[k], o = SP.outposts[k], G = SP_GOODS[R.good];
+  if (o) return `<div class="spRoute on"><div class="spRow">🏗️<span><b>Outpost</b> · makes ${spGI(R.good)} <b>${SP_OUTPOST_RATE}</b> ${G.name} an hour, even while the game is closed.</span></div>
+    <div class="muted">Goods made so far: ${(o.got || 0).toLocaleString()}</div>
+    <div class="spBtns"><button class="btn ghost small" data-spo="close">Close the outpost</button></div></div>`;
+  if (spLevel(k) < SP_OUTPOST_LV) return `<div class="spRoute locked spRow">🏗️<span><b>Outpost:</b> you can build one here when you are <b>😊 Friendly</b> with the ${R.name}.</span></div>`;
+  return `<div class="spRoute"><div class="spRow">🏗️<span><b>Outpost:</b> a base in this system that makes ${spGI(R.good)} <b>${SP_OUTPOST_RATE}</b> ${G.name} an hour, no ship needed. One per system.</span></div>
+    <div class="spBtns"><button class="btn" data-spo="build" ${spOutpostFree() > 0 ? "" : "disabled"}>🏗️ Build outpost</button></div>
+    <div class="muted">Outposts: ${spOutpostCount()} / ${spRL("outpost")} built${spOutpostFree() > 0 ? "" : " · research more 🏗️ Outposts or close one to build here"}.</div></div>`;
+}
+
+// every second (from spProcess): finish crafting and let the outposts work. Returns true when the page should redraw.
+function spResTick(now, msgs) {
+  let changed = false;
+  const J = SP.craft;
+  if (J && now >= J.t1) {
+    SP.crafted[J.c] = (SP.crafted[J.c] || 0) + J.n; SP.craft = null; changed = true;
+    SP.stats.crafted = (SP.stats.crafted || 0) + J.n;
+    msgs.push(`🛠️ Crafting done: ${SP_CRAFT[J.c].emoji} ${J.n} ${SP_CRAFT[J.c].name}.`);
+  }
+  for (const [k, o] of Object.entries(SP.outposts)) {
+    const n = Math.floor((now - o.t) / 3600e3 * SP_OUTPOST_RATE);
+    if (n <= 0) continue;
+    o.t += n * 3600e3 / SP_OUTPOST_RATE; o.got = (o.got || 0) + n;
+    const g = SP_RACES[k].good; SP.goods[g] = (SP.goods[g] || 0) + n; SP.stats.goods += n; changed = true;
+  }
+  return changed;
+}
+
+/* ----- 🖼️ the Research page ----- */
+function spResearchHtml() {
+  const now = Date.now();
+  const rows = Object.entries(SP_RESEARCH).map(([k, D]) => {
+    const L = spRL(k), c = spResCost(k);
+    const pips = [0, 1, 2].map(i => `<span class="spPip ${i < L ? "on" : ""}" title="${D.lv[i]}">${i + 1}</span>`).join("");
+    const costHtml = c ? `<div class="spResCost">
+        <span class="spNeed ${spSci2() >= c.sci ? "ok" : ""}">🔬 <b>${c.sci}</b> scientists <small>(${spSci2()})</small></span>
+        <span class="spNeed ${state.money >= c.money ? "ok" : ""}">💰 <b>${fmt(c.money)}</b></span>
+        ${Object.entries(c.goods).map(([g, n]) => `<span class="spNeed ${spHave(g) >= n ? "ok" : ""}">${spCostIco(g)} <b>${n}</b> ${spCostLbl(g)} <small>(${spHave(g).toLocaleString()})</small></span>`).join("")}</div>` : "";
+    return `<div class="spResLine ${L >= 3 ? "maxed" : ""}"><div class="spResHead"><span class="spResIco">${D.icon}</span><div><b>${D.name}</b><div class="spPips">${pips}</div></div></div>
+      <div class="spResBody">${L ? `<div class="muted">✅ Now: ${D.lv[L - 1]}</div>` : ""}
+        ${c ? `<div><b>Level ${L + 1}:</b> ${D.lv[L]}</div>${costHtml}` : `<div><b>⭐ Fully researched</b></div>`}</div>
+      ${c ? `<button class="btn" data-spr="${k}" ${spResCan(c) ? "" : "disabled"}>🔬 Research level ${L + 1}</button>` : ""}</div>`;
+  }).join("");
+  let craft;
+  if (!spRL("craft")) craft = `<p class="muted">🔒 Research <b>🛠️ Space crafting</b> to unlock crafting.</p>`;
+  else if (SP.craft) {
+    const J = SP.craft, pct = Math.min(100, (now - J.t0) / (J.t1 - J.t0) * 100);
+    craft = `<div class="spCraftJob"><div class="spCraftHead"><span class="spCraftBig">${SP_CRAFT[J.c].emoji}</span><span>Crafting <b>${J.n}</b> ${SP_CRAFT[J.c].name} · ready in <b data-spt="${J.t1}">${spClock(J.t1 - now)}</b></span></div>
+      <div class="xpBar"><div class="xpFill" id="spCraftFill" style="width:${pct}%"></div></div>
+      <div class="spBtns"><button class="btn ghost small" data-spk="cancel">✖ Cancel (get your goods back)</button></div></div>`;
+  } else craft = "";
+  const recipes = spRL("craft") ? Object.entries(SP_CRAFT).map(([c, C]) => `<div class="spRecipe">
+      <div class="spRecipeMix">${C.from.map(g => `<span class="spNeed ${(SP.goods[g] || 0) >= SP_CRAFT_SIZES[0] * SP_CRAFT_EACH ? "ok" : ""}">${spGI(g)} <b>${SP_CRAFT_EACH}</b> ${SP_GOODS[g].name} <small>(${(SP.goods[g] || 0).toLocaleString()})</small></span>`).join(" + ")}
+        <span class="spArrow">→</span><span class="spCraftOut">${spCI(c)} <b>1</b> ${C.name} <small>(${(SP.crafted[c] || 0).toLocaleString()})</small></span></div>
+      <div class="spCraftBtns">${SP_CRAFT_SIZES.map(n => `<button class="btn small" data-spk="${c}" data-n="${n}" ${spCraftCan(c, n) ? "" : "disabled"} title="${spClock(n * spCraftSec() * 1000)}">×${n}</button>`).join("")}</div></div>`).join("") : "";
+  return `<div class="card spResBar" id="spResBar">${spResHtml()}</div>
+    <div class="card"><h2 style="margin-top:0">🔬 Space research</h2>
+      <p class="muted">Each level costs 🔬 scientists, money and space resources. The last levels need resources you craft yourself.</p>
+      <div class="spResList">${rows}</div></div>
+    <div class="card"><h2 style="margin-top:0">🛠️ Crafting</h2>
+      ${spRL("craft") ? `<p class="muted">Mix ${SP_CRAFT_EACH} + ${SP_CRAFT_EACH} alien goods into 1 crafted resource, in batches of 25, 50, 75 or 100. One batch at a time: ${spCraftSec()} seconds a unit. It keeps going while the game is closed.</p>` : ""}
+      ${craft}${recipes}</div>
+    ${spRL("outpost") ? `<div class="card"><h2 style="margin-top:0">🏗️ Outposts (${spOutpostCount()} / ${spRL("outpost")})</h2>
+      <p class="muted">Pick a system on the 🌌 star map you are 😊 Friendly with and build an outpost there. Each one makes ${SP_OUTPOST_RATE} of that race's goods an hour.</p>
+      ${spOutpostCount() ? `<ul class="spSlots">${Object.entries(SP.outposts).map(([k, o]) => `<li>${SP_RACES[k].emoji} ${SP_RACES[k].name}: ${spGI(SP_RACES[k].good)} ${SP_OUTPOST_RATE} ${SP_GOODS[SP_RACES[k].good].name} an hour · ${(o.got || 0).toLocaleString()} made</li>`).join("")}</ul>` : `<p class="muted">No outposts yet.</p>`}</div>` : ""}`;
+}
+// keep the crafting bar moving without rebuilding the page
+setInterval(() => {
+  const f = document.getElementById("spCraftFill"), J = SP.craft;
+  if (f && J) f.style.width = Math.min(100, (Date.now() - J.t0) / (J.t1 - J.t0) * 100) + "%";
+}, 1000);
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest("#spaceView") || isPaused()) return;
+  const r = e.target.closest("[data-spr]"); if (r) return spResearch(r.dataset.spr);
+  const k = e.target.closest("[data-spk]");
+  if (k) return k.dataset.spk === "cancel" ? spCraftCancel() : spCraftStart(k.dataset.spk, Number(k.dataset.n));
+  const o = e.target.closest("[data-spo]");
+  if (o && o.dataset.spo === "build") spOutpostBuild(spSel);
+  if (o && o.dataset.spo === "close") showModal(`<h2>Close this outpost?</h2><p>It stops making goods, and you can build it again in another system.</p>
+    <div class="row" style="justify-content:center;gap:10px"><button class="btn ghost" data-modal="close">Keep it</button><button class="btn dangerBtn" data-spo2="${spSel}">Close it</button></div>`);
+});
+$("modal").addEventListener("click", (e) => { const b = e.target.closest("[data-spo2]"); if (b) spOutpostClose(b.dataset.spo2); });
+
+// ===== js/36-pip.js =====
+__eocLoaded = 46;
 /* =====================================================================
    🐾🎨 PIP, the painter pet (an alien mouse from the Lumerians).
    - Adopt him in 🌌 Space Logistics → Lumerians, once you are 😊 Friendly, for 10 paintings from your collection.
@@ -19245,7 +19477,7 @@ if (pipOwned()) pipProcess(true);
 if (state.view === "games" && !state.gamePage) renderPipCorner();   // the page opened straight on 🎮 Mini-games
 
 // ===== js/37-profile.js =====
-__eocLoaded = 46;
+__eocLoaded = 47;
 /* =====================================================================
    👤 PLAYER PROFILE: nickname, avatar (the emblem of one of your 🎁 reward collections), achievements and prestige count.
    · Opened with the round 👤 button next to ⚙️ Settings.
@@ -19405,7 +19637,7 @@ function renderProfile() {
   // 👈 Profile / Friends on the left, like the other pages (.subLayout)
   const tabs = `<div class="subLayout"><nav class="subNav"><button class="subTab ${prof.tab !== "friends" ? "active" : ""}" data-prof="tab-me">👤 Profile</button>
     <button class="subTab ${prof.tab === "friends" ? "active" : ""}" data-prof="tab-friends">👥 Friends${inc ? ` <span class="profBadge">${inc}</span>` : ""}</button></nav><div class="subMain">`;
-  if (prof.tab === "friends" && (__eocLoaded >= 47 && typeof renderFriends === "function")) { box.innerHTML = tabs + `<div id="friendsBox"></div></div></div>`; renderFriends(row); return; }
+  if (prof.tab === "friends" && (__eocLoaded >= 48 && typeof renderFriends === "function")) { box.innerHTML = tabs + `<div id="friendsBox"></div></div></div>`; renderFriends(row); return; }
   const ids = profAvatarIds(), cur = row ? row.avatar : prof.pendingAvatar;
   const shown = prof.showAll ? ids : ids.slice(0, 60);
   const typed = $("profNick") ? $("profNick").value : null;
@@ -19468,7 +19700,7 @@ document.addEventListener("click", (e) => {
   if (b.dataset.prof === "signin" && (__eocLoaded >= 37 && typeof cloudSignIn === "function")) cloudSignIn();
   if (b.dataset.prof === "nick") profSaveNick($("profNick").value);
   if (b.dataset.prof === "all") { prof.showAll = true; renderProfile(); }
-  if (b.dataset.prof === "tab-me" || b.dataset.prof === "tab-friends") { prof.tab = b.dataset.prof === "tab-friends" ? "friends" : "me"; prof.err = ""; prof.msg = ""; renderProfile(); if (prof.tab === "friends" && (__eocLoaded >= 47 && typeof frLoad === "function")) frLoad(); }
+  if (b.dataset.prof === "tab-me" || b.dataset.prof === "tab-friends") { prof.tab = b.dataset.prof === "tab-friends" ? "friends" : "me"; prof.err = ""; prof.msg = ""; renderProfile(); if (prof.tab === "friends" && (__eocLoaded >= 48 && typeof frLoad === "function")) frLoad(); }
   if (b.dataset.prof === "copy" && prof.row && prof.row.friend_code) {
     const c = prof.row.friend_code;
     (navigator.clipboard ? navigator.clipboard.writeText(c) : Promise.reject()).then(() => showNotice(`📋 Friend code ${c} copied.`), () => showNotice(`📋 Your friend code: ${c}`));
@@ -19495,7 +19727,7 @@ setInterval(() => { const m = $("profMoney"); if (m) { const t = fmt(state.money
 setInterval(() => { const src = profCoinImg(profCoin()).match(/src="([^"]+)"/)[1]; document.querySelectorAll(".coinSkinImg").forEach(i => { if (i.getAttribute("src") !== src) i.setAttribute("src", src); }); }, 1000);
 
 // ===== js/38-friends.js =====
-__eocLoaded = 47;
+__eocLoaded = 48;
 /* =====================================================================
    👥 FRIENDS (👤 Profile → 👥 Friends). Needs a profile (js/37-profile.js) and the tables from docs/supabase-friends.sql.
    · Find players by nickname (start of the name) or by their 8-letter friend code, and send a request.
@@ -19674,7 +19906,7 @@ var frProfLoadOrig = profLoad;
 profLoad = async function () { await frProfLoadOrig(); if (prof.row && prof.friendsOn) frLoad(true); };
 
 // ===== js/39-duels.js =====
-__eocLoaded = 48;
+__eocLoaded = 49;
 /* =====================================================================
    ⚔️ ONLINE CASINO: duels against friends (🎰 Casino → ⚔️ Online casino on the left).
    · ✊✋✌️ Rock Paper Scissors and 🎲 Dice Battle (2 dice each, higher total wins the round): best of 3; a tie is played again.
@@ -19798,7 +20030,7 @@ function duChallenge(oppId) {
   const bet = Math.floor(Number(DU.bet));
   if (!(bet >= 1)) { DU.err = "Choose a bet of at least 1."; return renderDuels(); }
   if (bet > state.money) { DU.err = "You don't have enough money for this bet."; return renderDuels(); }
-  if ((__eocLoaded >= 46 && typeof profPushStats === "function")) profPushStats();   // the referee checks the money on your profile
+  if ((__eocLoaded >= 47 && typeof profPushStats === "function")) profPushStats();   // the referee checks the money on your profile
   duDo("duel_invite", { p_opp: oppId, p_game: DU.game, p_bet: bet }, () => { setTimeout(duPending, 300); });
 }
 
@@ -20028,7 +20260,7 @@ function duMoneyTick() { const m = $("duMoney"); if (m) { const t = fmt(state.mo
 setInterval(duMoneyTick, 500);
 
 // ===== js/40-coin-input.js =====
-__eocLoaded = 49;
+__eocLoaded = 50;
 /* =====================================================================
    🪙 COIN UNIT SWITCH next to every money box: type the amount in bcoin, scoin (1M) or gcoin (1M scoin),
    instead of counting zeros. The rest of the game is not changed: each money box still reports its amount

@@ -99,7 +99,7 @@ function spConSend(id) {
   Object.entries(c.need).forEach(([g, n]) => { SP.goods[g] -= n; });
   c.sent = true;
   spLaunch(c.to, "contract", { cid: c.id });
-  showNotice(`📜 Contract cargo on its way to the ${SP_RACES[c.to].name} (${SP_RACES[c.to].min} min).`);
+  showNotice(`📜 Contract cargo on its way to the ${SP_RACES[c.to].name} (${spMin(c.to)} min).`);
 }
 function spConDrop(id) {
   const C = SP.con, c = C.active.find(x => x.id === id);
@@ -135,7 +135,7 @@ function spContractsHtml() {
       <div class="spConBody"><div class="spConTo"><b>${R.name}</b> <span class="muted">· ${R.title}</span></div>
         <div class="spConNeed">${spNeedHtml(c.need, sent)}</div>
         <div class="spConPay">💰 <b>${fmt(c.pay)}</b> · 💞 +${c.pts} friendship</div>
-        <div class="muted">${active ? (sent ? (trip ? `🚀 On its way · arrives in <b data-spt="${trip.t1}">${spClock(trip.t1 - now)}</b> · deadline in <b data-spt="${c.deadline}">${spClock(c.deadline - now)}</b>` : "🚀 Delivered") : `⏳ Deliver within <b data-spt="${c.deadline}">${spClock(c.deadline - now)}</b> (the ship needs ${R.min} min to get there)`)
+        <div class="muted">${active ? (sent ? (trip ? `🚀 On its way · arrives in <b data-spt="${trip.t1}">${spClock(trip.t1 - now)}</b> · deadline in <b data-spt="${c.deadline}">${spClock(c.deadline - now)}</b>` : "🚀 Delivered") : `⏳ Deliver within <b data-spt="${c.deadline}">${spClock(c.deadline - now)}</b> (the ship needs ${spMin(c.to)} min to get there)`)
           : `⏱️ ${c.hours} h to deliver once accepted · offer ends in <b data-spt="${c.until}">${spClock(c.until - now)}</b>`}</div></div>
       <div class="spConBtns">${active ? (sent ? "" : `<button class="btn" data-spc="send" data-id="${c.id}" ${spFree() && spConHave(c) ? "" : "disabled"}>${spI("gift", "spI btnI")}Deliver</button>
           <button class="btn ghost small" data-spc="drop" data-id="${c.id}">Give up</button>${!spConHave(c) ? `<div class="muted">Not enough goods yet.</div>` : !spFree() ? `<div class="muted">All ships are busy.</div>` : ""}`)

@@ -1399,6 +1399,56 @@ H("🎡 Roulette: new <b>↶ Undo last bet</b> button. It takes back your last c
   "🎡 Ruleta: nuevo botón <b>↶ Deshacer última apuesta</b>. Retira tu última ficha (o tu último ↺ Repetir últimas apuestas), y puedes pulsarlo una y otra vez.");
 ES["Free bet chips: what the bet pays goes to your money."] = "Fichas de apuesta gratis: lo que pague la apuesta va a tu dinero.";
 rx(String.raw`On the table now: (${NUM}) free\.`, "En la mesa ahora: $1 gratis.");
+// 🔬 space research & crafting (js/34d-space-research.js)
+const SP_ES_CRAFT = { "Resonance Prisms": "Prismas de resonancia", "Voidsteel Ingots": "Lingotes de acero del vacío", "Star Sails": "Velas estelares", "Chrono Chips": "Cronochips" };
+const SP_RX_CRAFT = Object.keys(SP_ES_CRAFT).join("|"), spC = (c) => SP_ES_CRAFT[c] || c;
+const SP_ES_RES = { "Space crafting": "Artesanía espacial", "Extra ship slots": "Hangares extra", "Cargo holds": "Bodegas de carga", "Ship engines": "Motores de nave", "Outposts": "Puestos avanzados",
+  "Unlocks crafting: 60 s per unit": "Desbloquea la artesanía: 60 s por unidad", "Crafting: 45 s per unit": "Artesanía: 45 s por unidad", "Crafting: 30 s per unit": "Artesanía: 30 s por unidad",
+  "+1 ship": "+1 nave", "+1 ship (2 in total)": "+1 nave (2 en total)", "+1 ship (3 in total)": "+1 nave (3 en total)",
+  "+10 goods on every trip": "+10 bienes en cada viaje", "+10 goods on every trip (+20 in total)": "+10 bienes en cada viaje (+20 en total)", "+15 goods on every trip (+35 in total)": "+15 bienes en cada viaje (+35 en total)",
+  "−5% trip time": "−5 % de tiempo de viaje", "−5% trip time (−10% in total)": "−5 % de tiempo de viaje (−10 % en total)", "−10% trip time (−20% in total)": "−10 % de tiempo de viaje (−20 % en total)",
+  "+1 outpost": "+1 puesto avanzado", "+1 outpost (2 in total)": "+1 puesto avanzado (2 en total)", "+1 outpost (3 in total)": "+1 puesto avanzado (3 en total)" };
+const SP_RX_RES = Object.keys(SP_ES_RES).map(k => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"), spRs = (x) => SP_ES_RES[x] || x;
+Object.assign(ES, SP_ES_CRAFT, SP_ES_RES, { "Research": "Investigación", "Space research": "Investigación espacial", "scientists": "científicos", "Crafting": "Artesanía", "Crafted": "Fabricado",
+  "Each level costs 🔬 scientists, money and space resources. The last levels need resources you craft yourself.": "Cada nivel cuesta 🔬 científicos, dinero y recursos espaciales. Los últimos niveles necesitan recursos que fabricas tú.",
+  "to unlock crafting.": "para desbloquear la artesanía.", "Fully researched": "Investigado del todo", "Cancel (get your goods back)": "Cancelar (recuperas tus bienes)",
+  "No outposts yet.": "Todavía no hay puestos avanzados.", "Outpost": "Puesto avanzado", "Build outpost": "Construir puesto avanzado", "Close the outpost": "Cerrar el puesto avanzado",
+  "Close this outpost?": "¿Cerrar este puesto avanzado?", "Close it": "Cerrarlo", "It stops making goods, and you can build it again in another system.": "Deja de producir bienes, y podrás construirlo de nuevo en otro sistema.",
+  "Crafting cancelled. Your goods are back.": "Artesanía cancelada. Has recuperado tus bienes.",
+  "a base in this system that makes": "una base en este sistema que produce", "makes": "produce",
+  "Pick a system on the 🌌 star map you are 😊 Friendly with and build an outpost there. Each one makes 20 of that race's goods an hour.": "Elige en el 🌌 mapa estelar un sistema con el que tengas una amistad 😊 Amistosa y construye allí un puesto avanzado. Cada uno produce 20 bienes de esa raza por hora.",
+});
+rx(String.raw`Research level (\d)`, "Investigar nivel $1");
+hrx(String.raw`<span class="ico">🔬<\/span>Research`, `<span class="ico">🔬</span>Investigación`); hrx(String.raw`<span>🔬<\/span>Research`, "<span>🔬</span>Investigación");
+hrx(String.raw`🔒 Research <b>🛠️ Space crafting<\/b> to unlock crafting\.`, "🔒 Investiga <b>🛠️ Artesanía espacial</b> para desbloquear la artesanía.");
+hrx(String.raw`<b>Level (\d):<\/b> (${SP_RX_RES})`, (m, n, x) => `<b>Nivel ${n}:</b> ${spRs(x)}`);
+rx(String.raw`(✅ )?Now: (${SP_RX_RES})`, (m, e, x) => `${e || ""}Ahora: ${spRs(x)}`);
+rx(String.raw`(🔬 )?Research done: (\S+) <b>(${SP_RX_RES}) (\d)<\/b> · (${SP_RX_RES})\.`, (m, e, i, nm, n, x) => `${e || ""}Investigación terminada: ${i} <b>${spRs(nm)} ${n}</b> · ${spRs(x)}.`);
+rx(String.raw`(🛠️ )?Crafting done: (\S+) (\d+) (${SP_RX_CRAFT})\.`, (m, e, i, n, c) => `${e || ""}Artesanía terminada: ${i} ${n} ${spC(c)}.`);
+hrx(String.raw`Crafting <b>(\d+)<\/b> (${SP_RX_CRAFT}) · ready in <b>([\d:]+)<\/b>`, (m, n, c, t) => `Fabricando <b>${n}</b> ${spC(c)} · listo en <b>${t}</b>`);
+rx(String.raw`(${SP_RX_CRAFT}) · ready in`, (m, c) => `${spC(c)} · listo en`);
+rx(String.raw`Mix 2 \+ 2 alien goods into 1 crafted resource, in batches of 25, 50, 75 or 100\. One batch at a time: (\d+) seconds a unit\. It keeps going while the game is closed\.`,
+  "Combina 2 + 2 bienes alienígenas en 1 recurso fabricado, en lotes de 25, 50, 75 o 100. Un lote a la vez: $1 segundos por unidad. Sigue funcionando con el juego cerrado.");
+rx(String.raw`(🏗️ )?Outposts \((\d+) \/ (\d+)\)`, (m, e, a, b) => `${e || ""}Puestos avanzados (${a} / ${b})`);
+rx(String.raw`Outposts: (\d+) \/ (\d+) built( · research more 🏗️ Outposts or close one to build here)?\.`, (m, a, b, x) => `Puestos avanzados: ${a} / ${b} construidos${x ? " · investiga más 🏗️ Puestos avanzados o cierra uno para construir aquí" : ""}.`);
+rx(String.raw`Goods made so far: ([\d.,]+)`, "Bienes producidos hasta ahora: $1");
+rx(String.raw`(${SP_RX_GOOD}) an hour, no ship needed\. One per system\.`, (m, g) => `${spG(g)} por hora, sin necesidad de nave. Uno por sistema.`);
+rx(String.raw`(${SP_RX_GOOD}) an hour, even while the game is closed\.`, (m, g) => `${spG(g)} por hora, incluso con el juego cerrado.`);
+rx(String.raw`(🏗️ )?Outpost built at the (${SP_RX_NAME})! It makes (\d+) (${SP_RX_GOOD}) an hour\.`, (m, e, n, x, g) => `${e || ""}¡Puesto avanzado construido en los ${spN(n)}! Produce ${x} ${spG(g)} por hora.`);
+hrx(String.raw`<b>Outpost:<\/b> you can build one here when you are <b>😊 Friendly<\/b> with the (${SP_RX_NAME})\.`, (m, n) => `<b>Puesto avanzado:</b> podrás construir uno aquí cuando tu amistad con los ${spN(n)} sea <b>😊 Amistosa</b>.`);
+rx(String.raw`(\S+) (${SP_RX_NAME}): (\S+) (\d+) (${SP_RX_GOOD}) an hour · ([\d.,]+) made`, (m, e, n, i, x, g, k) => `${e} ${spN(n)}: ${i} ${x} ${spG(g)} por hora · ${k} producidos`);
+H("🔬 <b>Research</b> (🌌 Space → Research): 5 research lines with 3 levels each. Every level costs 🔬 scientists (10/20/30), money (250,000/500,000/750,000 scoin) and space resources; the last levels need crafted resources. 🛠️ Space crafting unlocks crafting (60/45/30 s per unit), 🚀 Extra ship slots give +1 ship each, 📦 Cargo holds add +10/+10/+15 goods to every gift and trade route trip, 🔥 Ship engines cut trip times by 5%/5%/10%, and 🏗️ Outposts let you build +1 outpost each.",
+  "🔬 <b>Investigación</b> (🌌 Espacio → Investigación): 5 líneas de investigación con 3 niveles cada una. Cada nivel cuesta 🔬 científicos (10/20/30), dinero (250.000/500.000/750.000 scoin) y recursos espaciales; los últimos niveles necesitan recursos fabricados. 🛠️ Artesanía espacial desbloquea la artesanía (60/45/30 s por unidad), 🚀 Hangares extra da +1 nave por nivel, 📦 Bodegas de carga suma +10/+10/+15 bienes a cada viaje de regalo y de ruta comercial, 🔥 Motores de nave reduce los viajes un 5 %/5 %/10 %, y 🏗️ Puestos avanzados te deja construir +1 puesto avanzado por nivel.");
+H("🛠️ <b>Crafting:</b> mix 2 + 2 alien goods into 1 crafted resource, in batches of 25, 50, 75 or 100 (one batch at a time; it keeps going while the game is closed). 🔷 Resonance Prisms = Star Crystals + Echo Pearls · 🔩 Voidsteel Ingots = Nebula Cores + Void Gold · ⛵ Star Sails = Pirate Charts + Living Silk · 💾 Chrono Chips = Time Shards + Nano Parts.",
+  "🛠️ <b>Artesanía:</b> combina 2 + 2 bienes alienígenas en 1 recurso fabricado, en lotes de 25, 50, 75 o 100 (un lote a la vez; sigue funcionando con el juego cerrado). 🔷 Prismas de resonancia = Cristales estelares + Perlas de eco · 🔩 Lingotes de acero del vacío = Núcleos de nebulosa + Oro del vacío · ⛵ Velas estelares = Cartas piratas + Seda viva · 💾 Cronochips = Fragmentos del tiempo + Nanopiezas.");
+H("🏗️ <b>Outposts:</b> build one in a system you are 😊 Friendly with (one per system). It makes 20 of that race's goods an hour, even while the game is closed. Close it any time to build it somewhere else.",
+  "🏗️ <b>Puestos avanzados:</b> construye uno en un sistema con el que tengas una amistad 😊 Amistosa (uno por sistema). Produce 20 bienes de esa raza por hora, incluso con el juego cerrado. Ciérralo cuando quieras para construirlo en otro sitio.");
+H("🔬 New in 🌌 Space: <b>Research</b>! 5 research lines (crafting, extra ships, cargo holds, engines and outposts), each with 3 levels.",
+  "🔬 Novedad en 🌌 Espacio: ¡<b>Investigación</b>! 5 líneas de investigación (artesanía, naves extra, bodegas de carga, motores y puestos avanzados), cada una con 3 niveles.");
+H("🛠️ Space <b>crafting</b>: mix alien goods into 4 new resources (🔷 Resonance Prisms, 🔩 Voidsteel Ingots, ⛵ Star Sails and 💾 Chrono Chips), in batches of 25 to 100. You need them for the top research levels.",
+  "🛠️ <b>Artesanía</b> espacial: combina bienes alienígenas en 4 recursos nuevos (🔷 Prismas de resonancia, 🔩 Lingotes de acero del vacío, ⛵ Velas estelares y 💾 Cronochips), en lotes de 25 a 100. Los necesitas para los niveles más altos de investigación.");
+H("🏗️ <b>Outposts</b>: build a base in a friendly system and it makes that race's goods on its own, no ship needed.",
+  "🏗️ <b>Puestos avanzados</b>: construye una base en un sistema amistoso y producirá los bienes de esa raza por sí sola, sin necesidad de nave.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
