@@ -136,7 +136,7 @@ function spDriftPanel() {
   }
   const L = spRL("harvest"), can = spHarvFree() > 0, fr = spFrigFree() > 0;
   return `<div class="spCardHead"><div class="spCardSys" style="background-image:url(assets/space/sys-drift.webp)"></div>
-      <div class="spHeadTxt"><h3>🌫️ Stardust Drift <span class="muted">· Pirate space</span></h3>
+      <div class="spHeadTxt"><h3 class="spH"><img class="spI big" src="assets/space/sys-drift.webp" alt="">Stardust Drift <span class="muted">· Pirate space</span></h3>
         <p class="spBio">A glittering cloud of stardust left behind by dying stars. Harvesters can farm it, but wild pirates hunt here and nobody controls them, not even the Void Corsairs.</p></div></div>
     <div class="spInfo"><div class="spRow">${spI("distance")}<span><b>Distance:</b> ${SP_DRIFT.min} min each way · farming takes 1 hour</span></div>
       <div class="spRow">🏴‍☠️<span><b>Pirates:</b> ${SP_RAID[0] * 100}% chance of an attack in the first half hour of farming, ${SP_RAID[1] * 100}% in the second. Without an escort they take all the stardust farmed so far. A 🛡️ frigate drives them off, but has a ${SP_FRIG_LOSE * 100}% chance to be destroyed in each attack (and then the stardust is lost too).</span></div></div>

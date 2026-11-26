@@ -2867,7 +2867,7 @@ rx(String.raw`(🌫️ )?Your courier ship found the <b>Stardust Drift<\/b>: a g
   `${e || ""}Tu nave mensajera ha encontrado la <b>Deriva de Polvo Estelar</b>: una nube brillante llena de polvo estelar… y de piratas. ${x.startsWith("Send") ? "¡Envía una ✨ cosechadora de polvo estelar a recogerlo!" : "Investiga ✨ Cosechadoras de polvo estelar (🌌 Espacio → Investigación) para recogerlo."}`);
 hrx(String.raw`Stardust Drift<small>(🏴‍☠️ Pirate space|✨ (\d+) harvesting)<\/small>`, (m, x, n) => `Deriva de Polvo Estelar<small>${n ? `✨ ${n} cosechando` : "🏴‍☠️ Espacio pirata"}</small>`);
 rx(String.raw`(\d+) harvesting`, "$1 cosechando");
-hrx(String.raw`🌫️ Stardust Drift <span>· Pirate space<\/span>`, "🌫️ Deriva de Polvo Estelar <span>· Espacio pirata</span>");
+hrx(String.raw`(\{i\}|🌫️ )?Stardust Drift <span>· Pirate space<\/span>`, (m, i) => `${i || ""}Deriva de Polvo Estelar <span>· Espacio pirata</span>`);
 hrx(String.raw`<b>Distance:<\/b> (\d+) min each way · farming takes 1 hour`, "<b>Distancia:</b> $1 min por trayecto · la cosecha dura 1 hora");
 hrx(String.raw`<b>Pirates:<\/b> (.+)`, (m, x) => `<b>Piratas:</b> ${ES[x] || x}`);
 hrx(String.raw`(?:Research|Investigación) <b>✨ Stardust Harvesters<\/b> \(🌌 Space → Research\) to farm stardust here\.`, "Investiga <b>✨ Cosechadoras de polvo estelar</b> (🌌 Espacio → Investigación) para cosechar polvo estelar aquí.");
@@ -19508,7 +19508,7 @@ function spDriftPanel() {
   }
   const L = spRL("harvest"), can = spHarvFree() > 0, fr = spFrigFree() > 0;
   return `<div class="spCardHead"><div class="spCardSys" style="background-image:url(assets/space/sys-drift.webp)"></div>
-      <div class="spHeadTxt"><h3>🌫️ Stardust Drift <span class="muted">· Pirate space</span></h3>
+      <div class="spHeadTxt"><h3 class="spH"><img class="spI big" src="assets/space/sys-drift.webp" alt="">Stardust Drift <span class="muted">· Pirate space</span></h3>
         <p class="spBio">A glittering cloud of stardust left behind by dying stars. Harvesters can farm it, but wild pirates hunt here and nobody controls them, not even the Void Corsairs.</p></div></div>
     <div class="spInfo"><div class="spRow">${spI("distance")}<span><b>Distance:</b> ${SP_DRIFT.min} min each way · farming takes 1 hour</span></div>
       <div class="spRow">🏴‍☠️<span><b>Pirates:</b> ${SP_RAID[0] * 100}% chance of an attack in the first half hour of farming, ${SP_RAID[1] * 100}% in the second. Without an escort they take all the stardust farmed so far. A 🛡️ frigate drives them off, but has a ${SP_FRIG_LOSE * 100}% chance to be destroyed in each attack (and then the stardust is lost too).</span></div></div>
