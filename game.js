@@ -2716,6 +2716,58 @@ Object.assign(ES, { "platinum": "platino", "gold": "oro", "silver": "plata", "br
 Object.assign(ES, { "bronze · the basic coin": "bronce · la moneda básica", "silver · = 1,000,000 bcoin": "plata · = 1.000.000 bcoin", "gold · = 1,000,000 scoin": "oro · = 1.000.000 scoin",
   "platinum · = 1,000,000 gcoin": "platino · = 1.000.000 gcoin", "= 1,000,000,000,000,000,000 bcoin": "= 1.000.000.000.000.000.000 bcoin",
   "Money is always shown in the biggest coin that fits, so 3,400,000 bcoin shows as 3.4 scoin. Hover over your money to see it in every coin.": "El dinero se muestra siempre en la moneda más grande que cabe: 3.400.000 bcoin aparecen como 3,4 scoin. Pasa el ratón por encima de tu dinero para verlo en todas las monedas." });
+// 🌌 space politics & contracts (js/34c-space-politics.js)
+Object.assign(ES, { "Contracts": "Contratos", "Contracts board": "Tablón de contratos", "Offers": "Ofertas", "Deliver": "Entregar", "Accept": "Aceptar", "Give up": "Renunciar", "Keep it": "Quedármelo",
+  "Give up this contract?": "¿Renunciar a este contrato?", "Done": "Hechos", "Late": "Con retraso", "Failed": "Fallidos", "Delivered": "Entregado",
+  "No offers right now.": "Ahora mismo no hay ofertas.", "Not enough goods yet.": "Todavía no tienes suficientes bienes.", "All ships are busy.": "Todas las naves están ocupadas.",
+  "Meet at least 2 races (and be Acquainted with one) to get contracts.": "Conoce al menos 2 razas (y ten una amistad Conocida con una) para recibir contratos.",
+  "Races pay well for goods from other worlds. Accept a contract (up to 2 at a time), then send a ship with the goods before the deadline: money and friendship. Late: half pay and no friendship. Missing the deadline or giving up: −50 friendship.":
+    "Las razas pagan bien por bienes de otros mundos. Acepta un contrato (hasta 2 a la vez) y envía una nave con los bienes antes de que acabe el plazo: dinero y amistad. Con retraso: la mitad del pago y nada de amistad. Si se acaba el plazo o renuncias: −50 de amistad.",
+  "A new contract arrives in": "Llega un contrato nuevo en", "Deliver within": "Entrégalo en", "On its way · arrives in": "En camino · llega en", "deadline in": "el plazo acaba en",
+  "they start to cool off in": "empezarán a enfriarse en", "without a gift, a contract or a trade route.": "sin un regalo, un contrato o una ruta comercial.",
+  "Rivals": "Rivales", "No rivals": "Sin rivales", "Warm": "Cálida", "Cooling off": "Enfriándose", "Contract cancelled.": "Contrato cancelado.",
+  "Warm:": "Cálida:", "Rivals:": "Rivales:", "No rivals:": "Sin rivales:", "Cooling off:": "Enfriándose:",
+  "your trade route keeps them happy.": "tu ruta comercial los mantiene contentos.",
+  "−40 friendship an hour (never below 😊 Friendly). Send a gift or open a trade route.": "−40 de amistad por hora (nunca por debajo de 😊 Amistosa). Envía un regalo o abre una ruta comercial.",
+  "You sold a lot of it lately. The price recovers by itself over a few hours.": "Has vendido mucho últimamente. El precio se recupera solo en unas horas.",
+  "Sell the goods your ships bring home. Prices move every 30 minutes: sell when they are high. Selling a lot at once floods the market: every unit pays a little less, and the price recovers over a few hours. The further away a race lives, the more its goods are worth. Once you are 💖 Allies with a race, you can buy its goods here too.":
+    "Vende los bienes que traen tus naves. Los precios cambian cada 30 minutos: vende cuando estén altos. Vender mucho de golpe satura el mercado: cada unidad se paga un poco menos, y el precio se recupera en unas horas. Cuanto más lejos vive una raza, más valen sus bienes. Cuando tu amistad con una raza sea 💖 Aliada, también podrás comprar aquí sus bienes.",
+});
+hrx(String.raw`<span>📜</span>Contracts`, "<span>📜</span>Contratos");
+hrx(String.raw`<span class="ico">📜</span>Contracts`, `<span class="ico">📜</span>Contratos`);
+rx(String.raw`\+(\d+) friendship`, "+$1 de amistad");
+rx(String.raw`−(\d+)% flooded`, "−$1 % saturado");
+rx(String.raw`(\d+) h to deliver once accepted · offer ends in`, "$1 h para entregarlo una vez aceptado · la oferta acaba en");
+rx(String.raw`\(the ship needs (\d+) min to get there\)`, "(la nave tarda $1 min en llegar)");
+rx(String.raw`Your contracts \((\d+)\/(\d+)\)`, "Tus contratos ($1/$2)");
+hrx(String.raw`✍️ Your contracts \((\d+)\/(\d+)\)`, "✍️ Tus contratos ($1/$2)");
+hrx(String.raw`✅ Done: <b>(\d+)<\/b>`, "✅ Hechos: <b>$1</b>"); hrx(String.raw`🐢 Late: <b>(\d+)<\/b>`, "🐢 Con retraso: <b>$1</b>"); hrx(String.raw`❌ Failed: <b>(\d+)<\/b>`, "❌ Fallidos: <b>$1</b>");
+hrx(String.raw`<b>Rivals:<\/b> the (${SP_RX_NAME})\. Friendship you earn here costs (\d+)% of it with them \(never below 😊 Friendly\)\.`, (m, n, x) => `<b>Rivales:</b> los ${spN(n)}. La amistad que ganes aquí te cuesta un ${x} % de ella con ellos (nunca por debajo de 😊 Amistosa).`);
+hrx(String.raw`<b>Rivals:<\/b> a race you haven't met yet\. Friendship you earn here costs (\d+)% of it with them \(never below 😊 Friendly\)\.`, "<b>Rivales:</b> una raza que aún no conoces. La amistad que ganes aquí te cuesta un $1 % de ella con ellos (nunca por debajo de 😊 Amistosa).");
+hrx(String.raw`<b>No rivals:<\/b> everyone respects the (${SP_RX_NAME})\.`, (m, n) => `<b>Sin rivales:</b> todo el mundo respeta a los ${spN(n)}.`);
+rx(String.raw`(😒 )?The (${SP_RX_NAME}) didn't like you helping their rivals, the (${SP_RX_NAME}): −(\d+) friendship\.`, (m, e, a, b, x) => `${e || ""}A los ${spN(a)} no les ha gustado que ayudes a sus rivales, los ${spN(b)}: −${x} de amistad.`);
+hrx(String.raw`❄️ The (${SP_RX_NAME}) feel forgotten and are now only <b>(${SP_RX_LV})<\/b>\. Send a gift or keep a trade route running\.`, (m, n, l) => `❄️ Los ${spN(n)} se sienten olvidados y ahora vuestra amistad solo es <b>${spL(l)}</b>. Envíales un regalo o mantén una ruta comercial.`);
+rx(String.raw`The (${SP_RX_NAME}) feel forgotten and are now only <b>(${SP_RX_LV})<\/b>\. Send a gift or keep a trade route running\.`, (m, n, l) => `Los ${spN(n)} se sienten olvidados y ahora vuestra amistad solo es <b>${spL(l)}</b>. Envíales un regalo o mantén una ruta comercial.`);
+rx(String.raw`(📜 )?You missed the deadline of a contract for the (${SP_RX_NAME})(?:: −(\d+) friendship)?\.`, (m, e, n, x) => `${e || ""}Se ha acabado el plazo de un contrato para los ${spN(n)}${x ? `: −${x} de amistad` : ""}.`);
+rx(String.raw`(📜 )?Contract cargo on its way to the (${SP_RX_NAME}) \((\d+) min\)\.`, (m, e, n, x) => `${e || ""}La carga del contrato va de camino a los ${spN(n)} (${x} min).`);
+rx(String.raw`(📜 )?Contract cancelled: the (${SP_RX_NAME}) are disappointed \(−(\d+) friendship\)\.`, (m, e, n, x) => `${e || ""}Contrato cancelado: los ${spN(n)} están decepcionados (−${x} de amistad).`);
+rx(String.raw`(🏴‍☠️ )?Pirates stole the contract cargo for the (${SP_RX_NAME})\. The contract is lost\.`, (m, e, n) => `${e || ""}Los piratas han robado la carga del contrato para los ${spN(n)}. El contrato se ha perdido.`);
+rx(String.raw`(📜 )?Contract delivered late to the (${SP_RX_NAME}): half pay, (.+)\.`, (m, e, n, x) => `${e || ""}Contrato entregado con retraso a los ${spN(n)}: la mitad del pago, ${x}.`);
+rx(String.raw`(📜 )?Contract done! The (${SP_RX_NAME}) paid (.+) and \+(\d+) friendship\.`, (m, e, n, x, p) => `${e || ""}¡Contrato cumplido! Los ${spN(n)} han pagado ${x} y +${p} de amistad.`);
+rx(String.raw`(📜 )?Contract for the (${SP_RX_NAME})`, (m, e, n) => `${e || ""}Contrato para los ${spN(n)}`);
+rx(String.raw`The (${SP_RX_NAME}) will be disappointed: −(\d+) friendship\.`, (m, n, x) => `Los ${spN(n)} se decepcionarán: −${x} de amistad.`);
+H("⚔️ <b>Rivals:</b> some races dislike each other (Aurumites and Void Corsairs, Kragg and Lumerians, Glimmerkin and Vynari, Oracles of Vael and Cogitarium). Friendship you earn with one (gifts, contracts) costs 30% of it with its rival, but this never drops a race below 😊 Friendly. The First Ones have no rivals.",
+  "⚔️ <b>Rivales:</b> algunas razas no se soportan (Aurumitas y Corsarios del Vacío, Kragg y Lumerianos, Glimmerkin y Vynari, Oráculos de Vael y Cogitarium). La amistad que ganes con una (regalos, contratos) te cuesta un 30 % de ella con su rival, pero así nunca bajará una raza de 😊 Amistosa. Los Primeros no tienen rivales.");
+H("❄️ <b>Keeping friends:</b> once a race has been 💛 Trusted, it cools off after 24 hours without a gift, a contract or a rescue: −40 friendship an hour, never below 😊 Friendly. A running trade route keeps them warm.",
+  "❄️ <b>Cuidar las amistades:</b> cuando una raza ha llegado a 💛 De confianza, se enfría tras 24 horas sin un regalo, un contrato o un rescate: −40 de amistad por hora, nunca por debajo de 😊 Amistosa. Una ruta comercial en marcha la mantiene cálida.");
+H("📉 <b>Supply and demand:</b> selling a lot of one good at once floods the market: every unit pays a little less, and the price shows how flooded it is. It recovers by itself (half of the drop is gone after 3 hours).",
+  "📉 <b>Oferta y demanda:</b> vender mucho de un mismo bien de golpe satura el mercado: cada unidad se paga un poco menos, y el precio muestra lo saturado que está. Se recupera solo (la mitad de la bajada desaparece en 3 horas).");
+H("📜 <b>Contracts</b> (🌌 Space → Contracts): races you are Acquainted with post jobs: bring some goods from other worlds within a few hours. Accept up to 2, then send a ship with the goods: money and +150 friendship. Late: half pay and no friendship. Missing the deadline or giving up: −50 friendship. A new offer comes every hour (up to 3).",
+  "📜 <b>Contratos</b> (🌌 Espacio → Contratos): las razas con las que tienes una amistad Conocida publican encargos: llévales bienes de otros mundos en unas horas. Acepta hasta 2 y envía una nave con los bienes: dinero y +150 de amistad. Con retraso: la mitad del pago y nada de amistad. Si se acaba el plazo o renuncias: −50 de amistad. Llega una oferta nueva cada hora (hasta 3).");
+H("🌌 Space politics: races now have ⚔️ <b>rivals</b> (helping one makes its rival a little jealous), 💖 old allies slowly cool off unless you send a gift or keep a trade route running (never below 😊 Friendly), and selling lots of one good 📉 lowers its price for a few hours.",
+  "🌌 Política espacial: ahora las razas tienen ⚔️ <b>rivales</b> (ayudar a una pone un poco celosa a su rival), 💖 los viejos aliados se enfrían poco a poco si no les envías un regalo o mantienes una ruta comercial (nunca por debajo de 😊 Amistosa), y vender mucho de un mismo bien 📉 baja su precio durante unas horas.");
+H("📜 New in 🌌 Space: the <b>Contracts board</b>. Races post timed jobs: bring them goods from other worlds before the deadline for money and friendship.",
+  "📜 Novedad en 🌌 Espacio: el <b>tablón de contratos</b>. Las razas publican encargos con plazo: llévales bienes de otros mundos antes de que se acabe para ganar dinero y amistad.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -4318,7 +4370,7 @@ function showView(view) {
   $("achievementsView").hidden = view !== "achievements";
   $("wikiView").hidden = view !== "wiki";
   if ($("profileView")) $("profileView").hidden = view !== "profile";
-  if (view === "profile" && (__eocLoaded >= 45 && typeof renderProfile === "function")) renderProfile();
+  if (view === "profile" && (__eocLoaded >= 46 && typeof renderProfile === "function")) renderProfile();
   if ($("profileBtn")) $("profileBtn").classList.toggle("on", view === "profile");
   // 🎮 Mini-games: the hub, or one game page (state.gamePage: null = hub, "art", "mine")
   const gp = view === "games" ? (state.gamePage || null) : undefined;
@@ -10945,6 +10997,10 @@ function wikiLogistics() {
     <p>🚚 <b>Logistics XP:</b> every gift trip gives ${LOGI_XP_RATE.ship} XP per minute of the round trip when the ship gets home. Exploring gives no XP.</p>
     <p>🛣️ <b>Trade routes</b> (from 😊 Friendly): one ship flies to the race and back for good, bringing ${SP_ROUTE_GOODS[3]} goods every trip (${SP_ROUTE_GOODS[4]} at 💛 Trusted and ${SP_ROUTE_GOODS[5]} at 💖 Allies, with trips 15% and 30% faster). It keeps going while the game is closed and gives Logistics XP like a gift trip. Stop it any time: the ship comes home after its trip.</p>
     <p>🏪 <b>Market</b> (🌌 Space → Market): sell alien goods for money. A good is worth about ${SP_PRICE_MIN} × the race's distance (in minutes) minutes of your business income, and every price moves up or down every 30 minutes. Once you are 💖 Allies with a race, you can also buy its goods there; buying always costs more than the best selling price.</p>
+    <p>⚔️ <b>Rivals:</b> some races dislike each other (Aurumites and Void Corsairs, Kragg and Lumerians, Glimmerkin and Vynari, Oracles of Vael and Cogitarium). Friendship you earn with one (gifts, contracts) costs ${SP_RIVAL_CUT * 100}% of it with its rival, but this never drops a race below 😊 Friendly. The First Ones have no rivals.</p>
+    <p>❄️ <b>Keeping friends:</b> once a race has been 💛 Trusted, it cools off after ${SP_COOL.after / 3600e3} hours without a gift, a contract or a rescue: −${SP_COOL.perHour} friendship an hour, never below 😊 Friendly. A running trade route keeps them warm.</p>
+    <p>📉 <b>Supply and demand:</b> selling a lot of one good at once floods the market: every unit pays a little less, and the price shows how flooded it is. It recovers by itself (half of the drop is gone after ${SP_SAT.half / 3600e3} hours).</p>
+    <p>📜 <b>Contracts</b> (🌌 Space → Contracts): races you are Acquainted with post jobs: bring some goods from other worlds within a few hours. Accept up to ${SP_CON.maxActive}, then send a ship with the goods: money and +${SP_CON.pts} friendship. Late: half pay and no friendship. Missing the deadline or giving up: −${SP_CON.fail} friendship. A new offer comes every hour (up to ${SP_CON.board}).</p>
     <p>⭐ <b>Special requests:</b> sometimes a race asks for 50% more within 12 hours, for ${SP_SPECIAL.pts}× friendship and extra goods. Let it run out and they are offended (−${SP_SPECIAL.offend} friendship).</p>
     <p>☄️ <b>On the way:</b> an asteroid field can make a trip ${SP_EV.delay * 100}% longer; your ship may rescue a lost alien ship (+${SP_EV.rescue} friendship); and pirates may stop it: pay a toll (${SP_EV.toll} min of income) or run for it (50% chance to lose the cargo). Pirates leave you alone once the Void Corsairs are 💛 Trusted.</p>
     ${wt(["Race", "💛 Trusted", "💖 Allies"], Object.entries(SP_BONUS).map(([k, B]) => [SP.races[k].found ? `${SP_RACES[k].emoji} ${SP_RACES[k].name}` : "❓ Unknown", B.text(B.val[0], 0), B.text(B.val[1], 1)]))}
@@ -13179,6 +13235,8 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "🌌 Space politics: races now have ⚔️ <b>rivals</b> (helping one makes its rival a little jealous), 💖 old allies slowly cool off unless you send a gift or keep a trade route running (never below 😊 Friendly), and selling lots of one good 📉 lowers its price for a few hours.",
+    "📜 New in 🌌 Space: the <b>Contracts board</b>. Races post timed jobs: bring them goods from other worlds before the deadline for money and friendship.",
     "💎 New coin: <b>pcoin</b> (platinum). 1 pcoin = 1,000,000 gcoin; money switches to pcoin from 1,000,000 gcoin. The money boxes can be set to pcoin too.",
   ] },
   { date: "25 November 2026", title: "Empire of Coins", items: [
@@ -18284,15 +18342,17 @@ function spProcess() {
     if (!tr.arrived && now >= tr.t1) {
       tr.arrived = true; changed = true;
       if (tr.k === "explore" && !r.found) {
-        r.found = true; r.foundAt = now; SP.stats.explored++;
+        r.found = true; r.foundAt = now; r.warmAt = now; SP.stats.explored++;
         tr.goods = 3; spMakeReq(tr.to);
         msgs.push(`👽 First contact! Your ship met the <b>${R.name}</b> (${R.title}). See 🚢 Logistics → 🌌 Space.`);
+      } else if (tr.k === "contract") { if ((__eocLoaded >= 44 && typeof spConArrive === "function")) spConArrive(tr, msgs);
       } else if (tr.k === "gift" && tr.lost) {   // 🏴‍☠️ robbed on the way
         spMakeReq(tr.to);
         msgs.push(`🏴‍☠️ Pirates stole your gift for the ${R.name}. They will ask for something new.`);
       } else if (tr.k === "gift") {
         const before = spLevel(tr.to), pts = tr.cargo.pts || (tr.cargo.fav ? SP_FAV_PTS : SP_PTS);
         r.pts += pts; r.gifts = (r.gifts || 0) + 1; SP.stats.gifts++;
+        if ((__eocLoaded >= 44 && typeof spWarm === "function")) { spWarm(tr.to); spRivalHit(tr.to, pts, msgs); }
         if (tr.cargo.special) SP.stats.specials = (SP.stats.specials || 0) + 1;
         const after = spLevel(tr.to);
         tr.goods = spReturnGoods(after) + (after > before ? 5 * after : 0) + (tr.cargo.special ? 5 * after : 0);
@@ -18321,13 +18381,15 @@ function spProcess() {
       spMakeReq(k, r.req && r.req.kind); changed = true;
     }
   }
+  if ((__eocLoaded >= 44 && typeof spConTick === "function")) { const n0 = SP.con.offers.length + SP.con.active.length; spCoolTick(now, msgs); spConTick(now, msgs);
+    if (n0 !== SP.con.offers.length + SP.con.active.length) changed = true; }
   if (msgs.length > 3) showNotice(`🌌 Space: ${msgs.length} updates while you were away. See 🚢 Logistics → 🌌 Space.`);
   else msgs.forEach(m => showNotice(m));
   if (changed) { save(); if (spShown()) renderSpace(); }
 }
 
 /* ----- 🖼️ page ----- */
-var spPageOn = () => state.logiPage === "space" || state.logiPage === "market";
+var spPageOn = () => state.logiPage === "space" || state.logiPage === "market" || state.logiPage === "contracts";
 var spShown = () => state.view === "logistics" && spPageOn() && !$("logisticsView").hidden;
 // 🛰️ flight paths are gentle curves bending away from the middle; a ship flies from the edge of Home to the edge of the system
 var spAsp = () => { const m = document.querySelector(".spMap"); return m && m.clientHeight ? m.clientWidth / m.clientHeight : 16 / 9; };
@@ -18424,7 +18486,7 @@ document.addEventListener("pointercancel", (e) => { spPtrs.delete(e.pointerId); 
 window.addEventListener("resize", () => spZoomApply());
 function spTripLine(tr) {
   const R = SP_RACES[tr.to], now = Date.now();
-  const what = tr.k === "explore" ? (SP.races[tr.to].found ? `Exploring: ${R.name}` : "Exploring an unknown system") : tr.k === "route" ? `🛣️ Trade route: ${R.name}` : `🎁 Gift for the ${R.name}`;
+  const what = tr.k === "explore" ? (SP.races[tr.to].found ? `Exploring: ${R.name}` : "Exploring an unknown system") : tr.k === "route" ? `🛣️ Trade route: ${R.name}` : tr.k === "contract" ? `📜 Contract for the ${R.name}` : `🎁 Gift for the ${R.name}`;
   const st = now < tr.t1 ? `arrives in <b data-spt="${tr.t1}">${spClock(tr.t1 - now)}</b>` : `coming home, back in <b data-spt="${tr.t2}">${spClock(tr.t2 - now)}</b>`;
   return `<div class="spTrip">🚀 ${what} · ${st}${tr.lost ? " · 🏴‍☠️ cargo stolen" : ""}</div>`;
 }
@@ -18464,12 +18526,13 @@ function spPanelHtml() {
       <div class="spRow">${spI("likes")}<span><b>Also likes:</b> ${spKindName(R.wants[1])} <span class="muted">(+${SP_PTS})</span></span></div>`}
       <div class="spRow">${spI("sendback")}<span><b>They send back:</b> ${spGood(R.good)} <span class="muted">(${spReturnGoods(L)} per gift, more when you level up)</span></span></div>
       <div class="spRow">${spI("distance")}<span><b>Distance:</b> ${R.min} min each way</span></div></div>
+    ${(__eocLoaded >= 44 && typeof spPoliticsHtml === "function") ? spPoliticsHtml(spSel) : ""}
     ${trip ? spTripLine(trip) : q ? `<div class="spReq ${q.special ? "special" : ""}">${q.special ? `<div class="spSpecial spRow">${spI("special")}<span>Special request! Bring it in time for extra friendship and goods, or they will be offended (−${SP_SPECIAL.offend}).</span></div>` : ""}<div class="spRow">${spI("request")}<span><b>Their request:</b> ${spReqText(q)}</span></div>
         <div class="muted">+${spReqPts(q)} friendship${q.fav ? " (their favourite!)" : ""} · ${q.special ? "time left" : "a new request in"} <span data-spt="${q.until}">${spClock(q.until - Date.now())}</span></div>
         <div class="spBtns"><button class="btn big" data-spx="gift" ${can && spFree() ? "" : "disabled"}>${spI("gift", "spI btnI")}Send gift</button>
           <button class="btn ghost" data-spx="reroll" ${rerollLeft > 0 ? "disabled" : ""}>${spI("reroll", "spI btnI")}Ask for something else${rerollLeft > 0 ? ` (${spClock(rerollLeft)})` : ""}</button></div>
         ${!spFree() ? `<div class="muted">All your ships are busy.</div>` : !can ? `<div class="muted">You don't have enough for this gift yet.</div>` : ""}</div>` : ""}
-    ${(__eocLoaded >= 44 && typeof pipOfferHtml === "function") ? pipOfferHtml(spSel) : ""}${spRouteHtml(spSel)}${spBonusHtml(spSel)}`;
+    ${(__eocLoaded >= 45 && typeof pipOfferHtml === "function") ? pipOfferHtml(spSel) : ""}${spRouteHtml(spSel)}${spBonusHtml(spSel)}`;
 }
 function spBonusHtml(k) {
   const B = SP_BONUS[k], L = spLevel(k);
@@ -18526,7 +18589,7 @@ function spSosHelp() {
   if (!e || isPaused() || spSci2() < SP_SOS_SCI) return;
   spendScientists(SP_SOS_SCI);
   const r = SP.races[e.k], before = spLevel(e.k);
-  r.pts += SP_SOS_WIN; SP.sos = null; SP.stats.sosWon = (SP.stats.sosWon || 0) + 1;
+  r.pts += SP_SOS_WIN; if ((__eocLoaded >= 44 && typeof spWarm === "function")) spWarm(e.k); SP.sos = null; SP.stats.sosWon = (SP.stats.sosWon || 0) + 1;
   SP.nextSos = Date.now() + spSosGap();
   const after = spLevel(e.k);
   showNotice(`🆘 Your scientists saved the day! The ${SP_RACES[e.k].name} are grateful: +${SP_SOS_WIN} friendship.`);
@@ -18575,7 +18638,9 @@ function spMult(g, slot) {
   return Math.max(0.45, 1 + 0.3 * Math.sin(slot * 0.9 + i * 2.1) + 0.18 * Math.sin(slot * 0.37 + i * 5.3) + 0.24 * (noise - 0.5));
 }
 var spBase = (g) => mineBase() * 60 * SP_PRICE_MIN * SP_RACES[SP_GOOD_RACE[g]].min;
-var spPrice = (g, slot = spSlot()) => Math.max(1, Math.round(spBase(g) * spMult(g, slot) * (1 + spAllyBonus("market"))));
+// 📉 raw = without the supply & demand drop (js/34c-space-politics.js)
+var spPrice = (g, slot = spSlot(), raw) => Math.max(1, Math.round(spBase(g) * spMult(g, slot) * (1 + spAllyBonus("market")) * (raw || typeof spSatMult !== "function" ? 1 : spSatMult(g))));
+var spSellPay = (g, n) => (__eocLoaded >= 44 && typeof spSellValue === "function") ? Math.max(n, spSellValue(g, n)) : n * spPrice(g);
 // 💖 at Allies you can also BUY that race's good. The buy price moves with the market but always stays above the best selling price, so buying to sell back never pays.
 var spBuyPrice = (g, slot = spSlot()) => Math.max(2, Math.round(spBase(g) * (1.75 + 0.5 * spMult(g, slot)) * (1 + spAllyBonus("market"))));
 var spCanBuy = (g) => SP.races[SP_GOOD_RACE[g]].found && spLevel(SP_GOOD_RACE[g]) >= 5;
@@ -18592,7 +18657,8 @@ function spBuy(g) {
 function spSell(g, all) {
   const have = SP.goods[g] || 0, n = all ? have : Math.min(have, Math.max(1, Math.floor(spQty[g] || 1)));
   if (isPaused() || !n) return;
-  const pay = n * spPrice(g);
+  const pay = spSellPay(g, n);
+  if ((__eocLoaded >= 44 && typeof spFlood === "function")) spFlood(g, n);
   SP.goods[g] -= n; state.money += pay; clickedThisSecond += pay;   // counts as income (taxes)
   SP.stats.sold = (SP.stats.sold || 0) + n; SP.stats.soldMoney = (SP.stats.soldMoney || 0) + pay;
   showNotice(`🏪 Sold ${SP_GOODS[g].emoji} ${n} ${SP_GOODS[g].name} for ${fmt(pay)}.`);
@@ -18608,20 +18674,21 @@ function spMarketHtml() {
   const rows = Object.keys(SP_GOODS).map(g => {
     const R = SP_RACES[SP_GOOD_RACE[g]], known = SP.races[SP_GOOD_RACE[g]].found, have = SP.goods[g] || 0;
     if (!known && !have) return `<tr class="spMkLocked"><td>❓ Unknown goods</td><td colspan="5" class="muted">Meet more alien races to trade their goods.</td></tr>`;
-    const p = spPrice(g), prev = spPrice(g, spSlot() - 1), ch = (p - prev) / prev * 100;
+    const p = spPrice(g), prev = spPrice(g, spSlot() - 1, true), ch = (spPrice(g, spSlot(), true) - prev) / prev * 100;
+    const flood = typeof spSatMult === "function" ? Math.round((1 - spSatMult(g)) * 100) : 0;
     const q = Math.min(have, Math.max(1, Math.floor(spQty[g] || 1)));
     return `<tr><td>${spGI(g)} <b>${SP_GOODS[g].name}</b><div class="muted">from the ${R.name}</div></td><td><b>${have.toLocaleString()}</b></td>
-      <td><b>${fmt(p)}</b><div class="${ch >= 0 ? "up" : "down"}">${ch >= 0 ? "▲" : "▼"} ${Math.abs(ch).toFixed(0)}%</div></td><td>${spSpark(g)}</td>
+      <td><b>${fmt(p)}</b><div class="${ch >= 0 ? "up" : "down"}">${ch >= 0 ? "▲" : "▼"} ${Math.abs(ch).toFixed(0)}%</div>${flood >= 1 ? `<div class="spFlood" title="You sold a lot of it lately. The price recovers by itself over a few hours.">📉 −${flood}% flooded</div>` : ""}</td><td>${spSpark(g)}</td>
       <td class="spMkSell"><input type="number" min="1" max="${have}" value="${q}" data-spq="${g}" ${have ? "" : "disabled"}>
         <button class="btn small" data-spx="sell" data-g="${g}" ${have ? "" : "disabled"}>Sell</button>
-        <button class="btn ghost small" data-spx="sellall" data-g="${g}" ${have ? "" : "disabled"}>Sell all${have ? ` (${fmt(have * p)})` : ""}</button>
+        <button class="btn ghost small" data-spx="sellall" data-g="${g}" ${have ? "" : "disabled"}>Sell all${have ? ` (${fmt(spSellPay(g, have))})` : ""}</button>
         ${spCanBuy(g) ? `<div class="spMkBuy"><span class="muted">💖 Buy: <b>${fmt(spBuyPrice(g))}</b> each</span>
           <input type="number" min="1" value="${Math.max(1, Math.floor(spBQty[g] || 1))}" data-spbq="${g}"><button class="btn small" data-spx="buy" data-g="${g}">Buy</button></div>`
           : `<div class="spMkBuy muted">🔒 Buy here at 💖 Allies</div>`}</td></tr>`;
   }).join("");
   return `<div class="card spResBar" id="spResBar">${spResHtml()}</div>
     <div class="card"><div class="row"><h2 style="margin:0"><img class="ico h" src="assets/icons/ico-lg-market.webp" alt="">Alien market</h2><span class="muted">⏱️ Prices change in <b data-spt="${next}">${spClock(next - Date.now())}</b></span></div>
-    <p class="muted">Sell the goods your ships bring home. Prices move every 30 minutes: sell when they are high. The further away a race lives, the more its goods are worth. Once you are 💖 Allies with a race, you can buy its goods here too.</p>
+    <p class="muted">Sell the goods your ships bring home. Prices move every 30 minutes: sell when they are high. Selling a lot at once floods the market: every unit pays a little less, and the price recovers over a few hours. The further away a race lives, the more its goods are worth. Once you are 💖 Allies with a race, you can buy its goods here too.</p>
     <div class="spMkWrap"><table class="spMarket"><thead><tr><th>Good</th><th>You have</th><th>Price each</th><th>Last 6 hours</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
     <div class="spStats"><span>📦 Sold: <b>${(SP.stats.sold || 0).toLocaleString()}</b></span><span>💰 Earned: <b>${fmt(SP.stats.soldMoney || 0)}</b></span>${SP.stats.bought ? `<span>🛒 Bought: <b>${SP.stats.bought.toLocaleString()}</b></span><span>💸 Spent: <b>${fmt(SP.stats.boughtMoney || 0)}</b></span>` : ""}</div></div>`;
 }
@@ -18633,6 +18700,7 @@ function renderSpace() {
   if (!spOpen()) { box.innerHTML = `<div class="card" style="text-align:center"><h2>🔒 🌌 Space</h2><p>Explore the galaxy, meet alien races and trade with them.</p>
     <p><b>Opens when you build the 🚀 Space Mission Center</b> (💰 Income → 🔬 Science).</p></div>`; return; }
   if (state.logiPage === "market") { box.innerHTML = spSosHtml() + spMarketHtml(); return; }
+  if (state.logiPage === "contracts" && (__eocLoaded >= 44 && typeof spContractsHtml === "function")) { box.innerHTML = spSosHtml() + spContractsHtml(); return; }
   box.innerHTML = `${spSosHtml()}<div class="card spResBar" id="spResBar">${spResHtml()}</div><div class="card spMapCard"><div class="row"><h2 style="margin:0">🌌 Star map</h2><span class="spFreeBadge ${spFree() ? "" : "none"}" title="Free ships">🚀 <b>${spFree()}</b><small>/ ${spShips()}</small><span>${spFree() === 1 ? "ship free" : "ships free"}</span></span></div>${spMapHtml()}</div>
     <div class="card spPanel">${spPanelHtml()}</div><div class="card">${spGoodsHtml()}</div>`;
   spZoomApply();
@@ -18747,7 +18815,7 @@ function spApplyPage() {
   const view = $("logisticsView");
   if (!$("logiTabs")) {   // left-side page menu (like Investing): everything after the lock card moves into the main column
     const layout = document.createElement("div"); layout.className = "subLayout"; layout.id = "logiLayout";
-    layout.innerHTML = `<nav class="subNav" id="logiTabs"><button class="subTab" data-logipage="earth"><img class="ico" src="assets/icons/ico-lg-earth.webp" alt="">Earth</button><button class="subTab" data-logipage="space"><img class="ico" src="assets/icons/ico-lg-space.webp" alt="">Space</button><button class="subTab subSub" data-logipage="market"><img class="ico" src="assets/icons/ico-lg-market.webp" alt="">Market</button></nav><div class="subMain" id="logiMain"></div>`;
+    layout.innerHTML = `<nav class="subNav" id="logiTabs"><button class="subTab" data-logipage="earth"><img class="ico" src="assets/icons/ico-lg-earth.webp" alt="">Earth</button><button class="subTab" data-logipage="space"><img class="ico" src="assets/icons/ico-lg-space.webp" alt="">Space</button><button class="subTab subSub" data-logipage="market"><img class="ico" src="assets/icons/ico-lg-market.webp" alt="">Market</button><button class="subTab subSub" data-logipage="contracts"><span class="ico">📜</span>Contracts</button></nav><div class="subMain" id="logiMain"></div>`;
     const main = layout.querySelector("#logiMain");
     [...view.children].filter(el => !el.classList.contains("debtBanner") && el.id !== "logiLocked").forEach(el => main.appendChild(el));
     const sv = document.createElement("div"); sv.id = "spaceView"; sv.hidden = true; main.appendChild(sv);
@@ -18764,8 +18832,183 @@ setInterval(() => {
 }, 1000);
 spProcess();
 
-// ===== js/36-pip.js =====
+// ===== js/34c-space-politics.js =====
 __eocLoaded = 44;
+/* =====================================================================
+   🌌 SPACE POLITICS & ECONOMY (loaded right after js/34-space.js)
+   · ⚔️ RIVALRIES: 4 pairs of races dislike each other. Friendship you earn with one costs 30% of it with its rival.
+     A rival never drops below 😊 Friendly because of this (or below the level it is at, if it isn't Friendly yet).
+   · ❄️ UPKEEP: a race you have ever been 💛 Trusted with cools off after 24 h without a gift, a contract or a running
+     trade route: −40 friendship an hour, never below 😊 Friendly. One gift (or keeping a route) warms them up again.
+   · 📉 SUPPLY & DEMAND: selling a good floods the market: every unit sold lowers its price a little more.
+     The market recovers by itself (half of the effect is gone after 3 hours).
+   · 📜 CONTRACTS: a board of 3 jobs ("bring 20 Star Crystals and 12 Void Gold to the Lumerians within 3 h").
+     Accept up to 2, deliver them with a ship before the deadline: money + friendship. Late: half pay, no friendship.
+     Missing the deadline (or giving up) costs 50 friendship.
+   ===================================================================== */
+var SP_RIVALS = { bank: "pirate", pirate: "bank", rock: "art", art: "rock", stardust: "bio", bio: "stardust", mystic: "machine", machine: "mystic" };
+var SP_RIVAL_CUT = 0.3, SP_FRIENDLY = 1000;
+var SP_COOL = { after: 24 * 3600e3, perHour: 40, from: 2500 };
+var SP_SAT = { k: 150, half: 3 * 3600e3 };
+var SP_CON = { board: 3, maxActive: 2, offerLife: 6 * 3600e3, refill: 3600e3, pts: 150, fail: 50, payX: 2.5 };
+SP.press = SP.press || {};
+SP.con = SP.con || { offers: [], active: [], next: 0, done: 0, failed: 0, late: 0, earned: 0 };
+Object.values(SP.races).forEach(r => { if (r.found) { r.best = Math.max(r.best || 0, r.pts); if (!r.warmAt) r.warmAt = Date.now(); } });
+
+/* ----- 💞 friendship changes ----- */
+// lowest a race can drop to from a penalty: Friendly, or the level it is at if it isn't Friendly yet
+var spFloorPts = (k) => { const r = SP.races[k]; return r.pts >= SP_FRIENDLY ? SP_FRIENDLY : SP_LEVELS[spLevel(k)].pts; };
+function spLosePts(k, n) { const r = SP.races[k], f = spFloorPts(k), before = r.pts; r.pts = Math.max(Math.min(f, r.pts), r.pts - n); return before - r.pts; }
+function spWarm(k) { const r = SP.races[k]; r.warmAt = Date.now(); r.coolT = 0; r.best = Math.max(r.best || 0, r.pts); }
+// friendship earned with k (gifts, contracts, rescues): the rival race gets jealous
+function spRivalHit(k, pts, msgs) {
+  const rk = SP_RIVALS[k]; if (!rk || !SP.races[rk].found || pts <= 0) return 0;
+  const lost = spLosePts(rk, Math.round(pts * SP_RIVAL_CUT));
+  if (lost && msgs) msgs.push(`😒 The ${SP_RACES[rk].name} didn't like you helping their rivals, the ${SP_RACES[k].name}: −${lost} friendship.`);
+  return lost;
+}
+var spCooling = (k) => { const r = SP.races[k]; return r.found && (r.best || 0) >= SP_COOL.from && r.pts > SP_FRIENDLY && !spRouteOf(k) && Date.now() - (r.warmAt || 0) > SP_COOL.after; };
+function spCoolTick(now, msgs) {
+  for (const k of Object.keys(SP_RACES)) {
+    const r = SP.races[k]; if (!r.found) continue;
+    r.best = Math.max(r.best || 0, r.pts);
+    if (spRouteOf(k)) { r.warmAt = now; r.coolT = 0; continue; }   // a running trade route keeps them warm
+    if ((r.best || 0) < SP_COOL.from || r.pts <= SP_FRIENDLY) { r.coolT = 0; continue; }
+    const start = Math.max((r.warmAt || now) + SP_COOL.after, r.coolT || 0);
+    if (now <= start) continue;
+    const dp = Math.floor((now - start) / 3600e3 * SP_COOL.perHour);
+    if (dp <= 0) continue;
+    const L0 = spLevel(k);
+    r.pts = Math.max(SP_FRIENDLY, r.pts - dp);
+    r.coolT = start + dp * 3600e3 / SP_COOL.perHour;
+    if (spLevel(k) < L0) msgs.push(`❄️ The ${SP_RACES[k].name} feel forgotten and are now only <b>${SP_LEVELS[spLevel(k)].name}</b>. Send a gift or keep a trade route running.`);
+  }
+}
+
+/* ----- 📉 supply & demand ----- */
+var spPress = (g, now = Date.now()) => { const p = SP.press[g]; return p ? p.p * Math.pow(0.5, (now - p.t) / SP_SAT.half) : 0; };
+var spSatMult = (g, extra = 0) => 1 / (1 + (spPress(g) + extra) / SP_SAT.k);
+// what selling n units pays: every unit a little cheaper than the one before
+function spSellValue(g, n) { const base = spPrice(g, spSlot(), true); let s = 0; const p0 = spPress(g); for (let i = 0; i < n; i++) s += base / (1 + (p0 + i) / SP_SAT.k); return Math.floor(s); }
+function spFlood(g, n) { const now = Date.now(); SP.press[g] = { p: spPress(g, now) + n, t: now }; }
+
+/* ----- 📜 contracts ----- */
+function spConMake() {
+  const now = Date.now(), found = Object.keys(SP_RACES).filter(k => SP.races[k].found);
+  const targets = found.filter(k => spLevel(k) >= 2);
+  if (!targets.length) return null;
+  const to = targets[Math.floor(Math.random() * targets.length)];
+  const pool = found.map(k => SP_RACES[k].good).filter(g => g !== SP_RACES[to].good);
+  if (!pool.length) return null;
+  const kinds = Math.min(pool.length, Math.random() < 0.5 ? 1 : 2), need = {};
+  while (Object.keys(need).length < kinds) { const g = pool[Math.floor(Math.random() * pool.length)]; need[g] = 6 + Math.floor(Math.random() * 20); }
+  const value = Object.entries(need).reduce((s, [g, n]) => s + n * spBase(g), 0);
+  const hours = 2 + Math.floor(Math.random() * 3);
+  return { id: SP.nextId++, to, need, pay: Math.max(1e6, spRound(value * SP_CON.payX * (1 + SP_RACES[to].min / 60))), pts: SP_CON.pts, hours, until: now + SP_CON.offerLife };
+}
+function spConTick(now, msgs) {
+  const C = SP.con;
+  C.offers = C.offers.filter(o => o.until > now && SP.races[o.to].found);
+  if (C.offers.length < SP_CON.board && now >= (C.next || 0)) { const o = spConMake(); if (o) C.offers.push(o); if (C.offers.length >= SP_CON.board) C.next = 0; }
+  for (const c of C.active) {
+    if (!c.sent && now > c.deadline) {
+      c.gone = true; C.failed++;
+      const lost = spLosePts(c.to, SP_CON.fail);
+      msgs.push(`📜 You missed the deadline of a contract for the ${SP_RACES[c.to].name}${lost ? `: −${lost} friendship` : ""}.`);
+    }
+  }
+  C.active = C.active.filter(c => !c.gone);
+}
+var spConHave = (c) => Object.entries(c.need).every(([g, n]) => (SP.goods[g] || 0) >= n);
+function spConAccept(id) {
+  const C = SP.con, o = C.offers.find(x => x.id === id);
+  if (!o || C.active.length >= SP_CON.maxActive || isPaused()) return;
+  C.offers = C.offers.filter(x => x !== o);
+  C.active.push({ ...o, deadline: Date.now() + o.hours * 3600e3 + spMs(o.to) });
+  C.next = Date.now() + SP_CON.refill;
+  save(); renderSpace();
+}
+function spConSend(id) {
+  const C = SP.con, c = C.active.find(x => x.id === id);
+  if (!c || c.sent || !spFree() || !spConHave(c) || isPaused()) return;
+  Object.entries(c.need).forEach(([g, n]) => { SP.goods[g] -= n; });
+  c.sent = true;
+  spLaunch(c.to, "contract", { cid: c.id });
+  showNotice(`📜 Contract cargo on its way to the ${SP_RACES[c.to].name} (${SP_RACES[c.to].min} min).`);
+}
+function spConDrop(id) {
+  const C = SP.con, c = C.active.find(x => x.id === id);
+  if (!c || c.sent) return;
+  C.active = C.active.filter(x => x !== c); C.failed++;
+  const lost = spLosePts(c.to, SP_CON.fail);
+  showNotice(`📜 Contract cancelled${lost ? `: the ${SP_RACES[c.to].name} are disappointed (−${lost} friendship)` : ""}.`);
+  save(); renderSpace();
+}
+// the cargo ship arrived (called from spProcess)
+function spConArrive(tr, msgs) {
+  const C = SP.con, c = C.active.find(x => x.id === tr.cargo.cid), R = SP_RACES[tr.to];
+  if (!c) return;
+  C.active = C.active.filter(x => x !== c);
+  if (tr.lost) { C.failed++; msgs.push(`🏴‍☠️ Pirates stole the contract cargo for the ${R.name}. The contract is lost.`); return; }
+  const late = tr.t1 > c.deadline, pay = late ? Math.floor(c.pay / 2) : c.pay;
+  state.money += pay; clickedThisSecond += pay; C.earned += pay;
+  if (late) { C.late++; msgs.push(`📜 Contract delivered late to the ${R.name}: half pay, ${fmt(pay)}.`); return; }
+  C.done++;
+  const before = spLevel(tr.to);
+  SP.races[tr.to].pts += c.pts; spWarm(tr.to);
+  msgs.push(`📜 Contract done! The ${R.name} paid ${fmt(pay)} and +${c.pts} friendship.`);
+  if (spLevel(tr.to) > before) msgs.push(`${SP_LEVELS[spLevel(tr.to)].icon} The <b>${R.name}</b> are now <b>${SP_LEVELS[spLevel(tr.to)].name}</b>!`);
+  spRivalHit(tr.to, c.pts, msgs);
+  updateCounter();
+}
+var spNeedHtml = (need, sent) => Object.entries(need).map(([g, n]) => `<span class="spNeed ${sent || (SP.goods[g] || 0) >= n ? "ok" : ""}">${spGI(g)} <b>${n}</b> ${SP_GOODS[g].name}${sent ? "" : ` <small>(${(SP.goods[g] || 0).toLocaleString()})</small>`}</span>`).join("");
+function spContractsHtml() {
+  const C = SP.con, now = Date.now();
+  const card = (c, active) => { const R = SP_RACES[c.to], sent = active && c.sent;
+    const trip = sent && SP.trips.find(tr => tr.k === "contract" && tr.cargo && tr.cargo.cid === c.id);
+    return `<div class="spCon ${active ? "active" : ""}"><img class="spConPic" src="${spPortrait(c.to)}" alt="">
+      <div class="spConBody"><div class="spConTo"><b>${R.name}</b> <span class="muted">· ${R.title}</span></div>
+        <div class="spConNeed">${spNeedHtml(c.need, sent)}</div>
+        <div class="spConPay">💰 <b>${fmt(c.pay)}</b> · 💞 +${c.pts} friendship</div>
+        <div class="muted">${active ? (sent ? (trip ? `🚀 On its way · arrives in <b data-spt="${trip.t1}">${spClock(trip.t1 - now)}</b> · deadline in <b data-spt="${c.deadline}">${spClock(c.deadline - now)}</b>` : "🚀 Delivered") : `⏳ Deliver within <b data-spt="${c.deadline}">${spClock(c.deadline - now)}</b> (the ship needs ${R.min} min to get there)`)
+          : `⏱️ ${c.hours} h to deliver once accepted · offer ends in <b data-spt="${c.until}">${spClock(c.until - now)}</b>`}</div></div>
+      <div class="spConBtns">${active ? (sent ? "" : `<button class="btn" data-spc="send" data-id="${c.id}" ${spFree() && spConHave(c) ? "" : "disabled"}>${spI("gift", "spI btnI")}Deliver</button>
+          <button class="btn ghost small" data-spc="drop" data-id="${c.id}">Give up</button>${!spConHave(c) ? `<div class="muted">Not enough goods yet.</div>` : !spFree() ? `<div class="muted">All ships are busy.</div>` : ""}`)
+        : `<button class="btn" data-spc="take" data-id="${c.id}" ${C.active.length < SP_CON.maxActive ? "" : "disabled"}>✍️ Accept</button>`}</div></div>`; };
+  const nextIn = C.offers.length < SP_CON.board && C.next > now ? `<div class="muted">📜 A new contract arrives in <b data-spt="${C.next}">${spClock(C.next - now)}</b>.</div>` : "";
+  return `<div class="card spResBar" id="spResBar">${spResHtml()}</div>
+    <div class="card"><h2 style="margin-top:0">📜 Contracts board</h2>
+      <p class="muted">Races pay well for goods from other worlds. Accept a contract (up to ${SP_CON.maxActive} at a time), then send a ship with the goods before the deadline: money and friendship. Late: half pay and no friendship. Missing the deadline or giving up: −${SP_CON.fail} friendship.</p>
+      ${C.active.length ? `<h3>✍️ Your contracts (${C.active.length}/${SP_CON.maxActive})</h3>${C.active.map(c => card(c, true)).join("")}` : ""}
+      <h3>📋 Offers</h3>${C.offers.length ? C.offers.map(c => card(c, false)).join("") : `<p class="muted">${Object.values(SP.races).filter(r => r.found).length < 2 ? "Meet at least 2 races (and be Acquainted with one) to get contracts." : "No offers right now."}</p>`}${nextIn}
+      <div class="spStats"><span>✅ Done: <b>${C.done}</b></span><span>🐢 Late: <b>${C.late}</b></span><span>❌ Failed: <b>${C.failed}</b></span><span>💰 Earned: <b>${fmt(C.earned)}</b></span></div></div>`;
+}
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-spc]"); if (!b || !e.target.closest("#spaceView")) return;
+  const id = Number(b.dataset.id);
+  if (b.dataset.spc === "take") spConAccept(id);
+  if (b.dataset.spc === "send") spConSend(id);
+  if (b.dataset.spc === "drop") showModal(`<h2>Give up this contract?</h2><p>The ${SP_RACES[(SP.con.active.find(c => c.id === id) || {}).to || "rock"].name} will be disappointed: −${SP_CON.fail} friendship.</p>
+    <div class="row" style="justify-content:center;gap:10px"><button class="btn ghost" data-modal="close">Keep it</button><button class="btn dangerBtn" data-spc2="drop" data-id="${id}">Give up</button></div>`);
+});
+$("modal").addEventListener("click", (e) => { const b = e.target.closest("[data-spc2]"); if (b) { hideModal(); spConDrop(Number(b.dataset.id)); } });
+
+/* ----- 🪧 race panel lines ----- */
+function spPoliticsHtml(k) {
+  const r = SP.races[k], rk = SP_RIVALS[k], now = Date.now();
+  const rival = rk ? `<div class="spRow">⚔️<span><b>Rivals:</b> ${SP.races[rk].found ? `the ${SP_RACES[rk].name}` : "a race you haven't met yet"}. Friendship you earn here costs ${SP_RIVAL_CUT * 100}% of it with them (never below 😊 Friendly).</span></div>`
+    : `<div class="spRow">🕊️<span><b>No rivals:</b> everyone respects the ${SP_RACES[k].name}.</span></div>`;
+  let warm = "";
+  if ((r.best || 0) >= SP_COOL.from && r.pts > SP_FRIENDLY) {
+    if (spRouteOf(k)) warm = `<div class="spRow">🔥<span><b>Warm:</b> your trade route keeps them happy.</span></div>`;
+    else if (spCooling(k)) warm = `<div class="spRow spCool">❄️<span><b>Cooling off:</b> −${SP_COOL.perHour} friendship an hour (never below 😊 Friendly). Send a gift or open a trade route.</span></div>`;
+    else warm = `<div class="spRow">🔥<span><b>Warm:</b> they start to cool off in <b data-spt="${(r.warmAt || now) + SP_COOL.after}">${spClock((r.warmAt || now) + SP_COOL.after - now)}</b> without a gift, a contract or a trade route.</span></div>`;
+  }
+  return `<div class="spPolitics">${rival}${warm}</div>`;
+}
+
+// ===== js/36-pip.js =====
+__eocLoaded = 45;
 /* =====================================================================
    🐾🎨 PIP, the painter pet (an alien mouse from the Lumerians).
    - Adopt him in 🌌 Space Logistics → Lumerians, once you are 😊 Friendly, for 10 paintings from your collection.
@@ -18985,7 +19228,7 @@ if (pipOwned()) pipProcess(true);
 if (state.view === "games" && !state.gamePage) renderPipCorner();   // the page opened straight on 🎮 Mini-games
 
 // ===== js/37-profile.js =====
-__eocLoaded = 45;
+__eocLoaded = 46;
 /* =====================================================================
    👤 PLAYER PROFILE: nickname, avatar (the emblem of one of your 🎁 reward collections), achievements and prestige count.
    · Opened with the round 👤 button next to ⚙️ Settings.
@@ -19145,7 +19388,7 @@ function renderProfile() {
   // 👈 Profile / Friends on the left, like the other pages (.subLayout)
   const tabs = `<div class="subLayout"><nav class="subNav"><button class="subTab ${prof.tab !== "friends" ? "active" : ""}" data-prof="tab-me">👤 Profile</button>
     <button class="subTab ${prof.tab === "friends" ? "active" : ""}" data-prof="tab-friends">👥 Friends${inc ? ` <span class="profBadge">${inc}</span>` : ""}</button></nav><div class="subMain">`;
-  if (prof.tab === "friends" && (__eocLoaded >= 46 && typeof renderFriends === "function")) { box.innerHTML = tabs + `<div id="friendsBox"></div></div></div>`; renderFriends(row); return; }
+  if (prof.tab === "friends" && (__eocLoaded >= 47 && typeof renderFriends === "function")) { box.innerHTML = tabs + `<div id="friendsBox"></div></div></div>`; renderFriends(row); return; }
   const ids = profAvatarIds(), cur = row ? row.avatar : prof.pendingAvatar;
   const shown = prof.showAll ? ids : ids.slice(0, 60);
   const typed = $("profNick") ? $("profNick").value : null;
@@ -19208,7 +19451,7 @@ document.addEventListener("click", (e) => {
   if (b.dataset.prof === "signin" && (__eocLoaded >= 37 && typeof cloudSignIn === "function")) cloudSignIn();
   if (b.dataset.prof === "nick") profSaveNick($("profNick").value);
   if (b.dataset.prof === "all") { prof.showAll = true; renderProfile(); }
-  if (b.dataset.prof === "tab-me" || b.dataset.prof === "tab-friends") { prof.tab = b.dataset.prof === "tab-friends" ? "friends" : "me"; prof.err = ""; prof.msg = ""; renderProfile(); if (prof.tab === "friends" && (__eocLoaded >= 46 && typeof frLoad === "function")) frLoad(); }
+  if (b.dataset.prof === "tab-me" || b.dataset.prof === "tab-friends") { prof.tab = b.dataset.prof === "tab-friends" ? "friends" : "me"; prof.err = ""; prof.msg = ""; renderProfile(); if (prof.tab === "friends" && (__eocLoaded >= 47 && typeof frLoad === "function")) frLoad(); }
   if (b.dataset.prof === "copy" && prof.row && prof.row.friend_code) {
     const c = prof.row.friend_code;
     (navigator.clipboard ? navigator.clipboard.writeText(c) : Promise.reject()).then(() => showNotice(`📋 Friend code ${c} copied.`), () => showNotice(`📋 Your friend code: ${c}`));
@@ -19235,7 +19478,7 @@ setInterval(() => { const m = $("profMoney"); if (m) { const t = fmt(state.money
 setInterval(() => { const src = profCoinImg(profCoin()).match(/src="([^"]+)"/)[1]; document.querySelectorAll(".coinSkinImg").forEach(i => { if (i.getAttribute("src") !== src) i.setAttribute("src", src); }); }, 1000);
 
 // ===== js/38-friends.js =====
-__eocLoaded = 46;
+__eocLoaded = 47;
 /* =====================================================================
    👥 FRIENDS (👤 Profile → 👥 Friends). Needs a profile (js/37-profile.js) and the tables from docs/supabase-friends.sql.
    · Find players by nickname (start of the name) or by their 8-letter friend code, and send a request.
@@ -19414,7 +19657,7 @@ var frProfLoadOrig = profLoad;
 profLoad = async function () { await frProfLoadOrig(); if (prof.row && prof.friendsOn) frLoad(true); };
 
 // ===== js/39-duels.js =====
-__eocLoaded = 47;
+__eocLoaded = 48;
 /* =====================================================================
    ⚔️ ONLINE CASINO: duels against friends (🎰 Casino → ⚔️ Online casino on the left).
    · ✊✋✌️ Rock Paper Scissors and 🎲 Dice Battle (2 dice each, higher total wins the round): best of 3; a tie is played again.
@@ -19538,7 +19781,7 @@ function duChallenge(oppId) {
   const bet = Math.floor(Number(DU.bet));
   if (!(bet >= 1)) { DU.err = "Choose a bet of at least 1."; return renderDuels(); }
   if (bet > state.money) { DU.err = "You don't have enough money for this bet."; return renderDuels(); }
-  if ((__eocLoaded >= 45 && typeof profPushStats === "function")) profPushStats();   // the referee checks the money on your profile
+  if ((__eocLoaded >= 46 && typeof profPushStats === "function")) profPushStats();   // the referee checks the money on your profile
   duDo("duel_invite", { p_opp: oppId, p_game: DU.game, p_bet: bet }, () => { setTimeout(duPending, 300); });
 }
 
@@ -19768,7 +20011,7 @@ function duMoneyTick() { const m = $("duMoney"); if (m) { const t = fmt(state.mo
 setInterval(duMoneyTick, 500);
 
 // ===== js/40-coin-input.js =====
-__eocLoaded = 48;
+__eocLoaded = 49;
 /* =====================================================================
    🪙 COIN UNIT SWITCH next to every money box: type the amount in bcoin, scoin (1M) or gcoin (1M scoin),
    instead of counting zeros. The rest of the game is not changed: each money box still reports its amount

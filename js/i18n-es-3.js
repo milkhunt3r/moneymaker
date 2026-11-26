@@ -1342,6 +1342,58 @@ Object.assign(ES, { "platinum": "platino", "gold": "oro", "silver": "plata", "br
 Object.assign(ES, { "bronze · the basic coin": "bronce · la moneda básica", "silver · = 1,000,000 bcoin": "plata · = 1.000.000 bcoin", "gold · = 1,000,000 scoin": "oro · = 1.000.000 scoin",
   "platinum · = 1,000,000 gcoin": "platino · = 1.000.000 gcoin", "= 1,000,000,000,000,000,000 bcoin": "= 1.000.000.000.000.000.000 bcoin",
   "Money is always shown in the biggest coin that fits, so 3,400,000 bcoin shows as 3.4 scoin. Hover over your money to see it in every coin.": "El dinero se muestra siempre en la moneda más grande que cabe: 3.400.000 bcoin aparecen como 3,4 scoin. Pasa el ratón por encima de tu dinero para verlo en todas las monedas." });
+// 🌌 space politics & contracts (js/34c-space-politics.js)
+Object.assign(ES, { "Contracts": "Contratos", "Contracts board": "Tablón de contratos", "Offers": "Ofertas", "Deliver": "Entregar", "Accept": "Aceptar", "Give up": "Renunciar", "Keep it": "Quedármelo",
+  "Give up this contract?": "¿Renunciar a este contrato?", "Done": "Hechos", "Late": "Con retraso", "Failed": "Fallidos", "Delivered": "Entregado",
+  "No offers right now.": "Ahora mismo no hay ofertas.", "Not enough goods yet.": "Todavía no tienes suficientes bienes.", "All ships are busy.": "Todas las naves están ocupadas.",
+  "Meet at least 2 races (and be Acquainted with one) to get contracts.": "Conoce al menos 2 razas (y ten una amistad Conocida con una) para recibir contratos.",
+  "Races pay well for goods from other worlds. Accept a contract (up to 2 at a time), then send a ship with the goods before the deadline: money and friendship. Late: half pay and no friendship. Missing the deadline or giving up: −50 friendship.":
+    "Las razas pagan bien por bienes de otros mundos. Acepta un contrato (hasta 2 a la vez) y envía una nave con los bienes antes de que acabe el plazo: dinero y amistad. Con retraso: la mitad del pago y nada de amistad. Si se acaba el plazo o renuncias: −50 de amistad.",
+  "A new contract arrives in": "Llega un contrato nuevo en", "Deliver within": "Entrégalo en", "On its way · arrives in": "En camino · llega en", "deadline in": "el plazo acaba en",
+  "they start to cool off in": "empezarán a enfriarse en", "without a gift, a contract or a trade route.": "sin un regalo, un contrato o una ruta comercial.",
+  "Rivals": "Rivales", "No rivals": "Sin rivales", "Warm": "Cálida", "Cooling off": "Enfriándose", "Contract cancelled.": "Contrato cancelado.",
+  "Warm:": "Cálida:", "Rivals:": "Rivales:", "No rivals:": "Sin rivales:", "Cooling off:": "Enfriándose:",
+  "your trade route keeps them happy.": "tu ruta comercial los mantiene contentos.",
+  "−40 friendship an hour (never below 😊 Friendly). Send a gift or open a trade route.": "−40 de amistad por hora (nunca por debajo de 😊 Amistosa). Envía un regalo o abre una ruta comercial.",
+  "You sold a lot of it lately. The price recovers by itself over a few hours.": "Has vendido mucho últimamente. El precio se recupera solo en unas horas.",
+  "Sell the goods your ships bring home. Prices move every 30 minutes: sell when they are high. Selling a lot at once floods the market: every unit pays a little less, and the price recovers over a few hours. The further away a race lives, the more its goods are worth. Once you are 💖 Allies with a race, you can buy its goods here too.":
+    "Vende los bienes que traen tus naves. Los precios cambian cada 30 minutos: vende cuando estén altos. Vender mucho de golpe satura el mercado: cada unidad se paga un poco menos, y el precio se recupera en unas horas. Cuanto más lejos vive una raza, más valen sus bienes. Cuando tu amistad con una raza sea 💖 Aliada, también podrás comprar aquí sus bienes.",
+});
+hrx(String.raw`<span>📜</span>Contracts`, "<span>📜</span>Contratos");
+hrx(String.raw`<span class="ico">📜</span>Contracts`, `<span class="ico">📜</span>Contratos`);
+rx(String.raw`\+(\d+) friendship`, "+$1 de amistad");
+rx(String.raw`−(\d+)% flooded`, "−$1 % saturado");
+rx(String.raw`(\d+) h to deliver once accepted · offer ends in`, "$1 h para entregarlo una vez aceptado · la oferta acaba en");
+rx(String.raw`\(the ship needs (\d+) min to get there\)`, "(la nave tarda $1 min en llegar)");
+rx(String.raw`Your contracts \((\d+)\/(\d+)\)`, "Tus contratos ($1/$2)");
+hrx(String.raw`✍️ Your contracts \((\d+)\/(\d+)\)`, "✍️ Tus contratos ($1/$2)");
+hrx(String.raw`✅ Done: <b>(\d+)<\/b>`, "✅ Hechos: <b>$1</b>"); hrx(String.raw`🐢 Late: <b>(\d+)<\/b>`, "🐢 Con retraso: <b>$1</b>"); hrx(String.raw`❌ Failed: <b>(\d+)<\/b>`, "❌ Fallidos: <b>$1</b>");
+hrx(String.raw`<b>Rivals:<\/b> the (${SP_RX_NAME})\. Friendship you earn here costs (\d+)% of it with them \(never below 😊 Friendly\)\.`, (m, n, x) => `<b>Rivales:</b> los ${spN(n)}. La amistad que ganes aquí te cuesta un ${x} % de ella con ellos (nunca por debajo de 😊 Amistosa).`);
+hrx(String.raw`<b>Rivals:<\/b> a race you haven't met yet\. Friendship you earn here costs (\d+)% of it with them \(never below 😊 Friendly\)\.`, "<b>Rivales:</b> una raza que aún no conoces. La amistad que ganes aquí te cuesta un $1 % de ella con ellos (nunca por debajo de 😊 Amistosa).");
+hrx(String.raw`<b>No rivals:<\/b> everyone respects the (${SP_RX_NAME})\.`, (m, n) => `<b>Sin rivales:</b> todo el mundo respeta a los ${spN(n)}.`);
+rx(String.raw`(😒 )?The (${SP_RX_NAME}) didn't like you helping their rivals, the (${SP_RX_NAME}): −(\d+) friendship\.`, (m, e, a, b, x) => `${e || ""}A los ${spN(a)} no les ha gustado que ayudes a sus rivales, los ${spN(b)}: −${x} de amistad.`);
+hrx(String.raw`❄️ The (${SP_RX_NAME}) feel forgotten and are now only <b>(${SP_RX_LV})<\/b>\. Send a gift or keep a trade route running\.`, (m, n, l) => `❄️ Los ${spN(n)} se sienten olvidados y ahora vuestra amistad solo es <b>${spL(l)}</b>. Envíales un regalo o mantén una ruta comercial.`);
+rx(String.raw`The (${SP_RX_NAME}) feel forgotten and are now only <b>(${SP_RX_LV})<\/b>\. Send a gift or keep a trade route running\.`, (m, n, l) => `Los ${spN(n)} se sienten olvidados y ahora vuestra amistad solo es <b>${spL(l)}</b>. Envíales un regalo o mantén una ruta comercial.`);
+rx(String.raw`(📜 )?You missed the deadline of a contract for the (${SP_RX_NAME})(?:: −(\d+) friendship)?\.`, (m, e, n, x) => `${e || ""}Se ha acabado el plazo de un contrato para los ${spN(n)}${x ? `: −${x} de amistad` : ""}.`);
+rx(String.raw`(📜 )?Contract cargo on its way to the (${SP_RX_NAME}) \((\d+) min\)\.`, (m, e, n, x) => `${e || ""}La carga del contrato va de camino a los ${spN(n)} (${x} min).`);
+rx(String.raw`(📜 )?Contract cancelled: the (${SP_RX_NAME}) are disappointed \(−(\d+) friendship\)\.`, (m, e, n, x) => `${e || ""}Contrato cancelado: los ${spN(n)} están decepcionados (−${x} de amistad).`);
+rx(String.raw`(🏴‍☠️ )?Pirates stole the contract cargo for the (${SP_RX_NAME})\. The contract is lost\.`, (m, e, n) => `${e || ""}Los piratas han robado la carga del contrato para los ${spN(n)}. El contrato se ha perdido.`);
+rx(String.raw`(📜 )?Contract delivered late to the (${SP_RX_NAME}): half pay, (.+)\.`, (m, e, n, x) => `${e || ""}Contrato entregado con retraso a los ${spN(n)}: la mitad del pago, ${x}.`);
+rx(String.raw`(📜 )?Contract done! The (${SP_RX_NAME}) paid (.+) and \+(\d+) friendship\.`, (m, e, n, x, p) => `${e || ""}¡Contrato cumplido! Los ${spN(n)} han pagado ${x} y +${p} de amistad.`);
+rx(String.raw`(📜 )?Contract for the (${SP_RX_NAME})`, (m, e, n) => `${e || ""}Contrato para los ${spN(n)}`);
+rx(String.raw`The (${SP_RX_NAME}) will be disappointed: −(\d+) friendship\.`, (m, n, x) => `Los ${spN(n)} se decepcionarán: −${x} de amistad.`);
+H("⚔️ <b>Rivals:</b> some races dislike each other (Aurumites and Void Corsairs, Kragg and Lumerians, Glimmerkin and Vynari, Oracles of Vael and Cogitarium). Friendship you earn with one (gifts, contracts) costs 30% of it with its rival, but this never drops a race below 😊 Friendly. The First Ones have no rivals.",
+  "⚔️ <b>Rivales:</b> algunas razas no se soportan (Aurumitas y Corsarios del Vacío, Kragg y Lumerianos, Glimmerkin y Vynari, Oráculos de Vael y Cogitarium). La amistad que ganes con una (regalos, contratos) te cuesta un 30 % de ella con su rival, pero así nunca bajará una raza de 😊 Amistosa. Los Primeros no tienen rivales.");
+H("❄️ <b>Keeping friends:</b> once a race has been 💛 Trusted, it cools off after 24 hours without a gift, a contract or a rescue: −40 friendship an hour, never below 😊 Friendly. A running trade route keeps them warm.",
+  "❄️ <b>Cuidar las amistades:</b> cuando una raza ha llegado a 💛 De confianza, se enfría tras 24 horas sin un regalo, un contrato o un rescate: −40 de amistad por hora, nunca por debajo de 😊 Amistosa. Una ruta comercial en marcha la mantiene cálida.");
+H("📉 <b>Supply and demand:</b> selling a lot of one good at once floods the market: every unit pays a little less, and the price shows how flooded it is. It recovers by itself (half of the drop is gone after 3 hours).",
+  "📉 <b>Oferta y demanda:</b> vender mucho de un mismo bien de golpe satura el mercado: cada unidad se paga un poco menos, y el precio muestra lo saturado que está. Se recupera solo (la mitad de la bajada desaparece en 3 horas).");
+H("📜 <b>Contracts</b> (🌌 Space → Contracts): races you are Acquainted with post jobs: bring some goods from other worlds within a few hours. Accept up to 2, then send a ship with the goods: money and +150 friendship. Late: half pay and no friendship. Missing the deadline or giving up: −50 friendship. A new offer comes every hour (up to 3).",
+  "📜 <b>Contratos</b> (🌌 Espacio → Contratos): las razas con las que tienes una amistad Conocida publican encargos: llévales bienes de otros mundos en unas horas. Acepta hasta 2 y envía una nave con los bienes: dinero y +150 de amistad. Con retraso: la mitad del pago y nada de amistad. Si se acaba el plazo o renuncias: −50 de amistad. Llega una oferta nueva cada hora (hasta 3).");
+H("🌌 Space politics: races now have ⚔️ <b>rivals</b> (helping one makes its rival a little jealous), 💖 old allies slowly cool off unless you send a gift or keep a trade route running (never below 😊 Friendly), and selling lots of one good 📉 lowers its price for a few hours.",
+  "🌌 Política espacial: ahora las razas tienen ⚔️ <b>rivales</b> (ayudar a una pone un poco celosa a su rival), 💖 los viejos aliados se enfrían poco a poco si no les envías un regalo o mantienes una ruta comercial (nunca por debajo de 😊 Amistosa), y vender mucho de un mismo bien 📉 baja su precio durante unas horas.");
+H("📜 New in 🌌 Space: the <b>Contracts board</b>. Races post timed jobs: bring them goods from other worlds before the deadline for money and friendship.",
+  "📜 Novedad en 🌌 Espacio: el <b>tablón de contratos</b>. Las razas publican encargos con plazo: llévales bienes de otros mundos antes de que se acabe para ganar dinero y amistad.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

@@ -324,15 +324,17 @@ function spProcess() {
     if (!tr.arrived && now >= tr.t1) {
       tr.arrived = true; changed = true;
       if (tr.k === "explore" && !r.found) {
-        r.found = true; r.foundAt = now; SP.stats.explored++;
+        r.found = true; r.foundAt = now; r.warmAt = now; SP.stats.explored++;
         tr.goods = 3; spMakeReq(tr.to);
         msgs.push(`👽 First contact! Your ship met the <b>${R.name}</b> (${R.title}). See 🚢 Logistics → 🌌 Space.`);
+      } else if (tr.k === "contract") { if (typeof spConArrive === "function") spConArrive(tr, msgs);
       } else if (tr.k === "gift" && tr.lost) {   // 🏴‍☠️ robbed on the way
         spMakeReq(tr.to);
         msgs.push(`🏴‍☠️ Pirates stole your gift for the ${R.name}. They will ask for something new.`);
       } else if (tr.k === "gift") {
         const before = spLevel(tr.to), pts = tr.cargo.pts || (tr.cargo.fav ? SP_FAV_PTS : SP_PTS);
         r.pts += pts; r.gifts = (r.gifts || 0) + 1; SP.stats.gifts++;
+        if (typeof spWarm === "function") { spWarm(tr.to); spRivalHit(tr.to, pts, msgs); }
         if (tr.cargo.special) SP.stats.specials = (SP.stats.specials || 0) + 1;
         const after = spLevel(tr.to);
         tr.goods = spReturnGoods(after) + (after > before ? 5 * after : 0) + (tr.cargo.special ? 5 * after : 0);
@@ -361,13 +363,15 @@ function spProcess() {
       spMakeReq(k, r.req && r.req.kind); changed = true;
     }
   }
+  if (typeof spConTick === "function") { const n0 = SP.con.offers.length + SP.con.active.length; spCoolTick(now, msgs); spConTick(now, msgs);
+    if (n0 !== SP.con.offers.length + SP.con.active.length) changed = true; }
   if (msgs.length > 3) showNotice(`🌌 Space: ${msgs.length} updates while you were away. See 🚢 Logistics → 🌌 Space.`);
   else msgs.forEach(m => showNotice(m));
   if (changed) { save(); if (spShown()) renderSpace(); }
 }
 
 /* ----- 🖼️ page ----- */
-const spPageOn = () => state.logiPage === "space" || state.logiPage === "market";
+const spPageOn = () => state.logiPage === "space" || state.logiPage === "market" || state.logiPage === "contracts";
 const spShown = () => state.view === "logistics" && spPageOn() && !$("logisticsView").hidden;
 // 🛰️ flight paths are gentle curves bending away from the middle; a ship flies from the edge of Home to the edge of the system
 const spAsp = () => { const m = document.querySelector(".spMap"); return m && m.clientHeight ? m.clientWidth / m.clientHeight : 16 / 9; };
@@ -464,7 +468,7 @@ document.addEventListener("pointercancel", (e) => { spPtrs.delete(e.pointerId); 
 window.addEventListener("resize", () => spZoomApply());
 function spTripLine(tr) {
   const R = SP_RACES[tr.to], now = Date.now();
-  const what = tr.k === "explore" ? (SP.races[tr.to].found ? `Exploring: ${R.name}` : "Exploring an unknown system") : tr.k === "route" ? `🛣️ Trade route: ${R.name}` : `🎁 Gift for the ${R.name}`;
+  const what = tr.k === "explore" ? (SP.races[tr.to].found ? `Exploring: ${R.name}` : "Exploring an unknown system") : tr.k === "route" ? `🛣️ Trade route: ${R.name}` : tr.k === "contract" ? `📜 Contract for the ${R.name}` : `🎁 Gift for the ${R.name}`;
   const st = now < tr.t1 ? `arrives in <b data-spt="${tr.t1}">${spClock(tr.t1 - now)}</b>` : `coming home, back in <b data-spt="${tr.t2}">${spClock(tr.t2 - now)}</b>`;
   return `<div class="spTrip">🚀 ${what} · ${st}${tr.lost ? " · 🏴‍☠️ cargo stolen" : ""}</div>`;
 }
@@ -504,6 +508,7 @@ function spPanelHtml() {
       <div class="spRow">${spI("likes")}<span><b>Also likes:</b> ${spKindName(R.wants[1])} <span class="muted">(+${SP_PTS})</span></span></div>`}
       <div class="spRow">${spI("sendback")}<span><b>They send back:</b> ${spGood(R.good)} <span class="muted">(${spReturnGoods(L)} per gift, more when you level up)</span></span></div>
       <div class="spRow">${spI("distance")}<span><b>Distance:</b> ${R.min} min each way</span></div></div>
+    ${typeof spPoliticsHtml === "function" ? spPoliticsHtml(spSel) : ""}
     ${trip ? spTripLine(trip) : q ? `<div class="spReq ${q.special ? "special" : ""}">${q.special ? `<div class="spSpecial spRow">${spI("special")}<span>Special request! Bring it in time for extra friendship and goods, or they will be offended (−${SP_SPECIAL.offend}).</span></div>` : ""}<div class="spRow">${spI("request")}<span><b>Their request:</b> ${spReqText(q)}</span></div>
         <div class="muted">+${spReqPts(q)} friendship${q.fav ? " (their favourite!)" : ""} · ${q.special ? "time left" : "a new request in"} <span data-spt="${q.until}">${spClock(q.until - Date.now())}</span></div>
         <div class="spBtns"><button class="btn big" data-spx="gift" ${can && spFree() ? "" : "disabled"}>${spI("gift", "spI btnI")}Send gift</button>
@@ -566,7 +571,7 @@ function spSosHelp() {
   if (!e || isPaused() || spSci2() < SP_SOS_SCI) return;
   spendScientists(SP_SOS_SCI);
   const r = SP.races[e.k], before = spLevel(e.k);
-  r.pts += SP_SOS_WIN; SP.sos = null; SP.stats.sosWon = (SP.stats.sosWon || 0) + 1;
+  r.pts += SP_SOS_WIN; if (typeof spWarm === "function") spWarm(e.k); SP.sos = null; SP.stats.sosWon = (SP.stats.sosWon || 0) + 1;
   SP.nextSos = Date.now() + spSosGap();
   const after = spLevel(e.k);
   showNotice(`🆘 Your scientists saved the day! The ${SP_RACES[e.k].name} are grateful: +${SP_SOS_WIN} friendship.`);
@@ -615,7 +620,9 @@ function spMult(g, slot) {
   return Math.max(0.45, 1 + 0.3 * Math.sin(slot * 0.9 + i * 2.1) + 0.18 * Math.sin(slot * 0.37 + i * 5.3) + 0.24 * (noise - 0.5));
 }
 const spBase = (g) => mineBase() * 60 * SP_PRICE_MIN * SP_RACES[SP_GOOD_RACE[g]].min;
-const spPrice = (g, slot = spSlot()) => Math.max(1, Math.round(spBase(g) * spMult(g, slot) * (1 + spAllyBonus("market"))));
+// 📉 raw = without the supply & demand drop (js/34c-space-politics.js)
+const spPrice = (g, slot = spSlot(), raw) => Math.max(1, Math.round(spBase(g) * spMult(g, slot) * (1 + spAllyBonus("market")) * (raw || typeof spSatMult !== "function" ? 1 : spSatMult(g))));
+const spSellPay = (g, n) => typeof spSellValue === "function" ? Math.max(n, spSellValue(g, n)) : n * spPrice(g);
 // 💖 at Allies you can also BUY that race's good. The buy price moves with the market but always stays above the best selling price, so buying to sell back never pays.
 const spBuyPrice = (g, slot = spSlot()) => Math.max(2, Math.round(spBase(g) * (1.75 + 0.5 * spMult(g, slot)) * (1 + spAllyBonus("market"))));
 const spCanBuy = (g) => SP.races[SP_GOOD_RACE[g]].found && spLevel(SP_GOOD_RACE[g]) >= 5;
@@ -632,7 +639,8 @@ function spBuy(g) {
 function spSell(g, all) {
   const have = SP.goods[g] || 0, n = all ? have : Math.min(have, Math.max(1, Math.floor(spQty[g] || 1)));
   if (isPaused() || !n) return;
-  const pay = n * spPrice(g);
+  const pay = spSellPay(g, n);
+  if (typeof spFlood === "function") spFlood(g, n);
   SP.goods[g] -= n; state.money += pay; clickedThisSecond += pay;   // counts as income (taxes)
   SP.stats.sold = (SP.stats.sold || 0) + n; SP.stats.soldMoney = (SP.stats.soldMoney || 0) + pay;
   showNotice(`🏪 Sold ${SP_GOODS[g].emoji} ${n} ${SP_GOODS[g].name} for ${fmt(pay)}.`);
@@ -648,20 +656,21 @@ function spMarketHtml() {
   const rows = Object.keys(SP_GOODS).map(g => {
     const R = SP_RACES[SP_GOOD_RACE[g]], known = SP.races[SP_GOOD_RACE[g]].found, have = SP.goods[g] || 0;
     if (!known && !have) return `<tr class="spMkLocked"><td>❓ Unknown goods</td><td colspan="5" class="muted">Meet more alien races to trade their goods.</td></tr>`;
-    const p = spPrice(g), prev = spPrice(g, spSlot() - 1), ch = (p - prev) / prev * 100;
+    const p = spPrice(g), prev = spPrice(g, spSlot() - 1, true), ch = (spPrice(g, spSlot(), true) - prev) / prev * 100;
+    const flood = typeof spSatMult === "function" ? Math.round((1 - spSatMult(g)) * 100) : 0;
     const q = Math.min(have, Math.max(1, Math.floor(spQty[g] || 1)));
     return `<tr><td>${spGI(g)} <b>${SP_GOODS[g].name}</b><div class="muted">from the ${R.name}</div></td><td><b>${have.toLocaleString()}</b></td>
-      <td><b>${fmt(p)}</b><div class="${ch >= 0 ? "up" : "down"}">${ch >= 0 ? "▲" : "▼"} ${Math.abs(ch).toFixed(0)}%</div></td><td>${spSpark(g)}</td>
+      <td><b>${fmt(p)}</b><div class="${ch >= 0 ? "up" : "down"}">${ch >= 0 ? "▲" : "▼"} ${Math.abs(ch).toFixed(0)}%</div>${flood >= 1 ? `<div class="spFlood" title="You sold a lot of it lately. The price recovers by itself over a few hours.">📉 −${flood}% flooded</div>` : ""}</td><td>${spSpark(g)}</td>
       <td class="spMkSell"><input type="number" min="1" max="${have}" value="${q}" data-spq="${g}" ${have ? "" : "disabled"}>
         <button class="btn small" data-spx="sell" data-g="${g}" ${have ? "" : "disabled"}>Sell</button>
-        <button class="btn ghost small" data-spx="sellall" data-g="${g}" ${have ? "" : "disabled"}>Sell all${have ? ` (${fmt(have * p)})` : ""}</button>
+        <button class="btn ghost small" data-spx="sellall" data-g="${g}" ${have ? "" : "disabled"}>Sell all${have ? ` (${fmt(spSellPay(g, have))})` : ""}</button>
         ${spCanBuy(g) ? `<div class="spMkBuy"><span class="muted">💖 Buy: <b>${fmt(spBuyPrice(g))}</b> each</span>
           <input type="number" min="1" value="${Math.max(1, Math.floor(spBQty[g] || 1))}" data-spbq="${g}"><button class="btn small" data-spx="buy" data-g="${g}">Buy</button></div>`
           : `<div class="spMkBuy muted">🔒 Buy here at 💖 Allies</div>`}</td></tr>`;
   }).join("");
   return `<div class="card spResBar" id="spResBar">${spResHtml()}</div>
     <div class="card"><div class="row"><h2 style="margin:0"><img class="ico h" src="assets/icons/ico-lg-market.webp" alt="">Alien market</h2><span class="muted">⏱️ Prices change in <b data-spt="${next}">${spClock(next - Date.now())}</b></span></div>
-    <p class="muted">Sell the goods your ships bring home. Prices move every 30 minutes: sell when they are high. The further away a race lives, the more its goods are worth. Once you are 💖 Allies with a race, you can buy its goods here too.</p>
+    <p class="muted">Sell the goods your ships bring home. Prices move every 30 minutes: sell when they are high. Selling a lot at once floods the market: every unit pays a little less, and the price recovers over a few hours. The further away a race lives, the more its goods are worth. Once you are 💖 Allies with a race, you can buy its goods here too.</p>
     <div class="spMkWrap"><table class="spMarket"><thead><tr><th>Good</th><th>You have</th><th>Price each</th><th>Last 6 hours</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
     <div class="spStats"><span>📦 Sold: <b>${(SP.stats.sold || 0).toLocaleString()}</b></span><span>💰 Earned: <b>${fmt(SP.stats.soldMoney || 0)}</b></span>${SP.stats.bought ? `<span>🛒 Bought: <b>${SP.stats.bought.toLocaleString()}</b></span><span>💸 Spent: <b>${fmt(SP.stats.boughtMoney || 0)}</b></span>` : ""}</div></div>`;
 }
@@ -673,6 +682,7 @@ function renderSpace() {
   if (!spOpen()) { box.innerHTML = `<div class="card" style="text-align:center"><h2>🔒 🌌 Space</h2><p>Explore the galaxy, meet alien races and trade with them.</p>
     <p><b>Opens when you build the 🚀 Space Mission Center</b> (💰 Income → 🔬 Science).</p></div>`; return; }
   if (state.logiPage === "market") { box.innerHTML = spSosHtml() + spMarketHtml(); return; }
+  if (state.logiPage === "contracts" && typeof spContractsHtml === "function") { box.innerHTML = spSosHtml() + spContractsHtml(); return; }
   box.innerHTML = `${spSosHtml()}<div class="card spResBar" id="spResBar">${spResHtml()}</div><div class="card spMapCard"><div class="row"><h2 style="margin:0">🌌 Star map</h2><span class="spFreeBadge ${spFree() ? "" : "none"}" title="Free ships">🚀 <b>${spFree()}</b><small>/ ${spShips()}</small><span>${spFree() === 1 ? "ship free" : "ships free"}</span></span></div>${spMapHtml()}</div>
     <div class="card spPanel">${spPanelHtml()}</div><div class="card">${spGoodsHtml()}</div>`;
   spZoomApply();
@@ -787,7 +797,7 @@ function spApplyPage() {
   const view = $("logisticsView");
   if (!$("logiTabs")) {   // left-side page menu (like Investing): everything after the lock card moves into the main column
     const layout = document.createElement("div"); layout.className = "subLayout"; layout.id = "logiLayout";
-    layout.innerHTML = `<nav class="subNav" id="logiTabs"><button class="subTab" data-logipage="earth"><img class="ico" src="assets/icons/ico-lg-earth.webp" alt="">Earth</button><button class="subTab" data-logipage="space"><img class="ico" src="assets/icons/ico-lg-space.webp" alt="">Space</button><button class="subTab subSub" data-logipage="market"><img class="ico" src="assets/icons/ico-lg-market.webp" alt="">Market</button></nav><div class="subMain" id="logiMain"></div>`;
+    layout.innerHTML = `<nav class="subNav" id="logiTabs"><button class="subTab" data-logipage="earth"><img class="ico" src="assets/icons/ico-lg-earth.webp" alt="">Earth</button><button class="subTab" data-logipage="space"><img class="ico" src="assets/icons/ico-lg-space.webp" alt="">Space</button><button class="subTab subSub" data-logipage="market"><img class="ico" src="assets/icons/ico-lg-market.webp" alt="">Market</button><button class="subTab subSub" data-logipage="contracts"><span class="ico">📜</span>Contracts</button></nav><div class="subMain" id="logiMain"></div>`;
     const main = layout.querySelector("#logiMain");
     [...view.children].filter(el => !el.classList.contains("debtBanner") && el.id !== "logiLocked").forEach(el => main.appendChild(el));
     const sv = document.createElement("div"); sv.id = "spaceView"; sv.hidden = true; main.appendChild(sv);
