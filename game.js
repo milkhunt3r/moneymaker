@@ -2905,6 +2905,21 @@ H("🛸 New spaceships! ✨ <b>Stardust Harvesters</b> farm stardust and 🛡️
   "🛸 ¡Naves nuevas! Las ✨ <b>cosechadoras de polvo estelar</b> recogen polvo estelar y las 🛡️ <b>fragatas de escolta</b> protegen tus naves de los piratas. Investígalas en 🌌 Espacio → Investigación. Tus naves de siempre ahora se llaman 🚀 <b>naves mensajeras</b>.");
 H("🌫️ A new area on the star map: the <b>Stardust Drift</b>. Explore it, then send harvesters to farm stardust for an hour, but watch out for pirates!",
   "🌫️ Una zona nueva en el mapa estelar: la <b>Deriva de Polvo Estelar</b>. Explórala y envía cosechadoras a recoger polvo estelar durante una hora, ¡pero cuidado con los piratas!");
+// 🔁 barter in the alien market
+Object.assign(ES, { "Trade with friendly races": "Comerciar con razas amistosas", "You give": "Das", "You get": "Recibes", "How many to get": "Cuántos recibir", "Trade": "Intercambiar",
+  "Pick two different goods.": "Elige dos bienes distintos.", "Goods received by trading": "Bienes recibidos intercambiando",
+  "Swap your alien goods: you give 2, you get 1. You can get the goods of any race that is 😊 Friendly or better with you. 🏺 Ancient Relics can't be traded here.":
+    "Intercambia tus bienes alienígenas: das 2 y recibes 1. Puedes conseguir los bienes de cualquier raza con la que tengas una amistad 😊 Amistosa o mejor. Las 🏺 Reliquias antiguas no se pueden intercambiar aquí." });
+hrx(String.raw`🔒 Become <b>😊 Friendly<\/b> with a race to trade for its goods here\.`, "🔒 Consigue una amistad <b>😊 Amistosa</b> con una raza para intercambiar aquí sus bienes.");
+rx(String.raw`You need at least (\d+) of an alien good to trade\.`, "Necesitas al menos $1 de un bien alienígena para intercambiar.");
+rx(String.raw`(${SP_RX_GOOD}) \(([\d.,]+)\)`, (m, g, n) => `${spG(g)} (${n})`);
+rx(String.raw`Max \(([\d.,]+)\)`, "Máx. ($1)");
+hrx(String.raw`🔁 Goods received by trading: <b>([\d.,]+)<\/b>`, "🔁 Bienes recibidos intercambiando: <b>$1</b>");
+rx(String.raw`(🔁 )?Traded (\S+) ([\d.,]+) (${SP_RX_GOOD}) for (\S+) ([\d.,]+) (${SP_RX_GOOD}) with the (${SP_RX_NAME})\.`, (m, e, i1, a, g1, i2, b, g2, n) => `${e || ""}Has intercambiado ${i1} ${a} ${spG(g1)} por ${i2} ${b} ${spG(g2)} con los ${spN(n)}.`);
+H("🔁 <b>Trading goods</b> (🌌 Space → Market): swap your alien goods with races that are 😊 Friendly or better: you give 2 of any good and get 1 of theirs. 🏺 Ancient Relics can't be traded.",
+  "🔁 <b>Intercambio de bienes</b> (🌌 Espacio → Mercado): intercambia tus bienes alienígenas con razas con las que tengas una amistad 😊 Amistosa o mejor: das 2 de cualquier bien y recibes 1 del suyo. Las 🏺 Reliquias antiguas no se pueden intercambiar.");
+H("🔁 Market: you can now <b>trade goods</b> with 😊 Friendly races. Give 2 of any alien good, get 1 of theirs (🏺 Ancient Relics can't be traded).",
+  "🔁 Mercado: ahora puedes <b>intercambiar bienes</b> con razas 😊 Amistosas. Da 2 de cualquier bien alienígena y recibe 1 del suyo (las 🏺 Reliquias antiguas no se pueden intercambiar).");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -11160,6 +11175,7 @@ function wikiLogistics() {
     <p>🏗️ <b>Outposts:</b> build one in a system you are 😊 Friendly with (one per system) for 1 gcoin and 10 🔬 scientists. It makes 20 of that race's goods an hour, even while the game is closed. Close it any time to build it somewhere else.</p>
     <p>🛸 <b>Fleet:</b> 🚀 <b>courier ships</b> carry gifts, trade routes, contracts and explorers. ✨ <b>Stardust Harvesters</b> (research: up to 3) farm the 🌫️ Stardust Drift, and 🛡️ <b>Escort Frigates</b> (research: 1, then 2 and 2 more, up to 5) protect your other ships. Tick the box at 🌍 Home to send a free frigate with every courier ship: pirates leave escorted ships alone.</p>
     <p>🌫️ <b>Stardust Drift:</b> an area at the top of the star map (explore it first, 5 min each way). A harvester flies there in 5 minutes, farms for 1 hour (5/6/7 stardust a minute, by research level) and flies home. Pirates: 30% chance of an attack in the first half hour of farming and 50% in the second. With no escort they take all the stardust farmed so far. A frigate drives them off, but each attack has a 3% chance to destroy it (and then the stardust is lost too). Build a new frigate for 10 gcoin at 🌍 Home.</p>
+    <p>🔁 <b>Trading goods</b> (🌌 Space → Market): swap your alien goods with races that are 😊 Friendly or better: you give 2 of any good and get 1 of theirs. 🏺 Ancient Relics can't be traded.</p>
     <p>⭐ <b>Special requests:</b> sometimes a race asks for 50% more within 12 hours, for ${SP_SPECIAL.pts}× friendship and extra goods. Let it run out and they are offended (−${SP_SPECIAL.offend} friendship).</p>
     <p>☄️ <b>On the way:</b> an asteroid field can make a trip ${SP_EV.delay * 100}% longer; your ship may rescue a lost alien ship (+${SP_EV.rescue} friendship); and pirates may stop it: pay a toll (${SP_EV.toll} min of income) or run for it (50% chance to lose the cargo). Pirates leave you alone once the Void Corsairs are 💛 Trusted.</p>
     ${wt(["Race", "💛 Trusted", "💖 Allies"], Object.entries(SP_BONUS).map(([k, B]) => [SP.races[k].found ? `${SP_RACES[k].emoji} ${SP_RACES[k].name}` : "❓ Unknown", B.text(B.val[0], 0), B.text(B.val[1], 1)]))}
@@ -13400,6 +13416,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "🔁 Market: you can now <b>trade goods</b> with 😊 Friendly races. Give 2 of any alien good, get 1 of theirs (🏺 Ancient Relics can't be traded).",
     "🛸 New spaceships! ✨ <b>Stardust Harvesters</b> farm stardust and 🛡️ <b>Escort Frigates</b> protect your ships from pirates. Research them in 🌌 Space → Research. Your old ships are now called 🚀 <b>courier ships</b>.",
     "🌫️ A new area on the star map: the <b>Stardust Drift</b>. Explore it, then send harvesters to farm stardust for an hour, but watch out for pirates!",
     "🔬 New in 🌌 Space: <b>Research</b>! 5 research lines (crafting, extra ships, cargo holds, engines and outposts), each with 3 levels.",
@@ -18885,7 +18902,7 @@ function renderSpace() {
   if (!box || !spShown()) return;
   if (!spOpen()) { box.innerHTML = `<div class="card" style="text-align:center"><h2>🔒 🌌 Space</h2><p>Explore the galaxy, meet alien races and trade with them.</p>
     <p><b>Opens when you build the 🚀 Space Mission Center</b> (💰 Income → 🔬 Science).</p></div>`; return; }
-  if (state.logiPage === "market") { box.innerHTML = spSosHtml() + spMarketHtml(); return; }
+  if (state.logiPage === "market") { box.innerHTML = spSosHtml() + spMarketHtml() + ((__eocLoaded >= 44 && typeof spBarterHtml === "function") ? spBarterHtml() : ""); return; }
   if (state.logiPage === "research" && (__eocLoaded >= 45 && typeof spResearchHtml === "function")) { box.innerHTML = spSosHtml() + spResearchHtml(); return; }
   if (state.logiPage === "contracts" && (__eocLoaded >= 44 && typeof spContractsHtml === "function")) { box.innerHTML = spSosHtml() + spContractsHtml(); return; }
   box.innerHTML = `${spSosHtml()}<div class="card spResBar" id="spResBar">${spResHtml()}</div><div class="card spMapCard"><div class="row"><h2 style="margin:0">🌌 Star map</h2><span class="spFreeBadge ${spFree() ? "" : "none"}" title="Free courier ships">🚀 <b>${spFree()}</b><small>/ ${spShips()}</small><span>${spFree() === 1 ? "courier free" : "couriers free"}</span></span></div>${spMapHtml()}</div>
@@ -19203,6 +19220,59 @@ function spPoliticsHtml(k) {
   }
   return `<div class="spPolitics">${rival}${warm}</div>`;
 }
+
+/* ----- 🔁 BARTER (🌌 Space → Market): swap 2 of your goods for 1 good of a race that is 😊 Friendly or better.
+   Any alien good can be given or taken, except 🏺 Ancient Relics (the First Ones don't trade them away). ----- */
+var SP_BARTER_RATE = 2, SP_BARTER_NO = ["relic"];
+var spBarter = { give: null, get: null, n: 10 };
+var spBarterGive = () => Object.keys(SP_GOODS).filter(g => !SP_BARTER_NO.includes(g) && (SP.goods[g] || 0) >= SP_BARTER_RATE);
+var spBarterGet = () => Object.keys(SP_GOODS).filter(g => !SP_BARTER_NO.includes(g) && spLevel(SP_GOOD_RACE[g]) >= 3);
+function spBarterFix() {
+  const gv = spBarterGive(), gt = spBarterGet();
+  if (!gv.includes(spBarter.give)) spBarter.give = gv[0] || null;
+  if (!gt.includes(spBarter.get) || spBarter.get === spBarter.give) spBarter.get = gt.find(g => g !== spBarter.give) || null;
+  spBarter.n = Math.max(1, Math.floor(spBarter.n || 1));
+}
+var spBarterMax = () => spBarter.give ? Math.floor((SP.goods[spBarter.give] || 0) / SP_BARTER_RATE) : 0;
+function spBarterDo() {
+  spBarterFix();
+  const { give, get } = spBarter, n = Math.min(spBarter.n, spBarterMax());
+  if (isPaused() || !give || !get || give === get || n < 1) return;
+  SP.goods[give] -= n * SP_BARTER_RATE; SP.goods[get] = (SP.goods[get] || 0) + n;
+  SP.stats.bartered = (SP.stats.bartered || 0) + n;
+  showNotice(`🔁 Traded ${SP_GOODS[give].emoji} ${n * SP_BARTER_RATE} ${SP_GOODS[give].name} for ${SP_GOODS[get].emoji} ${n} ${SP_GOODS[get].name} with the ${SP_RACES[SP_GOOD_RACE[get]].name}.`);
+  save(); renderSpace();
+}
+function spBarterHtml() {
+  spBarterFix();
+  const gv = spBarterGive(), gt = spBarterGet(), { give, get } = spBarter, max = spBarterMax(), n = Math.min(spBarter.n, Math.max(1, max));
+  const opt = (list, sel, skip) => list.filter(g => g !== skip).map(g => `<option value="${g}" ${g === sel ? "selected" : ""}>${SP_GOODS[g].name} (${(SP.goods[g] || 0).toLocaleString()})</option>`).join("");
+  let body;
+  if (!gt.length) body = `<p class="muted">🔒 Become <b>😊 Friendly</b> with a race to trade for its goods here.</p>`;
+  else if (!gv.length) body = `<p class="muted">You need at least ${SP_BARTER_RATE} of an alien good to trade.</p>`;
+  else body = `<div class="spBarter">
+      <label><span class="muted">You give</span><select data-spb="give">${opt(gv, give)}</select></label>
+      <span class="spArrow">→</span>
+      <label><span class="muted">You get</span><select data-spb="get">${opt(gt, get, give)}</select></label>
+      <label><span class="muted">How many to get</span><input type="number" min="1" max="${max}" value="${n}" data-spb="n"></label></div>
+    ${give && get ? `<div class="spBarterSum"><span class="spNeed">${spGI(give)} <b>${(n * SP_BARTER_RATE).toLocaleString()}</b> ${SP_GOODS[give].name}</span><span class="spArrow">→</span>
+      <span class="spNeed ok">${spGI(get)} <b>${n.toLocaleString()}</b> ${SP_GOODS[get].name}</span>
+      <button class="btn" data-spb="go" ${max >= 1 && give !== get ? "" : "disabled"}>🔁 Trade</button>
+      <button class="btn ghost small" data-spb="max" ${max >= 1 ? "" : "disabled"}>Max (${max.toLocaleString()})</button></div>` : `<p class="muted">Pick two different goods.</p>`}`;
+  return `<div class="card"><h2 style="margin-top:0">🔁 Trade with friendly races</h2>
+    <p class="muted">Swap your alien goods: you give ${SP_BARTER_RATE}, you get 1. You can get the goods of any race that is 😊 Friendly or better with you. 🏺 Ancient Relics can't be traded here.</p>
+    ${body}${SP.stats.bartered ? `<div class="spStats"><span>🔁 Goods received by trading: <b>${SP.stats.bartered.toLocaleString()}</b></span></div>` : ""}</div>`;
+}
+document.addEventListener("change", (e) => {
+  const el = e.target.closest("[data-spb]"); if (!el || !e.target.closest("#spaceView")) return;
+  const k = el.dataset.spb;
+  if (k === "give" || k === "get") { spBarter[k] = el.value; renderSpace(); }
+  if (k === "n") { spBarter.n = Number(el.value) || 1; renderSpace(); }
+});
+document.addEventListener("click", (e) => {
+  const el = e.target.closest('[data-spb="go"], [data-spb="max"]'); if (!el || !e.target.closest("#spaceView")) return;
+  if (el.dataset.spb === "max") { spBarter.n = Math.max(1, spBarterMax()); renderSpace(); } else spBarterDo();
+});
 
 // ===== js/34d-space-research.js =====
 __eocLoaded = 45;

@@ -178,3 +178,56 @@ function spPoliticsHtml(k) {
   }
   return `<div class="spPolitics">${rival}${warm}</div>`;
 }
+
+/* ----- 🔁 BARTER (🌌 Space → Market): swap 2 of your goods for 1 good of a race that is 😊 Friendly or better.
+   Any alien good can be given or taken, except 🏺 Ancient Relics (the First Ones don't trade them away). ----- */
+const SP_BARTER_RATE = 2, SP_BARTER_NO = ["relic"];
+const spBarter = { give: null, get: null, n: 10 };
+const spBarterGive = () => Object.keys(SP_GOODS).filter(g => !SP_BARTER_NO.includes(g) && (SP.goods[g] || 0) >= SP_BARTER_RATE);
+const spBarterGet = () => Object.keys(SP_GOODS).filter(g => !SP_BARTER_NO.includes(g) && spLevel(SP_GOOD_RACE[g]) >= 3);
+function spBarterFix() {
+  const gv = spBarterGive(), gt = spBarterGet();
+  if (!gv.includes(spBarter.give)) spBarter.give = gv[0] || null;
+  if (!gt.includes(spBarter.get) || spBarter.get === spBarter.give) spBarter.get = gt.find(g => g !== spBarter.give) || null;
+  spBarter.n = Math.max(1, Math.floor(spBarter.n || 1));
+}
+const spBarterMax = () => spBarter.give ? Math.floor((SP.goods[spBarter.give] || 0) / SP_BARTER_RATE) : 0;
+function spBarterDo() {
+  spBarterFix();
+  const { give, get } = spBarter, n = Math.min(spBarter.n, spBarterMax());
+  if (isPaused() || !give || !get || give === get || n < 1) return;
+  SP.goods[give] -= n * SP_BARTER_RATE; SP.goods[get] = (SP.goods[get] || 0) + n;
+  SP.stats.bartered = (SP.stats.bartered || 0) + n;
+  showNotice(`🔁 Traded ${SP_GOODS[give].emoji} ${n * SP_BARTER_RATE} ${SP_GOODS[give].name} for ${SP_GOODS[get].emoji} ${n} ${SP_GOODS[get].name} with the ${SP_RACES[SP_GOOD_RACE[get]].name}.`);
+  save(); renderSpace();
+}
+function spBarterHtml() {
+  spBarterFix();
+  const gv = spBarterGive(), gt = spBarterGet(), { give, get } = spBarter, max = spBarterMax(), n = Math.min(spBarter.n, Math.max(1, max));
+  const opt = (list, sel, skip) => list.filter(g => g !== skip).map(g => `<option value="${g}" ${g === sel ? "selected" : ""}>${SP_GOODS[g].name} (${(SP.goods[g] || 0).toLocaleString()})</option>`).join("");
+  let body;
+  if (!gt.length) body = `<p class="muted">🔒 Become <b>😊 Friendly</b> with a race to trade for its goods here.</p>`;
+  else if (!gv.length) body = `<p class="muted">You need at least ${SP_BARTER_RATE} of an alien good to trade.</p>`;
+  else body = `<div class="spBarter">
+      <label><span class="muted">You give</span><select data-spb="give">${opt(gv, give)}</select></label>
+      <span class="spArrow">→</span>
+      <label><span class="muted">You get</span><select data-spb="get">${opt(gt, get, give)}</select></label>
+      <label><span class="muted">How many to get</span><input type="number" min="1" max="${max}" value="${n}" data-spb="n"></label></div>
+    ${give && get ? `<div class="spBarterSum"><span class="spNeed">${spGI(give)} <b>${(n * SP_BARTER_RATE).toLocaleString()}</b> ${SP_GOODS[give].name}</span><span class="spArrow">→</span>
+      <span class="spNeed ok">${spGI(get)} <b>${n.toLocaleString()}</b> ${SP_GOODS[get].name}</span>
+      <button class="btn" data-spb="go" ${max >= 1 && give !== get ? "" : "disabled"}>🔁 Trade</button>
+      <button class="btn ghost small" data-spb="max" ${max >= 1 ? "" : "disabled"}>Max (${max.toLocaleString()})</button></div>` : `<p class="muted">Pick two different goods.</p>`}`;
+  return `<div class="card"><h2 style="margin-top:0">🔁 Trade with friendly races</h2>
+    <p class="muted">Swap your alien goods: you give ${SP_BARTER_RATE}, you get 1. You can get the goods of any race that is 😊 Friendly or better with you. 🏺 Ancient Relics can't be traded here.</p>
+    ${body}${SP.stats.bartered ? `<div class="spStats"><span>🔁 Goods received by trading: <b>${SP.stats.bartered.toLocaleString()}</b></span></div>` : ""}</div>`;
+}
+document.addEventListener("change", (e) => {
+  const el = e.target.closest("[data-spb]"); if (!el || !e.target.closest("#spaceView")) return;
+  const k = el.dataset.spb;
+  if (k === "give" || k === "get") { spBarter[k] = el.value; renderSpace(); }
+  if (k === "n") { spBarter.n = Number(el.value) || 1; renderSpace(); }
+});
+document.addEventListener("click", (e) => {
+  const el = e.target.closest('[data-spb="go"], [data-spb="max"]'); if (!el || !e.target.closest("#spaceView")) return;
+  if (el.dataset.spb === "max") { spBarter.n = Math.max(1, spBarterMax()); renderSpace(); } else spBarterDo();
+});

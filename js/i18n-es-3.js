@@ -1531,6 +1531,21 @@ H("🛸 New spaceships! ✨ <b>Stardust Harvesters</b> farm stardust and 🛡️
   "🛸 ¡Naves nuevas! Las ✨ <b>cosechadoras de polvo estelar</b> recogen polvo estelar y las 🛡️ <b>fragatas de escolta</b> protegen tus naves de los piratas. Investígalas en 🌌 Espacio → Investigación. Tus naves de siempre ahora se llaman 🚀 <b>naves mensajeras</b>.");
 H("🌫️ A new area on the star map: the <b>Stardust Drift</b>. Explore it, then send harvesters to farm stardust for an hour, but watch out for pirates!",
   "🌫️ Una zona nueva en el mapa estelar: la <b>Deriva de Polvo Estelar</b>. Explórala y envía cosechadoras a recoger polvo estelar durante una hora, ¡pero cuidado con los piratas!");
+// 🔁 barter in the alien market
+Object.assign(ES, { "Trade with friendly races": "Comerciar con razas amistosas", "You give": "Das", "You get": "Recibes", "How many to get": "Cuántos recibir", "Trade": "Intercambiar",
+  "Pick two different goods.": "Elige dos bienes distintos.", "Goods received by trading": "Bienes recibidos intercambiando",
+  "Swap your alien goods: you give 2, you get 1. You can get the goods of any race that is 😊 Friendly or better with you. 🏺 Ancient Relics can't be traded here.":
+    "Intercambia tus bienes alienígenas: das 2 y recibes 1. Puedes conseguir los bienes de cualquier raza con la que tengas una amistad 😊 Amistosa o mejor. Las 🏺 Reliquias antiguas no se pueden intercambiar aquí." });
+hrx(String.raw`🔒 Become <b>😊 Friendly<\/b> with a race to trade for its goods here\.`, "🔒 Consigue una amistad <b>😊 Amistosa</b> con una raza para intercambiar aquí sus bienes.");
+rx(String.raw`You need at least (\d+) of an alien good to trade\.`, "Necesitas al menos $1 de un bien alienígena para intercambiar.");
+rx(String.raw`(${SP_RX_GOOD}) \(([\d.,]+)\)`, (m, g, n) => `${spG(g)} (${n})`);
+rx(String.raw`Max \(([\d.,]+)\)`, "Máx. ($1)");
+hrx(String.raw`🔁 Goods received by trading: <b>([\d.,]+)<\/b>`, "🔁 Bienes recibidos intercambiando: <b>$1</b>");
+rx(String.raw`(🔁 )?Traded (\S+) ([\d.,]+) (${SP_RX_GOOD}) for (\S+) ([\d.,]+) (${SP_RX_GOOD}) with the (${SP_RX_NAME})\.`, (m, e, i1, a, g1, i2, b, g2, n) => `${e || ""}Has intercambiado ${i1} ${a} ${spG(g1)} por ${i2} ${b} ${spG(g2)} con los ${spN(n)}.`);
+H("🔁 <b>Trading goods</b> (🌌 Space → Market): swap your alien goods with races that are 😊 Friendly or better: you give 2 of any good and get 1 of theirs. 🏺 Ancient Relics can't be traded.",
+  "🔁 <b>Intercambio de bienes</b> (🌌 Espacio → Mercado): intercambia tus bienes alienígenas con razas con las que tengas una amistad 😊 Amistosa o mejor: das 2 de cualquier bien y recibes 1 del suyo. Las 🏺 Reliquias antiguas no se pueden intercambiar.");
+H("🔁 Market: you can now <b>trade goods</b> with 😊 Friendly races. Give 2 of any alien good, get 1 of theirs (🏺 Ancient Relics can't be traded).",
+  "🔁 Mercado: ahora puedes <b>intercambiar bienes</b> con razas 😊 Amistosas. Da 2 de cualquier bien alienígena y recibe 1 del suyo (las 🏺 Reliquias antiguas no se pueden intercambiar).");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

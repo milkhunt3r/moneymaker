@@ -695,7 +695,7 @@ function renderSpace() {
   if (!box || !spShown()) return;
   if (!spOpen()) { box.innerHTML = `<div class="card" style="text-align:center"><h2>🔒 🌌 Space</h2><p>Explore the galaxy, meet alien races and trade with them.</p>
     <p><b>Opens when you build the 🚀 Space Mission Center</b> (💰 Income → 🔬 Science).</p></div>`; return; }
-  if (state.logiPage === "market") { box.innerHTML = spSosHtml() + spMarketHtml(); return; }
+  if (state.logiPage === "market") { box.innerHTML = spSosHtml() + spMarketHtml() + (typeof spBarterHtml === "function" ? spBarterHtml() : ""); return; }
   if (state.logiPage === "research" && typeof spResearchHtml === "function") { box.innerHTML = spSosHtml() + spResearchHtml(); return; }
   if (state.logiPage === "contracts" && typeof spContractsHtml === "function") { box.innerHTML = spSosHtml() + spContractsHtml(); return; }
   box.innerHTML = `${spSosHtml()}<div class="card spResBar" id="spResBar">${spResHtml()}</div><div class="card spMapCard"><div class="row"><h2 style="margin:0">🌌 Star map</h2><span class="spFreeBadge ${spFree() ? "" : "none"}" title="Free courier ships">🚀 <b>${spFree()}</b><small>/ ${spShips()}</small><span>${spFree() === 1 ? "courier free" : "couriers free"}</span></span></div>${spMapHtml()}</div>
