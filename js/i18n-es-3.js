@@ -1648,6 +1648,16 @@ rx(String.raw`(\S+ )?Sent (\d+) on their best contracts\.`, (m, e, n) => `${e ||
 rx(String.raw`(${NUM}) left`, "Quedan $1");
 H("🚚 Logistics is faster to run: every vehicle is one compact row, idle ones show their ⭐ best offer (most money per second) with a <b>Send</b> button, and <b>⭐ Send all</b> puts every waiting vehicle on its best contract at once. \"Other offers\" still opens all 4.",
   "🚚 La logística es más rápida: cada vehículo es una fila compacta, los que esperan muestran su ⭐ mejor oferta (más dinero por segundo) con un botón <b>Enviar</b>, y <b>⭐ Enviar todos</b> manda a cada vehículo libre a su mejor contrato de una vez. \"Otras ofertas\" sigue abriendo las 4.");
+// 🌍 earth slim bar + fleet tabs
+Object.assign(ES, { "Trucks": "Camiones", "Tankers": "Petroleros", "Planes": "Aviones", "locked": "bloqueado", "none yet": "ninguno todavía", "Waiting for a contract": "Esperando un contrato", "Broken down": "Averiado",
+  "Contracts fulfilled": "Contratos cumplidos", "Delivered (all time)": "Entregado (total)" });
+rx(String.raw`(\d+) on the road( · (\d+) waiting)?( · (\d+) broken)?`, (m, a, x, b, y, c) => `${a} en ruta${x ? ` · ${b} esperando` : ""}${y ? ` · ${c} averiados` : ""}`);
+rx(String.raw`(Trucks|Tankers|Planes) on the road \/ owned`, (m, x) => `${{ Trucks: "Camiones", Tankers: "Petroleros", Planes: "Aviones" }[x]} en ruta / en propiedad`);
+rx(String.raw`Logistics level · (max level|([\d.,]+) \/ ([\d.,]+) XP)`, (m, x, a, b) => `Nivel de logística · ${a ? `${a} / ${b} XP` : "nivel máximo"}`);
+H("🌍 Earth logistics is tidier: one slim bar shows your level, money, vehicles on the road and contracts, and Trucks · Tankers · Planes tabs show one fleet at a time (with a <b>!</b> when vehicles wait or break down). The world map follows the tab you pick.",
+  "🌍 La logística de la Tierra está más ordenada: una barra fina muestra tu nivel, tu dinero, los vehículos en ruta y los contratos, y las pestañas Camiones · Petroleros · Aviones muestran una flota a la vez (con un <b>!</b> cuando hay vehículos esperando o averiados). El mapa del mundo sigue la pestaña que elijas.");
+hrx(String.raw`(\{i\}|<img[^>]*>)(${NUM}) · (\{i\}|<img[^>]*>)([\dhms: ]+) · <b>≈ (${NUM}) \/ sec<\/b>`, "$1$2 · $3$4 · <b>≈ $5 / s</b>");
+Object.assign(ES, { "BROKEN DOWN": "AVERIADO", "This truck needs repairs before it can take new contracts.": "Este camión necesita reparaciones antes de aceptar contratos nuevos." });
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

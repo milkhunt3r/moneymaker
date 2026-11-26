@@ -3022,6 +3022,16 @@ rx(String.raw`(\S+ )?Sent (\d+) on their best contracts\.`, (m, e, n) => `${e ||
 rx(String.raw`(${NUM}) left`, "Quedan $1");
 H("🚚 Logistics is faster to run: every vehicle is one compact row, idle ones show their ⭐ best offer (most money per second) with a <b>Send</b> button, and <b>⭐ Send all</b> puts every waiting vehicle on its best contract at once. \"Other offers\" still opens all 4.",
   "🚚 La logística es más rápida: cada vehículo es una fila compacta, los que esperan muestran su ⭐ mejor oferta (más dinero por segundo) con un botón <b>Enviar</b>, y <b>⭐ Enviar todos</b> manda a cada vehículo libre a su mejor contrato de una vez. \"Otras ofertas\" sigue abriendo las 4.");
+// 🌍 earth slim bar + fleet tabs
+Object.assign(ES, { "Trucks": "Camiones", "Tankers": "Petroleros", "Planes": "Aviones", "locked": "bloqueado", "none yet": "ninguno todavía", "Waiting for a contract": "Esperando un contrato", "Broken down": "Averiado",
+  "Contracts fulfilled": "Contratos cumplidos", "Delivered (all time)": "Entregado (total)" });
+rx(String.raw`(\d+) on the road( · (\d+) waiting)?( · (\d+) broken)?`, (m, a, x, b, y, c) => `${a} en ruta${x ? ` · ${b} esperando` : ""}${y ? ` · ${c} averiados` : ""}`);
+rx(String.raw`(Trucks|Tankers|Planes) on the road \/ owned`, (m, x) => `${{ Trucks: "Camiones", Tankers: "Petroleros", Planes: "Aviones" }[x]} en ruta / en propiedad`);
+rx(String.raw`Logistics level · (max level|([\d.,]+) \/ ([\d.,]+) XP)`, (m, x, a, b) => `Nivel de logística · ${a ? `${a} / ${b} XP` : "nivel máximo"}`);
+H("🌍 Earth logistics is tidier: one slim bar shows your level, money, vehicles on the road and contracts, and Trucks · Tankers · Planes tabs show one fleet at a time (with a <b>!</b> when vehicles wait or break down). The world map follows the tab you pick.",
+  "🌍 La logística de la Tierra está más ordenada: una barra fina muestra tu nivel, tu dinero, los vehículos en ruta y los contratos, y las pestañas Camiones · Petroleros · Aviones muestran una flota a la vez (con un <b>!</b> cuando hay vehículos esperando o averiados). El mapa del mundo sigue la pestaña que elijas.");
+hrx(String.raw`(\{i\}|<img[^>]*>)(${NUM}) · (\{i\}|<img[^>]*>)([\dhms: ]+) · <b>≈ (${NUM}) \/ sec<\/b>`, "$1$2 · $3$4 · <b>≈ $5 / s</b>");
+Object.assign(ES, { "BROKEN DOWN": "AVERIADO", "This truck needs repairs before it can take new contracts.": "Este camión necesita reparaciones antes de aceptar contratos nuevos." });
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -3342,7 +3352,7 @@ var staffIco = (key, o, cls = "staffI") => STAFF_PICS.includes(key) ? ico("st-" 
 // 👽 alliance bonuses from 🌌 Space (js/34-space.js loads later)
 var alienBonus = (key) => ((__eocLoaded >= 44 && typeof spAllyBonus === "function") ? spAllyBonus(key) : 0);
 var geneBonus = (cat) => (typeof geneCatCount === "function" ? geneCatCount(cat) * 0.01 : 0);
-var PREF_KEYS = ["view", "coinUnit", "casinoPage", "logiPage", "rewardType", "rewardState", "gamePage", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage", "cryptoSel", "ivCard",
+var PREF_KEYS = ["view", "coinUnit", "casinoPage", "logiPage", "rewardType", "rewardState", "gamePage", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage", "cryptoSel", "ivCard", "logiFleet",
                    "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage"];
 function splitState(st) {   // -> { progress, prefs }
   const progress = {}, prefs = {};
@@ -4673,7 +4683,7 @@ function showView(view) {
   $("achievementsView").hidden = view !== "achievements";
   $("wikiView").hidden = view !== "wiki";
   if ($("profileView")) $("profileView").hidden = view !== "profile";
-  if (view === "profile" && (__eocLoaded >= 49 && typeof renderProfile === "function")) renderProfile();
+  if (view === "profile" && (__eocLoaded >= 50 && typeof renderProfile === "function")) renderProfile();
   if ($("profileBtn")) $("profileBtn").classList.toggle("on", view === "profile");
   // 🎮 Mini-games: the hub, or one game page (state.gamePage: null = hub, "art", "mine")
   const gp = view === "games" ? (state.gamePage || null) : undefined;
@@ -13709,6 +13719,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "🌍 Earth logistics is tidier: one slim bar shows your level, money, vehicles on the road and contracts, and Trucks · Tankers · Planes tabs show one fleet at a time (with a <b>!</b> when vehicles wait or break down). The world map follows the tab you pick.",
     "🚚 Logistics is faster to run: every vehicle is one compact row, idle ones show their ⭐ best offer (most money per second) with a <b>Send</b> button, and <b>⭐ Send all</b> puts every waiting vehicle on its best contract at once. \"Other offers\" still opens all 4.",
     "🔁 Investing: each investment now has one <b>Buy | Sell</b> switch with a single amount row. In Sell mode the % buttons fill a share of what you hold, and a line tells you what you put in or get back.",
     "🪙 Live trading is easier: one coin at a time with tabs (price, 24h change and how many positions you have), a big Open button with its preview right under it, and all your open positions and limit orders together in one list at the top.",
@@ -19168,7 +19179,7 @@ function spPanelHtml() {
       <span class="spChip" title="They send back ${spReturnGoods(L)} per gift (more when you level up)">${spI("sendback")}${spGI(R.good)} ×${spReturnGoods(L)}</span>
       <span class="spChip" title="Distance: one way">${spI("distance")}${spMin(spSel)} min</span>
       ${(__eocLoaded >= 45 && typeof spPoliticsChips === "function") ? spPoliticsChips(spSel) : ""}</div>
-    ${(__eocLoaded >= 48 && typeof pipOfferHtml === "function") ? pipOfferHtml(spSel) : ""}
+    ${(__eocLoaded >= 49 && typeof pipOfferHtml === "function") ? pipOfferHtml(spSel) : ""}
     <div class="spTabs"><button class="spTab ${spPTab === "trade" ? "on" : ""}" data-sptab="trade">${spI("route")}Trade</button><button class="spTab ${spPTab === "bonus" ? "on" : ""}" data-sptab="bonus">${spI("bonus")}Relations & bonuses</button></div>
     ${spPTab === "trade" ? spRouteHtml(spSel) + ((__eocLoaded >= 46 && typeof spOutpostHtml === "function") ? spOutpostHtml(spSel) : "")
       : ((__eocLoaded >= 45 && typeof spPoliticsHtml === "function") ? spPoliticsHtml(spSel) : "") + spBonusHtml(spSel)}`;
@@ -20149,8 +20160,63 @@ function spHarvAnimate(now) {
   }
 }
 
-// ===== js/36-pip.js =====
+// ===== js/34f-earth-ui.js =====
 __eocLoaded = 48;
+/* =====================================================================
+   🌍 EARTH LOGISTICS LAYOUT (loaded after the space files: the left menu is built by then)
+   · One slim bar (level, money, vehicles on the road, contracts) instead of the level card and the wallet card.
+   · Trucks · Tankers · Planes tabs: one fleet at a time. Picking a tab also shows only that fleet on the world map.
+   ===================================================================== */
+var LG_TABS = [["truck", "Trucks", "lg-truck"], ["tanker", "Tankers", "lg-tanker"], ["plane", "Planes", "lg-plane"]];
+(function lgSetup() {
+  const main = $("logiMain") || $("logisticsView");
+  const hud = document.createElement("div"); hud.id = "logiHud"; hud.className = "card ivHud lgHud";
+  ($("satelliteCard") || $("mapCard")).before(hud);
+  // the three fleet cards: their lists are #trucks, #tankers and #planes
+  LG_TABS.forEach(([k]) => { const box = $(FLEETS[k].box), card = box && box.closest(".card"); if (card) { card.dataset.lgfleet = k; card.classList.add("lgFleetCard"); } });
+  const first = main.querySelector('[data-lgfleet="truck"]');
+  const tabs = document.createElement("div"); tabs.id = "lgTabs"; tabs.className = "lgTabs"; first.before(tabs);
+})();
+if (!LG_TABS.some(t => t[0] === state.logiFleet)) state.logiFleet = "truck";
+
+var lgBusy = (k) => fleetList(k).filter(v => v.contract).length;
+var lgIdle = (k) => fleetList(k).filter(v => !v.contract && !v.broken).length;
+var lgBroken = (k) => fleetList(k).filter(v => v.broken).length;
+function lgHudHtml() {
+  const info = levelInfo(state.logiXp, LOGI_XP);
+  return `<button class="casHudLv" data-levels="logistics" title="Logistics level · ${info.max ? "max level" : `${fmtNum(info.into)} / ${fmtNum(info.need)} XP`}">${ico("lg-level")}<span>Lv <b>${info.level}</b></span>
+      <span class="casHudXp"><i style="width:${info.max ? 100 : 100 * info.into / info.need}%"></i></span></button>
+    <span class="casHudMoney" title="Your money"><img class="coinSkinImg" src="assets/coin.webp" alt=""><b>${fmt(state.money)}</b></span>
+    ${LG_TABS.filter(([k]) => fleetList(k).length).map(([k, n, ic]) => `<span class="ivHold" title="${n} on the road / owned">${ico(ic)}<b>${lgBusy(k)} / ${fleetList(k).length}</b></span>`).join("")}
+    <span class="ivHold" title="Contracts fulfilled">${ico("lg-contracts")}<b>${(logi.contracts || 0).toLocaleString()}</b></span>
+    <span class="ivHold" title="Delivered (all time)">${ico("lg-crates")}<b>${fmt(logi.earned || 0)}</b></span>`;
+}
+function lgTabsHtml() {
+  return LG_TABS.map(([k, n, ic]) => {
+    const own = fleetList(k).length, idle = lgIdle(k), br = lgBroken(k), locked = !fleetUnlocked(k) && !own;
+    const note = !own ? (locked ? "locked" : "none yet") : `${lgBusy(k)} on the road${idle ? ` · ${idle} waiting` : ""}${br ? ` · ${br} broken` : ""}`;
+    return `<button class="lgTab ${state.logiFleet === k ? "on" : ""} ${idle || br ? "needs" : ""}" data-lgtab="${k}">${locked ? ico("lock", "lockS") : ""}${ico(ic)}<span><b>${n}</b> <small class="muted">${own} / ${FLEETS[k].slots}</small><small>${note}</small></span>
+      ${br ? `<span class="tabWarn" title="Broken down">!</span>` : idle ? `<span class="tabWarn gold" title="Waiting for a contract">!</span>` : ""}</button>`; }).join("");
+}
+function lgApply() { document.querySelectorAll("[data-lgfleet]").forEach(c => { c.hidden = c.dataset.lgfleet !== state.logiFleet; }); }
+function lgRefresh() {
+  if ($("logisticsView").hidden) return;
+  const h = $("logiHud"), x = lgHudHtml(); if (h.dataset.h !== x) { h.dataset.h = x; h.innerHTML = x; }
+  const t = $("lgTabs"), y = lgTabsHtml(); if (t.dataset.h !== y) { t.dataset.h = y; t.innerHTML = y; }
+}
+$("lgTabs").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-lgtab]"); if (!b || isPaused()) return;
+  state.logiFleet = b.dataset.lgtab;
+  // 🗺️ the map follows: only this fleet's vehicles and cities (the map's own buttons can still add the others)
+  state.mapShow = { truck: false, tanker: false, plane: false, [state.logiFleet]: true };
+  if ((__eocLoaded >= 20 && typeof updateMapControls === "function")) { updateMapControls(); renderMapVehicles(); }
+  lgApply(); lgRefresh(); save();
+});
+lgApply(); lgRefresh();
+setInterval(lgRefresh, 1000);
+
+// ===== js/36-pip.js =====
+__eocLoaded = 49;
 /* =====================================================================
    🐾🎨 PIP, the painter pet (an alien mouse from the Lumerians).
    - Adopt him in 🌌 Space Logistics → Lumerians, once you are 😊 Friendly, for 10 paintings from your collection.
@@ -20370,7 +20436,7 @@ if (pipOwned()) pipProcess(true);
 if (state.view === "games" && !state.gamePage) renderPipCorner();   // the page opened straight on 🎮 Mini-games
 
 // ===== js/37-profile.js =====
-__eocLoaded = 49;
+__eocLoaded = 50;
 /* =====================================================================
    👤 PLAYER PROFILE: nickname, avatar (the emblem of one of your 🎁 reward collections), achievements and prestige count.
    · Opened with the round 👤 button next to ⚙️ Settings.
@@ -20530,7 +20596,7 @@ function renderProfile() {
   // 👈 Profile / Friends on the left, like the other pages (.subLayout)
   const tabs = `<div class="subLayout"><nav class="subNav"><button class="subTab ${prof.tab !== "friends" ? "active" : ""}" data-prof="tab-me">👤 Profile</button>
     <button class="subTab ${prof.tab === "friends" ? "active" : ""}" data-prof="tab-friends">👥 Friends${inc ? ` <span class="profBadge">${inc}</span>` : ""}</button></nav><div class="subMain">`;
-  if (prof.tab === "friends" && (__eocLoaded >= 50 && typeof renderFriends === "function")) { box.innerHTML = tabs + `<div id="friendsBox"></div></div></div>`; renderFriends(row); return; }
+  if (prof.tab === "friends" && (__eocLoaded >= 51 && typeof renderFriends === "function")) { box.innerHTML = tabs + `<div id="friendsBox"></div></div></div>`; renderFriends(row); return; }
   const ids = profAvatarIds(), cur = row ? row.avatar : prof.pendingAvatar;
   const shown = prof.showAll ? ids : ids.slice(0, 60);
   const typed = $("profNick") ? $("profNick").value : null;
@@ -20593,7 +20659,7 @@ document.addEventListener("click", (e) => {
   if (b.dataset.prof === "signin" && (__eocLoaded >= 38 && typeof cloudSignIn === "function")) cloudSignIn();
   if (b.dataset.prof === "nick") profSaveNick($("profNick").value);
   if (b.dataset.prof === "all") { prof.showAll = true; renderProfile(); }
-  if (b.dataset.prof === "tab-me" || b.dataset.prof === "tab-friends") { prof.tab = b.dataset.prof === "tab-friends" ? "friends" : "me"; prof.err = ""; prof.msg = ""; renderProfile(); if (prof.tab === "friends" && (__eocLoaded >= 50 && typeof frLoad === "function")) frLoad(); }
+  if (b.dataset.prof === "tab-me" || b.dataset.prof === "tab-friends") { prof.tab = b.dataset.prof === "tab-friends" ? "friends" : "me"; prof.err = ""; prof.msg = ""; renderProfile(); if (prof.tab === "friends" && (__eocLoaded >= 51 && typeof frLoad === "function")) frLoad(); }
   if (b.dataset.prof === "copy" && prof.row && prof.row.friend_code) {
     const c = prof.row.friend_code;
     (navigator.clipboard ? navigator.clipboard.writeText(c) : Promise.reject()).then(() => showNotice(`📋 Friend code ${c} copied.`), () => showNotice(`📋 Your friend code: ${c}`));
@@ -20620,7 +20686,7 @@ setInterval(() => { const m = $("profMoney"); if (m) { const t = fmt(state.money
 setInterval(() => { const src = profCoinImg(profCoin()).match(/src="([^"]+)"/)[1]; document.querySelectorAll(".coinSkinImg").forEach(i => { if (i.getAttribute("src") !== src) i.setAttribute("src", src); }); }, 1000);
 
 // ===== js/38-friends.js =====
-__eocLoaded = 50;
+__eocLoaded = 51;
 /* =====================================================================
    👥 FRIENDS (👤 Profile → 👥 Friends). Needs a profile (js/37-profile.js) and the tables from docs/supabase-friends.sql.
    · Find players by nickname (start of the name) or by their 8-letter friend code, and send a request.
@@ -20799,7 +20865,7 @@ var frProfLoadOrig = profLoad;
 profLoad = async function () { await frProfLoadOrig(); if (prof.row && prof.friendsOn) frLoad(true); };
 
 // ===== js/39-duels.js =====
-__eocLoaded = 51;
+__eocLoaded = 52;
 /* =====================================================================
    ⚔️ ONLINE CASINO: duels against friends (🎰 Casino → ⚔️ Online casino on the left).
    · ✊✋✌️ Rock Paper Scissors and 🎲 Dice Battle (2 dice each, higher total wins the round): best of 3; a tie is played again.
@@ -20923,7 +20989,7 @@ function duChallenge(oppId) {
   const bet = Math.floor(Number(DU.bet));
   if (!(bet >= 1)) { DU.err = "Choose a bet of at least 1."; return renderDuels(); }
   if (bet > state.money) { DU.err = "You don't have enough money for this bet."; return renderDuels(); }
-  if ((__eocLoaded >= 49 && typeof profPushStats === "function")) profPushStats();   // the referee checks the money on your profile
+  if ((__eocLoaded >= 50 && typeof profPushStats === "function")) profPushStats();   // the referee checks the money on your profile
   duDo("duel_invite", { p_opp: oppId, p_game: DU.game, p_bet: bet }, () => { setTimeout(duPending, 300); });
 }
 
@@ -21153,7 +21219,7 @@ function duMoneyTick() { const m = $("duMoney"); if (m) { const t = fmt(state.mo
 setInterval(duMoneyTick, 500);
 
 // ===== js/40-coin-input.js =====
-__eocLoaded = 52;
+__eocLoaded = 53;
 /* =====================================================================
    🪙 COIN UNIT SWITCH next to every money box: type the amount in bcoin, scoin (1M) or gcoin (1M scoin),
    instead of counting zeros. The rest of the game is not changed: each money box still reports its amount
