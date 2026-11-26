@@ -2976,7 +2976,7 @@ hrx(String.raw`(\{i\}|<img[^>]*>)?<span>(.+?)<\/span>&nbsp;in ([\d:]+)`, (m, i, 
 hrx(String.raw`(\{i\}|<img[^>]*>)?<span>(.+?)<\/span> in ([\d:]+)`, (m, i, g, t) => `${i || ""}<span>${ES[g] || g}</span> en ${t}`);
 rx(String.raw`in ([\d:]+)`, "en $1");
 // 🏢 compact businesses
-Object.assign(ES, { "free worker slots earn nothing": "las plazas de trabajador libres no ganan nada", "Show ›": "Ver ›", "Full": "Completo", "Details": "Detalles", "▴ Fold": "▴ Plegar" });
+Object.assign(ES, { "free worker slots earn nothing": "las plazas de trabajador libres no ganan nada", "Show ›": "Ver ›", "Full": "Completo", "Details": "Detalles", "▴ Fold": "▴ Plegar", "▴ Hide": "▴ Ocultar", "▴ Hide offers": "▴ Ocultar ofertas", "Hide offers": "Ocultar ofertas" });
 rx(String.raw`(\d+) (business needs|businesses need) staff`, (m, n, x) => `${n} ${x.startsWith("business ") ? "negocio necesita" : "negocios necesitan"} personal`);
 rx(String.raw`(\d+) (business|businesses) · (\d+) \/ (\d+) workers`, (m, n, x, a, b) => `${n} ${x === "business" ? "negocio" : "negocios"} · ${a} / ${b} trabajadores`);
 rx(String.raw`Hire · (\d+) free`, "Contratar · $1 libres");
@@ -3013,6 +3013,15 @@ H("🔁 Investing: each investment now has one <b>Buy | Sell</b> switch with a s
   "🔁 Inversiones: cada inversión tiene ahora un interruptor <b>Comprar | Vender</b> con una sola fila de cantidad. En modo Vender, los botones de % rellenan una parte de lo que tienes, y una línea te dice cuánto pones o recibes.");
 rx(String.raw`Sold (${NUM}) of gold \(no fee\)\.`, "Has vendido $1 de oro (sin comisión).");
 rx(String.raw`Next gold sale in ([\d:]+)`, "Próxima venta de oro en $1");
+// 🚚 logistics compact rows
+Object.assign(ES, { "Best": "Mejor", "Best per sec": "Mejor por segundo", "Send all on their best contract": "Enviar todos a su mejor contrato", "at the depot": "en el depósito", "in port": "en el puerto", "at the airport": "en el aeropuerto",
+  "trucks waiting for a contract": "camiones esperando un contrato", "tankers waiting for a contract": "petroleros esperando un contrato", "planes waiting for a contract": "aviones esperando un contrato", "⭐ Best": "⭐ Mejor", "⭐ Best per sec": "⭐ Mejor por segundo", "🚀 Send": "🚀 Enviar", "⭐ Send all on their best contract": "⭐ Enviar todos a su mejor contrato", "EXPRESS": "EXPRÉS" });
+rx(String.raw`Other offers \((\d+)\) ▸`, "Otras ofertas ($1) ▸");
+rx(String.raw`(\d+) (trucks|tankers|planes) waiting for a contract`, (m, n, x) => `${n} ${{ trucks: "camiones", tankers: "petroleros", planes: "aviones" }[x]} esperando un contrato`);
+rx(String.raw`(\S+ )?Sent (\d+) on their best contracts\.`, (m, e, n) => `${e || ""}${n} enviados a sus mejores contratos.`);
+rx(String.raw`(${NUM}) left`, "Quedan $1");
+H("🚚 Logistics is faster to run: every vehicle is one compact row, idle ones show their ⭐ best offer (most money per second) with a <b>Send</b> button, and <b>⭐ Send all</b> puts every waiting vehicle on its best contract at once. \"Other offers\" still opens all 4.",
+  "🚚 La logística es más rápida: cada vehículo es una fila compacta, los que esperan muestran su ⭐ mejor oferta (más dinero por segundo) con un botón <b>Enviar</b>, y <b>⭐ Enviar todos</b> manda a cada vehículo libre a su mejor contrato de una vez. \"Otras ofertas\" sigue abriendo las 4.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -3943,7 +3952,7 @@ function render() {
           <span class="income" id="c-income-${ci}">+0 / sec</span>
           ${staffReady(c)
             ? `<button class="btn ghost small" data-action="toggle" data-company="${ci}"
-                 title="Fold">▴ Fold</button>`
+                 title="Hide">▴ Hide</button>`
             : ""}
         </span>
       </div>
@@ -9400,6 +9409,7 @@ function updateVehicleLive(v) {
   const done = 1 - c.left / c.seconds;
   const ship = $("ship-" + v.id), wake = $("wake-" + v.id), left = $("left-" + v.id);
   if (ship) ship.style.left = (6 + done * 88) + "%";
+  const bar = $("lgbar-" + v.id); if (bar) bar.style.width = (done * 100) + "%";
   if (wake) wake.style.width = (6 + done * 88) + "%";
   if (left) left.textContent = clockLong(c.left) + " left";
 }
@@ -9409,8 +9419,31 @@ function renderFleet(key) {
   $(F.countEl).textContent = list.length + " / " + F.slots;
   $("logiEarned").textContent = fmt(logi.earned);
   $("logiContracts").textContent = (logi.contracts || 0).toLocaleString();
-  let html = `<div class="tankerGrid">`;
+  // 🚚 compact rows: idle vehicles show their best offer (⭐ most per second) with Send; "Other offers" opens all 4
+  const bestOf = (v) => v.offers && v.offers.length ? v.offers.reduce((b, o, k) => o.profit / o.seconds > v.offers[b].profit / v.offers[b].seconds ? k : b, 0) : -1;
+  const idle = list.filter(v => !v.contract && !v.broken && v.offers && v.offers.length);
+  let html = idle.length > 1 ? `<div class="lgSendAll"><span>${fIco(key)}<b>${idle.length}</b> ${F.road ? "trucks" : F.sky ? "planes" : "tankers"} waiting for a contract</span>
+    <button class="btn" data-sendall="${key}">⭐ Send all on their best contract</button></div>` : "";
+  html += `<div class="tankerGrid lgCompact">`;
   list.forEach(v => {
+    if (v.contract && !lgFull.has(v.id)) {
+      const r = F.routes[v.contract.route], c = v.contract, done = 1 - c.left / c.seconds;
+      html += `<div class="tanker lgRow sailing"><div class="row"><b>${fIco(key)}${v.name}</b><span class="income">+${fmt(contractPayout(key, c.profit))}</span></div>
+        <div class="lgRoute">${r.from} → ${r.to}</div>
+        <div class="lgBar"><i id="lgbar-${v.id}" style="width:${done * 100}%"></i></div>
+        <div class="row muted"><span>${lgIco("time")}${clockLong(c.seconds)}</span><span id="left-${v.id}">${clockLong(c.left)} left</span></div></div>`;
+      return;
+    }
+    if (!v.contract && !v.broken && v.offers && v.offers.length && !lgFull.has(v.id)) {
+      const k = bestOf(v), o = v.offers[k], r = F.routes[o.route];
+      html += `<div class="tanker lgRow idle"><div class="row"><b>${fIco(key)}${v.name}</b><span class="muted">${F.road ? "at the depot" : F.sky ? "at the airport" : "in port"}</span></div>
+        <div class="lgBest"><span class="lgStar">⭐ Best</span><span><b class="route">${r.from} → ${r.to}</b>
+          <small>${lgIco("profit")}${fmt(contractPayout(key, o.profit))} · ${lgIco("time")}${clockLong(o.seconds)} · <b>≈ ${fmt(o.profit / o.seconds)} / sec</b>${o.express ? ` · ${lgIco("express")}EXPRESS` : ""}</small></span></div>
+        <div class="lgBtns"><button class="btn" data-fleet="${key}" data-vehicle="${v.id}" data-offer="${k}">🚀 Send</button>
+          <button class="btn ghost small" data-lgmore="${v.id}" data-fleetk="${key}">Other offers (${v.offers.length - 1}) ▸</button></div>
+        ${agentOn(key) ? `<div class="agentNote" id="agent-${v.id}">${lgIco("agent")}Agent picks a contract in ${Math.max(0, agentDelay() - (v.wait || 0))}s</div>` : ""}</div>`;
+      return;
+    }
     if (v.contract) {
       const r = F.routes[v.contract.route], c = v.contract;
       const done = 1 - c.left / c.seconds;
@@ -9431,11 +9464,14 @@ function renderFleet(key) {
           <button class="btn" data-repair="${v.id}" ${state.money < v.broken.cost ? "disabled" : ""}>${lgIco("repair")}Repair for ${fmt(v.broken.cost)}</button></div>
       </div>`;
     } else {
-      html += `<div class="tanker">
-        <div class="row"><b>${fIco(key)}${v.name}</b><span class="muted">${F.road ? "at the depot" : F.sky ? "at the airport" : "in port"} · choose a contract</span></div>
+      const bk = bestOf(v);
+      html += `<div class="tanker lgOpen">
+        <div class="row"><b>${fIco(key)}${v.name}</b><span class="row"><span class="muted">${F.road ? "at the depot" : F.sky ? "at the airport" : "in port"} · choose a contract</span>
+          <button class="btn ghost small" data-lgmore="${v.id}" data-fleetk="${key}">▴ Hide offers</button></span></div>
         <div class="offers">${v.offers.map((o, k) => {
           const r = F.routes[o.route];
-          return `<button class="offer ${o.express ? "express" : ""}" data-fleet="${key}" data-vehicle="${v.id}" data-offer="${k}">
+          return `<button class="offer ${o.express ? "express" : ""} ${k === bk ? "best" : ""}" data-fleet="${key}" data-vehicle="${v.id}" data-offer="${k}">
+            ${k === bk ? `<span class="lgStar">⭐ Best per sec</span>` : ""}
             ${o.express ? `<span class="exp">${lgIco("express")}<span id="exp-${v.id}-${k}">EXPRESS · ${o.express}s left</span></span>` : ""}
             <b class="route">${r.from} → ${r.to}</b>
             ${lgIco("profit")}Total profit: <b>${fmt(contractPayout(key, o.profit))}</b>${contractBonus(key) ? ` <span class="long">+${+(contractBonus(key) * 100).toFixed(1)}%</span>` : ""}<br>
@@ -9464,8 +9500,22 @@ function renderFleet(key) {
 }
 function renderTankers() { renderFleet("tanker"); renderFleet("truck"); renderFleet("plane"); }
 
+var lgFull = new Set();   // vehicles whose 4 offers are open (only while the page is open)
 function fleetClick(e) {
   if (isPaused()) return;
+  const more = e.target.closest("[data-lgmore]");
+  if (more) { const id = Number(more.dataset.lgmore); lgFull.has(id) ? lgFull.delete(id) : lgFull.add(id); renderFleet(more.dataset.fleetk); return; }
+  const all = e.target.closest("[data-sendall]");
+  if (all) {   // ⭐ every idle vehicle of this fleet takes its best offer (most money per second)
+    const key = all.dataset.sendall; let n = 0;
+    for (const v of fleetList(key)) {
+      if (v.contract || v.broken || !v.offers || !v.offers.length) continue;
+      const k = v.offers.reduce((b, o, i) => o.profit / o.seconds > v.offers[b].profit / v.offers[b].seconds ? i : b, 0), o = v.offers[k];
+      v.contract = { route: o.route, seconds: o.seconds, profit: o.profit, left: o.seconds }; v.offers = null; v.wait = 0; lgFull.delete(v.id); n++;
+    }
+    if (n) showNotice(`${FLEETS[key].icon} Sent ${n} on their best contracts.`);
+    renderFleet(key); save(); return;
+  }
   const buy = e.target.closest("[data-buy-fleet]");
   if (buy) {
     const key = buy.dataset.buyFleet, F = FLEETS[key], list = fleetList(key);
@@ -9496,7 +9546,7 @@ function fleetClick(e) {
     if (!v || v.contract) return;
     const o = v.offers[Number(offer.dataset.offer)];
     v.contract = { route: o.route, seconds: o.seconds, profit: o.profit, left: o.seconds };
-    v.offers = null; v.wait = 0;
+    v.offers = null; v.wait = 0; lgFull.delete(v.id);
     renderFleet(key); save();
   }
 }
@@ -13659,6 +13709,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "🚚 Logistics is faster to run: every vehicle is one compact row, idle ones show their ⭐ best offer (most money per second) with a <b>Send</b> button, and <b>⭐ Send all</b> puts every waiting vehicle on its best contract at once. \"Other offers\" still opens all 4.",
     "🔁 Investing: each investment now has one <b>Buy | Sell</b> switch with a single amount row. In Sell mode the % buttons fill a share of what you hold, and a line tells you what you put in or get back.",
     "🪙 Live trading is easier: one coin at a time with tabs (price, 24h change and how many positions you have), a big Open button with its preview right under it, and all your open positions and limit orders together in one list at the top.",
     "📈 Investing is tidier: one slim bar shows your level, money and holdings, and the Investing page starts with a portfolio list (worth, profit and a mini chart for each investment). Pick one to open its chart and buy/sell controls.",

@@ -52,6 +52,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "🚚 Logistics is faster to run: every vehicle is one compact row, idle ones show their ⭐ best offer (most money per second) with a <b>Send</b> button, and <b>⭐ Send all</b> puts every waiting vehicle on its best contract at once. \"Other offers\" still opens all 4.",
     "🔁 Investing: each investment now has one <b>Buy | Sell</b> switch with a single amount row. In Sell mode the % buttons fill a share of what you hold, and a line tells you what you put in or get back.",
     "🪙 Live trading is easier: one coin at a time with tabs (price, 24h change and how many positions you have), a big Open button with its preview right under it, and all your open positions and limit orders together in one list at the top.",
     "📈 Investing is tidier: one slim bar shows your level, money and holdings, and the Investing page starts with a portfolio list (worth, profit and a mini chart for each investment). Pick one to open its chart and buy/sell controls.",

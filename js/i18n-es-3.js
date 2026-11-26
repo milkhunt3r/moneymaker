@@ -1602,7 +1602,7 @@ hrx(String.raw`(\{i\}|<img[^>]*>)?<span>(.+?)<\/span>&nbsp;in ([\d:]+)`, (m, i, 
 hrx(String.raw`(\{i\}|<img[^>]*>)?<span>(.+?)<\/span> in ([\d:]+)`, (m, i, g, t) => `${i || ""}<span>${ES[g] || g}</span> en ${t}`);
 rx(String.raw`in ([\d:]+)`, "en $1");
 // 🏢 compact businesses
-Object.assign(ES, { "free worker slots earn nothing": "las plazas de trabajador libres no ganan nada", "Show ›": "Ver ›", "Full": "Completo", "Details": "Detalles", "▴ Fold": "▴ Plegar" });
+Object.assign(ES, { "free worker slots earn nothing": "las plazas de trabajador libres no ganan nada", "Show ›": "Ver ›", "Full": "Completo", "Details": "Detalles", "▴ Fold": "▴ Plegar", "▴ Hide": "▴ Ocultar", "▴ Hide offers": "▴ Ocultar ofertas", "Hide offers": "Ocultar ofertas" });
 rx(String.raw`(\d+) (business needs|businesses need) staff`, (m, n, x) => `${n} ${x.startsWith("business ") ? "negocio necesita" : "negocios necesitan"} personal`);
 rx(String.raw`(\d+) (business|businesses) · (\d+) \/ (\d+) workers`, (m, n, x, a, b) => `${n} ${x === "business" ? "negocio" : "negocios"} · ${a} / ${b} trabajadores`);
 rx(String.raw`Hire · (\d+) free`, "Contratar · $1 libres");
@@ -1639,6 +1639,15 @@ H("🔁 Investing: each investment now has one <b>Buy | Sell</b> switch with a s
   "🔁 Inversiones: cada inversión tiene ahora un interruptor <b>Comprar | Vender</b> con una sola fila de cantidad. En modo Vender, los botones de % rellenan una parte de lo que tienes, y una línea te dice cuánto pones o recibes.");
 rx(String.raw`Sold (${NUM}) of gold \(no fee\)\.`, "Has vendido $1 de oro (sin comisión).");
 rx(String.raw`Next gold sale in ([\d:]+)`, "Próxima venta de oro en $1");
+// 🚚 logistics compact rows
+Object.assign(ES, { "Best": "Mejor", "Best per sec": "Mejor por segundo", "Send all on their best contract": "Enviar todos a su mejor contrato", "at the depot": "en el depósito", "in port": "en el puerto", "at the airport": "en el aeropuerto",
+  "trucks waiting for a contract": "camiones esperando un contrato", "tankers waiting for a contract": "petroleros esperando un contrato", "planes waiting for a contract": "aviones esperando un contrato", "⭐ Best": "⭐ Mejor", "⭐ Best per sec": "⭐ Mejor por segundo", "🚀 Send": "🚀 Enviar", "⭐ Send all on their best contract": "⭐ Enviar todos a su mejor contrato", "EXPRESS": "EXPRÉS" });
+rx(String.raw`Other offers \((\d+)\) ▸`, "Otras ofertas ($1) ▸");
+rx(String.raw`(\d+) (trucks|tankers|planes) waiting for a contract`, (m, n, x) => `${n} ${{ trucks: "camiones", tankers: "petroleros", planes: "aviones" }[x]} esperando un contrato`);
+rx(String.raw`(\S+ )?Sent (\d+) on their best contracts\.`, (m, e, n) => `${e || ""}${n} enviados a sus mejores contratos.`);
+rx(String.raw`(${NUM}) left`, "Quedan $1");
+H("🚚 Logistics is faster to run: every vehicle is one compact row, idle ones show their ⭐ best offer (most money per second) with a <b>Send</b> button, and <b>⭐ Send all</b> puts every waiting vehicle on its best contract at once. \"Other offers\" still opens all 4.",
+  "🚚 La logística es más rápida: cada vehículo es una fila compacta, los que esperan muestran su ⭐ mejor oferta (más dinero por segundo) con un botón <b>Enviar</b>, y <b>⭐ Enviar todos</b> manda a cada vehículo libre a su mejor contrato de una vez. \"Otras ofertas\" sigue abriendo las 4.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

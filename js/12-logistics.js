@@ -272,6 +272,7 @@ function updateVehicleLive(v) {
   const done = 1 - c.left / c.seconds;
   const ship = $("ship-" + v.id), wake = $("wake-" + v.id), left = $("left-" + v.id);
   if (ship) ship.style.left = (6 + done * 88) + "%";
+  const bar = $("lgbar-" + v.id); if (bar) bar.style.width = (done * 100) + "%";
   if (wake) wake.style.width = (6 + done * 88) + "%";
   if (left) left.textContent = clockLong(c.left) + " left";
 }
@@ -281,8 +282,31 @@ function renderFleet(key) {
   $(F.countEl).textContent = list.length + " / " + F.slots;
   $("logiEarned").textContent = fmt(logi.earned);
   $("logiContracts").textContent = (logi.contracts || 0).toLocaleString();
-  let html = `<div class="tankerGrid">`;
+  // 🚚 compact rows: idle vehicles show their best offer (⭐ most per second) with Send; "Other offers" opens all 4
+  const bestOf = (v) => v.offers && v.offers.length ? v.offers.reduce((b, o, k) => o.profit / o.seconds > v.offers[b].profit / v.offers[b].seconds ? k : b, 0) : -1;
+  const idle = list.filter(v => !v.contract && !v.broken && v.offers && v.offers.length);
+  let html = idle.length > 1 ? `<div class="lgSendAll"><span>${fIco(key)}<b>${idle.length}</b> ${F.road ? "trucks" : F.sky ? "planes" : "tankers"} waiting for a contract</span>
+    <button class="btn" data-sendall="${key}">⭐ Send all on their best contract</button></div>` : "";
+  html += `<div class="tankerGrid lgCompact">`;
   list.forEach(v => {
+    if (v.contract && !lgFull.has(v.id)) {
+      const r = F.routes[v.contract.route], c = v.contract, done = 1 - c.left / c.seconds;
+      html += `<div class="tanker lgRow sailing"><div class="row"><b>${fIco(key)}${v.name}</b><span class="income">+${fmt(contractPayout(key, c.profit))}</span></div>
+        <div class="lgRoute">${r.from} → ${r.to}</div>
+        <div class="lgBar"><i id="lgbar-${v.id}" style="width:${done * 100}%"></i></div>
+        <div class="row muted"><span>${lgIco("time")}${clockLong(c.seconds)}</span><span id="left-${v.id}">${clockLong(c.left)} left</span></div></div>`;
+      return;
+    }
+    if (!v.contract && !v.broken && v.offers && v.offers.length && !lgFull.has(v.id)) {
+      const k = bestOf(v), o = v.offers[k], r = F.routes[o.route];
+      html += `<div class="tanker lgRow idle"><div class="row"><b>${fIco(key)}${v.name}</b><span class="muted">${F.road ? "at the depot" : F.sky ? "at the airport" : "in port"}</span></div>
+        <div class="lgBest"><span class="lgStar">⭐ Best</span><span><b class="route">${r.from} → ${r.to}</b>
+          <small>${lgIco("profit")}${fmt(contractPayout(key, o.profit))} · ${lgIco("time")}${clockLong(o.seconds)} · <b>≈ ${fmt(o.profit / o.seconds)} / sec</b>${o.express ? ` · ${lgIco("express")}EXPRESS` : ""}</small></span></div>
+        <div class="lgBtns"><button class="btn" data-fleet="${key}" data-vehicle="${v.id}" data-offer="${k}">🚀 Send</button>
+          <button class="btn ghost small" data-lgmore="${v.id}" data-fleetk="${key}">Other offers (${v.offers.length - 1}) ▸</button></div>
+        ${agentOn(key) ? `<div class="agentNote" id="agent-${v.id}">${lgIco("agent")}Agent picks a contract in ${Math.max(0, agentDelay() - (v.wait || 0))}s</div>` : ""}</div>`;
+      return;
+    }
     if (v.contract) {
       const r = F.routes[v.contract.route], c = v.contract;
       const done = 1 - c.left / c.seconds;
@@ -303,11 +327,14 @@ function renderFleet(key) {
           <button class="btn" data-repair="${v.id}" ${state.money < v.broken.cost ? "disabled" : ""}>${lgIco("repair")}Repair for ${fmt(v.broken.cost)}</button></div>
       </div>`;
     } else {
-      html += `<div class="tanker">
-        <div class="row"><b>${fIco(key)}${v.name}</b><span class="muted">${F.road ? "at the depot" : F.sky ? "at the airport" : "in port"} · choose a contract</span></div>
+      const bk = bestOf(v);
+      html += `<div class="tanker lgOpen">
+        <div class="row"><b>${fIco(key)}${v.name}</b><span class="row"><span class="muted">${F.road ? "at the depot" : F.sky ? "at the airport" : "in port"} · choose a contract</span>
+          <button class="btn ghost small" data-lgmore="${v.id}" data-fleetk="${key}">▴ Hide offers</button></span></div>
         <div class="offers">${v.offers.map((o, k) => {
           const r = F.routes[o.route];
-          return `<button class="offer ${o.express ? "express" : ""}" data-fleet="${key}" data-vehicle="${v.id}" data-offer="${k}">
+          return `<button class="offer ${o.express ? "express" : ""} ${k === bk ? "best" : ""}" data-fleet="${key}" data-vehicle="${v.id}" data-offer="${k}">
+            ${k === bk ? `<span class="lgStar">⭐ Best per sec</span>` : ""}
             ${o.express ? `<span class="exp">${lgIco("express")}<span id="exp-${v.id}-${k}">EXPRESS · ${o.express}s left</span></span>` : ""}
             <b class="route">${r.from} → ${r.to}</b>
             ${lgIco("profit")}Total profit: <b>${fmt(contractPayout(key, o.profit))}</b>${contractBonus(key) ? ` <span class="long">+${+(contractBonus(key) * 100).toFixed(1)}%</span>` : ""}<br>
@@ -336,8 +363,22 @@ function renderFleet(key) {
 }
 function renderTankers() { renderFleet("tanker"); renderFleet("truck"); renderFleet("plane"); }
 
+const lgFull = new Set();   // vehicles whose 4 offers are open (only while the page is open)
 function fleetClick(e) {
   if (isPaused()) return;
+  const more = e.target.closest("[data-lgmore]");
+  if (more) { const id = Number(more.dataset.lgmore); lgFull.has(id) ? lgFull.delete(id) : lgFull.add(id); renderFleet(more.dataset.fleetk); return; }
+  const all = e.target.closest("[data-sendall]");
+  if (all) {   // ⭐ every idle vehicle of this fleet takes its best offer (most money per second)
+    const key = all.dataset.sendall; let n = 0;
+    for (const v of fleetList(key)) {
+      if (v.contract || v.broken || !v.offers || !v.offers.length) continue;
+      const k = v.offers.reduce((b, o, i) => o.profit / o.seconds > v.offers[b].profit / v.offers[b].seconds ? i : b, 0), o = v.offers[k];
+      v.contract = { route: o.route, seconds: o.seconds, profit: o.profit, left: o.seconds }; v.offers = null; v.wait = 0; lgFull.delete(v.id); n++;
+    }
+    if (n) showNotice(`${FLEETS[key].icon} Sent ${n} on their best contracts.`);
+    renderFleet(key); save(); return;
+  }
   const buy = e.target.closest("[data-buy-fleet]");
   if (buy) {
     const key = buy.dataset.buyFleet, F = FLEETS[key], list = fleetList(key);
@@ -368,7 +409,7 @@ function fleetClick(e) {
     if (!v || v.contract) return;
     const o = v.offers[Number(offer.dataset.offer)];
     v.contract = { route: o.route, seconds: o.seconds, profit: o.profit, left: o.seconds };
-    v.offers = null; v.wait = 0;
+    v.offers = null; v.wait = 0; lgFull.delete(v.id);
     renderFleet(key); save();
   }
 }

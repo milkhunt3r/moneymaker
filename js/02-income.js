@@ -238,7 +238,7 @@ function render() {
           <span class="income" id="c-income-${ci}">+0 / sec</span>
           ${staffReady(c)
             ? `<button class="btn ghost small" data-action="toggle" data-company="${ci}"
-                 title="Fold">▴ Fold</button>`
+                 title="Hide">▴ Hide</button>`
             : ""}
         </span>
       </div>

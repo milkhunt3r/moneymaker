@@ -2526,3 +2526,21 @@ body.phone .openRow .btn.big { width: 100%; }
 .ivMode .seg.buy.on { background: #2fbf71; color: #fff; } .ivMode .seg.sell.on { background: #e5534b; color: #fff; }
 .moneyRow[hidden] { display: none; }
 .ivPrev { font-size: 13px; margin-top: 4px; } .ivPrev:empty { display: none; }
+/* 🚚 logistics: compact vehicle rows, Send all, best offer */
+.tankerGrid.lgCompact { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+.lgCompact .lgOpen { grid-column: 1 / -1; }
+.lgRow { padding: 10px 12px; display: grid; gap: 6px; }
+.lgRow.idle { border-color: rgba(255,211,77,0.45); }
+.lgRoute { font-size: 13px; color: #d9d9e6; }
+.lgBar { height: 7px; border-radius: 4px; background: rgba(255,255,255,0.1); overflow: hidden; }
+.lgBar i { display: block; height: 100%; background: linear-gradient(90deg, #3ddc6a, #9be86b); transition: width 1s linear; }
+.lgBest { display: flex; gap: 8px; align-items: flex-start; }
+.lgBest > span:last-child { display: grid; gap: 2px; } .lgBest small { color: #c9c9da; font-size: 12px; }
+.lgBest .lgIco, .lgBest .ico { width: 16px; height: 16px; vertical-align: -3px; }
+.lgStar { flex: none; padding: 1px 7px; border-radius: 999px; background: #ffd34d; color: #2b2200; font-size: 11px; font-weight: 800; }
+.offer.best { border-color: #ffd34d; box-shadow: 0 0 10px rgba(255,211,77,0.25); }
+.offer .lgStar { display: inline-block; margin-bottom: 4px; }
+.lgBtns { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.lgSendAll { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; padding: 10px 12px; margin-bottom: 10px;
+  border-radius: 12px; border: 1px solid rgba(255,211,77,0.5); background: rgba(255,211,77,0.08); }
+.lgSendAll .ico { width: 22px; height: 22px; vertical-align: -5px; margin-right: 4px; }
