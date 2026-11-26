@@ -36,7 +36,7 @@ const spFrigBusy = () => SP.trips.filter(t => t.escort).length + SP.harvest.filt
 const spFrigFree = () => Math.max(0, SP.fleet.frigates - spFrigBusy());
 const spFrigCap = () => SP_FRIG_N[spRL("frigate")];
 const spScouting = () => !!(SP.drift.scout);
-const spSI = (n, cls = "spI") => `<img class="${cls}" src="assets/space/ship-${n}.webp" alt="" onerror="this.replaceWith(document.createTextNode('${{ courier: "🚀", harvester: "✨", frigate: "🛡️" }[n]}'))">`;
+const spSI = (n, cls = "spShipI") => `<img class="${cls}" src="assets/space/ship-${n}.webp" alt="" onerror="this.replaceWith(document.createTextNode('${{ courier: "🚀", harvester: "✨", frigate: "🛡️" }[n]}'))">`;
 
 /* ----- 🔭 exploring the Drift (uses a courier ship) ----- */
 function spDriftExplore() {
@@ -142,8 +142,8 @@ function spDriftPanel() {
       <div class="spRow">🏴‍☠️<span><b>Pirates:</b> ${SP_RAID[0] * 100}% chance of an attack in the first half hour of farming, ${SP_RAID[1] * 100}% in the second. Without an escort they take all the stardust farmed so far. A 🛡️ frigate drives them off, but has a ${SP_FRIG_LOSE * 100}% chance to be destroyed in each attack (and then the stardust is lost too).</span></div></div>
     ${SP.harvest.length ? `<h4>Harvesters at work</h4>${SP.harvest.map(spHarvLine).join("")}` : ""}
     ${L ? `<div class="spRoute ${can ? "" : "locked"}"><div class="spRow">${spSI("harvester")}<span><b>Stardust Harvesters:</b> ${SP.harvest.length} / ${spHarvMax()} out · each farms <b>${SP_HARV_RATE[L]}</b> stardust a minute (✨ ${(SP_HARV_RATE[L] * 60).toLocaleString()} an hour).</span></div>
-        <div class="spBtns"><button class="btn big" data-spf="harv1" ${can && fr ? "" : "disabled"}>${spSI("frigate", "spI btnI")}Send with escort</button>
-          <button class="btn ghost" data-spf="harv0" ${can ? "" : "disabled"}>${spSI("harvester", "spI btnI")}Send without escort</button></div>
+        <div class="spBtns"><button class="btn big" data-spf="harv1" ${can && fr ? "" : "disabled"}>${spSI("frigate", "spShipI btnI")}Send with escort</button>
+          <button class="btn ghost" data-spf="harv0" ${can ? "" : "disabled"}>${spSI("harvester", "spShipI btnI")}Send without escort</button></div>
         <div class="muted">${!can ? "All your harvesters are out." : !fr ? (SP.fleet.frigates ? "All your frigates are busy." : spFrigCap() ? `No frigates: build one for ${fmt(SP_FRIG_PRICE)} at 🌍 Home.` : "Research 🛡️ Escort Frigates (🌌 Space → Research) to protect your harvesters.") : `🛡️ Frigates free: ${spFrigFree()} / ${SP.fleet.frigates}`}</div></div>`
       : `<div class="spRoute locked spRow">${spSI("harvester")}<span>Research <b>✨ Stardust Harvesters</b> (🌌 Space → Research) to farm stardust here.</span></div>`}
     <div class="spStats"><span>✨ Farmed: <b>${(SP.stats.dustFarmed || 0).toLocaleString()}</b></span><span>🏴‍☠️ Attacks: <b>${SP.stats.raids || 0}</b></span><span>🛡️ Driven off: <b>${SP.stats.raidsWon || 0}</b></span><span>💥 Frigates lost: <b>${SP.fleet.lost || 0}</b></span></div>`;
@@ -156,7 +156,7 @@ function spFleetHtml() {
       <li>${spSI("courier")} Courier ships: <b>${spFree()} / ${spShips()}</b> free <span class="muted">(gifts, trade routes, contracts, exploring)</span></li>
       ${H ? `<li>${spSI("harvester")} Stardust Harvesters: <b>${spHarvFree()} / ${H}</b> free</li>` : ""}
       ${F ? `<li>${spSI("frigate")} Escort Frigates: <b>${spFrigFree()} / ${SP.fleet.frigates}</b> free${SP.fleet.frigates < F ? ` · ${F - SP.fleet.frigates} destroyed` : ""}</li>` : ""}</ul>
-    ${F ? `<div class="spBtns">${SP.fleet.frigates < F ? `<button class="btn" data-spf="build" ${state.money >= SP_FRIG_PRICE ? "" : "disabled"}>${spSI("frigate", "spI btnI")}Build a frigate · ${fmt(SP_FRIG_PRICE)}</button>` : ""}
+    ${F ? `<div class="spBtns">${SP.fleet.frigates < F ? `<button class="btn" data-spf="build" ${state.money >= SP_FRIG_PRICE ? "" : "disabled"}>${spSI("frigate", "spShipI btnI")}Build a frigate · ${fmt(SP_FRIG_PRICE)}</button>` : ""}
       <label class="spCheck"><input type="checkbox" data-spf="escort" ${SP.fleet.escortOn ? "checked" : ""}> 🛡️ Send a free frigate with every courier ship (pirates leave escorted ships alone)</label></div>` : ""}`;
 }
 
@@ -174,3 +174,28 @@ document.addEventListener("change", (e) => {
 });
 
 spProcess();   // catch up on everything that happened while the game was closed (needs all the space files)
+
+/* ----- 🗺️ harvesters (and their escorts) flying to the Drift and farming there ----- */
+const SP_DRIFT_CURVE = { a: [50, 50], c: [47.5, 31], b: [50, 13] };
+function spHarvPos(h, now, lag = 0) {
+  const t = now - lag;
+  if (t >= h.f0 && t < h.f1) {   // farming: slow circles around the cloud
+    const a = (t / 9000 + h.id) % (Math.PI * 2), x = 50 + Math.cos(a) * 7, y = 10 + Math.sin(a) * 4;
+    return { x, y, ang: Math.sin(a) > 0 ? 180 : 0, op: 1 };
+  }
+  const out = t < h.f0, p = Math.max(0, Math.min(1, out ? (t - h.t0) / (h.f0 - h.t0) : (t - h.f1) / (h.t2 - h.f1)));
+  const B = spBez(SP_DRIFT_CURVE, 0.1 + 0.8 * (out ? p : 1 - p));
+  let ang = Math.atan2(B.dy, B.dx * spAsp()) * 180 / Math.PI; if (!out) ang += 180; if (ang > 180) ang -= 360;
+  return { x: B.x, y: B.y, ang, op: Math.max(0.15, Math.min(1, p / 0.05, (1 - p) / 0.05)) };
+}
+const spScoutH = () => { const c = SP.drift.scout; return c ? { id: 0, t0: c.t0, f0: c.t1, f1: c.t1, t2: c.t2 } : null; };
+const spHarvShipsHtml = (now) => (spScoutH() ? `<img class="spShip" data-harv="scout" src="assets/space/ship-explorer.webp" alt="" draggable="false" style="${spShipCss(spHarvPos(spScoutH(), now))}">` : "") + SP.harvest.map(h => `<img class="spShip harvester" data-harv="${h.id}" src="assets/space/ship-harvester.webp" alt="" draggable="false" style="${spShipCss(spHarvPos(h, now))}">`
+  + (h.escort ? `<img class="spShip frigate" data-hesc="${h.id}" src="assets/space/ship-frigate.webp" alt="" draggable="false" style="${spShipCss(spHarvPos(h, now, 12e3))}">` : "")).join("");
+function spHarvAnimate(now) {
+  const sc = document.querySelector('.spShip[data-harv="scout"]'); if (sc && spScoutH()) sc.style.cssText = spShipCss(spHarvPos(spScoutH(), now));
+  for (const h of SP.harvest) {
+    const el = document.querySelector(`.spShip[data-harv="${h.id}"]`); if (el) el.style.cssText = spShipCss(spHarvPos(h, now));
+    const es = document.querySelector(`.spShip[data-hesc="${h.id}"]`);
+    if (es) { if (!h.escort) es.remove(); else es.style.cssText = spShipCss(spHarvPos(h, now, 12e3)); }
+  }
+}

@@ -404,6 +404,7 @@ function spShipPos(tr, now) {
   if (ang > 180) ang -= 360;
   return { x: B.x, y: B.y, ang, op: Math.max(0.15, Math.min(1, p / 0.05, (1 - p) / 0.05)) };
 }
+const spEscLag = (tr) => Math.min(25e3, (tr.t1 - tr.t0) * 0.06);   // how far behind the escort flies
 const spShipCss = (s) => `left:${s.x}%;top:${s.y}%;opacity:${s.op};transform:translate(-50%,-50%) rotate(${s.ang}deg)${Math.abs(s.ang) > 90 ? " scaleY(-1)" : ""}`;
 function spMapHtml() {
   const now = Date.now(), V = (q) => `${(q[0] * 1.6).toFixed(2)} ${(q[1] * 0.9).toFixed(2)}`;
@@ -416,7 +417,10 @@ function spMapHtml() {
     const rt = r.found && spRouteOf(k), lbl = r.found ? `${R.name}<small>${SP_LEVELS[L].name}</small>${rt && !rt.stop ? `<small class="spRtLbl">🛣️ Active trade route</small>` : ""}` : vis ? `Unknown signal<small>❓ Explore</small>` : `<small>🔒 Uncharted</small>`;
     return `<button class="spNode ${r.found ? "found" : vis ? "fog" : "hidden"} ${spSel === k ? "sel" : ""}" data-sp="${k}" style="left:${R.pos[0]}%;top:${R.pos[1]}%">
       <img src="assets/space/${img}.webp" alt="" draggable="false"><span class="spLbl">${lbl}</span>${SP.sos && SP.sos.k === k ? `<i class="spSosPin">🆘</i>` : ""}${r.found && r.req && spFree() && !spTripTo(k, "gift") && spCanPay(r.req) ? `<i class="spPing">🎁</i>` : ""}</button>`; }).join("");
-  const ships = SP.trips.map(tr => `<img class="spShip ${tr.k}" data-trip="${tr.id}" src="assets/space/ship-explorer.webp" alt="" draggable="false" style="${spShipCss(spShipPos(tr, now))}">`).join("");
+  // 🚀 explorers fly the old scout ship, everything else a courier ship; 🛡️ an escort frigate follows close behind
+  const ships = SP.trips.map(tr => `<img class="spShip ${tr.k} ${tr.k === "explore" ? "" : "courier"}" data-trip="${tr.id}" src="assets/space/${tr.k === "explore" ? "ship-explorer" : "ship-courier"}.webp" alt="" draggable="false" style="${spShipCss(spShipPos(tr, now))}">`
+    + (tr.escort ? `<img class="spShip frigate" data-esc="${tr.id}" src="assets/space/ship-frigate.webp" alt="" draggable="false" style="${spShipCss(spShipPos(tr, now - spEscLag(tr)))}">` : "")).join("")
+    + (typeof spHarvShipsHtml === "function" ? spHarvShipsHtml(now) : "");
   return `<div class="spMap" id="spMap"><div class="spWorld" id="spWorld"><svg viewBox="0 0 160 90" preserveAspectRatio="none">${lines}${typeof spDriftLine === "function" ? spDriftLine() : ""}</svg>
     <button class="spNode sol ${spSel === "sol" ? "sel" : ""}" data-sp="sol" style="left:50%;top:50%"><span class="spHalo"></span><img src="assets/space/sys-sol.webp" alt="" draggable="false"><span class="spLbl">Home<small>🌍 Solar System</small></span></button>
     ${nodes}${typeof spDriftNode === "function" ? spDriftNode() : ""}${ships}</div>
@@ -708,7 +712,9 @@ function spAnimate() {
   for (const tr of SP.trips) {
     const el = document.querySelector(`.spShip[data-trip="${tr.id}"]`); if (!el) continue;
     el.style.cssText = spShipCss(spShipPos(tr, now));
+    const es = document.querySelector(`.spShip[data-esc="${tr.id}"]`); if (es) es.style.cssText = spShipCss(spShipPos(tr, now - spEscLag(tr)));
   }
+  if (typeof spHarvAnimate === "function") spHarvAnimate(now);
   document.querySelectorAll("#spaceView [data-spt]").forEach(el => { el.textContent = spClock(Number(el.dataset.spt) - now); });
 }
 
