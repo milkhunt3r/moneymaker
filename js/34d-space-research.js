@@ -14,7 +14,7 @@ const SP_CRAFT = {
   chip:  { name: "Chrono Chips", emoji: "💾", from: ["shard", "nano"] },
 };
 const SP_CRAFT_EACH = 2, SP_CRAFT_SIZES = [25, 50, 75, 100], SP_CRAFT_SEC = [0, 60, 45, 30];
-const SP_OUTPOST_RATE = 20, SP_OUTPOST_LV = 3;   // goods an hour · needs 😊 Friendly
+const SP_OUTPOST_RATE = 20, SP_OUTPOST_LV = 3, SP_OUTPOST_SCI = 10, SP_OUTPOST_MONEY = GCOIN;   // goods an hour · needs 😊 Friendly · building one costs 1 gcoin + 10 scientists
 const SP_R_SCI = [10, 20, 30], SP_R_MONEY = [250e3, 500e3, 750e3].map(n => n * SCOIN);
 const SP_RESEARCH = {
   craft:   { name: "Space crafting", icon: "🛠️", lv: ["Unlocks crafting: 60 s per unit", "Crafting: 45 s per unit", "Crafting: 30 s per unit"],
@@ -73,6 +73,8 @@ const spOutpostCount = () => Object.keys(SP.outposts).length;
 const spOutpostFree = () => spRL("outpost") - spOutpostCount();
 function spOutpostBuild(k) {
   if (isPaused() || SP.outposts[k] || spOutpostFree() <= 0 || spLevel(k) < SP_OUTPOST_LV) return;
+  if (state.money < SP_OUTPOST_MONEY || spSci2() < SP_OUTPOST_SCI) return showNotice(`❌ An outpost costs ${fmt(SP_OUTPOST_MONEY)} and ${SP_OUTPOST_SCI} 🔬 scientists.`);
+  state.money -= SP_OUTPOST_MONEY; spendScientists(SP_OUTPOST_SCI); updateCounter();
   SP.outposts[k] = { t: Date.now(), got: 0 };
   showNotice(`🏗️ Outpost built at the ${SP_RACES[k].name}! It makes ${SP_OUTPOST_RATE} ${SP_GOODS[SP_RACES[k].good].name} an hour.`);
   save(); renderSpace();
@@ -86,7 +88,7 @@ function spOutpostHtml(k) {
     <div class="spBtns"><button class="btn ghost small" data-spo="close">Close the outpost</button></div></div>`;
   if (spLevel(k) < SP_OUTPOST_LV) return `<div class="spRoute locked spRow">🏗️<span><b>Outpost:</b> you can build one here when you are <b>😊 Friendly</b> with the ${R.name}.</span></div>`;
   return `<div class="spRoute"><div class="spRow">🏗️<span><b>Outpost:</b> a base in this system that makes ${spGI(R.good)} <b>${SP_OUTPOST_RATE}</b> ${G.name} an hour, no ship needed. One per system.</span></div>
-    <div class="spBtns"><button class="btn" data-spo="build" ${spOutpostFree() > 0 ? "" : "disabled"}>🏗️ Build outpost</button></div>
+    <div class="spBtns"><button class="btn" data-spo="build" ${spOutpostFree() > 0 && state.money >= SP_OUTPOST_MONEY && spSci2() >= SP_OUTPOST_SCI ? "" : "disabled"}>🏗️ Build outpost · ${fmt(SP_OUTPOST_MONEY)} + 🔬 ${SP_OUTPOST_SCI}</button></div>
     <div class="muted">Outposts: ${spOutpostCount()} / ${spRL("outpost")} built${spOutpostFree() > 0 ? "" : " · research more 🏗️ Outposts or close one to build here"}.</div></div>`;
 }
 
@@ -143,7 +145,7 @@ function spResearchHtml() {
       ${spRL("craft") ? `<p class="muted">Mix ${SP_CRAFT_EACH} + ${SP_CRAFT_EACH} alien goods into 1 crafted resource, in batches of 25, 50, 75 or 100. One batch at a time: ${spCraftSec()} seconds a unit. It keeps going while the game is closed.</p>` : ""}
       ${craft}${recipes}</div>
     ${spRL("outpost") ? `<div class="card"><h2 style="margin-top:0">🏗️ Outposts (${spOutpostCount()} / ${spRL("outpost")})</h2>
-      <p class="muted">Pick a system on the 🌌 star map you are 😊 Friendly with and build an outpost there. Each one makes ${SP_OUTPOST_RATE} of that race's goods an hour.</p>
+      <p class="muted">Pick a system on the 🌌 star map you are 😊 Friendly with and build an outpost there (${fmt(SP_OUTPOST_MONEY)} + ${SP_OUTPOST_SCI} 🔬 scientists). Each one makes ${SP_OUTPOST_RATE} of that race's goods an hour.</p>
       ${spOutpostCount() ? `<ul class="spSlots">${Object.entries(SP.outposts).map(([k, o]) => `<li>${SP_RACES[k].emoji} ${SP_RACES[k].name}: ${spGI(SP_RACES[k].good)} ${SP_OUTPOST_RATE} ${SP_GOODS[SP_RACES[k].good].name} an hour · ${(o.got || 0).toLocaleString()} made</li>`).join("")}</ul>` : `<p class="muted">No outposts yet.</p>`}</div>` : ""}`;
 }
 // keep the crafting bar moving without rebuilding the page
@@ -159,7 +161,7 @@ document.addEventListener("click", (e) => {
   if (k) return k.dataset.spk === "cancel" ? spCraftCancel() : spCraftStart(k.dataset.spk, Number(k.dataset.n));
   const o = e.target.closest("[data-spo]");
   if (o && o.dataset.spo === "build") spOutpostBuild(spSel);
-  if (o && o.dataset.spo === "close") showModal(`<h2>Close this outpost?</h2><p>It stops making goods, and you can build it again in another system.</p>
+  if (o && o.dataset.spo === "close") showModal(`<h2>Close this outpost?</h2><p>It stops making goods. You can build a new one in another system (that costs ${fmt(SP_OUTPOST_MONEY)} and ${SP_OUTPOST_SCI} 🔬 scientists again).</p>
     <div class="row" style="justify-content:center;gap:10px"><button class="btn ghost" data-modal="close">Keep it</button><button class="btn dangerBtn" data-spo2="${spSel}">Close it</button></div>`);
 });
 $("modal").addEventListener("click", (e) => { const b = e.target.closest("[data-spo2]"); if (b) spOutpostClose(b.dataset.spo2); });

@@ -1413,10 +1413,9 @@ Object.assign(ES, SP_ES_CRAFT, SP_ES_RES, { "Research": "Investigación", "Space
   "Each level costs 🔬 scientists, money and space resources. The last levels need resources you craft yourself.": "Cada nivel cuesta 🔬 científicos, dinero y recursos espaciales. Los últimos niveles necesitan recursos que fabricas tú.",
   "to unlock crafting.": "para desbloquear la artesanía.", "Fully researched": "Investigado del todo", "Cancel (get your goods back)": "Cancelar (recuperas tus bienes)",
   "No outposts yet.": "Todavía no hay puestos avanzados.", "Outpost": "Puesto avanzado", "Build outpost": "Construir puesto avanzado", "Close the outpost": "Cerrar el puesto avanzado",
-  "Close this outpost?": "¿Cerrar este puesto avanzado?", "Close it": "Cerrarlo", "It stops making goods, and you can build it again in another system.": "Deja de producir bienes, y podrás construirlo de nuevo en otro sistema.",
+  "Close this outpost?": "¿Cerrar este puesto avanzado?", "Close it": "Cerrarlo",
   "Crafting cancelled. Your goods are back.": "Artesanía cancelada. Has recuperado tus bienes.",
   "a base in this system that makes": "una base en este sistema que produce", "makes": "produce",
-  "Pick a system on the 🌌 star map you are 😊 Friendly with and build an outpost there. Each one makes 20 of that race's goods an hour.": "Elige en el 🌌 mapa estelar un sistema con el que tengas una amistad 😊 Amistosa y construye allí un puesto avanzado. Cada uno produce 20 bienes de esa raza por hora.",
 });
 rx(String.raw`Research level (\d)`, "Investigar nivel $1");
 hrx(String.raw`<span class="ico">🔬<\/span>Research`, `<span class="ico">🔬</span>Investigación`); hrx(String.raw`<span>🔬<\/span>Research`, "<span>🔬</span>Investigación");
@@ -1441,14 +1440,33 @@ H("🔬 <b>Research</b> (🌌 Space → Research): 5 research lines with 3 level
   "🔬 <b>Investigación</b> (🌌 Espacio → Investigación): 5 líneas de investigación con 3 niveles cada una. Cada nivel cuesta 🔬 científicos (10/20/30), dinero (250.000/500.000/750.000 scoin) y recursos espaciales; los últimos niveles necesitan recursos fabricados. 🛠️ Artesanía espacial desbloquea la artesanía (60/45/30 s por unidad), 🚀 Hangares extra da +1 nave por nivel, 📦 Bodegas de carga suma +10/+10/+15 bienes a cada viaje de regalo y de ruta comercial, 🔥 Motores de nave reduce los viajes un 5 %/5 %/10 %, y 🏗️ Puestos avanzados te deja construir +1 puesto avanzado por nivel.");
 H("🛠️ <b>Crafting:</b> mix 2 + 2 alien goods into 1 crafted resource, in batches of 25, 50, 75 or 100 (one batch at a time; it keeps going while the game is closed). 🔷 Resonance Prisms = Star Crystals + Echo Pearls · 🔩 Voidsteel Ingots = Nebula Cores + Void Gold · ⛵ Star Sails = Pirate Charts + Living Silk · 💾 Chrono Chips = Time Shards + Nano Parts.",
   "🛠️ <b>Artesanía:</b> combina 2 + 2 bienes alienígenas en 1 recurso fabricado, en lotes de 25, 50, 75 o 100 (un lote a la vez; sigue funcionando con el juego cerrado). 🔷 Prismas de resonancia = Cristales estelares + Perlas de eco · 🔩 Lingotes de acero del vacío = Núcleos de nebulosa + Oro del vacío · ⛵ Velas estelares = Cartas piratas + Seda viva · 💾 Cronochips = Fragmentos del tiempo + Nanopiezas.");
-H("🏗️ <b>Outposts:</b> build one in a system you are 😊 Friendly with (one per system). It makes 20 of that race's goods an hour, even while the game is closed. Close it any time to build it somewhere else.",
-  "🏗️ <b>Puestos avanzados:</b> construye uno en un sistema con el que tengas una amistad 😊 Amistosa (uno por sistema). Produce 20 bienes de esa raza por hora, incluso con el juego cerrado. Ciérralo cuando quieras para construirlo en otro sitio.");
+H("🏗️ <b>Outposts:</b> build one in a system you are 😊 Friendly with (one per system) for 1 gcoin and 10 🔬 scientists. It makes 20 of that race's goods an hour, even while the game is closed. Close it any time to build it somewhere else.",
+  "🏗️ <b>Puestos avanzados:</b> construye uno en un sistema con el que tengas una amistad 😊 Amistosa (uno por sistema) por 1 gcoin y 10 🔬 científicos. Produce 20 bienes de esa raza por hora, incluso con el juego cerrado. Ciérralo cuando quieras para construirlo en otro sitio.");
 H("🔬 New in 🌌 Space: <b>Research</b>! 5 research lines (crafting, extra ships, cargo holds, engines and outposts), each with 3 levels.",
   "🔬 Novedad en 🌌 Espacio: ¡<b>Investigación</b>! 5 líneas de investigación (artesanía, naves extra, bodegas de carga, motores y puestos avanzados), cada una con 3 niveles.");
 H("🛠️ Space <b>crafting</b>: mix alien goods into 4 new resources (🔷 Resonance Prisms, 🔩 Voidsteel Ingots, ⛵ Star Sails and 💾 Chrono Chips), in batches of 25 to 100. You need them for the top research levels.",
   "🛠️ <b>Artesanía</b> espacial: combina bienes alienígenas en 4 recursos nuevos (🔷 Prismas de resonancia, 🔩 Lingotes de acero del vacío, ⛵ Velas estelares y 💾 Cronochips), en lotes de 25 a 100. Los necesitas para los niveles más altos de investigación.");
 H("🏗️ <b>Outposts</b>: build a base in a friendly system and it makes that race's goods on its own, no ship needed.",
   "🏗️ <b>Puestos avanzados</b>: construye una base en un sistema amistoso y producirá los bienes de esa raza por sí sola, sin necesidad de nave.");
+rx(String.raw`Pick a system on the 🌌 star map you are 😊 Friendly with and build an outpost there \((${NUM}) \+ (\d+) 🔬 scientists\)\. Each one makes (\d+) of that race's goods an hour\.`,
+  "Elige en el 🌌 mapa estelar un sistema con el que tengas una amistad 😊 Amistosa y construye allí un puesto avanzado ($1 + $2 🔬 científicos). Cada uno produce $3 bienes de esa raza por hora.");
+rx(String.raw`It stops making goods\. You can build a new one in another system \(that costs (${NUM}) and (\d+) 🔬 scientists again\)\.`, "Deja de producir bienes. Puedes construir uno nuevo en otro sistema (vuelve a costar $1 y $2 🔬 científicos).");
+rx(String.raw`(❌ )?An outpost costs (${NUM}) and (\d+) 🔬 scientists\.`, (m, e, a, b) => `${e || ""}Un puesto avanzado cuesta ${a} y ${b} 🔬 científicos.`);
+rx(String.raw`Build outpost · (${NUM}) \+ 🔬 (\d+)`, "Construir puesto avanzado · $1 + 🔬 $2");
+// 🎓 4th University (after the 4th prestige)
+Object.assign(ES, { "4th University": "4.ª universidad" });
+rx(String.raw`Your reward for all 4 prestiges: a fourth University for the same shared pool, up to (\d+) scientists in total\. −(\d+) \/ sec per empty place, \+(${NUM}) \/ sec when full\.`,
+  "Tu recompensa por los 4 prestigios: una cuarta universidad para la misma reserva compartida, hasta $1 científicos en total. −$2 / s por cada plaza vacía, +$3 / s cuando está llena.");
+rx(String.raw`Your reward for all 4 prestiges: a fourth University for (${NUM}), up to (\d+) scientists in your shared pool\.`, "Tu recompensa por los 4 prestigios: una cuarta universidad por $1, hasta $2 científicos en tu reserva compartida.");
+rx(String.raw`(🎓 )?4th University built! Up to (\d+) scientists in your shared pool\.`, (m, e, n) => `${e || ""}¡4.ª universidad construida! Hasta ${n} científicos en tu reserva compartida.`);
+// 🎓 Science page: University card and Space Mission Center lines
+Object.assign(ES, { "1st": "1.ª", "2nd": "2.ª", "3rd": "3.ª", "4th": "4.ª", "next launch in": "próximo lanzamiento en",
+  "Both Universities share one pool": "Las dos universidades comparten una reserva", "All three Universities share one pool": "Las tres universidades comparten una reserva",
+  "All four Universities share one pool": "Las cuatro universidades comparten una reserva",
+  "A satellite is now available in 🚢 Logistics.": "Ya hay un satélite disponible en 🚢 Logística." });
+rx(String.raw`University ×(\d)`, "Universidad ×$1");
+rx(String.raw`1 new scientist every 2 minutes · −(\d+) \/ sec for each empty place · \+(${NUM}) \/ sec when full`, "1 científico nuevo cada 2 minutos · −$1 / s por cada plaza vacía · +$2 / s cuando está llena");
+rx(String.raw`Every (\d+) minutes: (${NUM}) – (${NUM})( \(🧬 \+30%\))?, or nothing if the mission fails \((\d+)% chance\)`, (m, n, a, b, g, f) => `Cada ${n} minutos: ${a} – ${b}${g ? " (🧬 +30 %)" : ""}, o nada si la misión fracasa (${f} % de probabilidad)`);
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

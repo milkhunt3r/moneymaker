@@ -72,7 +72,7 @@ function applyOffline(seconds) {
   // 🔬 Science: scientists keep arriving, space missions keep launching, at most ONE breakthrough while away
   const S = state.science;
   let nobelAway = false;
-  if (S) for (const u of [S.uni, S.uni2]) if (u && u.scientists < UNI_MAX) {
+  if (S) for (const u of [S.uni, S.uni2, S.uni3, S.uni4]) if (u && u.scientists < UNI_MAX) {
     if (away >= u.timer) {
       const n = 1 + Math.floor((away - u.timer) / UNI_EVERY);
       u.scientists = Math.min(UNI_MAX, u.scientists + n);

@@ -2787,10 +2787,9 @@ Object.assign(ES, SP_ES_CRAFT, SP_ES_RES, { "Research": "Investigación", "Space
   "Each level costs 🔬 scientists, money and space resources. The last levels need resources you craft yourself.": "Cada nivel cuesta 🔬 científicos, dinero y recursos espaciales. Los últimos niveles necesitan recursos que fabricas tú.",
   "to unlock crafting.": "para desbloquear la artesanía.", "Fully researched": "Investigado del todo", "Cancel (get your goods back)": "Cancelar (recuperas tus bienes)",
   "No outposts yet.": "Todavía no hay puestos avanzados.", "Outpost": "Puesto avanzado", "Build outpost": "Construir puesto avanzado", "Close the outpost": "Cerrar el puesto avanzado",
-  "Close this outpost?": "¿Cerrar este puesto avanzado?", "Close it": "Cerrarlo", "It stops making goods, and you can build it again in another system.": "Deja de producir bienes, y podrás construirlo de nuevo en otro sistema.",
+  "Close this outpost?": "¿Cerrar este puesto avanzado?", "Close it": "Cerrarlo",
   "Crafting cancelled. Your goods are back.": "Artesanía cancelada. Has recuperado tus bienes.",
   "a base in this system that makes": "una base en este sistema que produce", "makes": "produce",
-  "Pick a system on the 🌌 star map you are 😊 Friendly with and build an outpost there. Each one makes 20 of that race's goods an hour.": "Elige en el 🌌 mapa estelar un sistema con el que tengas una amistad 😊 Amistosa y construye allí un puesto avanzado. Cada uno produce 20 bienes de esa raza por hora.",
 });
 rx(String.raw`Research level (\d)`, "Investigar nivel $1");
 hrx(String.raw`<span class="ico">🔬<\/span>Research`, `<span class="ico">🔬</span>Investigación`); hrx(String.raw`<span>🔬<\/span>Research`, "<span>🔬</span>Investigación");
@@ -2815,14 +2814,33 @@ H("🔬 <b>Research</b> (🌌 Space → Research): 5 research lines with 3 level
   "🔬 <b>Investigación</b> (🌌 Espacio → Investigación): 5 líneas de investigación con 3 niveles cada una. Cada nivel cuesta 🔬 científicos (10/20/30), dinero (250.000/500.000/750.000 scoin) y recursos espaciales; los últimos niveles necesitan recursos fabricados. 🛠️ Artesanía espacial desbloquea la artesanía (60/45/30 s por unidad), 🚀 Hangares extra da +1 nave por nivel, 📦 Bodegas de carga suma +10/+10/+15 bienes a cada viaje de regalo y de ruta comercial, 🔥 Motores de nave reduce los viajes un 5 %/5 %/10 %, y 🏗️ Puestos avanzados te deja construir +1 puesto avanzado por nivel.");
 H("🛠️ <b>Crafting:</b> mix 2 + 2 alien goods into 1 crafted resource, in batches of 25, 50, 75 or 100 (one batch at a time; it keeps going while the game is closed). 🔷 Resonance Prisms = Star Crystals + Echo Pearls · 🔩 Voidsteel Ingots = Nebula Cores + Void Gold · ⛵ Star Sails = Pirate Charts + Living Silk · 💾 Chrono Chips = Time Shards + Nano Parts.",
   "🛠️ <b>Artesanía:</b> combina 2 + 2 bienes alienígenas en 1 recurso fabricado, en lotes de 25, 50, 75 o 100 (un lote a la vez; sigue funcionando con el juego cerrado). 🔷 Prismas de resonancia = Cristales estelares + Perlas de eco · 🔩 Lingotes de acero del vacío = Núcleos de nebulosa + Oro del vacío · ⛵ Velas estelares = Cartas piratas + Seda viva · 💾 Cronochips = Fragmentos del tiempo + Nanopiezas.");
-H("🏗️ <b>Outposts:</b> build one in a system you are 😊 Friendly with (one per system). It makes 20 of that race's goods an hour, even while the game is closed. Close it any time to build it somewhere else.",
-  "🏗️ <b>Puestos avanzados:</b> construye uno en un sistema con el que tengas una amistad 😊 Amistosa (uno por sistema). Produce 20 bienes de esa raza por hora, incluso con el juego cerrado. Ciérralo cuando quieras para construirlo en otro sitio.");
+H("🏗️ <b>Outposts:</b> build one in a system you are 😊 Friendly with (one per system) for 1 gcoin and 10 🔬 scientists. It makes 20 of that race's goods an hour, even while the game is closed. Close it any time to build it somewhere else.",
+  "🏗️ <b>Puestos avanzados:</b> construye uno en un sistema con el que tengas una amistad 😊 Amistosa (uno por sistema) por 1 gcoin y 10 🔬 científicos. Produce 20 bienes de esa raza por hora, incluso con el juego cerrado. Ciérralo cuando quieras para construirlo en otro sitio.");
 H("🔬 New in 🌌 Space: <b>Research</b>! 5 research lines (crafting, extra ships, cargo holds, engines and outposts), each with 3 levels.",
   "🔬 Novedad en 🌌 Espacio: ¡<b>Investigación</b>! 5 líneas de investigación (artesanía, naves extra, bodegas de carga, motores y puestos avanzados), cada una con 3 niveles.");
 H("🛠️ Space <b>crafting</b>: mix alien goods into 4 new resources (🔷 Resonance Prisms, 🔩 Voidsteel Ingots, ⛵ Star Sails and 💾 Chrono Chips), in batches of 25 to 100. You need them for the top research levels.",
   "🛠️ <b>Artesanía</b> espacial: combina bienes alienígenas en 4 recursos nuevos (🔷 Prismas de resonancia, 🔩 Lingotes de acero del vacío, ⛵ Velas estelares y 💾 Cronochips), en lotes de 25 a 100. Los necesitas para los niveles más altos de investigación.");
 H("🏗️ <b>Outposts</b>: build a base in a friendly system and it makes that race's goods on its own, no ship needed.",
   "🏗️ <b>Puestos avanzados</b>: construye una base en un sistema amistoso y producirá los bienes de esa raza por sí sola, sin necesidad de nave.");
+rx(String.raw`Pick a system on the 🌌 star map you are 😊 Friendly with and build an outpost there \((${NUM}) \+ (\d+) 🔬 scientists\)\. Each one makes (\d+) of that race's goods an hour\.`,
+  "Elige en el 🌌 mapa estelar un sistema con el que tengas una amistad 😊 Amistosa y construye allí un puesto avanzado ($1 + $2 🔬 científicos). Cada uno produce $3 bienes de esa raza por hora.");
+rx(String.raw`It stops making goods\. You can build a new one in another system \(that costs (${NUM}) and (\d+) 🔬 scientists again\)\.`, "Deja de producir bienes. Puedes construir uno nuevo en otro sistema (vuelve a costar $1 y $2 🔬 científicos).");
+rx(String.raw`(❌ )?An outpost costs (${NUM}) and (\d+) 🔬 scientists\.`, (m, e, a, b) => `${e || ""}Un puesto avanzado cuesta ${a} y ${b} 🔬 científicos.`);
+rx(String.raw`Build outpost · (${NUM}) \+ 🔬 (\d+)`, "Construir puesto avanzado · $1 + 🔬 $2");
+// 🎓 4th University (after the 4th prestige)
+Object.assign(ES, { "4th University": "4.ª universidad" });
+rx(String.raw`Your reward for all 4 prestiges: a fourth University for the same shared pool, up to (\d+) scientists in total\. −(\d+) \/ sec per empty place, \+(${NUM}) \/ sec when full\.`,
+  "Tu recompensa por los 4 prestigios: una cuarta universidad para la misma reserva compartida, hasta $1 científicos en total. −$2 / s por cada plaza vacía, +$3 / s cuando está llena.");
+rx(String.raw`Your reward for all 4 prestiges: a fourth University for (${NUM}), up to (\d+) scientists in your shared pool\.`, "Tu recompensa por los 4 prestigios: una cuarta universidad por $1, hasta $2 científicos en tu reserva compartida.");
+rx(String.raw`(🎓 )?4th University built! Up to (\d+) scientists in your shared pool\.`, (m, e, n) => `${e || ""}¡4.ª universidad construida! Hasta ${n} científicos en tu reserva compartida.`);
+// 🎓 Science page: University card and Space Mission Center lines
+Object.assign(ES, { "1st": "1.ª", "2nd": "2.ª", "3rd": "3.ª", "4th": "4.ª", "next launch in": "próximo lanzamiento en",
+  "Both Universities share one pool": "Las dos universidades comparten una reserva", "All three Universities share one pool": "Las tres universidades comparten una reserva",
+  "All four Universities share one pool": "Las cuatro universidades comparten una reserva",
+  "A satellite is now available in 🚢 Logistics.": "Ya hay un satélite disponible en 🚢 Logística." });
+rx(String.raw`University ×(\d)`, "Universidad ×$1");
+rx(String.raw`1 new scientist every 2 minutes · −(\d+) \/ sec for each empty place · \+(${NUM}) \/ sec when full`, "1 científico nuevo cada 2 minutos · −$1 / s por cada plaza vacía · +$2 / s cuando está llena");
+rx(String.raw`Every (\d+) minutes: (${NUM}) – (${NUM})( \(🧬 \+30%\))?, or nothing if the mission fails \((\d+)% chance\)`, (m, n, a, b, g, f) => `Cada ${n} minutos: ${a} – ${b}${g ? " (🧬 +30 %)" : ""}, o nada si la misión fracasa (${f} % de probabilidad)`);
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -10850,7 +10868,7 @@ function wikiGeneral() {
       After every prestige there are <b>no tax inspections for the first 10 minutes</b>, whichever bonus you pick.
       <b>Always kept:</b> achievements, Gambler, Investor and Logistics levels, cosmetics, statistics, free bet chips, the 🖼️ Art Gallery unlock, its collection slots and your paintings.</p>
     ${wt(["Bonus", "Effect", "Max"], [
-      ["💼 Tycoon's Legacy", `+25% income from businesses, special businesses and clicks, once. From the reset you pick it on, every reset keeps your Science buildings (University, Research lab, Space Mission Center${secretsOpen() ? ", 2nd University, Astronomy Research Center, Orbital Space Station" : ""}${secrets2Open() ? ", 3rd University, Moon Base, Genetics Laboratory, Mars Base" : ""}), but not the satellite`, "1"],
+      ["💼 Tycoon's Legacy", `+25% income from businesses, special businesses and clicks, once. From the reset you pick it on, every reset keeps your Science buildings (University, Research lab, Space Mission Center${secretsOpen() ? ", 2nd University, Astronomy Research Center, Orbital Space Station" : ""}${secrets2Open() ? ", 3rd University, Moon Base, Genetics Laboratory, Mars Base" : ""}${typeof secrets4Open === "function" && secrets4Open() ? ", 4th University" : ""}), but not the satellite`, "1"],
       ["🚢 Global Empire", "1st: keep trucks, tankers, planes, warehouses, Trading Port and Logistics Center on every reset (the satellite resets with Science). 2nd: all contracts take half the time (same pay)", "2"],
       ["🎟️ VIP Coins", "A free 500 scoin bet chip every 10 min for the Super high roller tables, and all other free bet chips come twice as fast (every 10 / 7.5 / 5 min instead of 20 / 15 / 10). You can hold up to 200 chips of 500 scoin instead of 100", "1"]])}
     <p class="muted">Tycoon's Legacy and VIP Coins can be picked once, Global Empire twice: 4 picks for 4 prestiges, so by the end you have every bonus, in the order you choose.</p>
@@ -11075,7 +11093,7 @@ function wikiLogistics() {
     <p>📜 <b>Contracts</b> (🌌 Space → Contracts): races you are Acquainted with post jobs: bring some goods from other worlds within a few hours. Accept up to ${SP_CON.maxActive}, then send a ship with the goods: money and +${SP_CON.pts} friendship. Late: half pay and no friendship. Missing the deadline or giving up: −${SP_CON.fail} friendship. A new offer comes every hour (up to ${SP_CON.board}).</p>
     <p>🔬 <b>Research</b> (🌌 Space → Research): 5 research lines with 3 levels each. Every level costs 🔬 scientists (10/20/30), money (250,000/500,000/750,000 scoin) and space resources; the last levels need crafted resources. 🛠️ Space crafting unlocks crafting (60/45/30 s per unit), 🚀 Extra ship slots give +1 ship each, 📦 Cargo holds add +10/+10/+15 goods to every gift and trade route trip, 🔥 Ship engines cut trip times by 5%/5%/10%, and 🏗️ Outposts let you build +1 outpost each.</p>
     <p>🛠️ <b>Crafting:</b> mix 2 + 2 alien goods into 1 crafted resource, in batches of 25, 50, 75 or 100 (one batch at a time; it keeps going while the game is closed). 🔷 Resonance Prisms = Star Crystals + Echo Pearls · 🔩 Voidsteel Ingots = Nebula Cores + Void Gold · ⛵ Star Sails = Pirate Charts + Living Silk · 💾 Chrono Chips = Time Shards + Nano Parts.</p>
-    <p>🏗️ <b>Outposts:</b> build one in a system you are 😊 Friendly with (one per system). It makes 20 of that race's goods an hour, even while the game is closed. Close it any time to build it somewhere else.</p>
+    <p>🏗️ <b>Outposts:</b> build one in a system you are 😊 Friendly with (one per system) for 1 gcoin and 10 🔬 scientists. It makes 20 of that race's goods an hour, even while the game is closed. Close it any time to build it somewhere else.</p>
     <p>⭐ <b>Special requests:</b> sometimes a race asks for 50% more within 12 hours, for ${SP_SPECIAL.pts}× friendship and extra goods. Let it run out and they are offended (−${SP_SPECIAL.offend} friendship).</p>
     <p>☄️ <b>On the way:</b> an asteroid field can make a trip ${SP_EV.delay * 100}% longer; your ship may rescue a lost alien ship (+${SP_EV.rescue} friendship); and pirates may stop it: pay a toll (${SP_EV.toll} min of income) or run for it (50% chance to lose the cargo). Pirates leave you alone once the Void Corsairs are 💛 Trusted.</p>
     ${wt(["Race", "💛 Trusted", "💖 Allies"], Object.entries(SP_BONUS).map(([k, B]) => [SP.races[k].found ? `${SP_RACES[k].emoji} ${SP_RACES[k].name}` : "❓ Unknown", B.text(B.val[0], 0), B.text(B.val[1], 1)]))}
@@ -12494,7 +12512,9 @@ var scienceOpen = () => { const L = sciLevels(); return L.logistics >= SCI_REQ.l
    Both Universities share one pool of scientists; buildings take scientists from the fullest one first. */
 var secretsOpen = () => (state.legacy && state.legacy.count) >= 1;
 var ASTRO_PRICE = 5e8, ASTRO_SCI = 20, ASTRO_TIME_CUT = 300;
-var unis = () => [sci().uni, sci().uni2, sci().uni3].filter(Boolean);
+var unis = () => [sci().uni, sci().uni2, sci().uni3, sci().uni4].filter(Boolean);
+// 👑 a 4th University opens after the 4th (last) prestige
+var secrets4Open = () => (state.legacy && state.legacy.count) >= 4;
 /* 🌌🌌 Second-tier secrets (no info anywhere until the 2nd prestige): a 3rd University, the 🌕 Moon Base (after the 🛸 station)
    with its own deep space missions, and the 🧬 Genetics Laboratory (after the Moon Base): +30% on every space mission. */
 var secrets2Open = () => (state.legacy && state.legacy.count) >= 2;
@@ -12637,7 +12657,7 @@ function scienceTick() {
   const S = sci();
   for (const u of unis()) if (u.scientists < UNI_MAX && --u.timer <= 0) {
     u.scientists++; u.timer = UNI_EVERY;
-    if (u.scientists === UNI_MAX) showNotice(`🎓 Your ${u === S.uni2 ? "2nd " : u === S.uni3 ? "3rd " : ""}University is full: ${UNI_MAX} scientists! It now earns +${fmt(UNI_FULL_INCOME)} / sec.`);
+    if (u.scientists === UNI_MAX) showNotice(`🎓 Your ${u === S.uni2 ? "2nd " : u === S.uni3 ? "3rd " : u === S.uni4 ? "4th " : ""}University is full: ${UNI_MAX} scientists! It now earns +${fmt(UNI_FULL_INCOME)} / sec.`);
     if (u.scientists === UNI_MAX && state.view === "income") render();
   }
   if (S.lab && !S.lab.pending) {
@@ -12685,7 +12705,7 @@ function scienceTick() {
     const ui = $("sci-uni-income"); if (ui) ui.classList.toggle("neg", uniIncome() < 0);
     set("sci-pool", sciPool());
     updateSciNeeds();
-    [["", S.uni], ["2", S.uni2], ["3", S.uni3]].forEach(([k, u]) => {
+    [["", S.uni], ["2", S.uni2], ["3", S.uni3], ["4", S.uni4]].forEach(([k, u]) => {
       if (!u) return;
       set(`sci-uni${k}-count`, u.scientists);
       set(`sci-uni${k}-next`, u.scientists >= UNI_MAX ? "full" : "next in " + clock(u.timer));
@@ -12737,9 +12757,9 @@ function renderScience() {
   const uniRows = (k, u, label) => `<div class="row"><span>${label}${ico("sci-scientist")}Scientists: <b id="sci-uni${k}-count">${u.scientists}</b> / ${UNI_MAX}</span><span class="muted" id="sci-uni${k}-next"></span></div>
       <div class="xpBar"><div class="xpFill" id="sci-uni${k}-bar" style="width:${u.scientists / UNI_MAX * 100}%"></div></div>`;
   if (S.uni) {
-    html += `<div class="card specialCard"><div class="row"><h3>${ico("sci-uni", "biz")}University${S.uni3 ? " ×3" : S.uni2 ? " ×2" : ""}</h3><span class="income ${uniIncome() < 0 ? "neg" : ""}" id="sci-uni-income">${uniIncome() >= 0 ? "+" : ""}${fmt(uniIncome())} / sec</span></div>
-      ${uniRows("", S.uni, S.uni2 ? "1st · " : "")}${S.uni2 ? uniRows("2", S.uni2, "2nd · ") : ""}${S.uni3 ? uniRows("3", S.uni3, "3rd · ") : ""}
-      ${S.uni2 ? `<div class="muted">${S.uni3 ? "All three" : "Both"} Universities share one pool: <b id="sci-pool">${sciPool()}</b> scientists</div>` : ""}
+    html += `<div class="card specialCard"><div class="row"><h3>${ico("sci-uni", "biz")}University${S.uni4 ? " ×4" : S.uni3 ? " ×3" : S.uni2 ? " ×2" : ""}</h3><span class="income ${uniIncome() < 0 ? "neg" : ""}" id="sci-uni-income">${uniIncome() >= 0 ? "+" : ""}${fmt(uniIncome())} / sec</span></div>
+      ${uniRows("", S.uni, S.uni2 ? "1st · " : "")}${S.uni2 ? uniRows("2", S.uni2, "2nd · ") : ""}${S.uni3 ? uniRows("3", S.uni3, "3rd · ") : ""}${S.uni4 ? uniRows("4", S.uni4, "4th · ") : ""}
+      ${S.uni2 ? `<div class="muted">${S.uni4 ? "All four" : S.uni3 ? "All three" : "Both"} Universities share one pool: <b id="sci-pool">${sciPool()}</b> scientists</div>` : ""}
       <div class="muted">1 new scientist every 2 minutes · −${UNI_COST_PER_EMPTY} / sec for each empty place · +${fmt(UNI_FULL_INCOME)} / sec when full</div></div>`;
     if (secretsOpen() && !S.uni2) html += `<div class="card specialCard secretCard"><div class="row"><div><h3>${ico("sci-uni", "biz")}2nd University <span class="secretTag">🌌 new</span></h3>
         <div class="muted">A second University: trains its own scientists (1 every 2 minutes, up to ${UNI_MAX}) for the same shared pool. −${UNI_COST_PER_EMPTY} / sec per empty place, +${fmt(UNI_FULL_INCOME)} / sec when full.</div></div>
@@ -12747,6 +12767,9 @@ function renderScience() {
     if (secrets2Open() && S.uni2 && !S.uni3) html += `<div class="card specialCard secretCard"><div class="row"><div><h3>${ico("sci-uni", "biz")}3rd University <span class="secretTag">🌌🌌 new</span></h3>
         <div class="muted">A third University for the same shared pool: up to ${UNI_MAX * 3} scientists in total. −${UNI_COST_PER_EMPTY} / sec per empty place, +${fmt(UNI_FULL_INCOME)} / sec when full.</div></div>
       <button class="btn" data-sci="uni3" data-cost="${UNI_PRICE}">Buy ${fmt(UNI_PRICE)}</button></div></div>`;
+    if (secrets4Open() && S.uni3 && !S.uni4) html += `<div class="card specialCard secretCard"><div class="row"><div><h3>${ico("sci-uni", "biz")}4th University <span class="secretTag">👑 new</span></h3>
+        <div class="muted">Your reward for all 4 prestiges: a fourth University for the same shared pool, up to ${UNI_MAX * 4} scientists in total. −${UNI_COST_PER_EMPTY} / sec per empty place, +${fmt(UNI_FULL_INCOME)} / sec when full.</div></div>
+      <button class="btn" data-sci="uni4" data-cost="${UNI_PRICE}">Buy ${fmt(UNI_PRICE)}</button></div></div>`;
   } else {
     html += `<div class="card specialCard"><div class="row"><div><h3>${ico("sci-uni", "biz")}University</h3>
         <div class="muted">Trains 1 scientist every 2 minutes, up to ${UNI_MAX}. Until it's full it costs ${UNI_COST_PER_EMPTY} / sec per empty place (−${fmt(UNI_COST_PER_EMPTY * UNI_MAX)} / sec at the start); with ${UNI_MAX} scientists it earns +${fmt(UNI_FULL_INCOME)} / sec.</div></div>
@@ -12866,6 +12889,7 @@ $("shop").addEventListener("click", (e) => {
     showNotice(`🛸 Orbital Space Station in orbit! Missions every ${spaceMin()} minutes with a ${Math.round(spaceFail() * 100)}% fail chance, and lab breakthroughs twice as likely.`);
   }
   else if (what === "uni3" && secrets2Open() && S.uni2 && !S.uni3 && buy(UNI_PRICE)) { S.uni3 = { scientists: 0, timer: UNI_EVERY }; showNotice("🎓 3rd University built! Up to 150 scientists in your shared pool."); }
+  else if (what === "uni4" && secrets4Open() && S.uni3 && !S.uni4 && buy(UNI_PRICE)) { S.uni4 = { scientists: 0, timer: UNI_EVERY }; showNotice(`🎓 4th University built! Up to ${UNI_MAX * 4} scientists in your shared pool.`); }
   else if (what === "moon" && secrets2Open() && S.station && !S.moon && sciPool() >= MOON_SCI && buy(MOON_PRICE)) {
     spendScientists(MOON_SCI); S.moon = { timer: DEEP_EVERY, log: [], count: 0, ok: 0, earned: 0 };
     showNotice(`🌕 Moon Base established! The first deep space mission launches in ${DEEP_EVERY / 60} minutes.`);
@@ -13159,7 +13183,7 @@ function applyOffline(seconds) {
   // 🔬 Science: scientists keep arriving, space missions keep launching, at most ONE breakthrough while away
   const S = state.science;
   let nobelAway = false;
-  if (S) for (const u of [S.uni, S.uni2]) if (u && u.scientists < UNI_MAX) {
+  if (S) for (const u of [S.uni, S.uni2, S.uni3, S.uni4]) if (u && u.scientists < UNI_MAX) {
     if (away >= u.timer) {
       const n = 1 + Math.floor((away - u.timer) / UNI_EVERY);
       u.scientists = Math.min(UNI_MAX, u.scientists + n);
@@ -13526,6 +13550,7 @@ var SECRETS = [
   { id: "uni2", html: () => `<b>🎓 2nd University</b><div class="muted">A second University for ${fmt(UNI_PRICE)}. It trains its own scientists for the same shared pool.</div>` },
   { id: "astro", html: () => `<b>🔭 Astronomy Research Center</b><div class="muted">${fmt(ASTRO_PRICE)} + 👩‍🔬 ${ASTRO_SCI} scientists: space missions launch ${ASTRO_TIME_CUT / 60} minutes sooner.</div>` },
   { id: "uni3", tier: 2, html: () => `<b>🎓 3rd University</b><div class="muted">A third University for ${fmt(UNI_PRICE)}: up to ${UNI_MAX * 3} scientists in your shared pool.</div>` },
+  { id: "uni4", tier: 4, html: () => `<b>🎓 4th University</b><div class="muted">Your reward for all 4 prestiges: a fourth University for ${fmt(UNI_PRICE)}, up to ${UNI_MAX * 4} scientists in your shared pool.</div>` },
   { id: "mars", tier: 2, html: () => `<b>🔴 Mars Base</b><div class="muted">${fmt(MARS_PRICE)} + 👩‍🔬 ${MARS_SCI} scientists, after the Moon Base and the Genetics Laboratory: its own deep space mission every ${MARS_EVERY / 60} minutes (${Math.round(MARS_FAIL * 100)}% chance to fail), and Moon Base missions launch ${MARS_MOON_CUT / 60} minutes sooner and fail ${MARS_MOON_FAIL_CUT * 100}% less often.</div>` },
   { id: "moon", tier: 2, html: () => `<b>🌕 Moon Base</b><div class="muted">${fmt(MOON_PRICE)} + 👩‍🔬 ${MOON_SCI} scientists, after the 🛸 Orbital Space Station: a deep space mission every ${DEEP_EVERY / 60} minutes worth ${fmt(DEEP_MIN * 1e6)} – ${fmt(DEEP_MAX * 1e6)} (${Math.round(DEEP_FAIL * 100)}% chance to fail).</div>` },
   { id: "gene", tier: 2, html: () => `<b>🧬 Genetics Laboratory</b><div class="muted">${fmt(GENE_PRICE)} + 👩‍🔬 ${GENE_SCI} scientists, after the Moon Base: +${GENE_BONUS * 100}% on every space and deep space mission.</div>` },
@@ -13542,7 +13567,7 @@ function showSecrets() {
   showModal(`<h2>🌌 New unlocks!</h2>
     <p>Your prestige opened doors that were hidden until now:</p>
     ${list.map(x => `<div class="card secretCard" style="text-align:left">${x.html()}</div>`).join("")}
-    <p class="muted">Find them in 💰 Income → 🔬 Science. ${list.some(x => x.tier === 2) ? "New hidden achievements have appeared in 🏆 Achievements → 🌌 Secrets." : "A new 🌌 Secrets section has appeared in 🏆 Achievements."}</p>
+    <p class="muted">Find them in 💰 Income → 🔬 Science. ${list.every(x => x.tier === 4) ? "" : list.some(x => x.tier === 2) ? "New hidden achievements have appeared in 🏆 Achievements → 🌌 Secrets." : "A new 🌌 Secrets section has appeared in 🏆 Achievements."}</p>
     <button class="btn big" data-modal="close">✨ Great!</button>`);
   $("modalBox").classList.add("gold");
 }
@@ -19106,7 +19131,7 @@ var SP_CRAFT = {
   chip:  { name: "Chrono Chips", emoji: "💾", from: ["shard", "nano"] },
 };
 var SP_CRAFT_EACH = 2, SP_CRAFT_SIZES = [25, 50, 75, 100], SP_CRAFT_SEC = [0, 60, 45, 30];
-var SP_OUTPOST_RATE = 20, SP_OUTPOST_LV = 3;   // goods an hour · needs 😊 Friendly
+var SP_OUTPOST_RATE = 20, SP_OUTPOST_LV = 3, SP_OUTPOST_SCI = 10, SP_OUTPOST_MONEY = GCOIN;   // goods an hour · needs 😊 Friendly · building one costs 1 gcoin + 10 scientists
 var SP_R_SCI = [10, 20, 30], SP_R_MONEY = [250e3, 500e3, 750e3].map(n => n * SCOIN);
 var SP_RESEARCH = {
   craft:   { name: "Space crafting", icon: "🛠️", lv: ["Unlocks crafting: 60 s per unit", "Crafting: 45 s per unit", "Crafting: 30 s per unit"],
@@ -19165,6 +19190,8 @@ var spOutpostCount = () => Object.keys(SP.outposts).length;
 var spOutpostFree = () => spRL("outpost") - spOutpostCount();
 function spOutpostBuild(k) {
   if (isPaused() || SP.outposts[k] || spOutpostFree() <= 0 || spLevel(k) < SP_OUTPOST_LV) return;
+  if (state.money < SP_OUTPOST_MONEY || spSci2() < SP_OUTPOST_SCI) return showNotice(`❌ An outpost costs ${fmt(SP_OUTPOST_MONEY)} and ${SP_OUTPOST_SCI} 🔬 scientists.`);
+  state.money -= SP_OUTPOST_MONEY; spendScientists(SP_OUTPOST_SCI); updateCounter();
   SP.outposts[k] = { t: Date.now(), got: 0 };
   showNotice(`🏗️ Outpost built at the ${SP_RACES[k].name}! It makes ${SP_OUTPOST_RATE} ${SP_GOODS[SP_RACES[k].good].name} an hour.`);
   save(); renderSpace();
@@ -19178,7 +19205,7 @@ function spOutpostHtml(k) {
     <div class="spBtns"><button class="btn ghost small" data-spo="close">Close the outpost</button></div></div>`;
   if (spLevel(k) < SP_OUTPOST_LV) return `<div class="spRoute locked spRow">🏗️<span><b>Outpost:</b> you can build one here when you are <b>😊 Friendly</b> with the ${R.name}.</span></div>`;
   return `<div class="spRoute"><div class="spRow">🏗️<span><b>Outpost:</b> a base in this system that makes ${spGI(R.good)} <b>${SP_OUTPOST_RATE}</b> ${G.name} an hour, no ship needed. One per system.</span></div>
-    <div class="spBtns"><button class="btn" data-spo="build" ${spOutpostFree() > 0 ? "" : "disabled"}>🏗️ Build outpost</button></div>
+    <div class="spBtns"><button class="btn" data-spo="build" ${spOutpostFree() > 0 && state.money >= SP_OUTPOST_MONEY && spSci2() >= SP_OUTPOST_SCI ? "" : "disabled"}>🏗️ Build outpost · ${fmt(SP_OUTPOST_MONEY)} + 🔬 ${SP_OUTPOST_SCI}</button></div>
     <div class="muted">Outposts: ${spOutpostCount()} / ${spRL("outpost")} built${spOutpostFree() > 0 ? "" : " · research more 🏗️ Outposts or close one to build here"}.</div></div>`;
 }
 
@@ -19235,7 +19262,7 @@ function spResearchHtml() {
       ${spRL("craft") ? `<p class="muted">Mix ${SP_CRAFT_EACH} + ${SP_CRAFT_EACH} alien goods into 1 crafted resource, in batches of 25, 50, 75 or 100. One batch at a time: ${spCraftSec()} seconds a unit. It keeps going while the game is closed.</p>` : ""}
       ${craft}${recipes}</div>
     ${spRL("outpost") ? `<div class="card"><h2 style="margin-top:0">🏗️ Outposts (${spOutpostCount()} / ${spRL("outpost")})</h2>
-      <p class="muted">Pick a system on the 🌌 star map you are 😊 Friendly with and build an outpost there. Each one makes ${SP_OUTPOST_RATE} of that race's goods an hour.</p>
+      <p class="muted">Pick a system on the 🌌 star map you are 😊 Friendly with and build an outpost there (${fmt(SP_OUTPOST_MONEY)} + ${SP_OUTPOST_SCI} 🔬 scientists). Each one makes ${SP_OUTPOST_RATE} of that race's goods an hour.</p>
       ${spOutpostCount() ? `<ul class="spSlots">${Object.entries(SP.outposts).map(([k, o]) => `<li>${SP_RACES[k].emoji} ${SP_RACES[k].name}: ${spGI(SP_RACES[k].good)} ${SP_OUTPOST_RATE} ${SP_GOODS[SP_RACES[k].good].name} an hour · ${(o.got || 0).toLocaleString()} made</li>`).join("")}</ul>` : `<p class="muted">No outposts yet.</p>`}</div>` : ""}`;
 }
 // keep the crafting bar moving without rebuilding the page
@@ -19251,7 +19278,7 @@ document.addEventListener("click", (e) => {
   if (k) return k.dataset.spk === "cancel" ? spCraftCancel() : spCraftStart(k.dataset.spk, Number(k.dataset.n));
   const o = e.target.closest("[data-spo]");
   if (o && o.dataset.spo === "build") spOutpostBuild(spSel);
-  if (o && o.dataset.spo === "close") showModal(`<h2>Close this outpost?</h2><p>It stops making goods, and you can build it again in another system.</p>
+  if (o && o.dataset.spo === "close") showModal(`<h2>Close this outpost?</h2><p>It stops making goods. You can build a new one in another system (that costs ${fmt(SP_OUTPOST_MONEY)} and ${SP_OUTPOST_SCI} 🔬 scientists again).</p>
     <div class="row" style="justify-content:center;gap:10px"><button class="btn ghost" data-modal="close">Keep it</button><button class="btn dangerBtn" data-spo2="${spSel}">Close it</button></div>`);
 });
 $("modal").addEventListener("click", (e) => { const b = e.target.closest("[data-spo2]"); if (b) spOutpostClose(b.dataset.spo2); });
