@@ -1491,7 +1491,7 @@ hrx(String.raw`A strange glittering cloud at the edge of your scanners\. Send a 
 rx(String.raw`(🚀 )?A courier ship is on its way to explore the strange signal \((\d+) min there, (\d+) min back\)\.`, (m, e, a, b) => `${e || ""}Una nave mensajera va de camino a explorar la extraña señal (${a} min de ida, ${b} min de vuelta).`);
 rx(String.raw`(🌫️ )?Your courier ship found the <b>Stardust Drift<\/b>: a glittering cloud full of stardust, and full of pirates\. (Send a ✨ Stardust Harvester to farm it!|Research ✨ Stardust Harvesters \(🌌 Space → Research\) to farm it\.)`, (m, e, x) =>
   `${e || ""}Tu nave mensajera ha encontrado la <b>Deriva de Polvo Estelar</b>: una nube brillante llena de polvo estelar… y de piratas. ${x.startsWith("Send") ? "¡Envía una ✨ cosechadora de polvo estelar a recogerlo!" : "Investiga ✨ Cosechadoras de polvo estelar (🌌 Espacio → Investigación) para recogerlo."}`);
-hrx(String.raw`Stardust Drift<small>(🏴‍☠️ Pirate space|✨ (\d+) harvesting)<\/small>`, (m, x, n) => `Deriva de Polvo Estelar<small>${n ? `✨ ${n} cosechando` : "🏴‍☠️ Espacio pirata"}</small>`);
+hrx(String.raw`Stardust Drift<small>(🏴‍☠️ Pirate space|(✨|🔁) (\d+) harvesting)<\/small>`, (m, x, e, n) => `Deriva de Polvo Estelar<small>${n ? `${e} ${n} cosechando` : "🏴‍☠️ Espacio pirata"}</small>`);
 rx(String.raw`(\d+) harvesting`, "$1 cosechando");
 hrx(String.raw`(\{i\}|🌫️ )?Stardust Drift <span>· Pirate space<\/span>`, (m, i) => `${i || ""}Deriva de Polvo Estelar <span>· Espacio pirata</span>`);
 hrx(String.raw`<b>Distance:<\/b> (\d+) min each way · farming takes 1 hour`, "<b>Distancia:</b> $1 min por trayecto · la cosecha dura 1 hora");
@@ -1563,6 +1563,17 @@ Object.assign(ES, { "Something is ready in 🌌 Space": "Hay algo listo en 🌌 
   "Crafting is done · You can afford a research level": "La artesanía ha terminado · Puedes pagar un nivel de investigación" });
 H("🌌 Space is easier to use: the system panel now sits beside the star map (a slide-up sheet on phones), race panels are shorter, and a gold <b>!</b> on the Space tabs shows when a harvester is back, a contract can be delivered, crafting is done or you can afford research.",
   "🌌 El Espacio es más cómodo: el panel del sistema está ahora junto al mapa estelar (una hoja que sube desde abajo en el móvil), los paneles de las razas son más cortos y un <b>!</b> dorado en las pestañas del Espacio avisa cuando vuelve una cosechadora, puedes entregar un contrato, termina la artesanía o puedes pagar una investigación.");
+// 🔁 auto-harvest
+Object.assign(ES, { "when a frigate is free": "cuando haya una fragata libre", "always (wait for a free frigate)": "siempre (esperar a una fragata libre)", "never": "nunca",
+  "Waiting for a free frigate.": "Esperando a una fragata libre.", "Escort:": "Escolta:", "Escort": "Escolta", "Escolta": "Escolta", "Keep harvesting": "Seguir cosechando",
+  "harvesters fly out again on their own, also while the game is closed": "las cosechadoras vuelven a salir solas, también con el juego cerrado" });
+hrx(String.raw`🔁 <b>Keep harvesting:<\/b> harvesters fly out again on their own, also while the game is closed`, "🔁 <b>Seguir cosechando:</b> las cosechadoras vuelven a salir solas, también con el juego cerrado");
+rx(String.raw`(🔁 )?Your harvesters made (\d+) trips? to the Stardust Drift and brought home ✨ <b>([\d.,]+)<\/b> stardust( \(pirates took ([\d.,]+)\))?\.`, (m, e, n, d, x, l) =>
+  `${e || ""}Tus cosechadoras han hecho ${n} viaje${n === "1" ? "" : "s"} a la Deriva de Polvo Estelar y han traído ✨ <b>${d}</b> de polvo estelar${l ? ` (los piratas se llevaron ${l})` : ""}.`);
+H("🔁 Stardust Drift: new <b>Keep harvesting</b> switch. Harvesters fly out again on their own (also while the game is closed), with an escort when a frigate is free, always, or never.",
+  "🔁 Deriva de Polvo Estelar: nuevo interruptor <b>Seguir cosechando</b>. Las cosechadoras vuelven a salir solas (también con el juego cerrado), con escolta cuando haya una fragata libre, siempre o nunca.");
+H("🔁 <b>Keep harvesting:</b> tick the box in the Stardust Drift panel and free harvesters fly out again on their own, also while the game is closed. Choose the escort: when a frigate is free, always (they wait for a free frigate), or never.",
+  "🔁 <b>Seguir cosechando:</b> marca la casilla en el panel de la Deriva de Polvo Estelar y las cosechadoras libres vuelven a salir solas, también con el juego cerrado. Elige la escolta: cuando haya una fragata libre, siempre (esperan a una fragata libre) o nunca.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

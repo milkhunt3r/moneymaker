@@ -2381,3 +2381,5 @@ body.phone .spPanel.sheet .spHeadTxt h3 { font-size: 17px; }
 body.phone .spPanel.sheet .spBio { font-size: 12.5px; margin-top: 4px; }
 .tabWarn.gold { background: #ffc61a; color: #2b2200; }
 #logiTabs .subTab { white-space: nowrap; }
+.spAuto { display: grid; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.15); }
+.spAuto select { padding: 4px 6px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: #15132a; color: #fff; font: inherit; }
