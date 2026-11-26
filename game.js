@@ -2713,6 +2713,9 @@ Object.assign(ES, { "bcoin (bronze)": "bcoin (bronce)", "scoin (silver, sc)": "s
 H("💎 New coin: <b>pcoin</b> (platinum). 1 pcoin = 1,000,000 gcoin; money switches to pcoin from 1,000,000 gcoin. The money boxes can be set to pcoin too.",
   "💎 Nueva moneda: <b>pcoin</b> (platino). 1 pcoin = 1.000.000 gcoin; el dinero pasa a mostrarse en pcoin desde 1.000.000 gcoin. Las casillas de dinero también se pueden poner en pcoin.");
 Object.assign(ES, { "platinum": "platino", "gold": "oro", "silver": "plata", "bronze": "bronce" });
+Object.assign(ES, { "bronze · the basic coin": "bronce · la moneda básica", "silver · = 1,000,000 bcoin": "plata · = 1.000.000 bcoin", "gold · = 1,000,000 scoin": "oro · = 1.000.000 scoin",
+  "platinum · = 1,000,000 gcoin": "platino · = 1.000.000 gcoin", "= 1,000,000,000,000,000,000 bcoin": "= 1.000.000.000.000.000.000 bcoin",
+  "Money is always shown in the biggest coin that fits, so 3,400,000 bcoin shows as 3.4 scoin. Hover over your money to see it in every coin.": "El dinero se muestra siempre en la moneda más grande que cabe: 3.400.000 bcoin aparecen como 3,4 scoin. Pasa el ratón por encima de tu dinero para verlo en todas las monedas." });
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
