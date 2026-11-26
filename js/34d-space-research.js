@@ -34,7 +34,8 @@ if (SP.craft === undefined) SP.craft = null;
 
 // a cost key is an alien good ("crystal") or a crafted resource ("c_prism")
 const spHave = (key) => key.startsWith("c_") ? SP.crafted[key.slice(2)] || 0 : SP.goods[key] || 0;
-const spCI = (c) => `<span class="spCi">${SP_CRAFT[c].emoji}</span>`;
+const spCI = (c, cls = "spGi") => `<img class="${cls}" src="assets/space/good-c-${c}.webp" alt="${SP_CRAFT[c].emoji}">`;   // painted crafted icon
+const spRI = (k, cls = "spResImg") => `<img class="${cls}" src="assets/space/sp-res-${k}.webp" alt="${SP_RESEARCH[k].icon}">`;
 const spCostIco = (key) => key.startsWith("c_") ? spCI(key.slice(2)) : spGI(key);
 const spCostLbl = (key) => key.startsWith("c_") ? SP_CRAFT[key.slice(2)].name : SP_GOODS[key].name;
 function spResCost(k) { const L = spRL(k); if (L >= 3) return null; return { sci: SP_R_SCI[L], money: SP_R_MONEY[L], goods: SP_RESEARCH[k].cost[L] }; }
@@ -83,12 +84,12 @@ function spOutpostClose(k) { if (!SP.outposts[k]) return; delete SP.outposts[k];
 function spOutpostHtml(k) {
   if (!spRL("outpost")) return "";
   const R = SP_RACES[k], o = SP.outposts[k], G = SP_GOODS[R.good];
-  if (o) return `<div class="spRoute on"><div class="spRow">🏗️<span><b>Outpost</b> · makes ${spGI(R.good)} <b>${SP_OUTPOST_RATE}</b> ${G.name} an hour, even while the game is closed.</span></div>
+  if (o) return `<div class="spRoute on"><div class="spRow">${spRI("outpost", "spI")}<span><b>Outpost</b> · makes ${spGI(R.good)} <b>${SP_OUTPOST_RATE}</b> ${G.name} an hour, even while the game is closed.</span></div>
     <div class="muted">Goods made so far: ${(o.got || 0).toLocaleString()}</div>
     <div class="spBtns"><button class="btn ghost small" data-spo="close">Close the outpost</button></div></div>`;
-  if (spLevel(k) < SP_OUTPOST_LV) return `<div class="spRoute locked spRow">🏗️<span><b>Outpost:</b> you can build one here when you are <b>😊 Friendly</b> with the ${R.name}.</span></div>`;
-  return `<div class="spRoute"><div class="spRow">🏗️<span><b>Outpost:</b> a base in this system that makes ${spGI(R.good)} <b>${SP_OUTPOST_RATE}</b> ${G.name} an hour, no ship needed. One per system.</span></div>
-    <div class="spBtns"><button class="btn" data-spo="build" ${spOutpostFree() > 0 && state.money >= SP_OUTPOST_MONEY && spSci2() >= SP_OUTPOST_SCI ? "" : "disabled"}>🏗️ Build outpost · ${fmt(SP_OUTPOST_MONEY)} + 🔬 ${SP_OUTPOST_SCI}</button></div>
+  if (spLevel(k) < SP_OUTPOST_LV) return `<div class="spRoute locked spRow">${spRI("outpost", "spI")}<span><b>Outpost:</b> you can build one here when you are <b>😊 Friendly</b> with the ${R.name}.</span></div>`;
+  return `<div class="spRoute"><div class="spRow">${spRI("outpost", "spI")}<span><b>Outpost:</b> a base in this system that makes ${spGI(R.good)} <b>${SP_OUTPOST_RATE}</b> ${G.name} an hour, no ship needed. One per system.</span></div>
+    <div class="spBtns"><button class="btn" data-spo="build" ${spOutpostFree() > 0 && state.money >= SP_OUTPOST_MONEY && spSci2() >= SP_OUTPOST_SCI ? "" : "disabled"}>${spRI("outpost", "spI btnI")}Build outpost · ${fmt(SP_OUTPOST_MONEY)} + 🔬 ${SP_OUTPOST_SCI}</button></div>
     <div class="muted">Outposts: ${spOutpostCount()} / ${spRL("outpost")} built${spOutpostFree() > 0 ? "" : " · research more 🏗️ Outposts or close one to build here"}.</div></div>`;
 }
 
@@ -120,7 +121,7 @@ function spResearchHtml() {
         <span class="spNeed ${spSci2() >= c.sci ? "ok" : ""}">🔬 <b>${c.sci}</b> scientists <small>(${spSci2()})</small></span>
         <span class="spNeed ${state.money >= c.money ? "ok" : ""}">💰 <b>${fmt(c.money)}</b></span>
         ${Object.entries(c.goods).map(([g, n]) => `<span class="spNeed ${spHave(g) >= n ? "ok" : ""}">${spCostIco(g)} <b>${n}</b> ${spCostLbl(g)} <small>(${spHave(g).toLocaleString()})</small></span>`).join("")}</div>` : "";
-    return `<div class="spResLine ${L >= 3 ? "maxed" : ""}"><div class="spResHead"><span class="spResIco">${D.icon}</span><div><b>${D.name}</b><div class="spPips">${pips}</div></div></div>
+    return `<div class="spResLine ${L >= 3 ? "maxed" : ""}"><div class="spResHead"><span class="spResIco">${spRI(k)}</span><div><b>${D.name}</b><div class="spPips">${pips}</div></div></div>
       <div class="spResBody">${L ? `<div class="muted">✅ Now: ${D.lv[L - 1]}</div>` : ""}
         ${c ? `<div><b>Level ${L + 1}:</b> ${D.lv[L]}</div>${costHtml}` : `<div><b>⭐ Fully researched</b></div>`}</div>
       ${c ? `<button class="btn" data-spr="${k}" ${spResCan(c) ? "" : "disabled"}>🔬 Research level ${L + 1}</button>` : ""}</div>`;
@@ -129,7 +130,7 @@ function spResearchHtml() {
   if (!spRL("craft")) craft = `<p class="muted">🔒 Research <b>🛠️ Space crafting</b> to unlock crafting.</p>`;
   else if (SP.craft) {
     const J = SP.craft, pct = Math.min(100, (now - J.t0) / (J.t1 - J.t0) * 100);
-    craft = `<div class="spCraftJob"><div class="spCraftHead"><span class="spCraftBig">${SP_CRAFT[J.c].emoji}</span><span>Crafting <b>${J.n}</b> ${SP_CRAFT[J.c].name} · ready in <b data-spt="${J.t1}">${spClock(J.t1 - now)}</b></span></div>
+    craft = `<div class="spCraftJob"><div class="spCraftHead">${spCI(J.c, "spCraftBig")}<span>Crafting <b>${J.n}</b> ${SP_CRAFT[J.c].name} · ready in <b data-spt="${J.t1}">${spClock(J.t1 - now)}</b></span></div>
       <div class="xpBar"><div class="xpFill" id="spCraftFill" style="width:${pct}%"></div></div>
       <div class="spBtns"><button class="btn ghost small" data-spk="cancel">✖ Cancel (get your goods back)</button></div></div>`;
   } else craft = "";
@@ -138,13 +139,13 @@ function spResearchHtml() {
         <span class="spArrow">→</span><span class="spCraftOut">${spCI(c)} <b>1</b> ${C.name} <small>(${(SP.crafted[c] || 0).toLocaleString()})</small></span></div>
       <div class="spCraftBtns">${SP_CRAFT_SIZES.map(n => `<button class="btn small" data-spk="${c}" data-n="${n}" ${spCraftCan(c, n) ? "" : "disabled"} title="${spClock(n * spCraftSec() * 1000)}">×${n}</button>`).join("")}</div></div>`).join("") : "";
   return `<div class="card spResBar" id="spResBar">${spResHtml()}</div>
-    <div class="card"><h2 style="margin-top:0">🔬 Space research</h2>
+    <div class="card"><h2 style="margin-top:0"><img class="ico h" src="assets/icons/ico-lg-research.webp" alt="">Space research</h2>
       <p class="muted">Each level costs 🔬 scientists, money and space resources. The last levels need resources you craft yourself.</p>
       <div class="spResList">${rows}</div></div>
-    <div class="card"><h2 style="margin-top:0">🛠️ Crafting</h2>
+    <div class="card"><h2 style="margin-top:0">${spRI("craft", "ico h")}Crafting</h2>
       ${spRL("craft") ? `<p class="muted">Mix ${SP_CRAFT_EACH} + ${SP_CRAFT_EACH} alien goods into 1 crafted resource, in batches of 25, 50, 75 or 100. One batch at a time: ${spCraftSec()} seconds a unit. It keeps going while the game is closed.</p>` : ""}
       ${craft}${recipes}</div>
-    ${spRL("outpost") ? `<div class="card"><h2 style="margin-top:0">🏗️ Outposts (${spOutpostCount()} / ${spRL("outpost")})</h2>
+    ${spRL("outpost") ? `<div class="card"><h2 style="margin-top:0">${spRI("outpost", "ico h")}Outposts (${spOutpostCount()} / ${spRL("outpost")})</h2>
       <p class="muted">Pick a system on the 🌌 star map you are 😊 Friendly with and build an outpost there (${fmt(SP_OUTPOST_MONEY)} + ${SP_OUTPOST_SCI} 🔬 scientists). Each one makes ${SP_OUTPOST_RATE} of that race's goods an hour.</p>
       ${spOutpostCount() ? `<ul class="spSlots">${Object.entries(SP.outposts).map(([k, o]) => `<li>${SP_RACES[k].emoji} ${SP_RACES[k].name}: ${spGI(SP_RACES[k].good)} ${SP_OUTPOST_RATE} ${SP_GOODS[SP_RACES[k].good].name} an hour · ${(o.got || 0).toLocaleString()} made</li>`).join("")}</ul>` : `<p class="muted">No outposts yet.</p>`}</div>` : ""}`;
 }

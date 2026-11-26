@@ -142,18 +142,18 @@ function spContractsHtml() {
       <div class="spConBody"><div class="spConTo"><b>${R.name}</b> <span class="muted">· ${R.title}</span></div>
         <div class="spConNeed">${spNeedHtml(c.need, sent)}</div>
         <div class="spConPay">💰 <b>${fmt(c.pay)}</b> · 💞 +${c.pts} friendship</div>
-        <div class="muted">${active ? (sent ? (trip ? `🚀 On its way · arrives in <b data-spt="${trip.t1}">${spClock(trip.t1 - now)}</b> · deadline in <b data-spt="${c.deadline}">${spClock(c.deadline - now)}</b>` : "🚀 Delivered") : `⏳ Deliver within <b data-spt="${c.deadline}">${spClock(c.deadline - now)}</b> (the ship needs ${spMin(c.to)} min to get there)`)
+        <div class="muted">${active ? (sent ? (trip ? `${spI("deliver")} On its way · arrives in <b data-spt="${trip.t1}">${spClock(trip.t1 - now)}</b> · deadline in <b data-spt="${c.deadline}">${spClock(c.deadline - now)}</b>` : "🚀 Delivered") : `⏳ Deliver within <b data-spt="${c.deadline}">${spClock(c.deadline - now)}</b> (the ship needs ${spMin(c.to)} min to get there)`)
           : `⏱️ ${c.hours} h to deliver once accepted · offer ends in <b data-spt="${c.until}">${spClock(c.until - now)}</b>`}</div></div>
-      <div class="spConBtns">${active ? (sent ? "" : `<button class="btn" data-spc="send" data-id="${c.id}" ${spFree() && spConHave(c) ? "" : "disabled"}>${spI("gift", "spI btnI")}Deliver</button>
+      <div class="spConBtns">${active ? (sent ? "" : `<button class="btn" data-spc="send" data-id="${c.id}" ${spFree() && spConHave(c) ? "" : "disabled"}>${spI("deliver", "spI btnI")}Deliver</button>
           <button class="btn ghost small" data-spc="drop" data-id="${c.id}">Give up</button>${!spConHave(c) ? `<div class="muted">Not enough goods yet.</div>` : !spFree() ? `<div class="muted">All ships are busy.</div>` : ""}`)
-        : `<button class="btn" data-spc="take" data-id="${c.id}" ${C.active.length < SP_CON.maxActive ? "" : "disabled"}>✍️ Accept</button>`}</div></div>`; };
+        : `<button class="btn" data-spc="take" data-id="${c.id}" ${C.active.length < SP_CON.maxActive ? "" : "disabled"}>${spI("accept", "spI btnI")}Accept</button>`}</div></div>`; };
   const nextIn = C.offers.length < SP_CON.board && C.next > now ? `<div class="muted">📜 A new contract arrives in <b data-spt="${C.next}">${spClock(C.next - now)}</b>.</div>` : "";
   return `<div class="card spResBar" id="spResBar">${spResHtml()}</div>
-    <div class="card"><h2 style="margin-top:0">📜 Contracts board</h2>
+    <div class="card"><h2 style="margin-top:0"><img class="ico h" src="assets/icons/ico-lg-contracts.webp" alt="">Contracts board</h2>
       <p class="muted">Races pay well for goods from other worlds. Accept a contract (up to ${SP_CON.maxActive} at a time), then send a ship with the goods before the deadline: money and friendship. Late: half pay and no friendship. Missing the deadline or giving up: −${SP_CON.fail} friendship.</p>
-      ${C.active.length ? `<h3>✍️ Your contracts (${C.active.length}/${SP_CON.maxActive})</h3>${C.active.map(c => card(c, true)).join("")}` : ""}
+      ${C.active.length ? `<h3 class="spH">${spI("accept")}Your contracts (${C.active.length}/${SP_CON.maxActive})</h3>${C.active.map(c => card(c, true)).join("")}` : ""}
       <h3>📋 Offers</h3>${C.offers.length ? C.offers.map(c => card(c, false)).join("") : `<p class="muted">${Object.values(SP.races).filter(r => r.found).length < 2 ? "Meet at least 2 races (and be Acquainted with one) to get contracts." : "No offers right now."}</p>`}${nextIn}
-      <div class="spStats"><span>✅ Done: <b>${C.done}</b></span><span>🐢 Late: <b>${C.late}</b></span><span>❌ Failed: <b>${C.failed}</b></span><span>💰 Earned: <b>${fmt(C.earned)}</b></span></div></div>`;
+      <div class="spStats"><span>${spI("done")} Done: <b>${C.done}</b></span><span>${spI("late")} Late: <b>${C.late}</b></span><span>${spI("failed")} Failed: <b>${C.failed}</b></span><span>💰 Earned: <b>${fmt(C.earned)}</b></span></div></div>`;
 }
 document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-spc]"); if (!b || !e.target.closest("#spaceView")) return;
@@ -168,12 +168,12 @@ $("modal").addEventListener("click", (e) => { const b = e.target.closest("[data-
 /* ----- 🪧 race panel lines ----- */
 function spPoliticsHtml(k) {
   const r = SP.races[k], rk = SP_RIVALS[k], now = Date.now();
-  const rival = rk ? `<div class="spRow">⚔️<span><b>Rivals:</b> ${SP.races[rk].found ? `the ${SP_RACES[rk].name}` : "a race you haven't met yet"}. Friendship you earn here costs ${SP_RIVAL_CUT * 100}% of it with them (never below 😊 Friendly).</span></div>`
+  const rival = rk ? `<div class="spRow">${spI("rivals")}<span><b>Rivals:</b> ${SP.races[rk].found ? `the ${SP_RACES[rk].name}` : "a race you haven't met yet"}. Friendship you earn here costs ${SP_RIVAL_CUT * 100}% of it with them (never below 😊 Friendly).</span></div>`
     : `<div class="spRow">🕊️<span><b>No rivals:</b> everyone respects the ${SP_RACES[k].name}.</span></div>`;
   let warm = "";
   if ((r.best || 0) >= SP_COOL.from && r.pts > SP_FRIENDLY) {
     if (spRouteOf(k)) warm = `<div class="spRow">🔥<span><b>Warm:</b> your trade route keeps them happy.</span></div>`;
-    else if (spCooling(k)) warm = `<div class="spRow spCool">❄️<span><b>Cooling off:</b> −${SP_COOL.perHour} friendship an hour (never below 😊 Friendly). Send a gift or open a trade route.</span></div>`;
+    else if (spCooling(k)) warm = `<div class="spRow spCool">${spI("cooling")}<span><b>Cooling off:</b> −${SP_COOL.perHour} friendship an hour (never below 😊 Friendly). Send a gift or open a trade route.</span></div>`;
     else warm = `<div class="spRow">🔥<span><b>Warm:</b> they start to cool off in <b data-spt="${(r.warmAt || now) + SP_COOL.after}">${spClock((r.warmAt || now) + SP_COOL.after - now)}</b> without a gift, a contract or a trade route.</span></div>`;
   }
   return `<div class="spPolitics">${rival}${warm}</div>`;

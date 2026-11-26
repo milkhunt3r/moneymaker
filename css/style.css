@@ -2324,3 +2324,7 @@ body.phone .machBalls { top: 26%; } body.phone .climbSky .ball { width: 14px; he
 .spCraftBig { font-size: 28px; }
 @media (max-width: 700px) { .spResLine { grid-template-columns: 1fr; } .spResLine .btn { justify-self: stretch; } }
 .spCraftHead { display: flex; gap: 10px; align-items: center; }
+.spResImg { width: 48px; height: 48px; object-fit: contain; display: block; }
+img.spCraftBig { width: 44px; height: 44px; object-fit: contain; }
+.spFlood .spI { width: 16px; height: 16px; vertical-align: -3px; }
+.spCraftOut .spGi, .spResCost .spGi { width: 22px; height: 22px; }

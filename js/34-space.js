@@ -556,7 +556,7 @@ function spResHtml() {
   return `<div class="spResRow"><span class="spResLbl">Money:</span>${it("💰", fmt(state.money), "Money")}</div>
     <div class="spResRow"><span class="spResLbl">Earth resources:</span>${earth.join("")}</div>
     <div class="spResRow"><span class="spResLbl">Space resources:</span>${goods.length ? goods.map(g => it(spGI(g), SP.goods[g].toLocaleString(), SP_GOODS[g].name)).join("") : `<span class="muted">none yet</span>`}</div>
-    ${typeof SP_CRAFT !== "undefined" && Object.keys(SP_CRAFT).some(c => SP.crafted[c]) ? `<div class="spResRow"><span class="spResLbl">Crafted:</span>${Object.keys(SP_CRAFT).filter(c => SP.crafted[c]).map(c => it(SP_CRAFT[c].emoji, SP.crafted[c].toLocaleString(), SP_CRAFT[c].name)).join("")}</div>` : ""}`;
+    ${typeof SP_CRAFT !== "undefined" && Object.keys(SP_CRAFT).some(c => SP.crafted[c]) ? `<div class="spResRow"><span class="spResLbl">Crafted:</span>${Object.keys(SP_CRAFT).filter(c => SP.crafted[c]).map(c => it(spCI(c), SP.crafted[c].toLocaleString(), SP_CRAFT[c].name)).join("")}</div>` : ""}`;
 }
 /* ----- 🆘 alien emergency ----- */
 const spSosOn = () => !!SP.sos;
@@ -662,7 +662,7 @@ function spMarketHtml() {
     const flood = typeof spSatMult === "function" ? Math.round((1 - spSatMult(g)) * 100) : 0;
     const q = Math.min(have, Math.max(1, Math.floor(spQty[g] || 1)));
     return `<tr><td>${spGI(g)} <b>${SP_GOODS[g].name}</b><div class="muted">from the ${R.name}</div></td><td><b>${have.toLocaleString()}</b></td>
-      <td><b>${fmt(p)}</b><div class="${ch >= 0 ? "up" : "down"}">${ch >= 0 ? "▲" : "▼"} ${Math.abs(ch).toFixed(0)}%</div>${flood >= 1 ? `<div class="spFlood" title="You sold a lot of it lately. The price recovers by itself over a few hours.">📉 −${flood}% flooded</div>` : ""}</td><td>${spSpark(g)}</td>
+      <td><b>${fmt(p)}</b><div class="${ch >= 0 ? "up" : "down"}">${ch >= 0 ? "▲" : "▼"} ${Math.abs(ch).toFixed(0)}%</div>${flood >= 1 ? `<div class="spFlood" title="You sold a lot of it lately. The price recovers by itself over a few hours.">${spI("flood")} −${flood}% flooded</div>` : ""}</td><td>${spSpark(g)}</td>
       <td class="spMkSell"><input type="number" min="1" max="${have}" value="${q}" data-spq="${g}" ${have ? "" : "disabled"}>
         <button class="btn small" data-spx="sell" data-g="${g}" ${have ? "" : "disabled"}>Sell</button>
         <button class="btn ghost small" data-spx="sellall" data-g="${g}" ${have ? "" : "disabled"}>Sell all${have ? ` (${fmt(spSellPay(g, have))})` : ""}</button>
@@ -800,7 +800,7 @@ function spApplyPage() {
   const view = $("logisticsView");
   if (!$("logiTabs")) {   // left-side page menu (like Investing): everything after the lock card moves into the main column
     const layout = document.createElement("div"); layout.className = "subLayout"; layout.id = "logiLayout";
-    layout.innerHTML = `<nav class="subNav" id="logiTabs"><button class="subTab" data-logipage="earth"><img class="ico" src="assets/icons/ico-lg-earth.webp" alt="">Earth</button><button class="subTab" data-logipage="space"><img class="ico" src="assets/icons/ico-lg-space.webp" alt="">Space</button><button class="subTab subSub" data-logipage="market"><img class="ico" src="assets/icons/ico-lg-market.webp" alt="">Market</button><button class="subTab subSub" data-logipage="contracts"><span class="ico">📜</span>Contracts</button><button class="subTab subSub" data-logipage="research"><span class="ico">🔬</span>Research</button></nav><div class="subMain" id="logiMain"></div>`;
+    layout.innerHTML = `<nav class="subNav" id="logiTabs"><button class="subTab" data-logipage="earth"><img class="ico" src="assets/icons/ico-lg-earth.webp" alt="">Earth</button><button class="subTab" data-logipage="space"><img class="ico" src="assets/icons/ico-lg-space.webp" alt="">Space</button><button class="subTab subSub" data-logipage="market"><img class="ico" src="assets/icons/ico-lg-market.webp" alt="">Market</button><button class="subTab subSub" data-logipage="contracts"><img class="ico" src="assets/icons/ico-lg-contracts.webp" alt="">Contracts</button><button class="subTab subSub" data-logipage="research"><img class="ico" src="assets/icons/ico-lg-research.webp" alt="">Research</button></nav><div class="subMain" id="logiMain"></div>`;
     const main = layout.querySelector("#logiMain");
     [...view.children].filter(el => !el.classList.contains("debtBanner") && el.id !== "logiLocked").forEach(el => main.appendChild(el));
     const sv = document.createElement("div"); sv.id = "spaceView"; sv.hidden = true; main.appendChild(sv);

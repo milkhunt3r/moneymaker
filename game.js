@@ -18678,7 +18678,7 @@ function spResHtml() {
   return `<div class="spResRow"><span class="spResLbl">Money:</span>${it("💰", fmt(state.money), "Money")}</div>
     <div class="spResRow"><span class="spResLbl">Earth resources:</span>${earth.join("")}</div>
     <div class="spResRow"><span class="spResLbl">Space resources:</span>${goods.length ? goods.map(g => it(spGI(g), SP.goods[g].toLocaleString(), SP_GOODS[g].name)).join("") : `<span class="muted">none yet</span>`}</div>
-    ${typeof SP_CRAFT !== "undefined" && Object.keys(SP_CRAFT).some(c => SP.crafted[c]) ? `<div class="spResRow"><span class="spResLbl">Crafted:</span>${Object.keys(SP_CRAFT).filter(c => SP.crafted[c]).map(c => it(SP_CRAFT[c].emoji, SP.crafted[c].toLocaleString(), SP_CRAFT[c].name)).join("")}</div>` : ""}`;
+    ${typeof SP_CRAFT !== "undefined" && Object.keys(SP_CRAFT).some(c => SP.crafted[c]) ? `<div class="spResRow"><span class="spResLbl">Crafted:</span>${Object.keys(SP_CRAFT).filter(c => SP.crafted[c]).map(c => it(spCI(c), SP.crafted[c].toLocaleString(), SP_CRAFT[c].name)).join("")}</div>` : ""}`;
 }
 /* ----- 🆘 alien emergency ----- */
 var spSosOn = () => !!SP.sos;
@@ -18784,7 +18784,7 @@ function spMarketHtml() {
     const flood = typeof spSatMult === "function" ? Math.round((1 - spSatMult(g)) * 100) : 0;
     const q = Math.min(have, Math.max(1, Math.floor(spQty[g] || 1)));
     return `<tr><td>${spGI(g)} <b>${SP_GOODS[g].name}</b><div class="muted">from the ${R.name}</div></td><td><b>${have.toLocaleString()}</b></td>
-      <td><b>${fmt(p)}</b><div class="${ch >= 0 ? "up" : "down"}">${ch >= 0 ? "▲" : "▼"} ${Math.abs(ch).toFixed(0)}%</div>${flood >= 1 ? `<div class="spFlood" title="You sold a lot of it lately. The price recovers by itself over a few hours.">📉 −${flood}% flooded</div>` : ""}</td><td>${spSpark(g)}</td>
+      <td><b>${fmt(p)}</b><div class="${ch >= 0 ? "up" : "down"}">${ch >= 0 ? "▲" : "▼"} ${Math.abs(ch).toFixed(0)}%</div>${flood >= 1 ? `<div class="spFlood" title="You sold a lot of it lately. The price recovers by itself over a few hours.">${spI("flood")} −${flood}% flooded</div>` : ""}</td><td>${spSpark(g)}</td>
       <td class="spMkSell"><input type="number" min="1" max="${have}" value="${q}" data-spq="${g}" ${have ? "" : "disabled"}>
         <button class="btn small" data-spx="sell" data-g="${g}" ${have ? "" : "disabled"}>Sell</button>
         <button class="btn ghost small" data-spx="sellall" data-g="${g}" ${have ? "" : "disabled"}>Sell all${have ? ` (${fmt(spSellPay(g, have))})` : ""}</button>
@@ -18922,7 +18922,7 @@ function spApplyPage() {
   const view = $("logisticsView");
   if (!$("logiTabs")) {   // left-side page menu (like Investing): everything after the lock card moves into the main column
     const layout = document.createElement("div"); layout.className = "subLayout"; layout.id = "logiLayout";
-    layout.innerHTML = `<nav class="subNav" id="logiTabs"><button class="subTab" data-logipage="earth"><img class="ico" src="assets/icons/ico-lg-earth.webp" alt="">Earth</button><button class="subTab" data-logipage="space"><img class="ico" src="assets/icons/ico-lg-space.webp" alt="">Space</button><button class="subTab subSub" data-logipage="market"><img class="ico" src="assets/icons/ico-lg-market.webp" alt="">Market</button><button class="subTab subSub" data-logipage="contracts"><span class="ico">📜</span>Contracts</button><button class="subTab subSub" data-logipage="research"><span class="ico">🔬</span>Research</button></nav><div class="subMain" id="logiMain"></div>`;
+    layout.innerHTML = `<nav class="subNav" id="logiTabs"><button class="subTab" data-logipage="earth"><img class="ico" src="assets/icons/ico-lg-earth.webp" alt="">Earth</button><button class="subTab" data-logipage="space"><img class="ico" src="assets/icons/ico-lg-space.webp" alt="">Space</button><button class="subTab subSub" data-logipage="market"><img class="ico" src="assets/icons/ico-lg-market.webp" alt="">Market</button><button class="subTab subSub" data-logipage="contracts"><img class="ico" src="assets/icons/ico-lg-contracts.webp" alt="">Contracts</button><button class="subTab subSub" data-logipage="research"><img class="ico" src="assets/icons/ico-lg-research.webp" alt="">Research</button></nav><div class="subMain" id="logiMain"></div>`;
     const main = layout.querySelector("#logiMain");
     [...view.children].filter(el => !el.classList.contains("debtBanner") && el.id !== "logiLocked").forEach(el => main.appendChild(el));
     const sv = document.createElement("div"); sv.id = "spaceView"; sv.hidden = true; main.appendChild(sv);
@@ -19085,18 +19085,18 @@ function spContractsHtml() {
       <div class="spConBody"><div class="spConTo"><b>${R.name}</b> <span class="muted">· ${R.title}</span></div>
         <div class="spConNeed">${spNeedHtml(c.need, sent)}</div>
         <div class="spConPay">💰 <b>${fmt(c.pay)}</b> · 💞 +${c.pts} friendship</div>
-        <div class="muted">${active ? (sent ? (trip ? `🚀 On its way · arrives in <b data-spt="${trip.t1}">${spClock(trip.t1 - now)}</b> · deadline in <b data-spt="${c.deadline}">${spClock(c.deadline - now)}</b>` : "🚀 Delivered") : `⏳ Deliver within <b data-spt="${c.deadline}">${spClock(c.deadline - now)}</b> (the ship needs ${spMin(c.to)} min to get there)`)
+        <div class="muted">${active ? (sent ? (trip ? `${spI("deliver")} On its way · arrives in <b data-spt="${trip.t1}">${spClock(trip.t1 - now)}</b> · deadline in <b data-spt="${c.deadline}">${spClock(c.deadline - now)}</b>` : "🚀 Delivered") : `⏳ Deliver within <b data-spt="${c.deadline}">${spClock(c.deadline - now)}</b> (the ship needs ${spMin(c.to)} min to get there)`)
           : `⏱️ ${c.hours} h to deliver once accepted · offer ends in <b data-spt="${c.until}">${spClock(c.until - now)}</b>`}</div></div>
-      <div class="spConBtns">${active ? (sent ? "" : `<button class="btn" data-spc="send" data-id="${c.id}" ${spFree() && spConHave(c) ? "" : "disabled"}>${spI("gift", "spI btnI")}Deliver</button>
+      <div class="spConBtns">${active ? (sent ? "" : `<button class="btn" data-spc="send" data-id="${c.id}" ${spFree() && spConHave(c) ? "" : "disabled"}>${spI("deliver", "spI btnI")}Deliver</button>
           <button class="btn ghost small" data-spc="drop" data-id="${c.id}">Give up</button>${!spConHave(c) ? `<div class="muted">Not enough goods yet.</div>` : !spFree() ? `<div class="muted">All ships are busy.</div>` : ""}`)
-        : `<button class="btn" data-spc="take" data-id="${c.id}" ${C.active.length < SP_CON.maxActive ? "" : "disabled"}>✍️ Accept</button>`}</div></div>`; };
+        : `<button class="btn" data-spc="take" data-id="${c.id}" ${C.active.length < SP_CON.maxActive ? "" : "disabled"}>${spI("accept", "spI btnI")}Accept</button>`}</div></div>`; };
   const nextIn = C.offers.length < SP_CON.board && C.next > now ? `<div class="muted">📜 A new contract arrives in <b data-spt="${C.next}">${spClock(C.next - now)}</b>.</div>` : "";
   return `<div class="card spResBar" id="spResBar">${spResHtml()}</div>
-    <div class="card"><h2 style="margin-top:0">📜 Contracts board</h2>
+    <div class="card"><h2 style="margin-top:0"><img class="ico h" src="assets/icons/ico-lg-contracts.webp" alt="">Contracts board</h2>
       <p class="muted">Races pay well for goods from other worlds. Accept a contract (up to ${SP_CON.maxActive} at a time), then send a ship with the goods before the deadline: money and friendship. Late: half pay and no friendship. Missing the deadline or giving up: −${SP_CON.fail} friendship.</p>
-      ${C.active.length ? `<h3>✍️ Your contracts (${C.active.length}/${SP_CON.maxActive})</h3>${C.active.map(c => card(c, true)).join("")}` : ""}
+      ${C.active.length ? `<h3 class="spH">${spI("accept")}Your contracts (${C.active.length}/${SP_CON.maxActive})</h3>${C.active.map(c => card(c, true)).join("")}` : ""}
       <h3>📋 Offers</h3>${C.offers.length ? C.offers.map(c => card(c, false)).join("") : `<p class="muted">${Object.values(SP.races).filter(r => r.found).length < 2 ? "Meet at least 2 races (and be Acquainted with one) to get contracts." : "No offers right now."}</p>`}${nextIn}
-      <div class="spStats"><span>✅ Done: <b>${C.done}</b></span><span>🐢 Late: <b>${C.late}</b></span><span>❌ Failed: <b>${C.failed}</b></span><span>💰 Earned: <b>${fmt(C.earned)}</b></span></div></div>`;
+      <div class="spStats"><span>${spI("done")} Done: <b>${C.done}</b></span><span>${spI("late")} Late: <b>${C.late}</b></span><span>${spI("failed")} Failed: <b>${C.failed}</b></span><span>💰 Earned: <b>${fmt(C.earned)}</b></span></div></div>`;
 }
 document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-spc]"); if (!b || !e.target.closest("#spaceView")) return;
@@ -19111,12 +19111,12 @@ $("modal").addEventListener("click", (e) => { const b = e.target.closest("[data-
 /* ----- 🪧 race panel lines ----- */
 function spPoliticsHtml(k) {
   const r = SP.races[k], rk = SP_RIVALS[k], now = Date.now();
-  const rival = rk ? `<div class="spRow">⚔️<span><b>Rivals:</b> ${SP.races[rk].found ? `the ${SP_RACES[rk].name}` : "a race you haven't met yet"}. Friendship you earn here costs ${SP_RIVAL_CUT * 100}% of it with them (never below 😊 Friendly).</span></div>`
+  const rival = rk ? `<div class="spRow">${spI("rivals")}<span><b>Rivals:</b> ${SP.races[rk].found ? `the ${SP_RACES[rk].name}` : "a race you haven't met yet"}. Friendship you earn here costs ${SP_RIVAL_CUT * 100}% of it with them (never below 😊 Friendly).</span></div>`
     : `<div class="spRow">🕊️<span><b>No rivals:</b> everyone respects the ${SP_RACES[k].name}.</span></div>`;
   let warm = "";
   if ((r.best || 0) >= SP_COOL.from && r.pts > SP_FRIENDLY) {
     if (spRouteOf(k)) warm = `<div class="spRow">🔥<span><b>Warm:</b> your trade route keeps them happy.</span></div>`;
-    else if (spCooling(k)) warm = `<div class="spRow spCool">❄️<span><b>Cooling off:</b> −${SP_COOL.perHour} friendship an hour (never below 😊 Friendly). Send a gift or open a trade route.</span></div>`;
+    else if (spCooling(k)) warm = `<div class="spRow spCool">${spI("cooling")}<span><b>Cooling off:</b> −${SP_COOL.perHour} friendship an hour (never below 😊 Friendly). Send a gift or open a trade route.</span></div>`;
     else warm = `<div class="spRow">🔥<span><b>Warm:</b> they start to cool off in <b data-spt="${(r.warmAt || now) + SP_COOL.after}">${spClock((r.warmAt || now) + SP_COOL.after - now)}</b> without a gift, a contract or a trade route.</span></div>`;
   }
   return `<div class="spPolitics">${rival}${warm}</div>`;
@@ -19159,7 +19159,8 @@ if (SP.craft === undefined) SP.craft = null;
 
 // a cost key is an alien good ("crystal") or a crafted resource ("c_prism")
 var spHave = (key) => key.startsWith("c_") ? SP.crafted[key.slice(2)] || 0 : SP.goods[key] || 0;
-var spCI = (c) => `<span class="spCi">${SP_CRAFT[c].emoji}</span>`;
+var spCI = (c, cls = "spGi") => `<img class="${cls}" src="assets/space/good-c-${c}.webp" alt="${SP_CRAFT[c].emoji}">`;   // painted crafted icon
+var spRI = (k, cls = "spResImg") => `<img class="${cls}" src="assets/space/sp-res-${k}.webp" alt="${SP_RESEARCH[k].icon}">`;
 var spCostIco = (key) => key.startsWith("c_") ? spCI(key.slice(2)) : spGI(key);
 var spCostLbl = (key) => key.startsWith("c_") ? SP_CRAFT[key.slice(2)].name : SP_GOODS[key].name;
 function spResCost(k) { const L = spRL(k); if (L >= 3) return null; return { sci: SP_R_SCI[L], money: SP_R_MONEY[L], goods: SP_RESEARCH[k].cost[L] }; }
@@ -19208,12 +19209,12 @@ function spOutpostClose(k) { if (!SP.outposts[k]) return; delete SP.outposts[k];
 function spOutpostHtml(k) {
   if (!spRL("outpost")) return "";
   const R = SP_RACES[k], o = SP.outposts[k], G = SP_GOODS[R.good];
-  if (o) return `<div class="spRoute on"><div class="spRow">🏗️<span><b>Outpost</b> · makes ${spGI(R.good)} <b>${SP_OUTPOST_RATE}</b> ${G.name} an hour, even while the game is closed.</span></div>
+  if (o) return `<div class="spRoute on"><div class="spRow">${spRI("outpost", "spI")}<span><b>Outpost</b> · makes ${spGI(R.good)} <b>${SP_OUTPOST_RATE}</b> ${G.name} an hour, even while the game is closed.</span></div>
     <div class="muted">Goods made so far: ${(o.got || 0).toLocaleString()}</div>
     <div class="spBtns"><button class="btn ghost small" data-spo="close">Close the outpost</button></div></div>`;
-  if (spLevel(k) < SP_OUTPOST_LV) return `<div class="spRoute locked spRow">🏗️<span><b>Outpost:</b> you can build one here when you are <b>😊 Friendly</b> with the ${R.name}.</span></div>`;
-  return `<div class="spRoute"><div class="spRow">🏗️<span><b>Outpost:</b> a base in this system that makes ${spGI(R.good)} <b>${SP_OUTPOST_RATE}</b> ${G.name} an hour, no ship needed. One per system.</span></div>
-    <div class="spBtns"><button class="btn" data-spo="build" ${spOutpostFree() > 0 && state.money >= SP_OUTPOST_MONEY && spSci2() >= SP_OUTPOST_SCI ? "" : "disabled"}>🏗️ Build outpost · ${fmt(SP_OUTPOST_MONEY)} + 🔬 ${SP_OUTPOST_SCI}</button></div>
+  if (spLevel(k) < SP_OUTPOST_LV) return `<div class="spRoute locked spRow">${spRI("outpost", "spI")}<span><b>Outpost:</b> you can build one here when you are <b>😊 Friendly</b> with the ${R.name}.</span></div>`;
+  return `<div class="spRoute"><div class="spRow">${spRI("outpost", "spI")}<span><b>Outpost:</b> a base in this system that makes ${spGI(R.good)} <b>${SP_OUTPOST_RATE}</b> ${G.name} an hour, no ship needed. One per system.</span></div>
+    <div class="spBtns"><button class="btn" data-spo="build" ${spOutpostFree() > 0 && state.money >= SP_OUTPOST_MONEY && spSci2() >= SP_OUTPOST_SCI ? "" : "disabled"}>${spRI("outpost", "spI btnI")}Build outpost · ${fmt(SP_OUTPOST_MONEY)} + 🔬 ${SP_OUTPOST_SCI}</button></div>
     <div class="muted">Outposts: ${spOutpostCount()} / ${spRL("outpost")} built${spOutpostFree() > 0 ? "" : " · research more 🏗️ Outposts or close one to build here"}.</div></div>`;
 }
 
@@ -19245,7 +19246,7 @@ function spResearchHtml() {
         <span class="spNeed ${spSci2() >= c.sci ? "ok" : ""}">🔬 <b>${c.sci}</b> scientists <small>(${spSci2()})</small></span>
         <span class="spNeed ${state.money >= c.money ? "ok" : ""}">💰 <b>${fmt(c.money)}</b></span>
         ${Object.entries(c.goods).map(([g, n]) => `<span class="spNeed ${spHave(g) >= n ? "ok" : ""}">${spCostIco(g)} <b>${n}</b> ${spCostLbl(g)} <small>(${spHave(g).toLocaleString()})</small></span>`).join("")}</div>` : "";
-    return `<div class="spResLine ${L >= 3 ? "maxed" : ""}"><div class="spResHead"><span class="spResIco">${D.icon}</span><div><b>${D.name}</b><div class="spPips">${pips}</div></div></div>
+    return `<div class="spResLine ${L >= 3 ? "maxed" : ""}"><div class="spResHead"><span class="spResIco">${spRI(k)}</span><div><b>${D.name}</b><div class="spPips">${pips}</div></div></div>
       <div class="spResBody">${L ? `<div class="muted">✅ Now: ${D.lv[L - 1]}</div>` : ""}
         ${c ? `<div><b>Level ${L + 1}:</b> ${D.lv[L]}</div>${costHtml}` : `<div><b>⭐ Fully researched</b></div>`}</div>
       ${c ? `<button class="btn" data-spr="${k}" ${spResCan(c) ? "" : "disabled"}>🔬 Research level ${L + 1}</button>` : ""}</div>`;
@@ -19254,7 +19255,7 @@ function spResearchHtml() {
   if (!spRL("craft")) craft = `<p class="muted">🔒 Research <b>🛠️ Space crafting</b> to unlock crafting.</p>`;
   else if (SP.craft) {
     const J = SP.craft, pct = Math.min(100, (now - J.t0) / (J.t1 - J.t0) * 100);
-    craft = `<div class="spCraftJob"><div class="spCraftHead"><span class="spCraftBig">${SP_CRAFT[J.c].emoji}</span><span>Crafting <b>${J.n}</b> ${SP_CRAFT[J.c].name} · ready in <b data-spt="${J.t1}">${spClock(J.t1 - now)}</b></span></div>
+    craft = `<div class="spCraftJob"><div class="spCraftHead">${spCI(J.c, "spCraftBig")}<span>Crafting <b>${J.n}</b> ${SP_CRAFT[J.c].name} · ready in <b data-spt="${J.t1}">${spClock(J.t1 - now)}</b></span></div>
       <div class="xpBar"><div class="xpFill" id="spCraftFill" style="width:${pct}%"></div></div>
       <div class="spBtns"><button class="btn ghost small" data-spk="cancel">✖ Cancel (get your goods back)</button></div></div>`;
   } else craft = "";
@@ -19263,13 +19264,13 @@ function spResearchHtml() {
         <span class="spArrow">→</span><span class="spCraftOut">${spCI(c)} <b>1</b> ${C.name} <small>(${(SP.crafted[c] || 0).toLocaleString()})</small></span></div>
       <div class="spCraftBtns">${SP_CRAFT_SIZES.map(n => `<button class="btn small" data-spk="${c}" data-n="${n}" ${spCraftCan(c, n) ? "" : "disabled"} title="${spClock(n * spCraftSec() * 1000)}">×${n}</button>`).join("")}</div></div>`).join("") : "";
   return `<div class="card spResBar" id="spResBar">${spResHtml()}</div>
-    <div class="card"><h2 style="margin-top:0">🔬 Space research</h2>
+    <div class="card"><h2 style="margin-top:0"><img class="ico h" src="assets/icons/ico-lg-research.webp" alt="">Space research</h2>
       <p class="muted">Each level costs 🔬 scientists, money and space resources. The last levels need resources you craft yourself.</p>
       <div class="spResList">${rows}</div></div>
-    <div class="card"><h2 style="margin-top:0">🛠️ Crafting</h2>
+    <div class="card"><h2 style="margin-top:0">${spRI("craft", "ico h")}Crafting</h2>
       ${spRL("craft") ? `<p class="muted">Mix ${SP_CRAFT_EACH} + ${SP_CRAFT_EACH} alien goods into 1 crafted resource, in batches of 25, 50, 75 or 100. One batch at a time: ${spCraftSec()} seconds a unit. It keeps going while the game is closed.</p>` : ""}
       ${craft}${recipes}</div>
-    ${spRL("outpost") ? `<div class="card"><h2 style="margin-top:0">🏗️ Outposts (${spOutpostCount()} / ${spRL("outpost")})</h2>
+    ${spRL("outpost") ? `<div class="card"><h2 style="margin-top:0">${spRI("outpost", "ico h")}Outposts (${spOutpostCount()} / ${spRL("outpost")})</h2>
       <p class="muted">Pick a system on the 🌌 star map you are 😊 Friendly with and build an outpost there (${fmt(SP_OUTPOST_MONEY)} + ${SP_OUTPOST_SCI} 🔬 scientists). Each one makes ${SP_OUTPOST_RATE} of that race's goods an hour.</p>
       ${spOutpostCount() ? `<ul class="spSlots">${Object.entries(SP.outposts).map(([k, o]) => `<li>${SP_RACES[k].emoji} ${SP_RACES[k].name}: ${spGI(SP_RACES[k].good)} ${SP_OUTPOST_RATE} ${SP_GOODS[SP_RACES[k].good].name} an hour · ${(o.got || 0).toLocaleString()} made</li>`).join("")}</ul>` : `<p class="muted">No outposts yet.</p>`}</div>` : ""}`;
 }
