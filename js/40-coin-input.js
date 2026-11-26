@@ -5,10 +5,10 @@
    in bcoin through .value (and code that fills the box, like the 10% buttons, still writes bcoin).
    · The chosen unit is remembered (state.coinUnit, a screen preference); "auto" picks it from your money.
    ===================================================================== */
-const COIN_UNITS = { bcoin: 1, scoin: SCOIN, gcoin: GCOIN };
+const COIN_UNITS = { bcoin: 1, scoin: SCOIN, gcoin: GCOIN, pcoin: PCOIN };
 const COIN_BOXES = "#buyAmount, #reAmount, #etfAmount, #etfSellAmount, #goldAmount, #goldSellAmount, #petfAmount, #gfcAmount, #gfcSellAmount, [id^='cbuy-'], #duBet";
 const NATIVE_VALUE = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value");
-const coinUnit = () => COIN_UNITS[state.coinUnit] ? state.coinUnit : state.money >= GCOIN ? "gcoin" : state.money >= SCOIN ? "scoin" : "bcoin";
+const coinUnit = () => COIN_UNITS[state.coinUnit] ? state.coinUnit : state.money >= PCOIN ? "pcoin" : state.money >= GCOIN ? "gcoin" : state.money >= SCOIN ? "scoin" : "bcoin";
 const coinNice = (n) => String(Math.round(n * 1e6) / 1e6);   // up to 6 decimals, no float noise
 function coinBox(el) {
   if (el.dataset.coinUnit) return;

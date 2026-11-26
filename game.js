@@ -50,7 +50,7 @@ function trText(raw) {
   const m = raw.match(EDGE); if (!m) return null;
   const core = squash(m[2]);
   if (!core) return null;
-  if (!LETTER.test(core.replace(/\b[sgb]coin\b|\d(?:sc|k|s|h|m|min)\b|\bXP\b/g, ""))) { const d = decFix(raw); return d !== raw ? d : null; }   // only numbers
+  if (!LETTER.test(core.replace(/\b[sgbp]coin\b|\d(?:sc|k|s|h|m|min)\b|\bXP\b/g, ""))) { const d = decFix(raw); return d !== raw ? d : null; }   // only numbers
   if (I18N_DONE.has(core)) return null;
   let out = trCore(core);
   if (out === null && m[3] && /:\s*$/.test(m[3])) { const c2 = trCore(core + ":"); if (c2 !== null) return m[1] + c2 + m[3].replace(/^\s*:/, ""); }
@@ -181,7 +181,7 @@ __eocLoaded = 1;
    ===================================================================== */
 // a piece of text in Spanish (or as it is, if it has no translation yet)
 var es = (s) => (s == null ? s : trText(String(s)) ?? s);
-var NUM = String.raw`[−+-]?[\d.,]+(?:\s?[sgb]coin)?`;   // an amount as the game shows it ("2,5 scoin", "1.000")
+var NUM = String.raw`[−+-]?[\d.,]+(?:\s?[sgbp]coin)?`;   // an amount as the game shows it ("2,5 scoin", "1.000")
 var rx = (src, to) => ES_RX.push([new RegExp("^" + src + "$"), to]);
 var hrx = (src, to) => ES_HTML_RX.push([new RegExp("^" + src + "$"), to]);
 var plural = (n, one, many) => (String(n).replace(/\D/g, "") === "1" ? one : many);
@@ -2704,9 +2704,14 @@ rx(String.raw`Not enough money to repeat \((${NUM}) needed\)\.`, "No tienes sufi
 rx(String.raw`Not enough money \(Ante \+ Blind = (${NUM})\)\.`, "No tienes suficiente dinero (ante + ciega = $1).");
 rx(String.raw`Not enough money to raise (${NUM})\.`, "No tienes suficiente dinero para subir $1.");
 rx(String.raw`Not enough money to buy the bonus \((${NUM})\)\.`, "No tienes suficiente dinero para comprar el bono ($1).");
-rx(String.raw`Have (\d+) (scoin|gcoin) on hand`, "Ten $1 $2 en mano");
+rx(String.raw`Have (\d+) (scoin|gcoin|pcoin) on hand`, "Ten $1 $2 en mano");
 Object.assign(ES, { "Shield active": "Escudo activo", "Gold ball! You climbed and got a shield against the next red ball.": "¡Bola dorada! Has subido y tienes un escudo contra la próxima bola roja." });
 rx(String.raw`Red: ([\d.,]+)% \(blocked\)`, "Roja: $1 % (bloqueada)");
+Object.assign(ES, { "bcoin (bronze)": "bcoin (bronce)", "scoin (silver, sc)": "scoin (plata, sc)", "gcoin (gold)": "gcoin (oro)", "pcoin (platinum)": "pcoin (platino)",
+  "Very big amounts": "Cantidades muy grandes", "The biggest amounts (from 1,000,000 gcoin)": "Las cantidades más grandes (desde 1.000.000 gcoin)", "1,000,000 gcoin": "1.000.000 gcoin",
+});
+H("💎 New coin: <b>pcoin</b> (platinum). 1 pcoin = 1,000,000 gcoin; money switches to pcoin from 1,000,000 gcoin. The money boxes can be set to pcoin too.",
+  "💎 Nueva moneda: <b>pcoin</b> (platino). 1 pcoin = 1.000.000 gcoin; el dinero pasa a mostrarse en pcoin desde 1.000.000 gcoin. Las casillas de dinero también se pueden poner en pcoin.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -3224,16 +3229,18 @@ var fmtNum = (n) => Math.floor(n).toLocaleString();
 // Money: shown in the biggest coin that fits.
 //   under 1M          -> "950,000"        (bcoin)
 //   1M  to 1M scoin   -> "3.4 scoin"      (1 scoin = 1,000,000 bcoin)
-//   1M scoin and up   -> "10,956.92 gcoin" (1 gcoin = 1,000,000 scoin)
+//   1M scoin to 1M gcoin -> "10,956.92 gcoin" (1 gcoin = 1,000,000 scoin)
+//   1M gcoin and up   -> "2.5 pcoin"      (1 pcoin = 1,000,000 gcoin)
+// 🥉 bcoin = bronze, 🥈 scoin = silver, 🥇 gcoin = gold, 💎 pcoin = platinum
 // Never rounds up, so it never shows more than you have.
-var SCOIN = 1e6, GCOIN = 1e12;
+var SCOIN = 1e6, GCOIN = 1e12, PCOIN = 1e18;
 // scoinFrom: from which amount to switch from bcoin to scoin (1M by default)
 function splitCoins(n, scoinFrom = SCOIN) {
   const a = Math.abs(n);
   if (a < scoinFrom) return [Math.floor(a).toLocaleString(), "bcoin"];
-  const unit = a < GCOIN ? SCOIN : GCOIN;
+  const unit = a < GCOIN ? SCOIN : a < PCOIN ? GCOIN : PCOIN;
   const v = Math.floor(a / unit * 100) / 100;
-  return [v.toLocaleString(undefined, { maximumFractionDigits: 2 }), unit === SCOIN ? "scoin" : "gcoin"];
+  return [v.toLocaleString(undefined, { maximumFractionDigits: 2 }), unit === SCOIN ? "scoin" : unit === GCOIN ? "gcoin" : "pcoin"];
 }
 var fmt = (n) => {
   const [num, unit] = splitCoins(n);
@@ -3774,6 +3781,7 @@ function updateCounterNow() {
   const asScoin = (Math.floor(state.money / SCOIN * 10 ** dec) / 10 ** dec).toLocaleString(undefined, { maximumFractionDigits: dec });
   $("counter").title = unit === "bcoin"
     ? "= " + asScoin + " scoin"
+    : unit === "pcoin" ? "= " + (Math.floor(state.money / GCOIN * 100) / 100).toLocaleString(undefined, { maximumFractionDigits: 2 }) + " gcoin"
     : (unit === "gcoin" ? "= " + asScoin + " scoin\n" : "") + "= " + Math.floor(state.money).toLocaleString() + " bcoin";
   $("casinoMoney").textContent = fmt(state.money);
   updateVipBar();
@@ -10668,7 +10676,8 @@ function wikiGeneral() {
     <p><b>Empire of Coins</b> is an idle tycoon game. Click the coin, build businesses, play the casino, invest, run a logistics empire, and grow your fortune up to <b>1 gcoin</b>, where you can prestige (then 5, 10 and 20 gcoin).</p>
     <h3>Money units</h3>
     ${wt(["Unit", "Value", "Where you see it"], [
-      ["bcoin", "1", "Normal amounts"], ["scoin (sc)", `${(1e6).toLocaleString()} bcoin`, "Amounts from 1 million (your main counter switches at 100 scoin)"], ["gcoin", `${(1e6).toLocaleString()} scoin`, "The biggest amounts"]])}
+      ["🥉 bcoin (bronze)", "1", "Normal amounts"], ["🥈 scoin (silver, sc)", `${(1e6).toLocaleString()} bcoin`, "Amounts from 1 million (your main counter switches at 100 scoin)"],
+      ["🥇 gcoin (gold)", `${(1e6).toLocaleString()} scoin`, "Very big amounts"], ["💎 pcoin (platinum)", `${(1e6).toLocaleString()} gcoin`, "The biggest amounts (from 1,000,000 gcoin)"]])}
     <p class="muted">Hover your money counter to see it in the other unit.</p>
     <h3>The tabs</h3>
     ${wt(["Tab", "What you do there"], [
@@ -13146,6 +13155,9 @@ addEventListener("resize", fitBrand); fitBrand();
 
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
+  { date: "26 November 2026", title: "Empire of Coins", items: [
+    "💎 New coin: <b>pcoin</b> (platinum). 1 pcoin = 1,000,000 gcoin; money switches to pcoin from 1,000,000 gcoin. The money boxes can be set to pcoin too.",
+  ] },
   { date: "25 November 2026", title: "Empire of Coins", items: [
     "🎰 No more casino chips: you now bet straight from your money, and wins go straight back to it. Any chips you had were turned back into money.",
     "👤 6 new starter avatars for your profile: everyone can pick them, even without unlocked rewards.",
@@ -19740,10 +19752,10 @@ __eocLoaded = 48;
    in bcoin through .value (and code that fills the box, like the 10% buttons, still writes bcoin).
    · The chosen unit is remembered (state.coinUnit, a screen preference); "auto" picks it from your money.
    ===================================================================== */
-var COIN_UNITS = { bcoin: 1, scoin: SCOIN, gcoin: GCOIN };
+var COIN_UNITS = { bcoin: 1, scoin: SCOIN, gcoin: GCOIN, pcoin: PCOIN };
 var COIN_BOXES = "#buyAmount, #reAmount, #etfAmount, #etfSellAmount, #goldAmount, #goldSellAmount, #petfAmount, #gfcAmount, #gfcSellAmount, [id^='cbuy-'], #duBet";
 var NATIVE_VALUE = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value");
-var coinUnit = () => COIN_UNITS[state.coinUnit] ? state.coinUnit : state.money >= GCOIN ? "gcoin" : state.money >= SCOIN ? "scoin" : "bcoin";
+var coinUnit = () => COIN_UNITS[state.coinUnit] ? state.coinUnit : state.money >= PCOIN ? "pcoin" : state.money >= GCOIN ? "gcoin" : state.money >= SCOIN ? "scoin" : "bcoin";
 var coinNice = (n) => String(Math.round(n * 1e6) / 1e6);   // up to 6 decimals, no float noise
 function coinBox(el) {
   if (el.dataset.coinUnit) return;

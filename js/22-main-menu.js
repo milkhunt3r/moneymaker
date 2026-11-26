@@ -51,6 +51,9 @@ addEventListener("resize", fitBrand); fitBrand();
 
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
+  { date: "26 November 2026", title: "Empire of Coins", items: [
+    "💎 New coin: <b>pcoin</b> (platinum). 1 pcoin = 1,000,000 gcoin; money switches to pcoin from 1,000,000 gcoin. The money boxes can be set to pcoin too.",
+  ] },
   { date: "25 November 2026", title: "Empire of Coins", items: [
     "🎰 No more casino chips: you now bet straight from your money, and wins go straight back to it. Any chips you had were turned back into money.",
     "👤 6 new starter avatars for your profile: everyone can pick them, even without unlocked rewards.",

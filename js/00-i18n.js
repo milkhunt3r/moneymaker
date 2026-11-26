@@ -45,7 +45,7 @@ function trText(raw) {
   const m = raw.match(EDGE); if (!m) return null;
   const core = squash(m[2]);
   if (!core) return null;
-  if (!LETTER.test(core.replace(/\b[sgb]coin\b|\d(?:sc|k|s|h|m|min)\b|\bXP\b/g, ""))) { const d = decFix(raw); return d !== raw ? d : null; }   // only numbers
+  if (!LETTER.test(core.replace(/\b[sgbp]coin\b|\d(?:sc|k|s|h|m|min)\b|\bXP\b/g, ""))) { const d = decFix(raw); return d !== raw ? d : null; }   // only numbers
   if (I18N_DONE.has(core)) return null;
   let out = trCore(core);
   if (out === null && m[3] && /:\s*$/.test(m[3])) { const c2 = trCore(core + ":"); if (c2 !== null) return m[1] + c2 + m[3].replace(/^\s*:/, ""); }

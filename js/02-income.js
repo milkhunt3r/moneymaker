@@ -377,6 +377,7 @@ function updateCounterNow() {
   const asScoin = (Math.floor(state.money / SCOIN * 10 ** dec) / 10 ** dec).toLocaleString(undefined, { maximumFractionDigits: dec });
   $("counter").title = unit === "bcoin"
     ? "= " + asScoin + " scoin"
+    : unit === "pcoin" ? "= " + (Math.floor(state.money / GCOIN * 100) / 100).toLocaleString(undefined, { maximumFractionDigits: 2 }) + " gcoin"
     : (unit === "gcoin" ? "= " + asScoin + " scoin\n" : "") + "= " + Math.floor(state.money).toLocaleString() + " bcoin";
   $("casinoMoney").textContent = fmt(state.money);
   updateVipBar();

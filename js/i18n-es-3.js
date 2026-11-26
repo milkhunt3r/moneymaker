@@ -1330,9 +1330,14 @@ rx(String.raw`Not enough money to repeat \((${NUM}) needed\)\.`, "No tienes sufi
 rx(String.raw`Not enough money \(Ante \+ Blind = (${NUM})\)\.`, "No tienes suficiente dinero (ante + ciega = $1).");
 rx(String.raw`Not enough money to raise (${NUM})\.`, "No tienes suficiente dinero para subir $1.");
 rx(String.raw`Not enough money to buy the bonus \((${NUM})\)\.`, "No tienes suficiente dinero para comprar el bono ($1).");
-rx(String.raw`Have (\d+) (scoin|gcoin) on hand`, "Ten $1 $2 en mano");
+rx(String.raw`Have (\d+) (scoin|gcoin|pcoin) on hand`, "Ten $1 $2 en mano");
 Object.assign(ES, { "Shield active": "Escudo activo", "Gold ball! You climbed and got a shield against the next red ball.": "¡Bola dorada! Has subido y tienes un escudo contra la próxima bola roja." });
 rx(String.raw`Red: ([\d.,]+)% \(blocked\)`, "Roja: $1 % (bloqueada)");
+Object.assign(ES, { "bcoin (bronze)": "bcoin (bronce)", "scoin (silver, sc)": "scoin (plata, sc)", "gcoin (gold)": "gcoin (oro)", "pcoin (platinum)": "pcoin (platino)",
+  "Very big amounts": "Cantidades muy grandes", "The biggest amounts (from 1,000,000 gcoin)": "Las cantidades más grandes (desde 1.000.000 gcoin)", "1,000,000 gcoin": "1.000.000 gcoin",
+});
+H("💎 New coin: <b>pcoin</b> (platinum). 1 pcoin = 1,000,000 gcoin; money switches to pcoin from 1,000,000 gcoin. The money boxes can be set to pcoin too.",
+  "💎 Nueva moneda: <b>pcoin</b> (platino). 1 pcoin = 1.000.000 gcoin; el dinero pasa a mostrarse en pcoin desde 1.000.000 gcoin. Las casillas de dinero también se pueden poner en pcoin.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

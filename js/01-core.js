@@ -443,16 +443,18 @@ const fmtNum = (n) => Math.floor(n).toLocaleString();
 // Money: shown in the biggest coin that fits.
 //   under 1M          -> "950,000"        (bcoin)
 //   1M  to 1M scoin   -> "3.4 scoin"      (1 scoin = 1,000,000 bcoin)
-//   1M scoin and up   -> "10,956.92 gcoin" (1 gcoin = 1,000,000 scoin)
+//   1M scoin to 1M gcoin -> "10,956.92 gcoin" (1 gcoin = 1,000,000 scoin)
+//   1M gcoin and up   -> "2.5 pcoin"      (1 pcoin = 1,000,000 gcoin)
+// 🥉 bcoin = bronze, 🥈 scoin = silver, 🥇 gcoin = gold, 💎 pcoin = platinum
 // Never rounds up, so it never shows more than you have.
-const SCOIN = 1e6, GCOIN = 1e12;
+const SCOIN = 1e6, GCOIN = 1e12, PCOIN = 1e18;
 // scoinFrom: from which amount to switch from bcoin to scoin (1M by default)
 function splitCoins(n, scoinFrom = SCOIN) {
   const a = Math.abs(n);
   if (a < scoinFrom) return [Math.floor(a).toLocaleString(), "bcoin"];
-  const unit = a < GCOIN ? SCOIN : GCOIN;
+  const unit = a < GCOIN ? SCOIN : a < PCOIN ? GCOIN : PCOIN;
   const v = Math.floor(a / unit * 100) / 100;
-  return [v.toLocaleString(undefined, { maximumFractionDigits: 2 }), unit === SCOIN ? "scoin" : "gcoin"];
+  return [v.toLocaleString(undefined, { maximumFractionDigits: 2 }), unit === SCOIN ? "scoin" : unit === GCOIN ? "gcoin" : "pcoin"];
 }
 const fmt = (n) => {
   const [num, unit] = splitCoins(n);

@@ -17,7 +17,8 @@ function wikiGeneral() {
     <p><b>Empire of Coins</b> is an idle tycoon game. Click the coin, build businesses, play the casino, invest, run a logistics empire, and grow your fortune up to <b>1 gcoin</b>, where you can prestige (then 5, 10 and 20 gcoin).</p>
     <h3>Money units</h3>
     ${wt(["Unit", "Value", "Where you see it"], [
-      ["bcoin", "1", "Normal amounts"], ["scoin (sc)", `${(1e6).toLocaleString()} bcoin`, "Amounts from 1 million (your main counter switches at 100 scoin)"], ["gcoin", `${(1e6).toLocaleString()} scoin`, "The biggest amounts"]])}
+      ["🥉 bcoin (bronze)", "1", "Normal amounts"], ["🥈 scoin (silver, sc)", `${(1e6).toLocaleString()} bcoin`, "Amounts from 1 million (your main counter switches at 100 scoin)"],
+      ["🥇 gcoin (gold)", `${(1e6).toLocaleString()} scoin`, "Very big amounts"], ["💎 pcoin (platinum)", `${(1e6).toLocaleString()} gcoin`, "The biggest amounts (from 1,000,000 gcoin)"]])}
     <p class="muted">Hover your money counter to see it in the other unit.</p>
     <h3>The tabs</h3>
     ${wt(["Tab", "What you do there"], [
