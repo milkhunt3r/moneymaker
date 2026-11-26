@@ -40,7 +40,7 @@ const PLINKO_CUP = (m) => m >= 100 ? 0 : m >= 10 ? 1 : m >= 3 ? 2 : m >= 1.5 ? 3
 const PLINKO_CUP_COLORS = ["#e3262e", "#ff7a1a", "#ffc928", "#7ccf2a", "#1fc9a8", "#2a9bff", "#8a3dff"];
 function multColor(m) { return PLINKO_CUP_COLORS[PLINKO_CUP(m)]; }
 const PIMG = {};
-["bg", "peg", "peg-lit", "ball", "ball-ruby", "fx-small", "fx-big", "fx-crown", "cup-0", "cup-1", "cup-2", "cup-3", "cup-4", "cup-5", "cup-6"].forEach(n => { const i = new Image(); i.src = `assets/plinko/${n}.webp`; PIMG[n] = i; });
+["bg", "peg", "ball", "ball-ruby", "fx-small", "fx-big", "fx-crown", "cup-0", "cup-1", "cup-2", "cup-3", "cup-4", "cup-5", "cup-6"].forEach(n => { const i = new Image(); i.src = `assets/plinko/${n}.webp`; PIMG[n] = i; });
 const pOk = (i) => i && i.complete && i.naturalWidth > 0;
 plinko.fx = []; plinko.lit = {};
 
@@ -144,22 +144,14 @@ function plinkoFrame(now) {
 function drawPlinko(ctx, now) {
   ctx.clearRect(0, 0, PW, PH);
   if (pOk(PIMG.bg)) ctx.drawImage(PIMG.bg, 0, 0, PW, PH);
-  // which pegs a ball is touching right now light up for a moment
   const pos = [];
   for (const ball of plinko.balls) { const t = now - ball.start; if (t < 0) continue; const p = ballPos(ball, t); if (p) pos.push([p, ball]); }
-  for (const [p] of pos) {
-    const r = Math.round((p.y + PEG_R + BALL_R - P_TOP) / P_GAP_Y);
-    if (r < 0 || r >= PLINKO_ROWS) continue;
-    const n = r + 3, j = Math.round((p.x - P_CX) / P_GAP_X + (n - 1) / 2), x = P_CX + (j - (n - 1) / 2) * P_GAP_X;
-    if (j >= 0 && j < n && Math.abs(p.x - x) < 14 && Math.abs(p.y - pegY(r)) < 16) plinko.lit[r + "_" + j] = now;
-  }
   // pegs: row r has r + 3 pegs
   const ps = PEG_R * 2.6;
   for (let r = 0; r < PLINKO_ROWS; r++) {
     const n = r + 3;
     for (let j = 0; j < n; j++) {
-      const x = P_CX + (j - (n - 1) / 2) * P_GAP_X, y = pegY(r), lit = now - (plinko.lit[r + "_" + j] || -1e9) < 220;
-      const img = lit ? PIMG["peg-lit"] : PIMG.peg, sz = lit ? ps * 1.35 : ps;
+      const x = P_CX + (j - (n - 1) / 2) * P_GAP_X, y = pegY(r), img = PIMG.peg, sz = ps;
       if (pOk(img)) ctx.drawImage(img, x - sz / 2, y - sz / 2, sz, sz);
       else { ctx.fillStyle = "#ffd34d"; ctx.beginPath(); ctx.arc(x, y, PEG_R, 0, Math.PI * 2); ctx.fill(); }
     }
