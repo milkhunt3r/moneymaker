@@ -2412,3 +2412,36 @@ body.phone .casHud { gap: 6px 8px; padding: 6px 8px; position: sticky; top: 0; z
 body.phone .casHud .casHudXp, body.phone .casHud .casHudXpM { display: none; }
 body.phone .casHudMoney { font-size: 14px; white-space: nowrap; } body.phone .casHudMoney img { width: 20px; height: 20px; }
 body.phone .casHudHot { white-space: nowrap; font-size: 12px; } body.phone .casHudLv { padding: 3px 8px; white-space: nowrap; }
+/* 🎰 lobby: one card per game + table switch, continue-playing row */
+.casFams { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 14px; }
+.casFam { margin: 0; cursor: pointer; display: grid; gap: 10px; align-content: start; transition: border-color 0.15s, transform 0.15s; }
+.casFam:hover:not(.locked) { border-color: rgba(255,211,77,0.55); transform: translateY(-2px); }
+.casFam.locked { cursor: default; opacity: 0.6; }
+.casFam.hot { border-color: rgba(255,120,60,0.7); box-shadow: 0 0 16px rgba(255,120,60,0.25); }
+.casFamHead { display: flex; gap: 12px; align-items: center; }
+.casFamHead h3 { margin: 0 0 3px; }
+.casFamHead .casIco .biz, .casFamHead .casIco > .ico { width: 54px; height: 54px; }
+.casFamLock { font-size: 13px; }
+.casTiers { display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 6px; }
+.casTierPill { display: grid; gap: 1px; padding: 7px 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.05); color: #fff; font: inherit; cursor: pointer; text-align: left; }
+.casTierPill:hover:not(:disabled) { border-color: #ffd34d; background: rgba(255,211,77,0.12); }
+.casTierPill b { font-size: 12.5px; } .casTierPill small { font-size: 11.5px; color: #c9c9da; } .casTierPill i { font-style: normal; font-size: 11px; color: #b388ff; font-weight: 700; }
+.casTierPill:disabled { opacity: 0.5; cursor: default; }
+.casCont { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 14px; }
+.casContLbl { font-weight: 700; color: #ffd34d; margin-right: 4px; }
+.casContBtn { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.06); color: #fff; font: inherit; cursor: pointer; text-align: left; }
+.casContBtn:hover { border-color: #ffd34d; }
+.casContBtn.hot { border-color: rgba(255,120,60,0.8); background: rgba(255,120,60,0.12); }
+.casContBtn span { display: grid; } .casContBtn small { color: #c9c9da; font-size: 11.5px; }
+.casContBtn .casIco .biz, .casContBtn .casIco > .ico { width: 34px; height: 34px; }
+.casHudTiers { display: inline-flex; gap: 3px; margin-left: auto; }
+.casHudTiers button { padding: 4px 9px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: #ddd; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.casHudTiers button.on { background: #ffd34d; color: #2b2200; border-color: #ffd34d; }
+.casHudTiers button:disabled { opacity: 0.45; cursor: default; }
+body.phone .casFams { grid-template-columns: 1fr; gap: 10px; }
+body.phone .casFamHead .casIco .biz, body.phone .casFamHead .casIco > .ico { width: 44px; height: 44px; }
+body.phone .casCont { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+body.phone .casContBtn { flex: none; }
+body.phone .casHudTiers { margin-left: 0; }
+#casMain, #casinoGame, .casCont { min-width: 0; } .subLayout > .subMain { min-width: 0; }
+.casContLbl { white-space: nowrap; } .casContBtn small .hotTag { display: inline; padding: 0 5px; font-size: 10px; } body.phone .casContLbl { font-size: 13px; }

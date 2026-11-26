@@ -117,6 +117,47 @@ function casIco(id, cls = "biz") {
   const tier = /Super$/.test(id) ? 2 : /High$/.test(id) ? 1 : 0;
   return `<span class="casIco ${cls}">${ico("cas-" + base, cls)}${tier ? `<span class="casTier">${ico("cas-highroller").repeat(tier)}</span>` : ""}</span>`;
 }
+/* ----- 🎰 lobby: one card per game, with a table switch (Classic / High rollers / Super high rollers) ----- */
+const CAS_FAMS = [
+  { id: "roulette", name: "Roulette", desc: "European roulette: bet on numbers, colours, dozens and more.", tables: ["rouletteLow", "rouletteHigh", "rouletteSuper"] },
+  { id: "bj", name: "Blackjack", desc: "Beat the dealer to 21 with up to 3 hands at once.", tables: ["bjLow", "bjHigh", "bjSuper"] },
+  { id: "bac", name: "Baccarat", desc: "Bet on Player, Banker or a Tie: the hand closest to 9 wins.", tables: ["bacLow", "bacHigh", "bacSuper"] },
+  { id: "vp", name: "Video Poker", desc: "Jacks or Better with a joker, and a jackpot on every table.", tables: ["vpLow", "vpHigh", "vpSuper"] },
+  { id: "uth", name: "Ultimate Texas Hold'em", desc: "Beat the dealer's poker hand with 1 or 2 seats.", tables: ["uthLow", "uthHigh", "uthSuper"] },
+  { id: "plinko", name: "Plinko", desc: "Drop up to 20 balls into multipliers from 0.3× to 250×.", tables: ["plinko", "plinkoSuper"] },
+  { id: "climb", name: "Sky Climb", desc: "Climb a 20-step ladder up to 50,000×. Cash out before a red ball!", tables: ["climb", "climbHigh"] },
+  { id: "gc", name: "Gene Cascade", desc: "A 7×7 cluster slot with lab spots that grow up to ×128.", tables: ["gcHigh", "gcSuper"] },
+];
+const CAS_RANGE = { rouletteLow: [500, 5e4], rouletteHigh: [5e4, 5e6], rouletteSuper: [1e7, 5e8], plinko: [5e3, 5e6], plinkoSuper: [1e7, 5e8], climb: [1e4, 5e5], climbHigh: [5e6, 5e8], gcHigh: [5e4, 5e6], gcSuper: [1e7, 5e8] };
+["bj", "bac", "vp", "uth"].forEach(f => { CAS_RANGE[f + "Low"] = CAS_RANGE.rouletteLow; CAS_RANGE[f + "High"] = CAS_RANGE.rouletteHigh; CAS_RANGE[f + "Super"] = CAS_RANGE.rouletteSuper; });
+const casTierName = (id) => /Super$/.test(id) ? "Super high rollers" : /High$/.test(id) ? "High rollers" : "Classic";
+const casFamOf = (id) => CAS_FAMS.find(f => f.tables.includes(id));
+if (!state.casRecent) state.casRecent = [];   // last tables played, newest first
+// 🔒 locked tables: Baccarat (Gambler level 20), Gene Cascade (1st prestige + Gambler level 40)
+function casLock(id) {
+  return id.startsWith("bac") && typeof bacUnlocked === "function" && !bacUnlocked() ? `Unlocks at Gambler level ${BAC_LEVEL} (you are level ${levelInfo(state.casinoXp).level})`
+    : id.startsWith("gc") && typeof gcUnlocked === "function" && !gcUnlocked() ? gcLockText() : "";
+}
+const casTierBtn = (id, cur) => { const L = casLock(id), R = CAS_RANGE[id];
+  return `<button class="casTierPill ${id === cur ? "on" : ""}" ${L ? "disabled" : `data-game="${id}"`} title="${casTierName(id)}${R ? ` · bets ${fmt(R[0])} – ${fmt(R[1])}` : ""}">
+    ${L ? ico("lock", "lockS") : ""}<b>${casTierName(id)}</b><small>${R ? `${fmt(R[0])} – ${fmt(R[1])}` : ""}</small><i>✨ XP ×${xpMult(id)}</i></button>`; };
+function casLobbyHtml() {
+  const h = hotNow();
+  const fav = (f) => (state.casRecent || []).find(id => f.tables.includes(id) && !casLock(id)) || f.tables.find(id => !casLock(id)) || f.tables[0];   // the table you played last
+  // ▶ continue playing: the hot game first, then the last tables you played
+  const cont = [];
+  if (h.active) { const f = CAS_FAMS.find(x => x.id === h.game.id); if (f && !casLock(fav(f))) cont.push({ id: fav(f), hot: true }); }
+  (state.casRecent || []).forEach(id => { if (cont.length < 4 && !cont.some(c => c.id === id) && CASINO_GAMES.some(g => g.id === id) && !casLock(id)) cont.push({ id }); });
+  const contHtml = cont.length ? `<div class="casCont"><span class="casContLbl">▶ Continue playing</span>${cont.map(c => { const f = casFamOf(c.id);
+    return `<button class="casContBtn ${c.hot ? "hot" : ""}" data-game="${c.id}">${casIco(c.id)}<span><b>${f ? f.name : c.id}</b><small>${casTierName(c.id)}${c.hot ? ` · <span class="hotTag">🔥 HOT</span>` : ""}</small></span></button>`; }).join("")}</div>` : "";
+  const cards = CAS_FAMS.map(f => {
+    const allLocked = f.tables.every(id => casLock(id)), hot = h.active && h.game.id === f.id;
+    return `<div class="card casFam ${allLocked ? "locked" : ""} ${hot ? "hot" : ""}" ${allLocked ? "" : `data-game="${fav(f)}"`}>
+      <div class="casFamHead">${casIco(f.tables[0])}<div><h3>${f.name}${hot ? ` <span class="hotTag">🔥 HOT</span>` : ""}</h3><div class="muted">${f.desc}</div></div></div>
+      ${allLocked ? `<div class="muted casFamLock">${ico("lock", "lockS")}${casLock(f.tables[0])}</div>` : ""}
+      <div class="casTiers">${f.tables.map(id => casTierBtn(id)).join("")}</div></div>`; }).join("");
+  return `<h2>Choose a game</h2>${contHtml}<div class="casFams">${cards}</div>`;
+}
 // Game groups in the casino lobby (games show in this order inside each group)
 const CASINO_GROUPS = [
   { name: "Roulette games", ico: "roulette", games: ["rouletteLow", "rouletteHigh", "rouletteSuper"] },
@@ -304,7 +345,9 @@ function casHudHtml() {
     <span class="casHudMoney" title="Your money: you bet straight from it"><img class="coinSkinImg" src="assets/coin.webp" alt=""><b>${fmt(state.money)}</b></span>
     <span class="casHudHot ${h.active ? "on" : ""} ${hotHere ? "here" : ""}" title="${h.active ? `Hot Tables: ${h.game.name} · +${hotBonus()} XP multiplier` : `Next hot game: ${h.next.name}`}">${ico("ui-hot")}${h.active ? `<b>${h.game.name}</b>&nbsp;· ${mm}` : `<span>${h.next.name}</span>&nbsp;in ${mm}`}</span>
     <span class="casHudXpM" title="XP multiplier at this table">✨ ×${xpMult()}</span>
-    ${free ? `<span class="casHudFree" title="Free bet chips you own">${ico("ui-freechip")}<b>${free}</b></span>` : ""}`;
+    ${free ? `<span class="casHudFree" title="Free bet chips you own">${ico("ui-freechip")}<b>${free}</b></span>` : ""}
+    ${casFamOf(currentGame) ? `<span class="casHudTiers" title="Switch table">${casFamOf(currentGame).tables.map(id => { const L = casLock(id);
+      return `<button class="${id === currentGame ? "on" : ""}" ${L ? "disabled" : `data-castier="${id}"`} title="${casTierName(id)}${CAS_RANGE[id] ? ` · ${fmt(CAS_RANGE[id][0])} – ${fmt(CAS_RANGE[id][1])}` : ""}">${L ? "🔒 " : ""}${casTierName(id) === "Classic" ? "Classic" : casTierName(id) === "High rollers" ? "High" : "Super"}</button>`; }).join("")}</span>` : ""}`;
 }
 function casHudUpdate() {
   const el = $("casHud"); if (!el || $("casinoView").hidden || !currentGame) return;
@@ -313,6 +356,7 @@ function casHudUpdate() {
 setInterval(casHudUpdate, 500);
 function renderCasino() {
   $("casinoView").classList.toggle("inGame", !!currentGame);
+  if (currentGame && state.casRecent[0] !== currentGame) { state.casRecent = [currentGame, ...state.casRecent.filter(x => x !== currentGame)].slice(0, 6); }
   casHudUpdate();
   // 📱 phone: the table sits below the lobby cards, so jump to it when a game is opened
   if (currentGame && currentGame !== renderCasino.shown && typeof isPhone === "function" && isPhone() && !$("casinoView").hidden)
@@ -321,23 +365,7 @@ function renderCasino() {
   const box = $("casinoGame");
   setTimeout(() => { if (typeof updateVipBar === "function") updateVipBar(); }, 0);
   if (!currentGame) {
-    // 🔒 locked games: Baccarat (Gambler level 20), Gene Cascade (1st prestige + Gambler level 40)
-    const lockText = (id) => id.startsWith("bac") && typeof bacUnlocked === "function" && !bacUnlocked()
-        ? `Unlocks at Gambler level ${BAC_LEVEL} (you are level ${levelInfo(state.casinoXp).level})`
-      : id.startsWith("gc") && typeof gcUnlocked === "function" && !gcUnlocked() ? gcLockText() : "";
-    const gameCard = (g) => lockText(g.id)
-      ? `<button class="card gameCard locked" disabled>
-         <h3>${casIco(g.id)}${g.name}</h3><div class="muted">${g.desc}</div>
-         <div class="muted" style="margin-top:4px">${ico("lock", "lockS")}${lockText(g.id)}</div></button>`
-      : `<button class="card gameCard" data-game="${g.id}">
-         <h3>${casIco(g.id)}${g.name}</h3><div class="muted">${g.desc}</div>
-         <div class="muted" style="color:#b388ff; margin-top:4px">✨ XP ×${xpMult(g.id)}${hotNow().active && g.id.startsWith(hotNow().game.id) ? ` <span class="hotTag">🔥 HOT</span>` : ""}</div></button>`;
-    box.innerHTML = `<h2>Choose a game</h2>` + CASINO_GROUPS.map(group => `
-      <div class="card gameGroup">
-        <h2 style="margin:0 0 10px">${group.ico ? ico("cas-" + group.ico, "biz") : ""}${group.name}</h2>
-        <div class="gameGrid">${group.games.map(id => gameCard(CASINO_GAMES.find(g => g.id === id))).join("")}</div>
-      </div>`).join("") +
-      `<div class="muted">More games coming soon...</div>`;
+    box.innerHTML = casLobbyHtml();
     return;
   }
   if (ROULETTE_TABLES[currentGame]) { roulette = ROULETTE_TABLES[currentGame]; renderRoulette(); }
@@ -358,7 +386,18 @@ $("casinoGame").addEventListener("click", (e) => {
   const card = e.target.closest("[data-game]");
   if (card) { currentGame = card.dataset.game; renderCasino(); }
   const back = e.target.closest("[data-back]");
-  if (back && !roulette.spinning && !(bj && bj.phase !== "betting") && !(CLIMBS[currentGame] && climb.active) && !(PLINKO_TABLES[currentGame] && plinko.balls.length) && !(VP_TABLES[currentGame] && vp.phase !== "betting") && !(UTH_TABLES[currentGame] && uth.phase !== "betting") && !(typeof BAC_TABLES !== "undefined" && BAC_TABLES[currentGame] && bac.phase !== "betting") && !(typeof GC_TABLES !== "undefined" && GC_TABLES[currentGame] && gcBusy)) { currentGame = null; renderCasino(); }
+  if (back && casCanLeave()) { currentGame = null; renderCasino(); }
+});
+// you can leave a table (or switch to another one) only between rounds
+function casCanLeave() {
+  return !roulette.spinning && !(bj && bj.phase !== "betting") && !(CLIMBS[currentGame] && climb.active) && !(PLINKO_TABLES[currentGame] && plinko.balls.length) && !(VP_TABLES[currentGame] && vp.phase !== "betting") && !(UTH_TABLES[currentGame] && uth.phase !== "betting") && !(typeof BAC_TABLES !== "undefined" && BAC_TABLES[currentGame] && bac.phase !== "betting") && !(typeof GC_TABLES !== "undefined" && GC_TABLES[currentGame] && gcBusy);
+}
+// 🎚️ table switch in the slim bar
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-castier]"); if (!b || b.disabled || isPaused()) return;
+  if (b.dataset.castier === currentGame) return;
+  if (!casCanLeave()) return casinoMessage("Finish this round first.");
+  currentGame = b.dataset.castier; renderCasino();
 });
 
 /* =====================================================================

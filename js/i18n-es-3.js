@@ -1583,6 +1583,19 @@ rx(String.raw`Hot Tables: (.+) · \+(\d+) XP multiplier`, (m, g, n) => `Mesas ca
 rx(String.raw`Next hot game: (.+)`, (m, g) => `Próximo juego caliente: ${ES[g] || g}`);
 H("🎰 Casino tables are easier to play: while a game is open, one slim bar shows your level, money, Hot Tables timer and free chips, so the table starts higher. Every chip table (Roulette, Blackjack, Baccarat, Hold'em) now has the same buttons in the same order, with <b>↶ Undo</b> everywhere; on phones they stay at the bottom of the screen.",
   "🎰 Las mesas del casino son más cómodas: con un juego abierto, una barra fina muestra tu nivel, tu dinero, el temporizador de mesas calientes y las fichas gratis, así la mesa empieza más arriba. Todas las mesas con fichas (ruleta, blackjack, baccarat y Hold'em) tienen ahora los mismos botones en el mismo orden, con <b>↶ Deshacer</b> en todas; en el móvil se quedan en la parte de abajo de la pantalla.");
+// 🎰 lobby rework: one card per game + continue playing + table switch
+Object.assign(ES, { "Continue playing": "Seguir jugando", "Classic": "Clásica", "High": "Altas", "Super": "Súper", "Switch table": "Cambiar de mesa", "Finish this round first.": "Termina primero esta ronda.",
+  "European roulette: bet on numbers, colours, dozens and more.": "Ruleta europea: apuesta a números, colores, docenas y más.",
+  "Beat the dealer to 21 with up to 3 hands at once.": "Gana a la banca llegando a 21 con hasta 3 manos a la vez.",
+  "Bet on Player, Banker or a Tie: the hand closest to 9 wins.": "Apuesta a Jugador, Banca o Empate: gana la mano más cercana a 9.",
+  "Jacks or Better with a joker, and a jackpot on every table.": "Jacks or Better con comodín, y un bote en cada mesa.",
+  "Beat the dealer's poker hand with 1 or 2 seats.": "Gana a la mano de póquer de la banca con 1 o 2 asientos.",
+  "Drop up to 20 balls into multipliers from 0.3× to 250×.": "Suelta hasta 20 bolas hacia multiplicadores de 0,3× a 250×.",
+  "Climb a 20-step ladder up to 50,000×. Cash out before a red ball!": "Sube una escalera de 20 peldaños hasta 50.000×. ¡Cobra antes de que salga una bola roja!",
+  "A 7×7 cluster slot with lab spots that grow up to ×128.": "Una tragaperras de grupos de 7×7 con casillas de laboratorio que crecen hasta ×128." });
+rx(String.raw`(Classic|High rollers|Super high rollers) · (?:bets )?(${NUM}) – (${NUM})`, (m, t, a, b) => `${{ Classic: "Clásica", "High rollers": "Altas apuestas", "Super high rollers": "Súper altas apuestas" }[t]} · ${a} – ${b}`);
+H("🎰 New casino lobby: one card per game with a quick table switch (Classic, High rollers, Super high rollers), a <b>▶ Continue playing</b> row with the 🔥 hot game and your last tables, and a table switch in the bar while you play.",
+  "🎰 Nuevo vestíbulo del casino: una tarjeta por juego con un cambio rápido de mesa (clásica, altas apuestas, súper altas apuestas), una fila <b>▶ Seguir jugando</b> con el juego caliente 🔥 y tus últimas mesas, y un cambio de mesa en la barra mientras juegas.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
