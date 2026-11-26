@@ -2948,6 +2948,15 @@ H("🔁 Stardust Drift: new <b>Keep harvesting</b> switch. Harvesters fly out ag
   "🔁 Deriva de Polvo Estelar: nuevo interruptor <b>Seguir cosechando</b>. Las cosechadoras vuelven a salir solas (también con el juego cerrado), con escolta cuando haya una fragata libre, siempre o nunca.");
 H("🔁 <b>Keep harvesting:</b> tick the box in the Stardust Drift panel and free harvesters fly out again on their own, also while the game is closed. Choose the escort: when a frigate is free, always (they wait for a free frigate), or never.",
   "🔁 <b>Seguir cosechando:</b> marca la casilla en el panel de la Deriva de Polvo Estelar y las cosechadoras libres vuelven a salir solas, también con el juego cerrado. Elige la escolta: cuando haya una fragata libre, siempre (esperan a una fragata libre) o nunca.");
+// 🎰 in-game bar + ↶ Undo on every chip table
+Object.assign(ES, { "Lv": "Nv.", "XP multiplier at this table": "Multiplicador de XP en esta mesa", "Free bet chips you own": "Fichas de apuesta gratis que tienes", "↶ Undo": "↶ Deshacer", "Undo": "Deshacer",
+  "Your money: you bet straight from it": "Tu dinero: apuestas directamente con él" });
+hrx(String.raw`Lv <b>(\d+)<\/b>`, "Nv. <b>$1</b>");
+rx(String.raw`Gambler level · (max level|([\d.,]+) \/ ([\d.,]+) XP)`, (m, x, a, b) => `Nivel de jugador · ${a ? `${a} / ${b} XP` : "nivel máximo"}`);
+rx(String.raw`Hot Tables: (.+) · \+(\d+) XP multiplier`, (m, g, n) => `Mesas calientes: ${ES[g] || g} · +${n} al multiplicador de XP`);
+rx(String.raw`Next hot game: (.+)`, (m, g) => `Próximo juego caliente: ${ES[g] || g}`);
+H("🎰 Casino tables are easier to play: while a game is open, one slim bar shows your level, money, Hot Tables timer and free chips, so the table starts higher. Every chip table (Roulette, Blackjack, Baccarat, Hold'em) now has the same buttons in the same order, with <b>↶ Undo</b> everywhere; on phones they stay at the bottom of the screen.",
+  "🎰 Las mesas del casino son más cómodas: con un juego abierto, una barra fina muestra tu nivel, tu dinero, el temporizador de mesas calientes y las fichas gratis, así la mesa empieza más arriba. Todas las mesas con fichas (ruleta, blackjack, baccarat y Hold'em) tienen ahora los mismos botones en el mismo orden, con <b>↶ Deshacer</b> en todas; en el móvil se quedan en la parte de abajo de la pantalla.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -4640,6 +4649,21 @@ function freeRebet(id, need) {
   });
   return { covered, undo, taken };
 }
+/* ----- ↶ UNDO (every chip table): each chip, or each ↺ repeat, placed since the last deal/clear, newest last.
+   revert() takes the chips off the table; paid goes back to your money; free chips go back to your free chips. ----- */
+var casUndoS = {};
+var casUndoList = (id) => casUndoS[id] || (casUndoS[id] = []);
+var casUndoPush = (id, revert, paid, free = []) => casUndoList(id).push({ revert, paid, free });
+var casUndoReset = (id) => { casUndoS[id] = []; };
+function casUndoPop(id) {
+  const u = casUndoList(id).pop(); if (!u) return false;
+  u.revert();
+  const pl = freeTbl(id).placed;
+  u.free.forEach(v => { const i = pl.lastIndexOf(v); if (i >= 0) { pl.splice(i, 1); state.freeChips[v] = (state.freeChips[v] || 0) + 1; } });
+  refundTo(id, u.paid);
+  return true;
+}
+var casUndoBtn = (id, attr, on = true) => `<button class="btn ghost" ${attr} ${on && casUndoList(id).length ? "" : "disabled"}>↶ Undo</button>`;
 function freeDone(id, which = "inPlay") { freeTbl(id)[which] = []; }   // played: they are used up
 var purse = (id) => vipOn(id) ? state.vip.coins : state.casinoChips;
 var purseName = (id) => vipOn(id) ? "VIP coins" : "money";
@@ -4863,7 +4887,26 @@ function addXp(amount) {
   return gained;
 }
 
+/* ----- 🎰 slim bar shown while a game is open (instead of the level, hot tables, free chips and money cards) ----- */
+function casHudHtml() {
+  const info = levelInfo(state.casinoXp), h = hotNow(), mm = clock(Math.ceil(h.left / 1000));
+  const free = Object.values(state.freeChips || {}).reduce((a, b) => a + (b || 0), 0);
+  const hotHere = h.active && (currentGame || "").startsWith(h.game.id);
+  return `<button class="casHudLv" data-levels="gambler" title="Gambler level · ${info.max ? "max level" : `${fmtNum(info.into)} / ${fmtNum(info.need)} XP`}">${ico("ui-dice")}<span>Lv <b>${info.level}</b></span>
+      <span class="casHudXp"><i style="width:${info.max ? 100 : 100 * info.into / info.need}%"></i></span></button>
+    <span class="casHudMoney" title="Your money: you bet straight from it"><img class="coinSkinImg" src="assets/coin.webp" alt=""><b>${fmt(state.money)}</b></span>
+    <span class="casHudHot ${h.active ? "on" : ""} ${hotHere ? "here" : ""}" title="${h.active ? `Hot Tables: ${h.game.name} · +${hotBonus()} XP multiplier` : `Next hot game: ${h.next.name}`}">${ico("ui-hot")}${h.active ? `<b>${h.game.name}</b>&nbsp;· ${mm}` : `<span>${h.next.name}</span>&nbsp;in ${mm}`}</span>
+    <span class="casHudXpM" title="XP multiplier at this table">✨ ×${xpMult()}</span>
+    ${free ? `<span class="casHudFree" title="Free bet chips you own">${ico("ui-freechip")}<b>${free}</b></span>` : ""}`;
+}
+function casHudUpdate() {
+  const el = $("casHud"); if (!el || $("casinoView").hidden || !currentGame) return;
+  const h = casHudHtml(); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; }
+}
+setInterval(casHudUpdate, 500);
 function renderCasino() {
+  $("casinoView").classList.toggle("inGame", !!currentGame);
+  casHudUpdate();
   // 📱 phone: the table sits below the lobby cards, so jump to it when a game is opened
   if (currentGame && currentGame !== renderCasino.shown && typeof isPhone === "function" && isPhone() && !$("casinoView").hidden)
     setTimeout(() => { const g = $("casinoGame"); if (g) window.scrollTo({ top: g.getBoundingClientRect().top + scrollY - 8, behavior: "smooth" }); }, 50);
@@ -5104,21 +5147,20 @@ function renderRoulette() {
         </div>
       </div>
 
-      <div class="chipsRow">
+      <div id="tableWrap"><div id="table">${table}</div></div>
+
+      <div class="casBar"><div class="chipsRow">
         <span class="muted">Chip:</span>
         ${roulette.chips.map(v => `<button class="chip ${v === roulette.chip && !roulette.chipFree ? "selected" : ""}" data-chip="${v}"
              style="background:${CHIP_COLORS[v].bg}; color:${CHIP_COLORS[v].text}">${chipLabel(v)}</button>`).join("")}
       </div>
       ${freeChipRow(roulette, roulette.chipFree)}
-
-      <div id="tableWrap"><div id="table">${table}</div></div>
-
-      <div class="moneyRow" style="margin-top:12px">
+      <div class="bjActions">
         <button class="btn" id="spin" ${roulette.spinning || totalBets() === 0 ? "disabled" : ""}>🎡 Spin (bet ${fmt(totalBets())})</button>
-        <button class="btn ghost" id="undoBet" ${roulette.spinning || !rlUndoList(roulette).length ? "disabled" : ""}>↶ Undo last bet</button>
+        <button class="btn ghost" id="undoBet" ${roulette.spinning || !rlUndoList(roulette).length ? "disabled" : ""}>↶ Undo</button>
         <button class="btn ghost" id="clearBets" ${roulette.spinning ? "disabled" : ""}>Clear bets</button>
         <button class="btn ghost" id="rebet" ${roulette.spinning || !hasLast ? "disabled" : ""}>↺ Repeat last bets</button>
-      </div>
+      </div></div>
       <div id="casinoMsg" class="flash" style="margin-top:8px"></div>
       <div class="muted" style="margin-top:6px">Click a number, or the line between numbers: between 2 = split, where 4 meet = corner, bottom edge = street, bottom corner = six line (next to 0: trios 0-1-2 / 0-2-3 where two rows meet the zero, and first four 0-1-2-3 at its bottom).</div>
       <div class="muted">Pays: number 35:1 · split 17:1 · street / trio 11:1 · corner / first four 8:1 · six line 5:1 · dozen / column 2:1 · red, black, odd, even, 1–18, 19–36 1:1 · when 0 comes up, only bets on 0 win</div>
@@ -6545,6 +6587,7 @@ function renderBlackjack() {
   if (betting) {
     actions = `
       <button class="btn" data-bj="deal" ${total === 0 ? "disabled" : ""}>🃏 Deal (bet ${fmt(total)})</button>
+      ${casUndoBtn(t.id, 'data-bj="undo"')}
       <button class="btn ghost" data-bj="clear" ${total === 0 && !t.hands.length ? "disabled" : ""}>Clear bets</button>
       <button class="btn ghost" data-bj="rebet" ${lastTotal === 0 ? "disabled" : ""}>↺ Repeat last bets</button>`;
   } else if (t.phase === "insurance") {
@@ -6578,14 +6621,14 @@ function renderBlackjack() {
         <div class="bjSeats">${seats}</div>
       </div>
 
-      <div class="chipsRow">
+      <div class="casBar">${betting ? `<div class="chipsRow">
         <span class="muted">Chip:</span>
         ${t.chips.map(v => `<button class="chip ${v === t.chip && !t.chipFree ? "selected" : ""}" data-bjchip="${v}"
              style="background:${CHIP_COLORS[v].bg}; color:${CHIP_COLORS[v].text}">${chipLabel(v)}</button>`).join("")}
         <span class="muted">Click a seat to add the chip. Play up to 3 seats.</span>
       </div>
-      ${freeChipRow(t, t.chipFree)}
-      <div class="bjActions">${actions}</div>
+      ${freeChipRow(t, t.chipFree)}` : ""}
+      <div class="bjActions">${actions}</div></div>
       <div id="casinoMsg" class="${/won|money back/.test(t.message) ? "income" : "flash"}" style="margin-top:10px; text-align:center">${t.message}</div>
       <div class="muted" style="margin-top:6px; text-align:center">Double on any first two cards · Split once per seat (split aces get one card) · Surrender a first-two-card hand for half your bet back · Insurance pays 2:1 when the dealer shows an Ace</div>
     </div>`;
@@ -6618,6 +6661,7 @@ $("casinoGame").addEventListener("click", (e) => {
       payFrom(t.id, t.chip);
     }
     bets[i] += t.chip;
+    { const v = t.chip, free = t.chipFree; casUndoPush(t.id, () => { const b = seatBets(t); b[i] = Math.max(0, b[i] - v); }, free ? 0 : v, free ? [v] : []); }
     t.message = "";
     updateCounter(); renderBlackjack(); save();
     return;
@@ -6627,12 +6671,13 @@ $("casinoGame").addEventListener("click", (e) => {
   if (!btn || btn.disabled) return;
   const a = btn.dataset.bj;
   // a button drawn just before the round started can still be clicked: only act between rounds
-  if ((a === "deal" || a === "clear" || a === "rebet") && (t.phase !== "betting" || t.busy)) return;
-  if (a === "deal") bjDeal();
+  if ((a === "deal" || a === "clear" || a === "rebet" || a === "undo") && (t.phase !== "betting" || t.busy)) return;
+  if (a === "undo") { if (casUndoPop(t.id)) { t.message = ""; updateCounter(); renderBlackjack(); save(); } return; }
+  if (a === "deal") { casUndoReset(t.id); bjDeal(); }
   if (a === "clear") {
     const bets = seatBets(t);
     refundTo(t.id, bets.reduce((x, y) => x + y, 0) - freeReturn(t.id));
-    state.bj[t.id].bets = [0, 0, 0];
+    state.bj[t.id].bets = [0, 0, 0]; casUndoReset(t.id);
     t.hands = []; t.dealer = []; t.message = "";   // also empties the seats after a finished round
     updateCounter(); renderBlackjack(); save();
   }
@@ -6644,6 +6689,7 @@ $("casinoGame").addEventListener("click", (e) => {
     if (purse(t.id) < rest) { fr.undo(); return bjMsg(`Not enough ${purseName(t.id)} to repeat (` + fmt(rest) + " needed)."); }
     payFrom(t.id, rest);
     t.lastBets.forEach((b, i) => bets[i] += b);
+    { const add = [...t.lastBets]; casUndoPush(t.id, () => { const b = seatBets(t); add.forEach((x, i) => b[i] = Math.max(0, b[i] - x)); }, rest, fr.taken); }
     t.hands = []; t.dealer = []; t.message = "";
     updateCounter(); renderBlackjack(); save();
   }
@@ -7245,6 +7291,7 @@ function renderUth() {
     const last = t.lastBets ? uthCost(t.lastBets) : 0;
     actions = `
       <button class="btn" data-uth="deal" ${seats.some(s => s.ante >= t.min) && !t.busy ? "" : "disabled"}>🤠 Deal (bet ${fmt(total)})</button>
+      ${casUndoBtn(t.id, 'data-uth="undo"', !t.busy)}
       <button class="btn ghost" data-uth="clear" ${total || t.hands.length ? "" : "disabled"}>Clear bets</button>
       <button class="btn ghost" data-uth="rebet" ${last ? "" : "disabled"}>↺ Repeat last bets${last ? " (" + fmt(last) + ")" : ""}</button>`;
   } else if (t.active >= 0 && !t.busy) {
@@ -7288,13 +7335,13 @@ function renderUth() {
         <div class="uthSeats">${seatHtml}</div>
       </div>
 
-      ${betting ? `<div class="chipsRow">
+      <div class="casBar">${betting ? `<div class="chipsRow">
         <span class="muted">Chip:</span>
         ${t.chips.map(v => `<button class="chip ${v === t.chip && !t.chipFree ? "selected" : ""}" data-uthchip="${v}"
              style="background:${CHIP_COLORS[v].bg}; color:${CHIP_COLORS[v].text}">${chipLabel(v)}</button>`).join("")}
         <span class="muted">Click Ante or Trips on a seat to add the chip. The Blind matches the Ante.</span>
       </div>${freeChipRow(t, t.chipFree)}` : ""}
-      <div class="bjActions">${actions}</div>
+      <div class="bjActions">${actions}</div></div>
       <div id="casinoMsg" class="${/won|broke even/.test(t.message) ? "income" : "flash"}" style="margin-top:10px; text-align:center">${t.message}</div>
       <div class="muted" style="margin-top:6px; text-align:center">Raise 3× or 4× before the flop, 2× after the flop, or 1× after the river (once per hand) · The dealer needs a pair to qualify, otherwise Antes push · Best 5 of 7 cards</div>
     </div>`;
@@ -7335,12 +7382,14 @@ $("casinoGame").addEventListener("click", (e) => {
         payFrom(t.id, v * 2);
       }
       s.ante += v;
+      { const n = Number(seatStr); casUndoPush(t.id, () => { const x = uthSeats(t)[n]; x.ante = Math.max(0, x.ante - v); }, free ? 0 : v * 2, free ? [v, v] : []); }
     } else {
       if (!s.ante) return uthMsg("Put an Ante on this seat first.");
       if (s.trips + v > t.max) return uthMsg("Table limit: max Trips " + fmt(t.max) + ".");
       if (free) { if (!freeTake(t.id, v)) return uthMsg("No free chips of that kind left."); }
       else { if (purse(t.id) < v) return uthMsg(`Not enough ${purseName(t.id)}.`); payFrom(t.id, v); }
       s.trips += v;
+      { const n = Number(seatStr); casUndoPush(t.id, () => { const x = uthSeats(t)[n]; x.trips = Math.max(0, x.trips - v); }, free ? 0 : v, free ? [v] : []); }
     }
     t.message = "";
     uthClearTable(t);
@@ -7351,10 +7400,11 @@ $("casinoGame").addEventListener("click", (e) => {
   if (!btn || btn.disabled) return;
   const a = btn.dataset.uth;
   if (a === "togglePay") { state.uthPayHidden = !state.uthPayHidden; renderUth(); save(); return; }
-  if (a === "deal" && t.phase === "betting" && !t.busy) uthDeal();
+  if (a === "undo" && t.phase === "betting" && !t.busy) { if (casUndoPop(t.id)) { t.message = ""; updateCounter(); renderUth(); save(); } return; }
+  if (a === "deal" && t.phase === "betting" && !t.busy) { casUndoReset(t.id); uthDeal(); }
   if (a === "clear" && t.phase === "betting") {
     refundTo(t.id, uthCost(uthSeats(t)) - freeReturn(t.id));
-    state.uth[t.id].seats = [{ ante: 0, trips: 0 }, { ante: 0, trips: 0 }];
+    state.uth[t.id].seats = [{ ante: 0, trips: 0 }, { ante: 0, trips: 0 }]; casUndoReset(t.id);
     uthClearTable(t);
     t.message = ""; updateCounter(); renderUth(); save();
   }
@@ -7365,6 +7415,7 @@ $("casinoGame").addEventListener("click", (e) => {
     if (purse(t.id) < rest) { fr.undo(); return uthMsg(`Not enough ${purseName(t.id)} to repeat (` + fmt(rest) + " needed)."); }
     payFrom(t.id, rest);
     t.lastBets.forEach((b, i) => { seats[i].ante += b.ante; seats[i].trips += b.trips; });
+    { const add = t.lastBets.map(b => ({ ...b })); casUndoPush(t.id, () => add.forEach((b, i) => { const x = uthSeats(t)[i]; x.ante = Math.max(0, x.ante - b.ante); x.trips = Math.max(0, x.trips - b.trips); }), rest, fr.taken); }
     uthClearTable(t);
     t.message = ""; updateCounter(); renderUth(); save();
   }
@@ -13446,6 +13497,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "🎰 Casino tables are easier to play: while a game is open, one slim bar shows your level, money, Hot Tables timer and free chips, so the table starts higher. Every chip table (Roulette, Blackjack, Baccarat, Hold'em) now has the same buttons in the same order, with <b>↶ Undo</b> everywhere; on phones they stay at the bottom of the screen.",
     "🔁 Stardust Drift: new <b>Keep harvesting</b> switch. Harvesters fly out again on their own (also while the game is closed), with an escort when a frigate is free, always, or never.",
     "🌌 Space is easier to use: the system panel now sits beside the star map (a slide-up sheet on phones), race panels are shorter, and a gold <b>!</b> on the Space tabs shows when a harvester is back, a contract can be delivered, crafting is done or you can afford research.",
     "🔁 Market: you can now <b>trade goods</b> with 😊 Friendly races. Give 2 of any alien good, get 1 of theirs (🏺 Ancient Relics can't be traded).",
@@ -15313,7 +15365,7 @@ function renderBaccarat() {
         </div>
         <div class="bacSpots">${spots}</div>
       </div>
-      ${betting ? `<div class="chipsRow">
+      <div class="casBar">${betting ? `<div class="chipsRow">
         <span class="muted">Chip:</span>
         ${t.chips.map(v => `<button class="chip ${v === t.chip && !t.chipFree ? "selected" : ""}" data-bacchip="${v}"
              style="background:${CHIP_COLORS[v].bg}; color:${CHIP_COLORS[v].text}">${chipLabel(v)}</button>`).join("")}
@@ -15321,9 +15373,10 @@ function renderBaccarat() {
       </div>${freeChipRow(t, t.chipFree)}` : ""}
       <div class="bjActions">${betting ? `
         <button class="btn" data-bac="deal" ${bacBets(t).player + bacBets(t).banker + bacBets(t).tie >= t.min && !t.busy ? "" : "disabled"}>🎴 Deal (bet ${fmt(total)})</button>
+        ${casUndoBtn(t.id, 'data-bac="undo"', !t.busy)}
         <button class="btn ghost" data-bac="clear" ${total || t.result ? "" : "disabled"}>Clear bets</button>
         <button class="btn ghost" data-bac="rebet" ${last && !total ? "" : "disabled"}>↺ Repeat last bets${last ? " (" + fmt(last) + ")" : ""}</button>`
-        : `<span class="muted" style="align-self:center">Dealing...</span>`}</div>
+        : `<span class="muted" style="align-self:center">Dealing...</span>`}</div></div>
       <div id="casinoMsg" class="${/won|broke even/.test(t.message) ? "income" : "flash"}" style="margin-top:10px; text-align:center">${t.message}</div>
       <div class="muted" style="margin-top:6px; text-align:center">A = 1 · 10, J, Q, K = 0 · only the last digit counts · Banker wins pay 0.95:1 (5% commission) · On a Tie, Player and Banker bets are returned · The third card is drawn by the standard rules</div>
     </div>`;
@@ -15344,16 +15397,18 @@ $("casinoGame").addEventListener("click", (e) => {
     if (t.chipFree) { if (!freeTake(t.id, v)) return bacMsg("No free chips of that kind left."); }
     else { if (purse(t.id) < v) return bacMsg(`Not enough ${purseName(t.id)}.`); payFrom(t.id, v); }
     bets[k] += v; t.message = ""; t.result = null; t.p = []; t.b = [];
+    { const free = t.chipFree; casUndoPush(t.id, () => { const b = bacBets(t); b[k] = Math.max(0, b[k] - v); }, free ? 0 : v, free ? [v] : []); }
     updateCounter(); renderBaccarat(); save();
     return;
   }
   const btn = e.target.closest("[data-bac]");
   if (!btn || btn.disabled) return;
   const a = btn.dataset.bac;
-  if (a === "deal" && t.phase === "betting" && !t.busy) bacDeal();
+  if (a === "undo" && t.phase === "betting" && !t.busy) { if (casUndoPop(t.id)) { t.message = ""; updateCounter(); renderBaccarat(); save(); } return; }
+  if (a === "deal" && t.phase === "betting" && !t.busy) { casUndoReset(t.id); bacDeal(); }
   if (a === "clear" && t.phase === "betting") {
     refundTo(t.id, bacTotal(bacBets(t)) - freeReturn(t.id));
-    state.bac[t.id].bets = bacEmpty(); t.message = "";
+    state.bac[t.id].bets = bacEmpty(); casUndoReset(t.id); t.message = "";
     t.result = null; t.p = []; t.b = [];   // also empties the felt after a finished hand
     updateCounter(); renderBaccarat(); save();
   }
@@ -15362,6 +15417,7 @@ $("casinoGame").addEventListener("click", (e) => {
     const fr = freeRebet(t.id, need), rest = need - fr.covered;
     if (purse(t.id) < rest) { fr.undo(); return bacMsg(`Not enough ${purseName(t.id)} to repeat (${fmt(rest)} needed).`); }
     payFrom(t.id, rest); state.bac[t.id].bets = { ...t.lastBets };
+    casUndoPush(t.id, () => { state.bac[t.id].bets = bacEmpty(); }, rest, fr.taken);
     t.message = ""; t.result = null; t.p = []; t.b = []; updateCounter(); renderBaccarat(); save();
   }
 });

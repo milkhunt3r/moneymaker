@@ -167,7 +167,7 @@ function renderBaccarat() {
         </div>
         <div class="bacSpots">${spots}</div>
       </div>
-      ${betting ? `<div class="chipsRow">
+      <div class="casBar">${betting ? `<div class="chipsRow">
         <span class="muted">Chip:</span>
         ${t.chips.map(v => `<button class="chip ${v === t.chip && !t.chipFree ? "selected" : ""}" data-bacchip="${v}"
              style="background:${CHIP_COLORS[v].bg}; color:${CHIP_COLORS[v].text}">${chipLabel(v)}</button>`).join("")}
@@ -175,9 +175,10 @@ function renderBaccarat() {
       </div>${freeChipRow(t, t.chipFree)}` : ""}
       <div class="bjActions">${betting ? `
         <button class="btn" data-bac="deal" ${bacBets(t).player + bacBets(t).banker + bacBets(t).tie >= t.min && !t.busy ? "" : "disabled"}>🎴 Deal (bet ${fmt(total)})</button>
+        ${casUndoBtn(t.id, 'data-bac="undo"', !t.busy)}
         <button class="btn ghost" data-bac="clear" ${total || t.result ? "" : "disabled"}>Clear bets</button>
         <button class="btn ghost" data-bac="rebet" ${last && !total ? "" : "disabled"}>↺ Repeat last bets${last ? " (" + fmt(last) + ")" : ""}</button>`
-        : `<span class="muted" style="align-self:center">Dealing...</span>`}</div>
+        : `<span class="muted" style="align-self:center">Dealing...</span>`}</div></div>
       <div id="casinoMsg" class="${/won|broke even/.test(t.message) ? "income" : "flash"}" style="margin-top:10px; text-align:center">${t.message}</div>
       <div class="muted" style="margin-top:6px; text-align:center">A = 1 · 10, J, Q, K = 0 · only the last digit counts · Banker wins pay 0.95:1 (5% commission) · On a Tie, Player and Banker bets are returned · The third card is drawn by the standard rules</div>
     </div>`;
@@ -198,16 +199,18 @@ $("casinoGame").addEventListener("click", (e) => {
     if (t.chipFree) { if (!freeTake(t.id, v)) return bacMsg("No free chips of that kind left."); }
     else { if (purse(t.id) < v) return bacMsg(`Not enough ${purseName(t.id)}.`); payFrom(t.id, v); }
     bets[k] += v; t.message = ""; t.result = null; t.p = []; t.b = [];
+    { const free = t.chipFree; casUndoPush(t.id, () => { const b = bacBets(t); b[k] = Math.max(0, b[k] - v); }, free ? 0 : v, free ? [v] : []); }
     updateCounter(); renderBaccarat(); save();
     return;
   }
   const btn = e.target.closest("[data-bac]");
   if (!btn || btn.disabled) return;
   const a = btn.dataset.bac;
-  if (a === "deal" && t.phase === "betting" && !t.busy) bacDeal();
+  if (a === "undo" && t.phase === "betting" && !t.busy) { if (casUndoPop(t.id)) { t.message = ""; updateCounter(); renderBaccarat(); save(); } return; }
+  if (a === "deal" && t.phase === "betting" && !t.busy) { casUndoReset(t.id); bacDeal(); }
   if (a === "clear" && t.phase === "betting") {
     refundTo(t.id, bacTotal(bacBets(t)) - freeReturn(t.id));
-    state.bac[t.id].bets = bacEmpty(); t.message = "";
+    state.bac[t.id].bets = bacEmpty(); casUndoReset(t.id); t.message = "";
     t.result = null; t.p = []; t.b = [];   // also empties the felt after a finished hand
     updateCounter(); renderBaccarat(); save();
   }
@@ -216,6 +219,7 @@ $("casinoGame").addEventListener("click", (e) => {
     const fr = freeRebet(t.id, need), rest = need - fr.covered;
     if (purse(t.id) < rest) { fr.undo(); return bacMsg(`Not enough ${purseName(t.id)} to repeat (${fmt(rest)} needed).`); }
     payFrom(t.id, rest); state.bac[t.id].bets = { ...t.lastBets };
+    casUndoPush(t.id, () => { state.bac[t.id].bets = bacEmpty(); }, rest, fr.taken);
     t.message = ""; t.result = null; t.p = []; t.b = []; updateCounter(); renderBaccarat(); save();
   }
 });

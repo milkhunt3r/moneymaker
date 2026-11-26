@@ -2383,3 +2383,32 @@ body.phone .spPanel.sheet .spBio { font-size: 12.5px; margin-top: 4px; }
 #logiTabs .subTab { white-space: nowrap; }
 .spAuto { display: grid; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.15); }
 .spAuto select { padding: 4px 6px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: #15132a; color: #fff; font: inherit; }
+/* 🎰 in a game: one slim bar instead of the level, hot tables, free chips and money cards */
+#casinoView.inGame #casinoLevel, #casinoView.inGame #hotCard, #casinoView.inGame #freeChipsCard, #casinoView.inGame .wallet { display: none !important; }
+#casinoView:not(.inGame) #casHud, #casinoView.onlineMode #casHud { display: none !important; }
+.casHud { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 8px 12px; }
+.casHud .ico { width: 20px; height: 20px; vertical-align: -4px; margin-right: 4px; }
+.casHudLv { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(255,211,77,0.4); background: rgba(255,211,77,0.08); color: #fff; font: inherit; cursor: pointer; }
+.casHudLv b { color: #ffd34d; }
+.casHudXp { display: inline-block; width: 70px; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.12); overflow: hidden; }
+.casHudXp i { display: block; height: 100%; background: linear-gradient(90deg, #ffd34d, #ffb300); }
+.casHudMoney { display: inline-flex; align-items: center; gap: 6px; padding: 3px 12px 3px 4px; border-radius: 999px; background: rgba(255,200,60,0.12); border: 1px solid rgba(255,200,60,0.45); font-size: 17px; }
+.casHudMoney img { width: 26px; height: 26px; object-fit: contain; }
+.casHudMoney b { color: #ffd34d; }
+.casHudHot { display: inline-flex; align-items: center; font-size: 13px; color: #9aa0b8; }
+.casHudHot.on { color: #ffb36b; } .casHudHot.here { color: #ff7a3d; font-weight: 700; }
+.casHudXpM { font-size: 13px; color: #b388ff; font-weight: 700; }
+.casHudFree { display: inline-flex; align-items: center; font-size: 14px; }
+/* ↶ the same action bar under every chip table: chips · Deal/Spin · Undo · Clear · Repeat */
+.casBar { margin-top: 12px; display: grid; gap: 8px; }
+.casBar .chipsRow, .casBar .bjActions { margin: 0; }
+body.phone .casBar { position: sticky; bottom: 57px; z-index: 6; margin: 10px -14px -14px; padding: 8px 10px 10px; background: rgba(24, 21, 44, 0.97);
+  border-top: 1px solid rgba(255,211,77,0.35); border-radius: 0 0 12px 12px; box-shadow: 0 -8px 18px rgba(0,0,0,0.45); }
+body.phone .casBar .chipsRow { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+body.phone .casBar .chipsRow > span.muted:last-child { display: none; }
+body.phone .casBar .bjActions { flex-wrap: wrap; gap: 6px; }
+body.phone .casBar .bjActions .btn { padding: 8px 10px; font-size: 13px; }
+body.phone .casHud { gap: 6px 8px; padding: 6px 8px; position: sticky; top: 0; z-index: 7; background: #1d1a33; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+body.phone .casHud .casHudXp, body.phone .casHud .casHudXpM { display: none; }
+body.phone .casHudMoney { font-size: 14px; white-space: nowrap; } body.phone .casHudMoney img { width: 20px; height: 20px; }
+body.phone .casHudHot { white-space: nowrap; font-size: 12px; } body.phone .casHudLv { padding: 3px 8px; white-space: nowrap; }

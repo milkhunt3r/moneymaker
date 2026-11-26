@@ -372,6 +372,7 @@ function renderBlackjack() {
   if (betting) {
     actions = `
       <button class="btn" data-bj="deal" ${total === 0 ? "disabled" : ""}>🃏 Deal (bet ${fmt(total)})</button>
+      ${casUndoBtn(t.id, 'data-bj="undo"')}
       <button class="btn ghost" data-bj="clear" ${total === 0 && !t.hands.length ? "disabled" : ""}>Clear bets</button>
       <button class="btn ghost" data-bj="rebet" ${lastTotal === 0 ? "disabled" : ""}>↺ Repeat last bets</button>`;
   } else if (t.phase === "insurance") {
@@ -405,14 +406,14 @@ function renderBlackjack() {
         <div class="bjSeats">${seats}</div>
       </div>
 
-      <div class="chipsRow">
+      <div class="casBar">${betting ? `<div class="chipsRow">
         <span class="muted">Chip:</span>
         ${t.chips.map(v => `<button class="chip ${v === t.chip && !t.chipFree ? "selected" : ""}" data-bjchip="${v}"
              style="background:${CHIP_COLORS[v].bg}; color:${CHIP_COLORS[v].text}">${chipLabel(v)}</button>`).join("")}
         <span class="muted">Click a seat to add the chip. Play up to 3 seats.</span>
       </div>
-      ${freeChipRow(t, t.chipFree)}
-      <div class="bjActions">${actions}</div>
+      ${freeChipRow(t, t.chipFree)}` : ""}
+      <div class="bjActions">${actions}</div></div>
       <div id="casinoMsg" class="${/won|money back/.test(t.message) ? "income" : "flash"}" style="margin-top:10px; text-align:center">${t.message}</div>
       <div class="muted" style="margin-top:6px; text-align:center">Double on any first two cards · Split once per seat (split aces get one card) · Surrender a first-two-card hand for half your bet back · Insurance pays 2:1 when the dealer shows an Ace</div>
     </div>`;
@@ -445,6 +446,7 @@ $("casinoGame").addEventListener("click", (e) => {
       payFrom(t.id, t.chip);
     }
     bets[i] += t.chip;
+    { const v = t.chip, free = t.chipFree; casUndoPush(t.id, () => { const b = seatBets(t); b[i] = Math.max(0, b[i] - v); }, free ? 0 : v, free ? [v] : []); }
     t.message = "";
     updateCounter(); renderBlackjack(); save();
     return;
@@ -454,12 +456,13 @@ $("casinoGame").addEventListener("click", (e) => {
   if (!btn || btn.disabled) return;
   const a = btn.dataset.bj;
   // a button drawn just before the round started can still be clicked: only act between rounds
-  if ((a === "deal" || a === "clear" || a === "rebet") && (t.phase !== "betting" || t.busy)) return;
-  if (a === "deal") bjDeal();
+  if ((a === "deal" || a === "clear" || a === "rebet" || a === "undo") && (t.phase !== "betting" || t.busy)) return;
+  if (a === "undo") { if (casUndoPop(t.id)) { t.message = ""; updateCounter(); renderBlackjack(); save(); } return; }
+  if (a === "deal") { casUndoReset(t.id); bjDeal(); }
   if (a === "clear") {
     const bets = seatBets(t);
     refundTo(t.id, bets.reduce((x, y) => x + y, 0) - freeReturn(t.id));
-    state.bj[t.id].bets = [0, 0, 0];
+    state.bj[t.id].bets = [0, 0, 0]; casUndoReset(t.id);
     t.hands = []; t.dealer = []; t.message = "";   // also empties the seats after a finished round
     updateCounter(); renderBlackjack(); save();
   }
@@ -471,6 +474,7 @@ $("casinoGame").addEventListener("click", (e) => {
     if (purse(t.id) < rest) { fr.undo(); return bjMsg(`Not enough ${purseName(t.id)} to repeat (` + fmt(rest) + " needed)."); }
     payFrom(t.id, rest);
     t.lastBets.forEach((b, i) => bets[i] += b);
+    { const add = [...t.lastBets]; casUndoPush(t.id, () => { const b = seatBets(t); add.forEach((x, i) => b[i] = Math.max(0, b[i] - x)); }, rest, fr.taken); }
     t.hands = []; t.dealer = []; t.message = "";
     updateCounter(); renderBlackjack(); save();
   }
@@ -1072,6 +1076,7 @@ function renderUth() {
     const last = t.lastBets ? uthCost(t.lastBets) : 0;
     actions = `
       <button class="btn" data-uth="deal" ${seats.some(s => s.ante >= t.min) && !t.busy ? "" : "disabled"}>🤠 Deal (bet ${fmt(total)})</button>
+      ${casUndoBtn(t.id, 'data-uth="undo"', !t.busy)}
       <button class="btn ghost" data-uth="clear" ${total || t.hands.length ? "" : "disabled"}>Clear bets</button>
       <button class="btn ghost" data-uth="rebet" ${last ? "" : "disabled"}>↺ Repeat last bets${last ? " (" + fmt(last) + ")" : ""}</button>`;
   } else if (t.active >= 0 && !t.busy) {
@@ -1115,13 +1120,13 @@ function renderUth() {
         <div class="uthSeats">${seatHtml}</div>
       </div>
 
-      ${betting ? `<div class="chipsRow">
+      <div class="casBar">${betting ? `<div class="chipsRow">
         <span class="muted">Chip:</span>
         ${t.chips.map(v => `<button class="chip ${v === t.chip && !t.chipFree ? "selected" : ""}" data-uthchip="${v}"
              style="background:${CHIP_COLORS[v].bg}; color:${CHIP_COLORS[v].text}">${chipLabel(v)}</button>`).join("")}
         <span class="muted">Click Ante or Trips on a seat to add the chip. The Blind matches the Ante.</span>
       </div>${freeChipRow(t, t.chipFree)}` : ""}
-      <div class="bjActions">${actions}</div>
+      <div class="bjActions">${actions}</div></div>
       <div id="casinoMsg" class="${/won|broke even/.test(t.message) ? "income" : "flash"}" style="margin-top:10px; text-align:center">${t.message}</div>
       <div class="muted" style="margin-top:6px; text-align:center">Raise 3× or 4× before the flop, 2× after the flop, or 1× after the river (once per hand) · The dealer needs a pair to qualify, otherwise Antes push · Best 5 of 7 cards</div>
     </div>`;
@@ -1162,12 +1167,14 @@ $("casinoGame").addEventListener("click", (e) => {
         payFrom(t.id, v * 2);
       }
       s.ante += v;
+      { const n = Number(seatStr); casUndoPush(t.id, () => { const x = uthSeats(t)[n]; x.ante = Math.max(0, x.ante - v); }, free ? 0 : v * 2, free ? [v, v] : []); }
     } else {
       if (!s.ante) return uthMsg("Put an Ante on this seat first.");
       if (s.trips + v > t.max) return uthMsg("Table limit: max Trips " + fmt(t.max) + ".");
       if (free) { if (!freeTake(t.id, v)) return uthMsg("No free chips of that kind left."); }
       else { if (purse(t.id) < v) return uthMsg(`Not enough ${purseName(t.id)}.`); payFrom(t.id, v); }
       s.trips += v;
+      { const n = Number(seatStr); casUndoPush(t.id, () => { const x = uthSeats(t)[n]; x.trips = Math.max(0, x.trips - v); }, free ? 0 : v, free ? [v] : []); }
     }
     t.message = "";
     uthClearTable(t);
@@ -1178,10 +1185,11 @@ $("casinoGame").addEventListener("click", (e) => {
   if (!btn || btn.disabled) return;
   const a = btn.dataset.uth;
   if (a === "togglePay") { state.uthPayHidden = !state.uthPayHidden; renderUth(); save(); return; }
-  if (a === "deal" && t.phase === "betting" && !t.busy) uthDeal();
+  if (a === "undo" && t.phase === "betting" && !t.busy) { if (casUndoPop(t.id)) { t.message = ""; updateCounter(); renderUth(); save(); } return; }
+  if (a === "deal" && t.phase === "betting" && !t.busy) { casUndoReset(t.id); uthDeal(); }
   if (a === "clear" && t.phase === "betting") {
     refundTo(t.id, uthCost(uthSeats(t)) - freeReturn(t.id));
-    state.uth[t.id].seats = [{ ante: 0, trips: 0 }, { ante: 0, trips: 0 }];
+    state.uth[t.id].seats = [{ ante: 0, trips: 0 }, { ante: 0, trips: 0 }]; casUndoReset(t.id);
     uthClearTable(t);
     t.message = ""; updateCounter(); renderUth(); save();
   }
@@ -1192,6 +1200,7 @@ $("casinoGame").addEventListener("click", (e) => {
     if (purse(t.id) < rest) { fr.undo(); return uthMsg(`Not enough ${purseName(t.id)} to repeat (` + fmt(rest) + " needed)."); }
     payFrom(t.id, rest);
     t.lastBets.forEach((b, i) => { seats[i].ante += b.ante; seats[i].trips += b.trips; });
+    { const add = t.lastBets.map(b => ({ ...b })); casUndoPush(t.id, () => add.forEach((b, i) => { const x = uthSeats(t)[i]; x.ante = Math.max(0, x.ante - b.ante); x.trips = Math.max(0, x.trips - b.trips); }), rest, fr.taken); }
     uthClearTable(t);
     t.message = ""; updateCounter(); renderUth(); save();
   }

@@ -1574,6 +1574,15 @@ H("🔁 Stardust Drift: new <b>Keep harvesting</b> switch. Harvesters fly out ag
   "🔁 Deriva de Polvo Estelar: nuevo interruptor <b>Seguir cosechando</b>. Las cosechadoras vuelven a salir solas (también con el juego cerrado), con escolta cuando haya una fragata libre, siempre o nunca.");
 H("🔁 <b>Keep harvesting:</b> tick the box in the Stardust Drift panel and free harvesters fly out again on their own, also while the game is closed. Choose the escort: when a frigate is free, always (they wait for a free frigate), or never.",
   "🔁 <b>Seguir cosechando:</b> marca la casilla en el panel de la Deriva de Polvo Estelar y las cosechadoras libres vuelven a salir solas, también con el juego cerrado. Elige la escolta: cuando haya una fragata libre, siempre (esperan a una fragata libre) o nunca.");
+// 🎰 in-game bar + ↶ Undo on every chip table
+Object.assign(ES, { "Lv": "Nv.", "XP multiplier at this table": "Multiplicador de XP en esta mesa", "Free bet chips you own": "Fichas de apuesta gratis que tienes", "↶ Undo": "↶ Deshacer", "Undo": "Deshacer",
+  "Your money: you bet straight from it": "Tu dinero: apuestas directamente con él" });
+hrx(String.raw`Lv <b>(\d+)<\/b>`, "Nv. <b>$1</b>");
+rx(String.raw`Gambler level · (max level|([\d.,]+) \/ ([\d.,]+) XP)`, (m, x, a, b) => `Nivel de jugador · ${a ? `${a} / ${b} XP` : "nivel máximo"}`);
+rx(String.raw`Hot Tables: (.+) · \+(\d+) XP multiplier`, (m, g, n) => `Mesas calientes: ${ES[g] || g} · +${n} al multiplicador de XP`);
+rx(String.raw`Next hot game: (.+)`, (m, g) => `Próximo juego caliente: ${ES[g] || g}`);
+H("🎰 Casino tables are easier to play: while a game is open, one slim bar shows your level, money, Hot Tables timer and free chips, so the table starts higher. Every chip table (Roulette, Blackjack, Baccarat, Hold'em) now has the same buttons in the same order, with <b>↶ Undo</b> everywhere; on phones they stay at the bottom of the screen.",
+  "🎰 Las mesas del casino son más cómodas: con un juego abierto, una barra fina muestra tu nivel, tu dinero, el temporizador de mesas calientes y las fichas gratis, así la mesa empieza más arriba. Todas las mesas con fichas (ruleta, blackjack, baccarat y Hold'em) tienen ahora los mismos botones en el mismo orden, con <b>↶ Deshacer</b> en todas; en el móvil se quedan en la parte de abajo de la pantalla.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

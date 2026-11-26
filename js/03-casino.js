@@ -56,6 +56,21 @@ function freeRebet(id, need) {
   });
   return { covered, undo, taken };
 }
+/* ----- ↶ UNDO (every chip table): each chip, or each ↺ repeat, placed since the last deal/clear, newest last.
+   revert() takes the chips off the table; paid goes back to your money; free chips go back to your free chips. ----- */
+const casUndoS = {};
+const casUndoList = (id) => casUndoS[id] || (casUndoS[id] = []);
+const casUndoPush = (id, revert, paid, free = []) => casUndoList(id).push({ revert, paid, free });
+const casUndoReset = (id) => { casUndoS[id] = []; };
+function casUndoPop(id) {
+  const u = casUndoList(id).pop(); if (!u) return false;
+  u.revert();
+  const pl = freeTbl(id).placed;
+  u.free.forEach(v => { const i = pl.lastIndexOf(v); if (i >= 0) { pl.splice(i, 1); state.freeChips[v] = (state.freeChips[v] || 0) + 1; } });
+  refundTo(id, u.paid);
+  return true;
+}
+const casUndoBtn = (id, attr, on = true) => `<button class="btn ghost" ${attr} ${on && casUndoList(id).length ? "" : "disabled"}>↶ Undo</button>`;
 function freeDone(id, which = "inPlay") { freeTbl(id)[which] = []; }   // played: they are used up
 const purse = (id) => vipOn(id) ? state.vip.coins : state.casinoChips;
 const purseName = (id) => vipOn(id) ? "VIP coins" : "money";
@@ -279,7 +294,26 @@ function addXp(amount) {
   return gained;
 }
 
+/* ----- 🎰 slim bar shown while a game is open (instead of the level, hot tables, free chips and money cards) ----- */
+function casHudHtml() {
+  const info = levelInfo(state.casinoXp), h = hotNow(), mm = clock(Math.ceil(h.left / 1000));
+  const free = Object.values(state.freeChips || {}).reduce((a, b) => a + (b || 0), 0);
+  const hotHere = h.active && (currentGame || "").startsWith(h.game.id);
+  return `<button class="casHudLv" data-levels="gambler" title="Gambler level · ${info.max ? "max level" : `${fmtNum(info.into)} / ${fmtNum(info.need)} XP`}">${ico("ui-dice")}<span>Lv <b>${info.level}</b></span>
+      <span class="casHudXp"><i style="width:${info.max ? 100 : 100 * info.into / info.need}%"></i></span></button>
+    <span class="casHudMoney" title="Your money: you bet straight from it"><img class="coinSkinImg" src="assets/coin.webp" alt=""><b>${fmt(state.money)}</b></span>
+    <span class="casHudHot ${h.active ? "on" : ""} ${hotHere ? "here" : ""}" title="${h.active ? `Hot Tables: ${h.game.name} · +${hotBonus()} XP multiplier` : `Next hot game: ${h.next.name}`}">${ico("ui-hot")}${h.active ? `<b>${h.game.name}</b>&nbsp;· ${mm}` : `<span>${h.next.name}</span>&nbsp;in ${mm}`}</span>
+    <span class="casHudXpM" title="XP multiplier at this table">✨ ×${xpMult()}</span>
+    ${free ? `<span class="casHudFree" title="Free bet chips you own">${ico("ui-freechip")}<b>${free}</b></span>` : ""}`;
+}
+function casHudUpdate() {
+  const el = $("casHud"); if (!el || $("casinoView").hidden || !currentGame) return;
+  const h = casHudHtml(); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; }
+}
+setInterval(casHudUpdate, 500);
 function renderCasino() {
+  $("casinoView").classList.toggle("inGame", !!currentGame);
+  casHudUpdate();
   // 📱 phone: the table sits below the lobby cards, so jump to it when a game is opened
   if (currentGame && currentGame !== renderCasino.shown && typeof isPhone === "function" && isPhone() && !$("casinoView").hidden)
     setTimeout(() => { const g = $("casinoGame"); if (g) window.scrollTo({ top: g.getBoundingClientRect().top + scrollY - 8, behavior: "smooth" }); }, 50);
@@ -520,21 +554,20 @@ function renderRoulette() {
         </div>
       </div>
 
-      <div class="chipsRow">
+      <div id="tableWrap"><div id="table">${table}</div></div>
+
+      <div class="casBar"><div class="chipsRow">
         <span class="muted">Chip:</span>
         ${roulette.chips.map(v => `<button class="chip ${v === roulette.chip && !roulette.chipFree ? "selected" : ""}" data-chip="${v}"
              style="background:${CHIP_COLORS[v].bg}; color:${CHIP_COLORS[v].text}">${chipLabel(v)}</button>`).join("")}
       </div>
       ${freeChipRow(roulette, roulette.chipFree)}
-
-      <div id="tableWrap"><div id="table">${table}</div></div>
-
-      <div class="moneyRow" style="margin-top:12px">
+      <div class="bjActions">
         <button class="btn" id="spin" ${roulette.spinning || totalBets() === 0 ? "disabled" : ""}>🎡 Spin (bet ${fmt(totalBets())})</button>
-        <button class="btn ghost" id="undoBet" ${roulette.spinning || !rlUndoList(roulette).length ? "disabled" : ""}>↶ Undo last bet</button>
+        <button class="btn ghost" id="undoBet" ${roulette.spinning || !rlUndoList(roulette).length ? "disabled" : ""}>↶ Undo</button>
         <button class="btn ghost" id="clearBets" ${roulette.spinning ? "disabled" : ""}>Clear bets</button>
         <button class="btn ghost" id="rebet" ${roulette.spinning || !hasLast ? "disabled" : ""}>↺ Repeat last bets</button>
-      </div>
+      </div></div>
       <div id="casinoMsg" class="flash" style="margin-top:8px"></div>
       <div class="muted" style="margin-top:6px">Click a number, or the line between numbers: between 2 = split, where 4 meet = corner, bottom edge = street, bottom corner = six line (next to 0: trios 0-1-2 / 0-2-3 where two rows meet the zero, and first four 0-1-2-3 at its bottom).</div>
       <div class="muted">Pays: number 35:1 · split 17:1 · street / trio 11:1 · corner / first four 8:1 · six line 5:1 · dozen / column 2:1 · red, black, odd, even, 1–18, 19–36 1:1 · when 0 comes up, only bets on 0 win</div>
