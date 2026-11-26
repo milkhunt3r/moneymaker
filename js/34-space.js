@@ -698,8 +698,12 @@ function renderSpace() {
   if (state.logiPage === "market") { box.innerHTML = spSosHtml() + spMarketHtml() + (typeof spBarterHtml === "function" ? spBarterHtml() : ""); return; }
   if (state.logiPage === "research" && typeof spResearchHtml === "function") { box.innerHTML = spSosHtml() + spResearchHtml(); return; }
   if (state.logiPage === "contracts" && typeof spContractsHtml === "function") { box.innerHTML = spSosHtml() + spContractsHtml(); return; }
-  box.innerHTML = `${spSosHtml()}<div class="card spResBar" id="spResBar">${spResHtml()}</div><div class="card spMapCard"><div class="row"><h2 style="margin:0">🌌 Star map</h2><span class="spFreeBadge ${spFree() ? "" : "none"}" title="Free courier ships">🚀 <b>${spFree()}</b><small>/ ${spShips()}</small><span>${spFree() === 1 ? "courier free" : "couriers free"}</span></span></div>${spMapHtml()}</div>
-    <div class="card spPanel">${spPanelHtml()}</div>`;
+  // 🗺️ wide screens: the map on the left, the system panel beside it (sticky). Phones: the panel slides up as a bottom sheet.
+  const oldPanel = box.querySelector(".spPanel"), keep = oldPanel && oldPanel.dataset.sel === spSel ? oldPanel.scrollTop : 0;
+  box.innerHTML = `${spSosHtml()}<div class="card spResBar" id="spResBar">${spResHtml()}</div><div class="spMapLayout ${spSheet ? "sheetOpen" : ""}"><div class="card spMapCard"><div class="row"><h2 style="margin:0">🌌 Star map</h2><span class="spFreeBadge ${spFree() ? "" : "none"}" title="Free courier ships">🚀 <b>${spFree()}</b><small>/ ${spShips()}</small><span>${spFree() === 1 ? "courier free" : "couriers free"}</span></span></div>${spMapHtml()}</div>
+    <div class="card spPanel ${spSheet ? `sheet${spSheetNew ? " anim" : ""}` : ""}" data-sel="${spSel}"><button class="spSheetX" data-spsheet="close" title="Close">✕</button>${spPanelHtml()}</div></div>`;
+  const np = box.querySelector(".spPanel"); if (np && keep) np.scrollTop = keep;
+  if (spSheetNew) { spSheetNew = false; const mc = box.querySelector(".spMapCard"); if (mc && (mc.getBoundingClientRect().top < 0 || mc.getBoundingClientRect().top > 120)) mc.scrollIntoView({ block: "start", behavior: "smooth" }); }
   spZoomApply();
 }
 // every second: move the ships and count down (no full rebuild)
@@ -784,7 +788,8 @@ document.addEventListener("click", (e) => {
   if (tab) { state.logiPage = tab.dataset.logipage; spApplyPage(); save(); return; }
   if (!e.target.closest("#spaceView")) return;
   const node = e.target.closest("[data-sp]");
-  if (node) { spSel = SP.sel = node.dataset.sp; renderSpace(); return; }
+  if (node) { spSel = SP.sel = node.dataset.sp; spSheetNew = spSheet = document.body.classList.contains("phone"); renderSpace(); return; }
+  if (e.target.closest('[data-spsheet="close"]')) { spSheet = false; renderSpace(); return; }
   const x = e.target.closest("[data-spx]");
   if (!x || isPaused()) return;
   if (x.dataset.spx === "explore") spExplore(spSel);
@@ -802,9 +807,12 @@ document.addEventListener("click", (e) => {
 });
 
 /* ----- 🌍 / 🌌 the two Logistics pages ----- */
+let spSheet = false, spSheetNew = false;   // 📱 the system panel is open as a bottom sheet
 function spApplyPage() {
   const space = spPageOn();
   $("logisticsView").classList.toggle("spaceMode", space);
+  $("logisticsView").classList.toggle("spMapPage", space && state.logiPage === "space");   // the star map page gets a wider layout
+  if (state.logiPage !== "space") spSheet = false;
   $("spaceView").hidden = !space;
   document.querySelectorAll("[data-logipage]").forEach(b => b.classList.toggle("active", b.dataset.logipage === (space ? state.logiPage : "earth")));
   spRefreshWarn();

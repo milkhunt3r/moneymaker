@@ -2347,3 +2347,19 @@ body.phone .spShip.courier, body.phone .spShip.harvester { width: 8%; } body.pho
 .spBarter input { width: 90px; }
 .spBarterSum { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 #logiMain, #spaceView, #spaceView > .card { min-width: 0; }
+/* 🗺️ star map page: map + system panel side by side on wide screens, bottom sheet on phones */
+.spSheetX { display: none; }
+@media (min-width: 1200px) {
+  #logisticsView.spMapPage { max-width: min(1680px, 100vw); }
+  .spMapLayout { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(380px, 1fr); gap: 16px; align-items: start; }
+  .spMapLayout > .card { margin: 0; }
+  .spMapLayout .spPanel { position: sticky; top: 80px; max-height: calc(100vh - 100px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+}
+body.phone .spPanel.sheet { position: fixed; left: 0; right: 0; bottom: 57px; z-index: 40; margin: 0; max-height: 52vh; background: #1c1931; border-top: 2px solid rgba(255,211,77,0.5); overflow-y: auto; overscroll-behavior: contain;
+  border-radius: 18px 18px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.6); padding-top: 30px; }
+body.phone .spPanel.sheet.anim { animation: spSheetUp 0.22s ease-out; }
+body.phone .spPanel.sheet .spSheetX { display: block; position: sticky; top: -22px; margin: -22px 0 4px auto; width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(14,12,34,0.9); color: #fff; font-size: 16px; z-index: 2; }
+body.phone .spPanel.sheet::before { content: ""; position: absolute; top: 8px; left: 50%; width: 44px; height: 5px; margin-left: -22px; border-radius: 3px; background: rgba(255,255,255,0.3); }
+@keyframes spSheetUp { from { transform: translateY(40%); opacity: 0.4; } to { transform: none; opacity: 1; } }
+body.phone .spMapLayout.sheetOpen { padding-bottom: 54vh; }
