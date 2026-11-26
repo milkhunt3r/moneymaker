@@ -2841,6 +2841,70 @@ Object.assign(ES, { "1st": "1.ª", "2nd": "2.ª", "3rd": "3.ª", "4th": "4.ª", 
 rx(String.raw`University ×(\d)`, "Universidad ×$1");
 rx(String.raw`1 new scientist every 2 minutes · −(\d+) \/ sec for each empty place · \+(${NUM}) \/ sec when full`, "1 científico nuevo cada 2 minutos · −$1 / s por cada plaza vacía · +$2 / s cuando está llena");
 rx(String.raw`Every (\d+) minutes: (${NUM}) – (${NUM})( \(🧬 \+30%\))?, or nothing if the mission fails \((\d+)% chance\)`, (m, n, a, b, g, f) => `Cada ${n} minutos: ${a} – ${b}${g ? " (🧬 +30 %)" : ""}, o nada si la misión fracasa (${f} % de probabilidad)`);
+// 🛸 fleet & Stardust Drift (js/34e-space-fleet.js)
+Object.assign(SP_ES_RES, { "Stardust Harvesters": "Cosechadoras de polvo estelar", "Escort Frigates": "Fragatas de escolta", "Extra courier ships": "Naves mensajeras extra",
+  "+1 harvester · 5 stardust a minute": "+1 cosechadora · 5 de polvo estelar por minuto", "+1 harvester (2 in total) · 6 stardust a minute each": "+1 cosechadora (2 en total) · 6 de polvo estelar por minuto cada una",
+  "+1 harvester (3 in total) · 7 stardust a minute each": "+1 cosechadora (3 en total) · 7 de polvo estelar por minuto cada una",
+  "+1 frigate": "+1 fragata", "+2 frigates (3 in total)": "+2 fragatas (3 en total)", "+2 frigates (5 in total)": "+2 fragatas (5 en total)" });
+var SP_RX_RES2 = Object.keys(SP_ES_RES).sort((a, b) => b.length - a.length).map(k => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
+Object.assign(ES, SP_ES_RES, { "Free courier ships": "Naves mensajeras libres", "courier free": "mensajera libre", "couriers free": "mensajeras libres",
+  "Stardust Drift": "Deriva de Polvo Estelar", "Pirate space": "Espacio pirata", "Pirates": "Piratas", "Farmed": "Cosechado", "Attacks": "Ataques", "Driven off": "Ahuyentados", "Frigates lost": "Fragatas perdidas",
+  "Send with escort": "Enviar con escolta", "Send without escort": "Enviar sin escolta", "Harvesters at work": "Cosechadoras trabajando", "Harvester": "Cosechadora", "no escort": "sin escolta",
+  "Courier ships": "Naves mensajeras", "(gifts, trade routes, contracts, exploring)": "(regalos, rutas comerciales, contratos, exploración)", "free": "libres",
+  "A new Escort Frigate is ready.": "Una nueva fragata de escolta está lista.", "Fleet": "Flota",
+  "Send a free frigate with every courier ship (pirates leave escorted ships alone)": "Enviar una fragata libre con cada nave mensajera (los piratas dejan en paz a las naves escoltadas)",
+  "A glittering cloud of stardust left behind by dying stars. Harvesters can farm it, but wild pirates hunt here and nobody controls them, not even the Void Corsairs.":
+    "Una nube brillante de polvo estelar que dejaron estrellas moribundas. Las cosechadoras pueden recogerlo, pero aquí cazan piratas salvajes que nadie controla, ni siquiera los Corsarios del Vacío.",
+  "30% chance of an attack in the first half hour of farming, 50% in the second. Without an escort they take all the stardust farmed so far. A 🛡️ frigate drives them off, but has a 3% chance to be destroyed in each attack (and then the stardust is lost too).":
+    "30 % de probabilidad de un ataque en la primera media hora de cosecha y 50 % en la segunda. Sin escolta se llevan todo el polvo estelar cosechado hasta entonces. Una 🛡️ fragata los ahuyenta, pero tiene un 3 % de probabilidad de ser destruida en cada ataque (y entonces también se pierde el polvo estelar).",
+  "(🌌 Space → Research) to farm stardust here.": "(🌌 Espacio → Investigación) para cosechar polvo estelar aquí.",
+  "Exploring the signal · back in": "Explorando la señal · vuelve en", "5 min each way · farming takes 1 hour": "5 min por trayecto · la cosecha dura 1 hora",
+  "flying there · farming starts in": "de camino · la cosecha empieza en", "coming home · back in": "volviendo · llega en",
+});
+hrx(String.raw`A strange glittering cloud at the edge of your scanners\. Send a courier ship to explore it: <b>(\d+) min<\/b> there and <b>(\d+) min<\/b> back\.`, "Una extraña nube brillante en el borde de tus escáneres. Envía una nave mensajera a explorarla: <b>$1 min</b> de ida y <b>$2 min</b> de vuelta.");
+rx(String.raw`(🚀 )?A courier ship is on its way to explore the strange signal \((\d+) min there, (\d+) min back\)\.`, (m, e, a, b) => `${e || ""}Una nave mensajera va de camino a explorar la extraña señal (${a} min de ida, ${b} min de vuelta).`);
+rx(String.raw`(🌫️ )?Your courier ship found the <b>Stardust Drift<\/b>: a glittering cloud full of stardust, and full of pirates\. (Send a ✨ Stardust Harvester to farm it!|Research ✨ Stardust Harvesters \(🌌 Space → Research\) to farm it\.)`, (m, e, x) =>
+  `${e || ""}Tu nave mensajera ha encontrado la <b>Deriva de Polvo Estelar</b>: una nube brillante llena de polvo estelar… y de piratas. ${x.startsWith("Send") ? "¡Envía una ✨ cosechadora de polvo estelar a recogerlo!" : "Investiga ✨ Cosechadoras de polvo estelar (🌌 Espacio → Investigación) para recogerlo."}`);
+hrx(String.raw`Stardust Drift<small>(🏴‍☠️ Pirate space|✨ (\d+) harvesting)<\/small>`, (m, x, n) => `Deriva de Polvo Estelar<small>${n ? `✨ ${n} cosechando` : "🏴‍☠️ Espacio pirata"}</small>`);
+rx(String.raw`(\d+) harvesting`, "$1 cosechando");
+hrx(String.raw`🌫️ Stardust Drift <span>· Pirate space<\/span>`, "🌫️ Deriva de Polvo Estelar <span>· Espacio pirata</span>");
+hrx(String.raw`<b>Distance:<\/b> (\d+) min each way · farming takes 1 hour`, "<b>Distancia:</b> $1 min por trayecto · la cosecha dura 1 hora");
+hrx(String.raw`<b>Pirates:<\/b> (.+)`, (m, x) => `<b>Piratas:</b> ${ES[x] || x}`);
+hrx(String.raw`(?:Research|Investigación) <b>✨ Stardust Harvesters<\/b> \(🌌 Space → Research\) to farm stardust here\.`, "Investiga <b>✨ Cosechadoras de polvo estelar</b> (🌌 Espacio → Investigación) para cosechar polvo estelar aquí.");
+hrx(String.raw`<b>Level (\d):<\/b> (${SP_RX_RES2})`, (m, n, x) => `<b>Nivel ${n}:</b> ${SP_ES_RES[x] || x}`);
+rx(String.raw`(✅ )?Now: (${SP_RX_RES2})`, (m, e, x) => `${e || ""}Ahora: ${SP_ES_RES[x] || x}`);
+rx(String.raw`(🔬 )?Research done: (\S+) <b>(${SP_RX_RES2}) (\d)<\/b> · (${SP_RX_RES2})\.`, (m, e, i, nm, n, x) => `${e || ""}Investigación terminada: ${i} <b>${SP_ES_RES[nm] || nm} ${n}</b> · ${SP_ES_RES[x] || x}.`);
+hrx(String.raw`<b>Stardust Harvesters:<\/b> (\d+) \/ (\d+) out · each farms <b>(\d+)<\/b> stardust a minute \(✨ ([\d.,]+) an hour\)\.`, "<b>Cosechadoras de polvo estelar:</b> $1 / $2 fuera · cada una cosecha <b>$3</b> de polvo estelar por minuto (✨ $4 por hora).");
+rx(String.raw`(🛡️ )?Frigates free: (\d+) \/ (\d+)`, (m, e, a, b) => `${e || ""}Fragatas libres: ${a} / ${b}`);
+rx(String.raw`All your courier ships are busy\.`, "Todas tus naves mensajeras están ocupadas.");
+rx(String.raw`All your harvesters are out\.`, "Todas tus cosechadoras están fuera.");
+rx(String.raw`All your frigates are busy\.`, "Todas tus fragatas están ocupadas.");
+rx(String.raw`No frigates: build one for (${NUM}) at 🌍 Home\.`, "No tienes fragatas: construye una por $1 en 🌍 Hogar.");
+rx(String.raw`Research 🛡️ Escort Frigates \(🌌 Space → Research\) to protect your harvesters\.`, "Investiga 🛡️ Fragatas de escolta (🌌 Espacio → Investigación) para proteger tus cosechadoras.");
+rx(String.raw`(✨ )?A Stardust Harvester is on its way to the Stardust Drift( with a 🛡️ frigate escort| \(no escort: watch out for pirates!\))\.`, (m, e, x) => `${e || ""}Una cosechadora de polvo estelar va de camino a la Deriva de Polvo Estelar${x.includes("with") ? " con una 🛡️ fragata de escolta" : " (sin escolta: ¡cuidado con los piratas!)"}.`);
+hrx(String.raw`(\S+|\{i\}) Harvester( \+ (?:\S+|\{i\}) escort| · <span>no escort<\/span>) · (flying there · farming starts in|farming · ✨ <b>[\d.,]+<\/b> so far · done in|coming home · back in) <b>([\d:]+)<\/b>( with ✨ <b>[\d.,]+<\/b>)?`, (m, i, esc, st, t, w) => {
+  const e2 = esc.includes("no escort") ? " · <span>sin escolta</span>" : esc.replace(" escort", " escolta");
+  const st2 = st.startsWith("flying") ? "de camino · la cosecha empieza en" : st.startsWith("coming") ? "volviendo · llega en" : st.replace("farming · ", "cosechando · ").replace(" so far · done in", " hasta ahora · termina en");
+  return `${i} Cosechadora${e2} · ${st2} <b>${t}</b>${w ? w.replace(" with ", " con ") : ""}`; });
+rx(String.raw`(🛡️ )?Pirates attacked your harvester in the Stardust Drift, but your frigate drove them off!`, (m, e) => `${e || ""}¡Los piratas atacaron tu cosechadora en la Deriva de Polvo Estelar, pero tu fragata los ahuyentó!`);
+rx(String.raw`(💥 )?Pirates destroyed your escort frigate in the Stardust Drift and took ✨ ([\d.,]+) stardust! Build a new frigate for (${NUM}) \(🌍 Home\)\.`, (m, e, n, x) => `${e || ""}¡Los piratas destruyeron tu fragata de escolta en la Deriva de Polvo Estelar y se llevaron ✨ ${n} de polvo estelar! Construye una fragata nueva por ${x} (🌍 Hogar).`);
+rx(String.raw`(🏴‍☠️ )?Pirates raided your unprotected harvester in the Stardust Drift and took ✨ ([\d.,]+) stardust! It keeps farming\.`, (m, e, n) => `${e || ""}¡Los piratas asaltaron tu cosechadora sin protección en la Deriva de Polvo Estelar y se llevaron ✨ ${n} de polvo estelar! Sigue cosechando.`);
+rx(String.raw`(✨ )?Your harvester is back from the Stardust Drift with <b>([\d.,]+)<\/b> stardust( \(pirates took ([\d.,]+)\))?\.`, (m, e, n, x, l) => `${e || ""}Tu cosechadora ha vuelto de la Deriva de Polvo Estelar con <b>${n}</b> de polvo estelar${l ? ` (los piratas se llevaron ${l})` : ""}.`);
+rx(String.raw`(🛡️ )?Pirates spotted your courier ship to the (${SP_RX_NAME}), saw its frigate escort and flew away\.`, (m, e, n) => `${e || ""}Los piratas vieron tu nave mensajera hacia los ${spN(n)}, vieron su fragata de escolta y se marcharon.`);
+hrx(String.raw`🚀 Courier ships: <b>(\d+) \/ (\d+)<\/b> (?:busy|ocupadas)`, "🚀 Naves mensajeras: <b>$1 / $2</b> ocupadas");
+hrx(String.raw`(\S+|\{i\}) Courier ships: <b>(\d+) \/ (\d+)<\/b> free <span>\(gifts, trade routes, contracts, exploring\)<\/span>`, "$1 Naves mensajeras: <b>$2 / $3</b> libres <span>(regalos, rutas comerciales, contratos, exploración)</span>");
+hrx(String.raw`(\S+|\{i\}) Stardust Harvesters: <b>(\d+) \/ (\d+)<\/b> free`, "$1 Cosechadoras de polvo estelar: <b>$2 / $3</b> libres");
+hrx(String.raw`(\S+|\{i\}) Escort Frigates: <b>(\d+) \/ (\d+)<\/b> free( · (\d+) destroyed)?`, (m, i, a, b, x, d) => `${i} Fragatas de escolta: <b>${a} / ${b}</b> libres${d ? ` · ${d} destruidas` : ""}`);
+rx(String.raw`free · (\d+) destroyed`, "libres · $1 destruidas");
+rx(String.raw`Build a frigate · (${NUM})`, "Construir una fragata · $1");
+H("🛸 <b>Fleet:</b> 🚀 <b>courier ships</b> carry gifts, trade routes, contracts and explorers. ✨ <b>Stardust Harvesters</b> (research: up to 3) farm the 🌫️ Stardust Drift, and 🛡️ <b>Escort Frigates</b> (research: 1, then 2 and 2 more, up to 5) protect your other ships. Tick the box at 🌍 Home to send a free frigate with every courier ship: pirates leave escorted ships alone.",
+  "🛸 <b>Flota:</b> las 🚀 <b>naves mensajeras</b> llevan regalos, rutas comerciales, contratos y exploradores. Las ✨ <b>cosechadoras de polvo estelar</b> (investigación: hasta 3) recogen polvo en la 🌫️ Deriva de Polvo Estelar, y las 🛡️ <b>fragatas de escolta</b> (investigación: 1, luego 2 y 2 más, hasta 5) protegen tus otras naves. Marca la casilla en 🌍 Hogar para enviar una fragata libre con cada nave mensajera: los piratas dejan en paz a las naves escoltadas.");
+H("🌫️ <b>Stardust Drift:</b> an area at the top of the star map (explore it first, 5 min each way). A harvester flies there in 5 minutes, farms for 1 hour (5/6/7 stardust a minute, by research level) and flies home. Pirates: 30% chance of an attack in the first half hour of farming and 50% in the second. With no escort they take all the stardust farmed so far. A frigate drives them off, but each attack has a 3% chance to destroy it (and then the stardust is lost too). Build a new frigate for 10 gcoin at 🌍 Home.",
+  "🌫️ <b>Deriva de Polvo Estelar:</b> una zona en la parte de arriba del mapa estelar (primero hay que explorarla, 5 min por trayecto). Una cosechadora tarda 5 minutos en llegar, cosecha durante 1 hora (5/6/7 de polvo estelar por minuto, según el nivel de investigación) y vuelve. Piratas: 30 % de probabilidad de un ataque en la primera media hora de cosecha y 50 % en la segunda. Sin escolta se llevan todo el polvo cosechado hasta entonces. Una fragata los ahuyenta, pero cada ataque tiene un 3 % de probabilidad de destruirla (y entonces también se pierde el polvo). Construye una fragata nueva por 10 gcoin en 🌍 Hogar.");
+H("🛸 New spaceships! ✨ <b>Stardust Harvesters</b> farm stardust and 🛡️ <b>Escort Frigates</b> protect your ships from pirates. Research them in 🌌 Space → Research. Your old ships are now called 🚀 <b>courier ships</b>.",
+  "🛸 ¡Naves nuevas! Las ✨ <b>cosechadoras de polvo estelar</b> recogen polvo estelar y las 🛡️ <b>fragatas de escolta</b> protegen tus naves de los piratas. Investígalas en 🌌 Espacio → Investigación. Tus naves de siempre ahora se llaman 🚀 <b>naves mensajeras</b>.");
+H("🌫️ A new area on the star map: the <b>Stardust Drift</b>. Explore it, then send harvesters to farm stardust for an hour, but watch out for pirates!",
+  "🌫️ Una zona nueva en el mapa estelar: la <b>Deriva de Polvo Estelar</b>. Explórala y envía cosechadoras a recoger polvo estelar durante una hora, ¡pero cuidado con los piratas!");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -4443,7 +4507,7 @@ function showView(view) {
   $("achievementsView").hidden = view !== "achievements";
   $("wikiView").hidden = view !== "wiki";
   if ($("profileView")) $("profileView").hidden = view !== "profile";
-  if (view === "profile" && (__eocLoaded >= 47 && typeof renderProfile === "function")) renderProfile();
+  if (view === "profile" && (__eocLoaded >= 48 && typeof renderProfile === "function")) renderProfile();
   if ($("profileBtn")) $("profileBtn").classList.toggle("on", view === "profile");
   // 🎮 Mini-games: the hub, or one game page (state.gamePage: null = hub, "art", "mine")
   const gp = view === "games" ? (state.gamePage || null) : undefined;
@@ -11094,6 +11158,8 @@ function wikiLogistics() {
     <p>🔬 <b>Research</b> (🌌 Space → Research): 5 research lines with 3 levels each. Every level costs 🔬 scientists (10/20/30), money (250,000/500,000/750,000 scoin) and space resources; the last levels need crafted resources. 🛠️ Space crafting unlocks crafting (60/45/30 s per unit), 🚀 Extra ship slots give +1 ship each, 📦 Cargo holds add +10/+10/+15 goods to every gift and trade route trip, 🔥 Ship engines cut trip times by 5%/5%/10%, and 🏗️ Outposts let you build +1 outpost each.</p>
     <p>🛠️ <b>Crafting:</b> mix 2 + 2 alien goods into 1 crafted resource, in batches of 25, 50, 75 or 100 (one batch at a time; it keeps going while the game is closed). 🔷 Resonance Prisms = Star Crystals + Echo Pearls · 🔩 Voidsteel Ingots = Nebula Cores + Void Gold · ⛵ Star Sails = Pirate Charts + Living Silk · 💾 Chrono Chips = Time Shards + Nano Parts.</p>
     <p>🏗️ <b>Outposts:</b> build one in a system you are 😊 Friendly with (one per system) for 1 gcoin and 10 🔬 scientists. It makes 20 of that race's goods an hour, even while the game is closed. Close it any time to build it somewhere else.</p>
+    <p>🛸 <b>Fleet:</b> 🚀 <b>courier ships</b> carry gifts, trade routes, contracts and explorers. ✨ <b>Stardust Harvesters</b> (research: up to 3) farm the 🌫️ Stardust Drift, and 🛡️ <b>Escort Frigates</b> (research: 1, then 2 and 2 more, up to 5) protect your other ships. Tick the box at 🌍 Home to send a free frigate with every courier ship: pirates leave escorted ships alone.</p>
+    <p>🌫️ <b>Stardust Drift:</b> an area at the top of the star map (explore it first, 5 min each way). A harvester flies there in 5 minutes, farms for 1 hour (5/6/7 stardust a minute, by research level) and flies home. Pirates: 30% chance of an attack in the first half hour of farming and 50% in the second. With no escort they take all the stardust farmed so far. A frigate drives them off, but each attack has a 3% chance to destroy it (and then the stardust is lost too). Build a new frigate for 10 gcoin at 🌍 Home.</p>
     <p>⭐ <b>Special requests:</b> sometimes a race asks for 50% more within 12 hours, for ${SP_SPECIAL.pts}× friendship and extra goods. Let it run out and they are offended (−${SP_SPECIAL.offend} friendship).</p>
     <p>☄️ <b>On the way:</b> an asteroid field can make a trip ${SP_EV.delay * 100}% longer; your ship may rescue a lost alien ship (+${SP_EV.rescue} friendship); and pirates may stop it: pay a toll (${SP_EV.toll} min of income) or run for it (50% chance to lose the cargo). Pirates leave you alone once the Void Corsairs are 💛 Trusted.</p>
     ${wt(["Race", "💛 Trusted", "💖 Allies"], Object.entries(SP_BONUS).map(([k, B]) => [SP.races[k].found ? `${SP_RACES[k].emoji} ${SP_RACES[k].name}` : "❓ Unknown", B.text(B.val[0], 0), B.text(B.val[1], 1)]))}
@@ -13334,6 +13400,8 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "🛸 New spaceships! ✨ <b>Stardust Harvesters</b> farm stardust and 🛡️ <b>Escort Frigates</b> protect your ships from pirates. Research them in 🌌 Space → Research. Your old ships are now called 🚀 <b>courier ships</b>.",
+    "🌫️ A new area on the star map: the <b>Stardust Drift</b>. Explore it, then send harvesters to farm stardust for an hour, but watch out for pirates!",
     "🔬 New in 🌌 Space: <b>Research</b>! 5 research lines (crafting, extra ships, cargo holds, engines and outposts), each with 3 levels.",
     "🛠️ Space <b>crafting</b>: mix alien goods into 4 new resources (🔷 Resonance Prisms, 🔩 Voidsteel Ingots, ⛵ Star Sails and 💾 Chrono Chips), in batches of 25 to 100. You need them for the top research levels.",
     "🏗️ <b>Outposts</b>: build a base in a friendly system and it makes that race's goods on its own, no ship needed.",
@@ -18231,7 +18299,7 @@ var spSci = () => state.science || {};
 // 🚀 ship slots come from the space buildings
 var SP_SLOTS = [["space", 1, "🚀 Space Mission Center"], ["station", 1, "🛸 Orbital Space Station"], ["moon", 2, "🌕 Moon Base"], ["mars", 2, "🔴 Mars Base"]];
 var spShips = () => { const n = SP_SLOTS.reduce((a, [k, n]) => a + (spSci()[k] ? n : 0), 0); return n ? n + spAllyBonus("ship") + SP_R_SHIPS[spRL("ships")] : 0; };
-var spFree = () => Math.max(0, spShips() - SP.trips.length);
+var spFree = () => Math.max(0, spShips() - SP.trips.length - (SP.drift && SP.drift.scout ? 1 : 0));   // 🚀 free courier ships
 var spRouteOf = (k) => SP.trips.find(tr => tr.to === k && tr.k === "route");
 var spRouteMs = (k) => spMs(k) * SP_ROUTE_SPEED[Math.max(SP_ROUTE_LV, spLevel(k))] * (1 - spAllyBonus("route"));
 var spOpen = () => !!(SP.unlocked || spSci().space);
@@ -18339,6 +18407,9 @@ function spEventStep(tr, now, msgs = []) {
     e.done = true;
     if (k) { SP.races[k].pts += SP_EV.rescue; SP.stats.rescues = (SP.stats.rescues || 0) + 1;
       msgs.push(`🛸 Your ship found a lost ship of the ${SP_RACES[k].name} and towed it home: +${SP_EV.rescue} friendship.`); }
+  } else if (e.type === "pirates" && tr.escort) {   // 🛡️ escorted: the pirates don't dare
+    e.done = true; SP.stats.escorted = (SP.stats.escorted || 0) + 1;
+    msgs.push(`🛡️ Pirates spotted your courier ship to the ${R.name}, saw its frigate escort and flew away.`);
   } else if (e.type === "pirates") {
     const live = now - e.at < 5000 && !document.hidden && !isPaused() && $("modal").hidden && !spAsk;
     if (!e.asked && live) { e.asked = now; spAskPirates(tr); return false; }
@@ -18377,6 +18448,7 @@ $("modal").addEventListener("click", (e) => {
 function spLaunch(k, kind, cargo) {
   const now = Date.now(), ms = spMs(k) * (1 - spAllyBonus("giftSpeed"));
   const tr = { id: SP.nextId++, k: kind, to: k, t0: now, t1: now + ms, t2: now + 2 * ms, cargo };
+  if ((__eocLoaded >= 46 && typeof spEscortFor === "function")) spEscortFor(tr);   // 🛡️ a free frigate flies along
   tr.ev = spRollEvent(tr);
   SP.trips.push(tr);
   save(); renderSpace();
@@ -18391,6 +18463,7 @@ function spRouteStart(k) {
   if (isPaused() || !spFree() || spLevel(k) < SP_ROUTE_LV || spRouteOf(k)) return;
   const now = Date.now(), ms = spRouteMs(k);
   const tr = { id: SP.nextId++, k: "route", to: k, t0: now, t1: now + ms, t2: now + 2 * ms, got: 0, loops: 0 };
+  if ((__eocLoaded >= 46 && typeof spEscortFor === "function")) spEscortFor(tr);
   tr.ev = spRollEvent(tr); SP.trips.push(tr);
   SP.stats.routes = (SP.stats.routes || 0) + 1;
   showNotice(`🛣️ Trade route to the ${SP_RACES[k].name} is open! One ship now flies there and back for good.`);
@@ -18492,6 +18565,7 @@ function spProcess() {
     }
   }
   if ((__eocLoaded >= 45 && typeof spResTick === "function") && spResTick(now, msgs)) changed = true;
+  if ((__eocLoaded >= 46 && typeof spFleetTick === "function") && spFleetTick(now, msgs)) changed = true;
   if ((__eocLoaded >= 44 && typeof spConTick === "function")) { const n0 = SP.con.offers.length + SP.con.active.length; spCoolTick(now, msgs); spConTick(now, msgs);
     if (n0 !== SP.con.offers.length + SP.con.active.length) changed = true; }
   if (msgs.length > 3) showNotice(`🌌 Space: ${msgs.length} updates while you were away. See 🚢 Logistics → 🌌 Space.`);
@@ -18533,9 +18607,9 @@ function spMapHtml() {
     return `<button class="spNode ${r.found ? "found" : vis ? "fog" : "hidden"} ${spSel === k ? "sel" : ""}" data-sp="${k}" style="left:${R.pos[0]}%;top:${R.pos[1]}%">
       <img src="assets/space/${img}.webp" alt="" draggable="false"><span class="spLbl">${lbl}</span>${SP.sos && SP.sos.k === k ? `<i class="spSosPin">🆘</i>` : ""}${r.found && r.req && spFree() && !spTripTo(k, "gift") && spCanPay(r.req) ? `<i class="spPing">🎁</i>` : ""}</button>`; }).join("");
   const ships = SP.trips.map(tr => `<img class="spShip ${tr.k}" data-trip="${tr.id}" src="assets/space/ship-explorer.webp" alt="" draggable="false" style="${spShipCss(spShipPos(tr, now))}">`).join("");
-  return `<div class="spMap" id="spMap"><div class="spWorld" id="spWorld"><svg viewBox="0 0 160 90" preserveAspectRatio="none">${lines}</svg>
+  return `<div class="spMap" id="spMap"><div class="spWorld" id="spWorld"><svg viewBox="0 0 160 90" preserveAspectRatio="none">${lines}${(__eocLoaded >= 46 && typeof spDriftLine === "function") ? spDriftLine() : ""}</svg>
     <button class="spNode sol ${spSel === "sol" ? "sel" : ""}" data-sp="sol" style="left:50%;top:50%"><span class="spHalo"></span><img src="assets/space/sys-sol.webp" alt="" draggable="false"><span class="spLbl">Home<small>🌍 Solar System</small></span></button>
-    ${nodes}${ships}</div>
+    ${nodes}${(__eocLoaded >= 46 && typeof spDriftNode === "function") ? spDriftNode() : ""}${ships}</div>
     <div class="spZoom"><button data-spz="in" title="Zoom in">+</button><button data-spz="out" title="Zoom out">−</button><button data-spz="reset" title="Whole map">⤢</button></div></div>`;
 }
 /* ----- 🔍 zoom and pan: buttons, mouse wheel, drag, and two-finger pinch on phones ----- */
@@ -18602,6 +18676,7 @@ function spTripLine(tr) {
   return `<div class="spTrip">🚀 ${what} · ${st}${tr.lost ? " · 🏴‍☠️ cargo stolen" : ""}</div>`;
 }
 function spPanelHtml() {
+  if (spSel === "drift") return (__eocLoaded >= 46 && typeof spDriftPanel === "function") ? spDriftPanel() : "";
   if (spSel === "sol") {
     const ships = spShips(), slots = SP_SLOTS.map(([k, n, name]) => {
       const has = !!spSci()[k], secret = k !== "space" && !has;
@@ -18609,9 +18684,10 @@ function spPanelHtml() {
       + (spAllyBonus("ship") ? `<li>✅ 🤖 Cogitarium (💖 Allies): <b>+1</b> ship</li>` : "");
     return `<h3>🌍 Home: the Solar System</h3>
       <p>Your spaceport. Pick a system on the map to explore it or send gifts. Ships keep flying while the game is closed.</p>
-      <div class="spStats"><span>🚀 Ships: <b>${SP.trips.length} / ${ships}</b> busy</span><span>👽 Races met: <b>${Object.values(SP.races).filter(r => r.found).length} / ${Object.keys(SP_RACES).length}</b></span><span>🎁 Gifts delivered: <b>${SP.stats.gifts}</b></span></div>
+      <div class="spStats"><span>🚀 Courier ships: <b>${ships - spFree()} / ${ships}</b> busy</span><span>👽 Races met: <b>${Object.values(SP.races).filter(r => r.found).length} / ${Object.keys(SP_RACES).length}</b></span><span>🎁 Gifts delivered: <b>${SP.stats.gifts}</b></span></div>
       ${ships ? "" : `<p class="spWarn">⚠️ You have no ships right now. Build the 🚀 Space Mission Center (💰 Income → 🔬 Science) to get your first one back.</p>`}
       <ul class="spSlots">${slots}</ul>
+      ${(__eocLoaded >= 46 && typeof spFleetHtml === "function") ? spFleetHtml() : ""}
       ${spBonusList() ? `<h4>🏅 Your alliance bonuses</h4><ul class="spSlots">${spBonusList()}</ul>` : ""}
       ${SP.trips.length ? `<h4>Ships in flight</h4>${SP.trips.map(spTripLine).join("")}` : ""}`;
   }
@@ -18643,7 +18719,7 @@ function spPanelHtml() {
         <div class="spBtns"><button class="btn big" data-spx="gift" ${can && spFree() ? "" : "disabled"}>${spI("gift", "spI btnI")}Send gift</button>
           <button class="btn ghost" data-spx="reroll" ${rerollLeft > 0 ? "disabled" : ""}>${spI("reroll", "spI btnI")}Ask for something else${rerollLeft > 0 ? ` (${spClock(rerollLeft)})` : ""}</button></div>
         ${!spFree() ? `<div class="muted">All your ships are busy.</div>` : !can ? `<div class="muted">You don't have enough for this gift yet.</div>` : ""}</div>` : ""}
-    ${(__eocLoaded >= 46 && typeof pipOfferHtml === "function") ? pipOfferHtml(spSel) : ""}${spRouteHtml(spSel)}${(__eocLoaded >= 45 && typeof spOutpostHtml === "function") ? spOutpostHtml(spSel) : ""}${spBonusHtml(spSel)}`;
+    ${(__eocLoaded >= 47 && typeof pipOfferHtml === "function") ? pipOfferHtml(spSel) : ""}${spRouteHtml(spSel)}${(__eocLoaded >= 45 && typeof spOutpostHtml === "function") ? spOutpostHtml(spSel) : ""}${spBonusHtml(spSel)}`;
 }
 function spBonusHtml(k) {
   const B = SP_BONUS[k], L = spLevel(k);
@@ -18808,7 +18884,7 @@ function renderSpace() {
   if (state.logiPage === "market") { box.innerHTML = spSosHtml() + spMarketHtml(); return; }
   if (state.logiPage === "research" && (__eocLoaded >= 45 && typeof spResearchHtml === "function")) { box.innerHTML = spSosHtml() + spResearchHtml(); return; }
   if (state.logiPage === "contracts" && (__eocLoaded >= 44 && typeof spContractsHtml === "function")) { box.innerHTML = spSosHtml() + spContractsHtml(); return; }
-  box.innerHTML = `${spSosHtml()}<div class="card spResBar" id="spResBar">${spResHtml()}</div><div class="card spMapCard"><div class="row"><h2 style="margin:0">🌌 Star map</h2><span class="spFreeBadge ${spFree() ? "" : "none"}" title="Free ships">🚀 <b>${spFree()}</b><small>/ ${spShips()}</small><span>${spFree() === 1 ? "ship free" : "ships free"}</span></span></div>${spMapHtml()}</div>
+  box.innerHTML = `${spSosHtml()}<div class="card spResBar" id="spResBar">${spResHtml()}</div><div class="card spMapCard"><div class="row"><h2 style="margin:0">🌌 Star map</h2><span class="spFreeBadge ${spFree() ? "" : "none"}" title="Free courier ships">🚀 <b>${spFree()}</b><small>/ ${spShips()}</small><span>${spFree() === 1 ? "courier free" : "couriers free"}</span></span></div>${spMapHtml()}</div>
     <div class="card spPanel">${spPanelHtml()}</div>`;
   spZoomApply();
 }
@@ -18937,7 +19013,7 @@ setInterval(() => {
   if (spSci().space && !SP.unlocked) { SP.unlocked = true; save(); showNotice("🌌 New in 🚢 Logistics: <b>Space</b>! Explore the galaxy and meet alien races."); spApplyPage(); }
   spProcess(); spSosTick(); spAnimate();
 }, 1000);
-// the first catch-up (ships that arrived while the game was closed) runs at the end of js/34d-space-research.js,
+// the first catch-up (ships that arrived while the game was closed) runs at the end of js/34e-space-fleet.js,
 // once the contracts and research code is loaded too
 
 // ===== js/34c-space-politics.js =====
@@ -19160,10 +19236,10 @@ if (SP.craft === undefined) SP.craft = null;
 // a cost key is an alien good ("crystal") or a crafted resource ("c_prism")
 var spHave = (key) => key.startsWith("c_") ? SP.crafted[key.slice(2)] || 0 : SP.goods[key] || 0;
 var spCI = (c, cls = "spGi") => `<img class="${cls}" src="assets/space/good-c-${c}.webp" alt="${SP_CRAFT[c].emoji}">`;   // painted crafted icon
-var spRI = (k, cls = "spResImg") => `<img class="${cls}" src="assets/space/sp-res-${k}.webp" alt="${SP_RESEARCH[k].icon}">`;
+var spRI = (k, cls = "spResImg") => `<img class="${cls}" src="assets/space/sp-res-${k}.webp" alt="${SP_RESEARCH[k].icon}" onerror="this.replaceWith(document.createTextNode(this.alt))">`;
 var spCostIco = (key) => key.startsWith("c_") ? spCI(key.slice(2)) : spGI(key);
 var spCostLbl = (key) => key.startsWith("c_") ? SP_CRAFT[key.slice(2)].name : SP_GOODS[key].name;
-function spResCost(k) { const L = spRL(k); if (L >= 3) return null; return { sci: SP_R_SCI[L], money: SP_R_MONEY[L], goods: SP_RESEARCH[k].cost[L] }; }
+function spResCost(k) { const L = spRL(k), D = SP_RESEARCH[k]; if (L >= 3) return null; return { sci: SP_R_SCI[L], money: (D.money || SP_R_MONEY)[L], goods: D.cost[L] }; }
 var spResCan = (c) => c && spSci2() >= c.sci && state.money >= c.money && Object.entries(c.goods).every(([g, n]) => spHave(g) >= n);
 function spResearch(k) {
   const c = spResCost(k);
@@ -19292,10 +19368,187 @@ document.addEventListener("click", (e) => {
 });
 $("modal").addEventListener("click", (e) => { const b = e.target.closest("[data-spo2]"); if (b) spOutpostClose(b.dataset.spo2); });
 
-spProcess();   // catch up on everything that happened while the game was closed (needs all three space files)
+
+// ===== js/34e-space-fleet.js =====
+__eocLoaded = 46;
+/* =====================================================================
+   🛸 SPACE FLEET (loaded after js/34d-space-research.js)
+   Three kinds of spaceships:
+   · 🚀 Courier ships: the ships you always had (gifts, trade routes, contracts, exploring).
+   · ✨ Stardust Harvesters (research 1/1/1 → up to 3): fly to the 🌫️ Stardust Drift (5 min there, 5 back), farm for 1 hour:
+     5/6/7 stardust a minute (by research level). Pirates: 30% chance of one attack in the first 30 min of farming,
+     50% chance of one in the last 30 min. An attack on a harvester with no escort takes all the stardust farmed so far.
+   · 🛡️ Escort Frigates (research 1/2/2 → up to 5): escort a harvester (pirates are driven off, but each attack has a 3% chance
+     to destroy the frigate, and then the stardust is lost too), or escort courier ships (pirates leave them alone).
+     A destroyed frigate can be rebuilt for 10 gcoin.
+   · 🌫️ Stardust Drift: a new area at the top of the star map. Explore it first (a courier ship, 5 min there and back).
+   ===================================================================== */
+var SP_DRIFT = { pos: [50, 13], min: 5, farm: 60 * 60e3, sci: 10 };
+var SP_HARV_N = [0, 1, 2, 3], SP_HARV_RATE = [0, 5, 6, 7];
+var SP_FRIG_N = [0, 1, 3, 5], SP_FRIG_PRICE = 10 * GCOIN, SP_FRIG_LOSE = 0.03;
+var SP_RAID = [0.3, 0.5];   // chance of one pirate attack in the 1st / 2nd half hour of farming
+Object.assign(SP_RESEARCH, {
+  harvest: { name: "Stardust Harvesters", icon: "✨", money: [1, 5, 10].map(n => n * GCOIN),
+             lv: ["+1 harvester · 5 stardust a minute", "+1 harvester (2 in total) · 6 stardust a minute each", "+1 harvester (3 in total) · 7 stardust a minute each"],
+             cost: [{ crystal: 50, core: 50 }, { pearl: 100, silk: 100 }, { c_prism: 150, c_sail: 150 }] },
+  frigate: { name: "Escort Frigates", icon: "🛡️", money: [1, 5, 10].map(n => n * GCOIN),
+             lv: ["+1 frigate", "+2 frigates (3 in total)", "+2 frigates (5 in total)"],
+             cost: [{ vgold: 50, chart: 50 }, { core: 100, chart: 100 }, { c_alloy: 150, c_chip: 150 }] },
+});
+SP_RESEARCH.ships.name = "Extra courier ships";
+SP.drift = SP.drift || { found: false };
+SP.harvest = SP.harvest || [];
+SP.fleet = SP.fleet || { frigates: 0, lost: 0, escortOn: true };
+// research gives frigates: new ones arrive ready
+function spFrigSync() { const cap = SP_FRIG_N[spRL("frigate")]; if ((SP.fleet.got || 0) < cap) { SP.fleet.frigates += cap - (SP.fleet.got || 0); SP.fleet.got = cap; } }
+spFrigSync();
+var spHarvMax = () => SP_HARV_N[spRL("harvest")];
+var spHarvFree = () => Math.max(0, spHarvMax() - SP.harvest.length);
+var spFrigBusy = () => SP.trips.filter(t => t.escort).length + SP.harvest.filter(h => h.escort).length;
+var spFrigFree = () => Math.max(0, SP.fleet.frigates - spFrigBusy());
+var spFrigCap = () => SP_FRIG_N[spRL("frigate")];
+var spScouting = () => !!(SP.drift.scout);
+var spSI = (n, cls = "spI") => `<img class="${cls}" src="assets/space/ship-${n}.webp" alt="" onerror="this.replaceWith(document.createTextNode('${{ courier: "🚀", harvester: "✨", frigate: "🛡️" }[n]}'))">`;
+
+/* ----- 🔭 exploring the Drift (uses a courier ship) ----- */
+function spDriftExplore() {
+  if (isPaused() || SP.drift.found || spScouting() || !spFree() || spSci2() < SP_EXPLORE_SCI) return;
+  spendScientists(SP_EXPLORE_SCI);
+  const now = Date.now(), ms = SP_DRIFT.min * 60e3;
+  SP.drift.scout = { t0: now, t1: now + ms, t2: now + 2 * ms };
+  showNotice(`🚀 A courier ship is on its way to explore the strange signal (${SP_DRIFT.min} min there, ${SP_DRIFT.min} min back).`);
+  save(); renderSpace();
+}
+
+/* ----- ✨ harvesting ----- */
+function spHarvLaunch(escort) {
+  if (isPaused() || !SP.drift.found || !spHarvFree()) return;
+  if (escort && !spFrigFree()) escort = false;
+  const now = Date.now(), go = SP_DRIFT.min * 60e3, f0 = now + go, half = SP_DRIFT.farm / 2;
+  const raid = (i) => Math.random() < SP_RAID[i] ? { at: f0 + i * half + Math.random() * half, kill: Math.random() < SP_FRIG_LOSE } : null;
+  SP.harvest.push({ id: SP.nextId++, t0: now, f0, f1: f0 + SP_DRIFT.farm, t2: f0 + SP_DRIFT.farm + go, rate: SP_HARV_RATE[spRL("harvest")], escort: !!escort, raids: [raid(0), raid(1)].filter(Boolean), lost: 0 });
+  showNotice(`✨ A Stardust Harvester is on its way to the Stardust Drift${escort ? " with a 🛡️ frigate escort" : " (no escort: watch out for pirates!)"}.`);
+  save(); renderSpace();
+}
+var spFarmed = (h, t) => Math.floor(h.rate * Math.max(0, Math.min(t, h.f1) - h.f0) / 60e3);
+function spFrigBuild() {
+  if (isPaused() || SP.fleet.frigates >= spFrigCap() || state.money < SP_FRIG_PRICE) return;
+  state.money -= SP_FRIG_PRICE; SP.fleet.frigates++; SP.stats.frigBuilt = (SP.stats.frigBuilt || 0) + 1;
+  showNotice("🛡️ A new Escort Frigate is ready.");
+  updateCounter(); save(); renderSpace();
+}
+
+// every second (from spProcess): scouting, raids and harvesters coming home. Returns true when the page should redraw.
+function spFleetTick(now, msgs) {
+  let changed = false;
+  spFrigSync();
+  const sc = SP.drift.scout;
+  if (sc && now >= sc.t2) {
+    SP.drift.scout = null; SP.drift.found = true; SP.drift.foundAt = now; changed = true;
+    msgs.push(`🌫️ Your courier ship found the <b>Stardust Drift</b>: a glittering cloud full of stardust, and full of pirates. ${spRL("harvest") ? "Send a ✨ Stardust Harvester to farm it!" : "Research ✨ Stardust Harvesters (🌌 Space → Research) to farm it."}`);
+  }
+  for (const h of SP.harvest) {
+    for (const r of h.raids) {
+      if (r.done || now < r.at) continue;
+      r.done = true; changed = true; SP.stats.raids = (SP.stats.raids || 0) + 1;
+      const stash = spFarmed(h, r.at) - h.lost;
+      if (h.escort && !r.kill) { SP.stats.raidsWon = (SP.stats.raidsWon || 0) + 1; msgs.push(`🛡️ Pirates attacked your harvester in the Stardust Drift, but your frigate drove them off!`); continue; }
+      h.lost += stash; SP.stats.dustLost = (SP.stats.dustLost || 0) + stash;
+      if (h.escort) {
+        h.escort = false; SP.fleet.frigates = Math.max(0, SP.fleet.frigates - 1); SP.fleet.lost++;
+        msgs.push(`💥 Pirates destroyed your escort frigate in the Stardust Drift and took ✨ ${stash.toLocaleString()} stardust! Build a new frigate for ${fmt(SP_FRIG_PRICE)} (🌍 Home).`);
+      } else msgs.push(`🏴‍☠️ Pirates raided your unprotected harvester in the Stardust Drift and took ✨ ${stash.toLocaleString()} stardust! It keeps farming.`);
+    }
+    if (now >= h.t2) {
+      h.done = true; changed = true;
+      const got = Math.max(0, spFarmed(h, h.f1) - h.lost);
+      if (!state.shooter) state.shooter = {};
+      state.shooter.dust = (state.shooter.dust || 0) + got;
+      SP.stats.dustFarmed = (SP.stats.dustFarmed || 0) + got; SP.stats.harvests = (SP.stats.harvests || 0) + 1;
+      msgs.push(`✨ Your harvester is back from the Stardust Drift with <b>${got.toLocaleString()}</b> stardust${h.lost ? ` (pirates took ${h.lost.toLocaleString()})` : ""}.`);
+    }
+  }
+  if (changed) SP.harvest = SP.harvest.filter(h => !h.done);
+  return changed;
+}
+
+/* ----- 🛡️ courier escorts: pirates leave an escorted courier ship alone ----- */
+function spEscortFor(tr) { if (SP.fleet.escortOn && spFrigFree() > 0) tr.escort = true; }
+
+/* ----- 🗺️ map: the Drift node ----- */
+function spDriftLine() {
+  const vis = true, cls = SP.harvest.length || spScouting() ? "busy" : SP.drift.found ? "known" : "";
+  const d = "M80 40 Q76 26 80 14";
+  return vis ? (cls === "busy" ? `<path d="${d}" class="glow busy"/>` : "") + `<path d="${d}" class="${cls}"/>` : "";
+}
+function spDriftNode() {
+  const f = SP.drift.found, n = SP.harvest.length;
+  const lbl = f ? `Stardust Drift<small>${n ? `✨ ${n} harvesting` : "🏴‍☠️ Pirate space"}</small>` : `Unknown signal<small>❓ Explore</small>`;
+  return `<button class="spNode ${f ? "found" : "fog"} spDrift ${spSel === "drift" ? "sel" : ""}" data-sp="drift" style="left:${SP_DRIFT.pos[0]}%;top:${SP_DRIFT.pos[1]}%">
+    <img src="assets/space/${f ? "sys-drift" : "sys-unknown"}.webp" alt="" draggable="false" ${f ? `onerror="this.src='assets/space/sys-stardust.webp';this.classList.add('spDriftTmp')"` : ""}><span class="spLbl">${lbl}</span></button>`;
+}
+
+/* ----- 🪧 panels ----- */
+function spHarvLine(h) {
+  const now = Date.now();
+  const st = now < h.f0 ? `flying there · farming starts in <b data-spt="${h.f0}">${spClock(h.f0 - now)}</b>`
+    : now < h.f1 ? `farming · ✨ <b>${Math.max(0, spFarmed(h, now) - h.lost).toLocaleString()}</b> so far · done in <b data-spt="${h.f1}">${spClock(h.f1 - now)}</b>`
+    : `coming home · back in <b data-spt="${h.t2}">${spClock(h.t2 - now)}</b> with ✨ <b>${Math.max(0, spFarmed(h, h.f1) - h.lost).toLocaleString()}</b>`;
+  return `<div class="spTrip">${spSI("harvester")} Harvester${h.escort ? ` + ${spSI("frigate")} escort` : " · <span class=\"spWarnTxt\">no escort</span>"} · ${st}</div>`;
+}
+function spDriftPanel() {
+  const now = Date.now();
+  if (!SP.drift.found) {
+    const sc = SP.drift.scout;
+    return `<h3 class="spH">${spI("explore", "spI big")} Unknown signal</h3>
+      <p>A strange glittering cloud at the edge of your scanners. Send a courier ship to explore it: <b>${SP_DRIFT.min} min</b> there and <b>${SP_DRIFT.min} min</b> back.</p>
+      ${sc ? `<div class="spTrip">🚀 Exploring the signal · back in <b data-spt="${sc.t2}">${spClock(sc.t2 - now)}</b></div>`
+        : `<button class="btn big" data-spf="explore" ${spFree() && spSci2() >= SP_EXPLORE_SCI ? "" : "disabled"}>${spI("explore", "spI btnI")}Explore · 🔬 ${SP_EXPLORE_SCI} scientists</button>
+        ${!spFree() ? `<div class="muted">All your courier ships are busy.</div>` : spSci2() < SP_EXPLORE_SCI ? `<div class="muted">You need ${SP_EXPLORE_SCI} scientists (you have ${spSci2()}).</div>` : ""}`}`;
+  }
+  const L = spRL("harvest"), can = spHarvFree() > 0, fr = spFrigFree() > 0;
+  return `<div class="spCardHead"><div class="spCardSys" style="background-image:url(assets/space/sys-drift.webp)"></div>
+      <div class="spHeadTxt"><h3>🌫️ Stardust Drift <span class="muted">· Pirate space</span></h3>
+        <p class="spBio">A glittering cloud of stardust left behind by dying stars. Harvesters can farm it, but wild pirates hunt here and nobody controls them, not even the Void Corsairs.</p></div></div>
+    <div class="spInfo"><div class="spRow">${spI("distance")}<span><b>Distance:</b> ${SP_DRIFT.min} min each way · farming takes 1 hour</span></div>
+      <div class="spRow">🏴‍☠️<span><b>Pirates:</b> ${SP_RAID[0] * 100}% chance of an attack in the first half hour of farming, ${SP_RAID[1] * 100}% in the second. Without an escort they take all the stardust farmed so far. A 🛡️ frigate drives them off, but has a ${SP_FRIG_LOSE * 100}% chance to be destroyed in each attack (and then the stardust is lost too).</span></div></div>
+    ${SP.harvest.length ? `<h4>Harvesters at work</h4>${SP.harvest.map(spHarvLine).join("")}` : ""}
+    ${L ? `<div class="spRoute ${can ? "" : "locked"}"><div class="spRow">${spSI("harvester")}<span><b>Stardust Harvesters:</b> ${SP.harvest.length} / ${spHarvMax()} out · each farms <b>${SP_HARV_RATE[L]}</b> stardust a minute (✨ ${(SP_HARV_RATE[L] * 60).toLocaleString()} an hour).</span></div>
+        <div class="spBtns"><button class="btn big" data-spf="harv1" ${can && fr ? "" : "disabled"}>${spSI("frigate", "spI btnI")}Send with escort</button>
+          <button class="btn ghost" data-spf="harv0" ${can ? "" : "disabled"}>${spSI("harvester", "spI btnI")}Send without escort</button></div>
+        <div class="muted">${!can ? "All your harvesters are out." : !fr ? (SP.fleet.frigates ? "All your frigates are busy." : spFrigCap() ? `No frigates: build one for ${fmt(SP_FRIG_PRICE)} at 🌍 Home.` : "Research 🛡️ Escort Frigates (🌌 Space → Research) to protect your harvesters.") : `🛡️ Frigates free: ${spFrigFree()} / ${SP.fleet.frigates}`}</div></div>`
+      : `<div class="spRoute locked spRow">${spSI("harvester")}<span>Research <b>✨ Stardust Harvesters</b> (🌌 Space → Research) to farm stardust here.</span></div>`}
+    <div class="spStats"><span>✨ Farmed: <b>${(SP.stats.dustFarmed || 0).toLocaleString()}</b></span><span>🏴‍☠️ Attacks: <b>${SP.stats.raids || 0}</b></span><span>🛡️ Driven off: <b>${SP.stats.raidsWon || 0}</b></span><span>💥 Frigates lost: <b>${SP.fleet.lost || 0}</b></span></div>`;
+}
+// 🌍 Home panel: the whole fleet
+function spFleetHtml() {
+  const H = spHarvMax(), F = spFrigCap();
+  if (!H && !F) return "";
+  return `<h4>🛸 Fleet</h4><ul class="spSlots">
+      <li>${spSI("courier")} Courier ships: <b>${spFree()} / ${spShips()}</b> free <span class="muted">(gifts, trade routes, contracts, exploring)</span></li>
+      ${H ? `<li>${spSI("harvester")} Stardust Harvesters: <b>${spHarvFree()} / ${H}</b> free</li>` : ""}
+      ${F ? `<li>${spSI("frigate")} Escort Frigates: <b>${spFrigFree()} / ${SP.fleet.frigates}</b> free${SP.fleet.frigates < F ? ` · ${F - SP.fleet.frigates} destroyed` : ""}</li>` : ""}</ul>
+    ${F ? `<div class="spBtns">${SP.fleet.frigates < F ? `<button class="btn" data-spf="build" ${state.money >= SP_FRIG_PRICE ? "" : "disabled"}>${spSI("frigate", "spI btnI")}Build a frigate · ${fmt(SP_FRIG_PRICE)}</button>` : ""}
+      <label class="spCheck"><input type="checkbox" data-spf="escort" ${SP.fleet.escortOn ? "checked" : ""}> 🛡️ Send a free frigate with every courier ship (pirates leave escorted ships alone)</label></div>` : ""}`;
+}
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest("#spaceView") || isPaused()) return;
+  const b = e.target.closest("[data-spf]"); if (!b) return;
+  const k = b.dataset.spf;
+  if (k === "explore") spDriftExplore();
+  if (k === "harv1" || k === "harv0") spHarvLaunch(k === "harv1");
+  if (k === "build") spFrigBuild();
+});
+document.addEventListener("change", (e) => {
+  const b = e.target.closest('[data-spf="escort"]'); if (!b) return;
+  SP.fleet.escortOn = b.checked; save();
+});
+
+spProcess();   // catch up on everything that happened while the game was closed (needs all the space files)
 
 // ===== js/36-pip.js =====
-__eocLoaded = 46;
+__eocLoaded = 47;
 /* =====================================================================
    🐾🎨 PIP, the painter pet (an alien mouse from the Lumerians).
    - Adopt him in 🌌 Space Logistics → Lumerians, once you are 😊 Friendly, for 10 paintings from your collection.
@@ -19515,7 +19768,7 @@ if (pipOwned()) pipProcess(true);
 if (state.view === "games" && !state.gamePage) renderPipCorner();   // the page opened straight on 🎮 Mini-games
 
 // ===== js/37-profile.js =====
-__eocLoaded = 47;
+__eocLoaded = 48;
 /* =====================================================================
    👤 PLAYER PROFILE: nickname, avatar (the emblem of one of your 🎁 reward collections), achievements and prestige count.
    · Opened with the round 👤 button next to ⚙️ Settings.
@@ -19675,7 +19928,7 @@ function renderProfile() {
   // 👈 Profile / Friends on the left, like the other pages (.subLayout)
   const tabs = `<div class="subLayout"><nav class="subNav"><button class="subTab ${prof.tab !== "friends" ? "active" : ""}" data-prof="tab-me">👤 Profile</button>
     <button class="subTab ${prof.tab === "friends" ? "active" : ""}" data-prof="tab-friends">👥 Friends${inc ? ` <span class="profBadge">${inc}</span>` : ""}</button></nav><div class="subMain">`;
-  if (prof.tab === "friends" && (__eocLoaded >= 48 && typeof renderFriends === "function")) { box.innerHTML = tabs + `<div id="friendsBox"></div></div></div>`; renderFriends(row); return; }
+  if (prof.tab === "friends" && (__eocLoaded >= 49 && typeof renderFriends === "function")) { box.innerHTML = tabs + `<div id="friendsBox"></div></div></div>`; renderFriends(row); return; }
   const ids = profAvatarIds(), cur = row ? row.avatar : prof.pendingAvatar;
   const shown = prof.showAll ? ids : ids.slice(0, 60);
   const typed = $("profNick") ? $("profNick").value : null;
@@ -19738,7 +19991,7 @@ document.addEventListener("click", (e) => {
   if (b.dataset.prof === "signin" && (__eocLoaded >= 37 && typeof cloudSignIn === "function")) cloudSignIn();
   if (b.dataset.prof === "nick") profSaveNick($("profNick").value);
   if (b.dataset.prof === "all") { prof.showAll = true; renderProfile(); }
-  if (b.dataset.prof === "tab-me" || b.dataset.prof === "tab-friends") { prof.tab = b.dataset.prof === "tab-friends" ? "friends" : "me"; prof.err = ""; prof.msg = ""; renderProfile(); if (prof.tab === "friends" && (__eocLoaded >= 48 && typeof frLoad === "function")) frLoad(); }
+  if (b.dataset.prof === "tab-me" || b.dataset.prof === "tab-friends") { prof.tab = b.dataset.prof === "tab-friends" ? "friends" : "me"; prof.err = ""; prof.msg = ""; renderProfile(); if (prof.tab === "friends" && (__eocLoaded >= 49 && typeof frLoad === "function")) frLoad(); }
   if (b.dataset.prof === "copy" && prof.row && prof.row.friend_code) {
     const c = prof.row.friend_code;
     (navigator.clipboard ? navigator.clipboard.writeText(c) : Promise.reject()).then(() => showNotice(`📋 Friend code ${c} copied.`), () => showNotice(`📋 Your friend code: ${c}`));
@@ -19765,7 +20018,7 @@ setInterval(() => { const m = $("profMoney"); if (m) { const t = fmt(state.money
 setInterval(() => { const src = profCoinImg(profCoin()).match(/src="([^"]+)"/)[1]; document.querySelectorAll(".coinSkinImg").forEach(i => { if (i.getAttribute("src") !== src) i.setAttribute("src", src); }); }, 1000);
 
 // ===== js/38-friends.js =====
-__eocLoaded = 48;
+__eocLoaded = 49;
 /* =====================================================================
    👥 FRIENDS (👤 Profile → 👥 Friends). Needs a profile (js/37-profile.js) and the tables from docs/supabase-friends.sql.
    · Find players by nickname (start of the name) or by their 8-letter friend code, and send a request.
@@ -19944,7 +20197,7 @@ var frProfLoadOrig = profLoad;
 profLoad = async function () { await frProfLoadOrig(); if (prof.row && prof.friendsOn) frLoad(true); };
 
 // ===== js/39-duels.js =====
-__eocLoaded = 49;
+__eocLoaded = 50;
 /* =====================================================================
    ⚔️ ONLINE CASINO: duels against friends (🎰 Casino → ⚔️ Online casino on the left).
    · ✊✋✌️ Rock Paper Scissors and 🎲 Dice Battle (2 dice each, higher total wins the round): best of 3; a tie is played again.
@@ -20068,7 +20321,7 @@ function duChallenge(oppId) {
   const bet = Math.floor(Number(DU.bet));
   if (!(bet >= 1)) { DU.err = "Choose a bet of at least 1."; return renderDuels(); }
   if (bet > state.money) { DU.err = "You don't have enough money for this bet."; return renderDuels(); }
-  if ((__eocLoaded >= 47 && typeof profPushStats === "function")) profPushStats();   // the referee checks the money on your profile
+  if ((__eocLoaded >= 48 && typeof profPushStats === "function")) profPushStats();   // the referee checks the money on your profile
   duDo("duel_invite", { p_opp: oppId, p_game: DU.game, p_bet: bet }, () => { setTimeout(duPending, 300); });
 }
 
@@ -20298,7 +20551,7 @@ function duMoneyTick() { const m = $("duMoney"); if (m) { const t = fmt(state.mo
 setInterval(duMoneyTick, 500);
 
 // ===== js/40-coin-input.js =====
-__eocLoaded = 50;
+__eocLoaded = 51;
 /* =====================================================================
    🪙 COIN UNIT SWITCH next to every money box: type the amount in bcoin, scoin (1M) or gcoin (1M scoin),
    instead of counting zeros. The rest of the game is not changed: each money box still reports its amount

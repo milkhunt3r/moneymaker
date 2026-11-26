@@ -35,10 +35,10 @@ if (SP.craft === undefined) SP.craft = null;
 // a cost key is an alien good ("crystal") or a crafted resource ("c_prism")
 const spHave = (key) => key.startsWith("c_") ? SP.crafted[key.slice(2)] || 0 : SP.goods[key] || 0;
 const spCI = (c, cls = "spGi") => `<img class="${cls}" src="assets/space/good-c-${c}.webp" alt="${SP_CRAFT[c].emoji}">`;   // painted crafted icon
-const spRI = (k, cls = "spResImg") => `<img class="${cls}" src="assets/space/sp-res-${k}.webp" alt="${SP_RESEARCH[k].icon}">`;
+const spRI = (k, cls = "spResImg") => `<img class="${cls}" src="assets/space/sp-res-${k}.webp" alt="${SP_RESEARCH[k].icon}" onerror="this.replaceWith(document.createTextNode(this.alt))">`;
 const spCostIco = (key) => key.startsWith("c_") ? spCI(key.slice(2)) : spGI(key);
 const spCostLbl = (key) => key.startsWith("c_") ? SP_CRAFT[key.slice(2)].name : SP_GOODS[key].name;
-function spResCost(k) { const L = spRL(k); if (L >= 3) return null; return { sci: SP_R_SCI[L], money: SP_R_MONEY[L], goods: SP_RESEARCH[k].cost[L] }; }
+function spResCost(k) { const L = spRL(k), D = SP_RESEARCH[k]; if (L >= 3) return null; return { sci: SP_R_SCI[L], money: (D.money || SP_R_MONEY)[L], goods: D.cost[L] }; }
 const spResCan = (c) => c && spSci2() >= c.sci && state.money >= c.money && Object.entries(c.goods).every(([g, n]) => spHave(g) >= n);
 function spResearch(k) {
   const c = spResCost(k);
@@ -167,4 +167,3 @@ document.addEventListener("click", (e) => {
 });
 $("modal").addEventListener("click", (e) => { const b = e.target.closest("[data-spo2]"); if (b) spOutpostClose(b.dataset.spo2); });
 
-spProcess();   // catch up on everything that happened while the game was closed (needs all three space files)

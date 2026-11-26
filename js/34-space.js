@@ -109,7 +109,7 @@ const spSci = () => state.science || {};
 // 🚀 ship slots come from the space buildings
 const SP_SLOTS = [["space", 1, "🚀 Space Mission Center"], ["station", 1, "🛸 Orbital Space Station"], ["moon", 2, "🌕 Moon Base"], ["mars", 2, "🔴 Mars Base"]];
 const spShips = () => { const n = SP_SLOTS.reduce((a, [k, n]) => a + (spSci()[k] ? n : 0), 0); return n ? n + spAllyBonus("ship") + SP_R_SHIPS[spRL("ships")] : 0; };
-const spFree = () => Math.max(0, spShips() - SP.trips.length);
+const spFree = () => Math.max(0, spShips() - SP.trips.length - (SP.drift && SP.drift.scout ? 1 : 0));   // 🚀 free courier ships
 const spRouteOf = (k) => SP.trips.find(tr => tr.to === k && tr.k === "route");
 const spRouteMs = (k) => spMs(k) * SP_ROUTE_SPEED[Math.max(SP_ROUTE_LV, spLevel(k))] * (1 - spAllyBonus("route"));
 const spOpen = () => !!(SP.unlocked || spSci().space);
@@ -217,6 +217,9 @@ function spEventStep(tr, now, msgs = []) {
     e.done = true;
     if (k) { SP.races[k].pts += SP_EV.rescue; SP.stats.rescues = (SP.stats.rescues || 0) + 1;
       msgs.push(`🛸 Your ship found a lost ship of the ${SP_RACES[k].name} and towed it home: +${SP_EV.rescue} friendship.`); }
+  } else if (e.type === "pirates" && tr.escort) {   // 🛡️ escorted: the pirates don't dare
+    e.done = true; SP.stats.escorted = (SP.stats.escorted || 0) + 1;
+    msgs.push(`🛡️ Pirates spotted your courier ship to the ${R.name}, saw its frigate escort and flew away.`);
   } else if (e.type === "pirates") {
     const live = now - e.at < 5000 && !document.hidden && !isPaused() && $("modal").hidden && !spAsk;
     if (!e.asked && live) { e.asked = now; spAskPirates(tr); return false; }
@@ -255,6 +258,7 @@ $("modal").addEventListener("click", (e) => {
 function spLaunch(k, kind, cargo) {
   const now = Date.now(), ms = spMs(k) * (1 - spAllyBonus("giftSpeed"));
   const tr = { id: SP.nextId++, k: kind, to: k, t0: now, t1: now + ms, t2: now + 2 * ms, cargo };
+  if (typeof spEscortFor === "function") spEscortFor(tr);   // 🛡️ a free frigate flies along
   tr.ev = spRollEvent(tr);
   SP.trips.push(tr);
   save(); renderSpace();
@@ -269,6 +273,7 @@ function spRouteStart(k) {
   if (isPaused() || !spFree() || spLevel(k) < SP_ROUTE_LV || spRouteOf(k)) return;
   const now = Date.now(), ms = spRouteMs(k);
   const tr = { id: SP.nextId++, k: "route", to: k, t0: now, t1: now + ms, t2: now + 2 * ms, got: 0, loops: 0 };
+  if (typeof spEscortFor === "function") spEscortFor(tr);
   tr.ev = spRollEvent(tr); SP.trips.push(tr);
   SP.stats.routes = (SP.stats.routes || 0) + 1;
   showNotice(`🛣️ Trade route to the ${SP_RACES[k].name} is open! One ship now flies there and back for good.`);
@@ -370,6 +375,7 @@ function spProcess() {
     }
   }
   if (typeof spResTick === "function" && spResTick(now, msgs)) changed = true;
+  if (typeof spFleetTick === "function" && spFleetTick(now, msgs)) changed = true;
   if (typeof spConTick === "function") { const n0 = SP.con.offers.length + SP.con.active.length; spCoolTick(now, msgs); spConTick(now, msgs);
     if (n0 !== SP.con.offers.length + SP.con.active.length) changed = true; }
   if (msgs.length > 3) showNotice(`🌌 Space: ${msgs.length} updates while you were away. See 🚢 Logistics → 🌌 Space.`);
@@ -411,9 +417,9 @@ function spMapHtml() {
     return `<button class="spNode ${r.found ? "found" : vis ? "fog" : "hidden"} ${spSel === k ? "sel" : ""}" data-sp="${k}" style="left:${R.pos[0]}%;top:${R.pos[1]}%">
       <img src="assets/space/${img}.webp" alt="" draggable="false"><span class="spLbl">${lbl}</span>${SP.sos && SP.sos.k === k ? `<i class="spSosPin">🆘</i>` : ""}${r.found && r.req && spFree() && !spTripTo(k, "gift") && spCanPay(r.req) ? `<i class="spPing">🎁</i>` : ""}</button>`; }).join("");
   const ships = SP.trips.map(tr => `<img class="spShip ${tr.k}" data-trip="${tr.id}" src="assets/space/ship-explorer.webp" alt="" draggable="false" style="${spShipCss(spShipPos(tr, now))}">`).join("");
-  return `<div class="spMap" id="spMap"><div class="spWorld" id="spWorld"><svg viewBox="0 0 160 90" preserveAspectRatio="none">${lines}</svg>
+  return `<div class="spMap" id="spMap"><div class="spWorld" id="spWorld"><svg viewBox="0 0 160 90" preserveAspectRatio="none">${lines}${typeof spDriftLine === "function" ? spDriftLine() : ""}</svg>
     <button class="spNode sol ${spSel === "sol" ? "sel" : ""}" data-sp="sol" style="left:50%;top:50%"><span class="spHalo"></span><img src="assets/space/sys-sol.webp" alt="" draggable="false"><span class="spLbl">Home<small>🌍 Solar System</small></span></button>
-    ${nodes}${ships}</div>
+    ${nodes}${typeof spDriftNode === "function" ? spDriftNode() : ""}${ships}</div>
     <div class="spZoom"><button data-spz="in" title="Zoom in">+</button><button data-spz="out" title="Zoom out">−</button><button data-spz="reset" title="Whole map">⤢</button></div></div>`;
 }
 /* ----- 🔍 zoom and pan: buttons, mouse wheel, drag, and two-finger pinch on phones ----- */
@@ -480,6 +486,7 @@ function spTripLine(tr) {
   return `<div class="spTrip">🚀 ${what} · ${st}${tr.lost ? " · 🏴‍☠️ cargo stolen" : ""}</div>`;
 }
 function spPanelHtml() {
+  if (spSel === "drift") return typeof spDriftPanel === "function" ? spDriftPanel() : "";
   if (spSel === "sol") {
     const ships = spShips(), slots = SP_SLOTS.map(([k, n, name]) => {
       const has = !!spSci()[k], secret = k !== "space" && !has;
@@ -487,9 +494,10 @@ function spPanelHtml() {
       + (spAllyBonus("ship") ? `<li>✅ 🤖 Cogitarium (💖 Allies): <b>+1</b> ship</li>` : "");
     return `<h3>🌍 Home: the Solar System</h3>
       <p>Your spaceport. Pick a system on the map to explore it or send gifts. Ships keep flying while the game is closed.</p>
-      <div class="spStats"><span>🚀 Ships: <b>${SP.trips.length} / ${ships}</b> busy</span><span>👽 Races met: <b>${Object.values(SP.races).filter(r => r.found).length} / ${Object.keys(SP_RACES).length}</b></span><span>🎁 Gifts delivered: <b>${SP.stats.gifts}</b></span></div>
+      <div class="spStats"><span>🚀 Courier ships: <b>${ships - spFree()} / ${ships}</b> busy</span><span>👽 Races met: <b>${Object.values(SP.races).filter(r => r.found).length} / ${Object.keys(SP_RACES).length}</b></span><span>🎁 Gifts delivered: <b>${SP.stats.gifts}</b></span></div>
       ${ships ? "" : `<p class="spWarn">⚠️ You have no ships right now. Build the 🚀 Space Mission Center (💰 Income → 🔬 Science) to get your first one back.</p>`}
       <ul class="spSlots">${slots}</ul>
+      ${typeof spFleetHtml === "function" ? spFleetHtml() : ""}
       ${spBonusList() ? `<h4>🏅 Your alliance bonuses</h4><ul class="spSlots">${spBonusList()}</ul>` : ""}
       ${SP.trips.length ? `<h4>Ships in flight</h4>${SP.trips.map(spTripLine).join("")}` : ""}`;
   }
@@ -686,7 +694,7 @@ function renderSpace() {
   if (state.logiPage === "market") { box.innerHTML = spSosHtml() + spMarketHtml(); return; }
   if (state.logiPage === "research" && typeof spResearchHtml === "function") { box.innerHTML = spSosHtml() + spResearchHtml(); return; }
   if (state.logiPage === "contracts" && typeof spContractsHtml === "function") { box.innerHTML = spSosHtml() + spContractsHtml(); return; }
-  box.innerHTML = `${spSosHtml()}<div class="card spResBar" id="spResBar">${spResHtml()}</div><div class="card spMapCard"><div class="row"><h2 style="margin:0">🌌 Star map</h2><span class="spFreeBadge ${spFree() ? "" : "none"}" title="Free ships">🚀 <b>${spFree()}</b><small>/ ${spShips()}</small><span>${spFree() === 1 ? "ship free" : "ships free"}</span></span></div>${spMapHtml()}</div>
+  box.innerHTML = `${spSosHtml()}<div class="card spResBar" id="spResBar">${spResHtml()}</div><div class="card spMapCard"><div class="row"><h2 style="margin:0">🌌 Star map</h2><span class="spFreeBadge ${spFree() ? "" : "none"}" title="Free courier ships">🚀 <b>${spFree()}</b><small>/ ${spShips()}</small><span>${spFree() === 1 ? "courier free" : "couriers free"}</span></span></div>${spMapHtml()}</div>
     <div class="card spPanel">${spPanelHtml()}</div>`;
   spZoomApply();
 }
@@ -815,5 +823,5 @@ setInterval(() => {
   if (spSci().space && !SP.unlocked) { SP.unlocked = true; save(); showNotice("🌌 New in 🚢 Logistics: <b>Space</b>! Explore the galaxy and meet alien races."); spApplyPage(); }
   spProcess(); spSosTick(); spAnimate();
 }, 1000);
-// the first catch-up (ships that arrived while the game was closed) runs at the end of js/34d-space-research.js,
+// the first catch-up (ships that arrived while the game was closed) runs at the end of js/34e-space-fleet.js,
 // once the contracts and research code is loaded too

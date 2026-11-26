@@ -2035,7 +2035,7 @@ body.phone .spMkSell { white-space: normal; } body.phone .spSpark { width: 60px;
   font-size: 20px; font-weight: 800; line-height: 1; cursor: pointer; backdrop-filter: blur(4px); }
 .spZoom button:hover { background: rgba(60, 50, 110, 0.92); }
 body.phone .spNode { width: 14%; } body.phone .spNode.sol { width: 16%; } body.phone .spShip { width: 6.5%; }
-body.phone .spZoom { right: auto; left: 50%; top: 6px; bottom: auto; transform: translateX(-50%); flex-direction: row; gap: 4px; }
+body.phone .spZoom { right: 6px; bottom: 6px; gap: 4px; }
 body.phone .spZoom button { width: 28px; height: 28px; font-size: 17px; border-radius: 8px; }
 .spGi { width: 1.35em; height: 1.35em; vertical-align: -0.32em; object-fit: contain; }
 .spRes .spGi { width: 22px; height: 22px; }
@@ -2328,3 +2328,8 @@ body.phone .machBalls { top: 26%; } body.phone .climbSky .ball { width: 14px; he
 img.spCraftBig { width: 44px; height: 44px; object-fit: contain; }
 .spFlood .spI { width: 16px; height: 16px; vertical-align: -3px; }
 .spCraftOut .spGi, .spResCost .spGi { width: 22px; height: 22px; }
+/* 🛸 fleet & Stardust Drift */
+.spCheck { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
+.spCheck input { width: 18px; height: 18px; accent-color: #ffd34d; }
+.spWarnTxt { color: #ff9b6b; font-weight: 700; }
+.spDriftTmp { filter: hue-rotate(160deg) saturate(1.3); }

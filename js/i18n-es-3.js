@@ -1467,6 +1467,70 @@ Object.assign(ES, { "1st": "1.ª", "2nd": "2.ª", "3rd": "3.ª", "4th": "4.ª", 
 rx(String.raw`University ×(\d)`, "Universidad ×$1");
 rx(String.raw`1 new scientist every 2 minutes · −(\d+) \/ sec for each empty place · \+(${NUM}) \/ sec when full`, "1 científico nuevo cada 2 minutos · −$1 / s por cada plaza vacía · +$2 / s cuando está llena");
 rx(String.raw`Every (\d+) minutes: (${NUM}) – (${NUM})( \(🧬 \+30%\))?, or nothing if the mission fails \((\d+)% chance\)`, (m, n, a, b, g, f) => `Cada ${n} minutos: ${a} – ${b}${g ? " (🧬 +30 %)" : ""}, o nada si la misión fracasa (${f} % de probabilidad)`);
+// 🛸 fleet & Stardust Drift (js/34e-space-fleet.js)
+Object.assign(SP_ES_RES, { "Stardust Harvesters": "Cosechadoras de polvo estelar", "Escort Frigates": "Fragatas de escolta", "Extra courier ships": "Naves mensajeras extra",
+  "+1 harvester · 5 stardust a minute": "+1 cosechadora · 5 de polvo estelar por minuto", "+1 harvester (2 in total) · 6 stardust a minute each": "+1 cosechadora (2 en total) · 6 de polvo estelar por minuto cada una",
+  "+1 harvester (3 in total) · 7 stardust a minute each": "+1 cosechadora (3 en total) · 7 de polvo estelar por minuto cada una",
+  "+1 frigate": "+1 fragata", "+2 frigates (3 in total)": "+2 fragatas (3 en total)", "+2 frigates (5 in total)": "+2 fragatas (5 en total)" });
+const SP_RX_RES2 = Object.keys(SP_ES_RES).sort((a, b) => b.length - a.length).map(k => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
+Object.assign(ES, SP_ES_RES, { "Free courier ships": "Naves mensajeras libres", "courier free": "mensajera libre", "couriers free": "mensajeras libres",
+  "Stardust Drift": "Deriva de Polvo Estelar", "Pirate space": "Espacio pirata", "Pirates": "Piratas", "Farmed": "Cosechado", "Attacks": "Ataques", "Driven off": "Ahuyentados", "Frigates lost": "Fragatas perdidas",
+  "Send with escort": "Enviar con escolta", "Send without escort": "Enviar sin escolta", "Harvesters at work": "Cosechadoras trabajando", "Harvester": "Cosechadora", "no escort": "sin escolta",
+  "Courier ships": "Naves mensajeras", "(gifts, trade routes, contracts, exploring)": "(regalos, rutas comerciales, contratos, exploración)", "free": "libres",
+  "A new Escort Frigate is ready.": "Una nueva fragata de escolta está lista.", "Fleet": "Flota",
+  "Send a free frigate with every courier ship (pirates leave escorted ships alone)": "Enviar una fragata libre con cada nave mensajera (los piratas dejan en paz a las naves escoltadas)",
+  "A glittering cloud of stardust left behind by dying stars. Harvesters can farm it, but wild pirates hunt here and nobody controls them, not even the Void Corsairs.":
+    "Una nube brillante de polvo estelar que dejaron estrellas moribundas. Las cosechadoras pueden recogerlo, pero aquí cazan piratas salvajes que nadie controla, ni siquiera los Corsarios del Vacío.",
+  "30% chance of an attack in the first half hour of farming, 50% in the second. Without an escort they take all the stardust farmed so far. A 🛡️ frigate drives them off, but has a 3% chance to be destroyed in each attack (and then the stardust is lost too).":
+    "30 % de probabilidad de un ataque en la primera media hora de cosecha y 50 % en la segunda. Sin escolta se llevan todo el polvo estelar cosechado hasta entonces. Una 🛡️ fragata los ahuyenta, pero tiene un 3 % de probabilidad de ser destruida en cada ataque (y entonces también se pierde el polvo estelar).",
+  "(🌌 Space → Research) to farm stardust here.": "(🌌 Espacio → Investigación) para cosechar polvo estelar aquí.",
+  "Exploring the signal · back in": "Explorando la señal · vuelve en", "5 min each way · farming takes 1 hour": "5 min por trayecto · la cosecha dura 1 hora",
+  "flying there · farming starts in": "de camino · la cosecha empieza en", "coming home · back in": "volviendo · llega en",
+});
+hrx(String.raw`A strange glittering cloud at the edge of your scanners\. Send a courier ship to explore it: <b>(\d+) min<\/b> there and <b>(\d+) min<\/b> back\.`, "Una extraña nube brillante en el borde de tus escáneres. Envía una nave mensajera a explorarla: <b>$1 min</b> de ida y <b>$2 min</b> de vuelta.");
+rx(String.raw`(🚀 )?A courier ship is on its way to explore the strange signal \((\d+) min there, (\d+) min back\)\.`, (m, e, a, b) => `${e || ""}Una nave mensajera va de camino a explorar la extraña señal (${a} min de ida, ${b} min de vuelta).`);
+rx(String.raw`(🌫️ )?Your courier ship found the <b>Stardust Drift<\/b>: a glittering cloud full of stardust, and full of pirates\. (Send a ✨ Stardust Harvester to farm it!|Research ✨ Stardust Harvesters \(🌌 Space → Research\) to farm it\.)`, (m, e, x) =>
+  `${e || ""}Tu nave mensajera ha encontrado la <b>Deriva de Polvo Estelar</b>: una nube brillante llena de polvo estelar… y de piratas. ${x.startsWith("Send") ? "¡Envía una ✨ cosechadora de polvo estelar a recogerlo!" : "Investiga ✨ Cosechadoras de polvo estelar (🌌 Espacio → Investigación) para recogerlo."}`);
+hrx(String.raw`Stardust Drift<small>(🏴‍☠️ Pirate space|✨ (\d+) harvesting)<\/small>`, (m, x, n) => `Deriva de Polvo Estelar<small>${n ? `✨ ${n} cosechando` : "🏴‍☠️ Espacio pirata"}</small>`);
+rx(String.raw`(\d+) harvesting`, "$1 cosechando");
+hrx(String.raw`🌫️ Stardust Drift <span>· Pirate space<\/span>`, "🌫️ Deriva de Polvo Estelar <span>· Espacio pirata</span>");
+hrx(String.raw`<b>Distance:<\/b> (\d+) min each way · farming takes 1 hour`, "<b>Distancia:</b> $1 min por trayecto · la cosecha dura 1 hora");
+hrx(String.raw`<b>Pirates:<\/b> (.+)`, (m, x) => `<b>Piratas:</b> ${ES[x] || x}`);
+hrx(String.raw`(?:Research|Investigación) <b>✨ Stardust Harvesters<\/b> \(🌌 Space → Research\) to farm stardust here\.`, "Investiga <b>✨ Cosechadoras de polvo estelar</b> (🌌 Espacio → Investigación) para cosechar polvo estelar aquí.");
+hrx(String.raw`<b>Level (\d):<\/b> (${SP_RX_RES2})`, (m, n, x) => `<b>Nivel ${n}:</b> ${SP_ES_RES[x] || x}`);
+rx(String.raw`(✅ )?Now: (${SP_RX_RES2})`, (m, e, x) => `${e || ""}Ahora: ${SP_ES_RES[x] || x}`);
+rx(String.raw`(🔬 )?Research done: (\S+) <b>(${SP_RX_RES2}) (\d)<\/b> · (${SP_RX_RES2})\.`, (m, e, i, nm, n, x) => `${e || ""}Investigación terminada: ${i} <b>${SP_ES_RES[nm] || nm} ${n}</b> · ${SP_ES_RES[x] || x}.`);
+hrx(String.raw`<b>Stardust Harvesters:<\/b> (\d+) \/ (\d+) out · each farms <b>(\d+)<\/b> stardust a minute \(✨ ([\d.,]+) an hour\)\.`, "<b>Cosechadoras de polvo estelar:</b> $1 / $2 fuera · cada una cosecha <b>$3</b> de polvo estelar por minuto (✨ $4 por hora).");
+rx(String.raw`(🛡️ )?Frigates free: (\d+) \/ (\d+)`, (m, e, a, b) => `${e || ""}Fragatas libres: ${a} / ${b}`);
+rx(String.raw`All your courier ships are busy\.`, "Todas tus naves mensajeras están ocupadas.");
+rx(String.raw`All your harvesters are out\.`, "Todas tus cosechadoras están fuera.");
+rx(String.raw`All your frigates are busy\.`, "Todas tus fragatas están ocupadas.");
+rx(String.raw`No frigates: build one for (${NUM}) at 🌍 Home\.`, "No tienes fragatas: construye una por $1 en 🌍 Hogar.");
+rx(String.raw`Research 🛡️ Escort Frigates \(🌌 Space → Research\) to protect your harvesters\.`, "Investiga 🛡️ Fragatas de escolta (🌌 Espacio → Investigación) para proteger tus cosechadoras.");
+rx(String.raw`(✨ )?A Stardust Harvester is on its way to the Stardust Drift( with a 🛡️ frigate escort| \(no escort: watch out for pirates!\))\.`, (m, e, x) => `${e || ""}Una cosechadora de polvo estelar va de camino a la Deriva de Polvo Estelar${x.includes("with") ? " con una 🛡️ fragata de escolta" : " (sin escolta: ¡cuidado con los piratas!)"}.`);
+hrx(String.raw`(\S+|\{i\}) Harvester( \+ (?:\S+|\{i\}) escort| · <span>no escort<\/span>) · (flying there · farming starts in|farming · ✨ <b>[\d.,]+<\/b> so far · done in|coming home · back in) <b>([\d:]+)<\/b>( with ✨ <b>[\d.,]+<\/b>)?`, (m, i, esc, st, t, w) => {
+  const e2 = esc.includes("no escort") ? " · <span>sin escolta</span>" : esc.replace(" escort", " escolta");
+  const st2 = st.startsWith("flying") ? "de camino · la cosecha empieza en" : st.startsWith("coming") ? "volviendo · llega en" : st.replace("farming · ", "cosechando · ").replace(" so far · done in", " hasta ahora · termina en");
+  return `${i} Cosechadora${e2} · ${st2} <b>${t}</b>${w ? w.replace(" with ", " con ") : ""}`; });
+rx(String.raw`(🛡️ )?Pirates attacked your harvester in the Stardust Drift, but your frigate drove them off!`, (m, e) => `${e || ""}¡Los piratas atacaron tu cosechadora en la Deriva de Polvo Estelar, pero tu fragata los ahuyentó!`);
+rx(String.raw`(💥 )?Pirates destroyed your escort frigate in the Stardust Drift and took ✨ ([\d.,]+) stardust! Build a new frigate for (${NUM}) \(🌍 Home\)\.`, (m, e, n, x) => `${e || ""}¡Los piratas destruyeron tu fragata de escolta en la Deriva de Polvo Estelar y se llevaron ✨ ${n} de polvo estelar! Construye una fragata nueva por ${x} (🌍 Hogar).`);
+rx(String.raw`(🏴‍☠️ )?Pirates raided your unprotected harvester in the Stardust Drift and took ✨ ([\d.,]+) stardust! It keeps farming\.`, (m, e, n) => `${e || ""}¡Los piratas asaltaron tu cosechadora sin protección en la Deriva de Polvo Estelar y se llevaron ✨ ${n} de polvo estelar! Sigue cosechando.`);
+rx(String.raw`(✨ )?Your harvester is back from the Stardust Drift with <b>([\d.,]+)<\/b> stardust( \(pirates took ([\d.,]+)\))?\.`, (m, e, n, x, l) => `${e || ""}Tu cosechadora ha vuelto de la Deriva de Polvo Estelar con <b>${n}</b> de polvo estelar${l ? ` (los piratas se llevaron ${l})` : ""}.`);
+rx(String.raw`(🛡️ )?Pirates spotted your courier ship to the (${SP_RX_NAME}), saw its frigate escort and flew away\.`, (m, e, n) => `${e || ""}Los piratas vieron tu nave mensajera hacia los ${spN(n)}, vieron su fragata de escolta y se marcharon.`);
+hrx(String.raw`🚀 Courier ships: <b>(\d+) \/ (\d+)<\/b> (?:busy|ocupadas)`, "🚀 Naves mensajeras: <b>$1 / $2</b> ocupadas");
+hrx(String.raw`(\S+|\{i\}) Courier ships: <b>(\d+) \/ (\d+)<\/b> free <span>\(gifts, trade routes, contracts, exploring\)<\/span>`, "$1 Naves mensajeras: <b>$2 / $3</b> libres <span>(regalos, rutas comerciales, contratos, exploración)</span>");
+hrx(String.raw`(\S+|\{i\}) Stardust Harvesters: <b>(\d+) \/ (\d+)<\/b> free`, "$1 Cosechadoras de polvo estelar: <b>$2 / $3</b> libres");
+hrx(String.raw`(\S+|\{i\}) Escort Frigates: <b>(\d+) \/ (\d+)<\/b> free( · (\d+) destroyed)?`, (m, i, a, b, x, d) => `${i} Fragatas de escolta: <b>${a} / ${b}</b> libres${d ? ` · ${d} destruidas` : ""}`);
+rx(String.raw`free · (\d+) destroyed`, "libres · $1 destruidas");
+rx(String.raw`Build a frigate · (${NUM})`, "Construir una fragata · $1");
+H("🛸 <b>Fleet:</b> 🚀 <b>courier ships</b> carry gifts, trade routes, contracts and explorers. ✨ <b>Stardust Harvesters</b> (research: up to 3) farm the 🌫️ Stardust Drift, and 🛡️ <b>Escort Frigates</b> (research: 1, then 2 and 2 more, up to 5) protect your other ships. Tick the box at 🌍 Home to send a free frigate with every courier ship: pirates leave escorted ships alone.",
+  "🛸 <b>Flota:</b> las 🚀 <b>naves mensajeras</b> llevan regalos, rutas comerciales, contratos y exploradores. Las ✨ <b>cosechadoras de polvo estelar</b> (investigación: hasta 3) recogen polvo en la 🌫️ Deriva de Polvo Estelar, y las 🛡️ <b>fragatas de escolta</b> (investigación: 1, luego 2 y 2 más, hasta 5) protegen tus otras naves. Marca la casilla en 🌍 Hogar para enviar una fragata libre con cada nave mensajera: los piratas dejan en paz a las naves escoltadas.");
+H("🌫️ <b>Stardust Drift:</b> an area at the top of the star map (explore it first, 5 min each way). A harvester flies there in 5 minutes, farms for 1 hour (5/6/7 stardust a minute, by research level) and flies home. Pirates: 30% chance of an attack in the first half hour of farming and 50% in the second. With no escort they take all the stardust farmed so far. A frigate drives them off, but each attack has a 3% chance to destroy it (and then the stardust is lost too). Build a new frigate for 10 gcoin at 🌍 Home.",
+  "🌫️ <b>Deriva de Polvo Estelar:</b> una zona en la parte de arriba del mapa estelar (primero hay que explorarla, 5 min por trayecto). Una cosechadora tarda 5 minutos en llegar, cosecha durante 1 hora (5/6/7 de polvo estelar por minuto, según el nivel de investigación) y vuelve. Piratas: 30 % de probabilidad de un ataque en la primera media hora de cosecha y 50 % en la segunda. Sin escolta se llevan todo el polvo cosechado hasta entonces. Una fragata los ahuyenta, pero cada ataque tiene un 3 % de probabilidad de destruirla (y entonces también se pierde el polvo). Construye una fragata nueva por 10 gcoin en 🌍 Hogar.");
+H("🛸 New spaceships! ✨ <b>Stardust Harvesters</b> farm stardust and 🛡️ <b>Escort Frigates</b> protect your ships from pirates. Research them in 🌌 Space → Research. Your old ships are now called 🚀 <b>courier ships</b>.",
+  "🛸 ¡Naves nuevas! Las ✨ <b>cosechadoras de polvo estelar</b> recogen polvo estelar y las 🛡️ <b>fragatas de escolta</b> protegen tus naves de los piratas. Investígalas en 🌌 Espacio → Investigación. Tus naves de siempre ahora se llaman 🚀 <b>naves mensajeras</b>.");
+H("🌫️ A new area on the star map: the <b>Stardust Drift</b>. Explore it, then send harvesters to farm stardust for an hour, but watch out for pirates!",
+  "🌫️ Una zona nueva en el mapa estelar: la <b>Deriva de Polvo Estelar</b>. Explórala y envía cosechadoras a recoger polvo estelar durante una hora, ¡pero cuidado con los piratas!");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
