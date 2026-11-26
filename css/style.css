@@ -2284,3 +2284,7 @@ body.phone .machBalls { top: 26%; } body.phone .climbSky .ball { width: 14px; he
 .climbWrap { grid-template-columns: 1fr 260px; }
 @media (max-width: 760px) { .climbWrap { grid-template-columns: 1fr; } }
 .casinoMoneyBox { margin-left: 0; display: inline-flex; } .wallet { align-items: center; } .casinoMoneyBox b { font-size: 30px; } .casinoMoneyBox .duMoneyI { width: 42px; height: 42px; }
+#counterTip { position: fixed; transform: translateX(-50%); z-index: 500; padding: 10px 14px; border-radius: 12px; background: rgba(18,14,40,0.95); border: 1px solid rgba(255,211,77,0.5); box-shadow: 0 8px 24px rgba(0,0,0,0.5); font-size: 15px; font-weight: 500; color: #e8e8f0; white-space: nowrap; pointer-events: none; text-align: left; line-height: 1.25; }
+#counterTip div { display: grid; grid-template-columns: 22px auto 52px auto; gap: 6px; align-items: baseline; padding: 2px 0; }
+#counterTip b { color: #ffd34d; text-align: right; font-variant-numeric: tabular-nums; } #counterTip small { color: #9a9ab5; font-size: 12px; }
+#counterTip span { font-size: 15px !important; color: #e8e8f0 !important; font-weight: 500 !important; }

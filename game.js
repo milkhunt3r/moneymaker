@@ -2712,6 +2712,7 @@ Object.assign(ES, { "bcoin (bronze)": "bcoin (bronce)", "scoin (silver, sc)": "s
 });
 H("💎 New coin: <b>pcoin</b> (platinum). 1 pcoin = 1,000,000 gcoin; money switches to pcoin from 1,000,000 gcoin. The money boxes can be set to pcoin too.",
   "💎 Nueva moneda: <b>pcoin</b> (platino). 1 pcoin = 1.000.000 gcoin; el dinero pasa a mostrarse en pcoin desde 1.000.000 gcoin. Las casillas de dinero también se pueden poner en pcoin.");
+Object.assign(ES, { "platinum": "platino", "gold": "oro", "silver": "plata", "bronze": "bronce" });
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -3771,18 +3772,22 @@ function updateCounter() {   // batched: many calls in one frame (fast clicks, i
   requestAnimationFrame(() => { counterQueued = false; updateCounterNow(); });
   if (document.hidden) setTimeout(() => { if (counterQueued) { counterQueued = false; updateCounterNow(); } }, 0);
 }
+// 🪙 Hovering your money shows it in every coin, in a steady box (a browser tooltip would blink as the money changes)
+var counterTipOn = false;
+function counterTipFill() {
+  const tip = $("counterTip"); if (!tip) return;
+  const m = Math.max(0, state.money), u = (d, n) => (Math.floor(m / d * 100) / 100).toLocaleString(undefined, { maximumFractionDigits: 2 });
+  const rows = [["💎", "pcoin", PCOIN, "platinum"], ["🥇", "gcoin", GCOIN, "gold"], ["🥈", "scoin", SCOIN, "silver"], ["🥉", "bcoin", 1, "bronze"]]
+    .filter(([, , d]) => d === 1 || m >= d / 1e3)
+    .map(([e, n, d, name]) => `<div><span>${e}</span><b>${d === 1 ? Math.floor(m).toLocaleString() : u(d)}</b><span>${n}</span><small>${name}</small></div>`).join("");
+  if (tip.dataset.h !== rows) { tip.dataset.h = rows; tip.innerHTML = rows; }
+}
 function updateCounterNow() {
   // Main counter: stays in bcoin until 100M, then switches to scoin (and gcoin at 1M scoin)
   const [num, unit] = splitCoins(state.money, 100 * SCOIN);
   $("counter").firstChild.nodeValue = num + " ";
   $("counter").querySelector("span").textContent = unit;
-  // Hover shows the other coin: bcoin view -> how many scoin; scoin/gcoin view -> exact bcoin
-  const dec = state.money >= GCOIN ? 2 : 6;   // huge amounts: 2 decimals is plenty
-  const asScoin = (Math.floor(state.money / SCOIN * 10 ** dec) / 10 ** dec).toLocaleString(undefined, { maximumFractionDigits: dec });
-  $("counter").title = unit === "bcoin"
-    ? "= " + asScoin + " scoin"
-    : unit === "pcoin" ? "= " + (Math.floor(state.money / GCOIN * 100) / 100).toLocaleString(undefined, { maximumFractionDigits: 2 }) + " gcoin"
-    : (unit === "gcoin" ? "= " + asScoin + " scoin\n" : "") + "= " + Math.floor(state.money).toLocaleString() + " bcoin";
+  if (counterTipOn) counterTipFill();   // the hover box with every coin (stays steady, no blinking)
   $("casinoMoney").textContent = fmt(state.money);
   updateVipBar();
   $("investMoney").textContent = fmt(state.money);
@@ -4334,6 +4339,12 @@ $("tabs").addEventListener("click", (e) => {
   if (tab) showView(tab.dataset.view);
 });
 document.querySelectorAll(".debtBanner").forEach(b => b.addEventListener("click", payTaxDebt));   // pay right here, no need to go to Income
+document.body.insertAdjacentHTML("beforeend", `<div id="counterTip" hidden></div>`);   // outside the counter: it clips what it holds
+$("counter").addEventListener("mouseenter", () => {
+  counterTipOn = true; counterTipFill(); const t = $("counterTip"), r = $("counter").getBoundingClientRect();
+  t.hidden = false; t.style.left = (r.left + r.width / 2) + "px"; t.style.top = (r.bottom + 4) + "px";
+});
+$("counter").addEventListener("mouseleave", () => { counterTipOn = false; $("counterTip").hidden = true; });
 
 // ===== js/03-casino.js =====
 __eocLoaded = 8;
