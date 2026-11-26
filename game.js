@@ -3032,6 +3032,10 @@ H("🌍 Earth logistics is tidier: one slim bar shows your level, money, vehicle
   "🌍 La logística de la Tierra está más ordenada: una barra fina muestra tu nivel, tu dinero, los vehículos en ruta y los contratos, y las pestañas Camiones · Petroleros · Aviones muestran una flota a la vez (con un <b>!</b> cuando hay vehículos esperando o averiados). El mapa del mundo sigue la pestaña que elijas.");
 hrx(String.raw`(\{i\}|<img[^>]*>)(${NUM}) · (\{i\}|<img[^>]*>)([\dhms: ]+) · <b>≈ (${NUM}) \/ sec<\/b>`, "$1$2 · $3$4 · <b>≈ $5 / s</b>");
 Object.assign(ES, { "BROKEN DOWN": "AVERIADO", "This truck needs repairs before it can take new contracts.": "Este camión necesita reparaciones antes de aceptar contratos nuevos." });
+// 🗺️ map size
+Object.assign(ES, { "⤢ Full map": "⤢ Mapa completo", "⤡ Smaller map": "⤡ Mapa más pequeño", "How to read the map": "Cómo leer el mapa" });
+H("🗺️ The world map is smaller by default (⤢ Full map makes it full width again), its help text moved into an ℹ️ button, and on phones it starts folded.",
+  "🗺️ El mapa del mundo es más pequeño por defecto (⤢ Mapa completo lo vuelve a poner a todo el ancho), su texto de ayuda está ahora en un botón ℹ️, y en el móvil empieza plegado.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -3352,7 +3356,7 @@ var staffIco = (key, o, cls = "staffI") => STAFF_PICS.includes(key) ? ico("st-" 
 // 👽 alliance bonuses from 🌌 Space (js/34-space.js loads later)
 var alienBonus = (key) => ((__eocLoaded >= 44 && typeof spAllyBonus === "function") ? spAllyBonus(key) : 0);
 var geneBonus = (cat) => (typeof geneCatCount === "function" ? geneCatCount(cat) * 0.01 : 0);
-var PREF_KEYS = ["view", "coinUnit", "casinoPage", "logiPage", "rewardType", "rewardState", "gamePage", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage", "cryptoSel", "ivCard", "logiFleet",
+var PREF_KEYS = ["view", "coinUnit", "casinoPage", "logiPage", "rewardType", "rewardState", "gamePage", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage", "cryptoSel", "ivCard", "logiFleet", "mapBig", "mapHelp",
                    "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage"];
 function splitState(st) {   // -> { progress, prefs }
   const progress = {}, prefs = {};
@@ -10394,8 +10398,15 @@ function showMapTip(e) {
   tip.style.left = Math.max(4, Math.min(box.width - 214, left - 105)) + "px";
   tip.style.top = (top > 110 ? top - tip.offsetHeight - 8 : top + r.height + 8) + "px";
 }
+// 🗺️ the map starts smaller (⤢ Full map makes it full width); on phones it starts folded
+if (state.mapHidden === undefined && document.body.classList.contains("phone")) state.mapHidden = true;
 function updateMapControls() {
   $("worldMapWrap").hidden = !!state.mapHidden;
+  $("mapCard").classList.toggle("mapBig", !!state.mapBig);
+  $("mapBig").textContent = state.mapBig ? "⤡ Smaller map" : "⤢ Full map";
+  $("mapBig").hidden = !!state.mapHidden;
+  $("mapHelpText").hidden = !state.mapHelp;
+  $("mapHelp").classList.toggle("open", !!state.mapHelp);
   $("mapToggle").textContent = state.mapHidden ? "▸ Show" : "▾ Minimize";
   document.querySelectorAll("[data-mapshow]").forEach(b => b.classList.toggle("on", !!state.mapShow[b.dataset.mapshow]));
 }
@@ -10404,6 +10415,8 @@ $("worldMap").addEventListener("mouseleave", () => { $("mapTip").hidden = true; 
 $("worldMap").addEventListener("click", showMapTip);   // tap on phones
 $("mapCard").addEventListener("click", (e) => {
   if (e.target.closest("#mapToggle")) { state.mapHidden = !state.mapHidden; updateMapControls(); save(); return; }
+  if (e.target.closest("#mapBig")) { state.mapBig = !state.mapBig; updateMapControls(); save(); return; }
+  if (e.target.closest("#mapHelp")) { state.mapHelp = !state.mapHelp; updateMapControls(); save(); return; }
   const f = e.target.closest("[data-mapshow]");
   if (f) { state.mapShow[f.dataset.mapshow] = !state.mapShow[f.dataset.mapshow]; updateMapControls(); renderMapVehicles(); save(); }
 });
@@ -13719,6 +13732,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "🗺️ The world map is smaller by default (⤢ Full map makes it full width again), its help text moved into an ℹ️ button, and on phones it starts folded.",
     "🌍 Earth logistics is tidier: one slim bar shows your level, money, vehicles on the road and contracts, and Trucks · Tankers · Planes tabs show one fleet at a time (with a <b>!</b> when vehicles wait or break down). The world map follows the tab you pick.",
     "🚚 Logistics is faster to run: every vehicle is one compact row, idle ones show their ⭐ best offer (most money per second) with a <b>Send</b> button, and <b>⭐ Send all</b> puts every waiting vehicle on its best contract at once. \"Other offers\" still opens all 4.",
     "🔁 Investing: each investment now has one <b>Buy | Sell</b> switch with a single amount row. In Sell mode the % buttons fill a share of what you hold, and a line tells you what you put in or get back.",

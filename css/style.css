@@ -2556,3 +2556,9 @@ body.phone .openRow .btn.big { width: 100%; }
 .lgFleetCard[hidden] { display: none; }
 body.phone .lgTabs { gap: 5px; } body.phone .lgTab { padding: 6px; gap: 4px; } body.phone .lgTab .ico { width: 22px; height: 22px; }
 body.phone .lgTab small:last-child { display: none; }
+/* 🗺️ smaller world map by default; ⤢ Full map makes it full width */
+#mapCard:not(.mapBig) #worldMap { max-width: 600px; margin-left: auto; margin-right: auto; }
+#mapCard:not(.mapBig) #mapCounts { text-align: center; }
+body.phone #mapCard:not(.mapBig) #worldMap { max-width: none; }
+body.phone #mapBig { display: none; }
+#mapHelp.open { border-color: #ffd34d; }

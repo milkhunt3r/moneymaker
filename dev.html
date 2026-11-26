@@ -220,11 +220,11 @@
     <div class="card" id="mapCard">
       <div class="row"><h2 style="margin:0">🗺️ World map</h2>
         <span><span class="segGroup"><button class="seg" data-mapshow="truck"><img class="ico" src="assets/icons/ico-lg-truck.webp" alt="">Trucks</button><button class="seg" data-mapshow="tanker"><img class="ico" src="assets/icons/ico-lg-tanker.webp" alt="">Tankers</button><button class="seg" data-mapshow="plane"><img class="ico" src="assets/icons/ico-lg-plane.webp" alt="">Planes</button></span>
-        <button class="btn ghost small" id="mapToggle" style="margin-left:6px">▾ Minimize</button></span></div>
+        <button class="btn ghost small" id="mapBig" style="margin-left:6px">⤢ Full map</button><button class="btn ghost small" id="mapHelp" title="How to read the map">ℹ️</button><button class="btn ghost small" id="mapToggle">▾ Minimize</button></span></div>
       <div id="worldMapWrap">
         <div class="muted" id="mapCounts" style="margin-top:6px"></div>
         <div id="worldMap"></div>
-        <div class="muted" style="font-size:12px; margin-top:4px">Hover (or tap) a vehicle or city. Dots = contract cities in the fleet's color (🟠 trucks, 🔵 tankers, 🟣 planes); a glowing ring = a vehicle is on its way there. Gray ring on a vehicle = waiting, red = broken down.</div>
+        <div class="muted" id="mapHelpText" hidden style="font-size:12px; margin-top:4px">Hover (or tap) a vehicle or city. Dots = contract cities in the fleet's color (🟠 trucks, 🔵 tankers, 🟣 planes); a glowing ring = a vehicle is on its way there. Gray ring on a vehicle = waiting, red = broken down.</div>
       </div>
     </div>
     <div class="card">

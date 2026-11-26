@@ -223,8 +223,15 @@ function showMapTip(e) {
   tip.style.left = Math.max(4, Math.min(box.width - 214, left - 105)) + "px";
   tip.style.top = (top > 110 ? top - tip.offsetHeight - 8 : top + r.height + 8) + "px";
 }
+// 🗺️ the map starts smaller (⤢ Full map makes it full width); on phones it starts folded
+if (state.mapHidden === undefined && document.body.classList.contains("phone")) state.mapHidden = true;
 function updateMapControls() {
   $("worldMapWrap").hidden = !!state.mapHidden;
+  $("mapCard").classList.toggle("mapBig", !!state.mapBig);
+  $("mapBig").textContent = state.mapBig ? "⤡ Smaller map" : "⤢ Full map";
+  $("mapBig").hidden = !!state.mapHidden;
+  $("mapHelpText").hidden = !state.mapHelp;
+  $("mapHelp").classList.toggle("open", !!state.mapHelp);
   $("mapToggle").textContent = state.mapHidden ? "▸ Show" : "▾ Minimize";
   document.querySelectorAll("[data-mapshow]").forEach(b => b.classList.toggle("on", !!state.mapShow[b.dataset.mapshow]));
 }
@@ -233,6 +240,8 @@ $("worldMap").addEventListener("mouseleave", () => { $("mapTip").hidden = true; 
 $("worldMap").addEventListener("click", showMapTip);   // tap on phones
 $("mapCard").addEventListener("click", (e) => {
   if (e.target.closest("#mapToggle")) { state.mapHidden = !state.mapHidden; updateMapControls(); save(); return; }
+  if (e.target.closest("#mapBig")) { state.mapBig = !state.mapBig; updateMapControls(); save(); return; }
+  if (e.target.closest("#mapHelp")) { state.mapHelp = !state.mapHelp; updateMapControls(); save(); return; }
   const f = e.target.closest("[data-mapshow]");
   if (f) { state.mapShow[f.dataset.mapshow] = !state.mapShow[f.dataset.mapshow]; updateMapControls(); renderMapVehicles(); save(); }
 });
