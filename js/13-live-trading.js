@@ -353,9 +353,12 @@ function drawCryptoChart(sym) {
 }
 const priceText = (p) => p.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+// 🪙 one coin at a time (tabs); all open positions and limit orders in one list on top
+if (!CRYPTOS.some(c => c.sym === state.cryptoSel)) state.cryptoSel = "BTC";
 function renderCrypto() {
-  $("cryptoList").innerHTML = CRYPTOS.map(c => `
-    <div class="cryptoRow">
+  $("cryptoList").innerHTML = `<div id="cposAll"></div><div class="coinTabs">${CRYPTOS.map(c => `<button class="coinTab ${c.sym === state.cryptoSel ? "on" : ""}" data-csel="${c.sym}">
+      <span class="cryptoIcon">${c.icon}</span><span><b>${c.sym}</b><small id="ctabp-${c.sym}">–</small></span><span class="coinTabChg" id="ctabc-${c.sym}"></span><i class="coinTabPos" id="ctabn-${c.sym}"></i></button>`).join("")}</div>` + CRYPTOS.map(c => `
+    <div class="cryptoRow" data-crow="${c.sym}" ${c.sym === state.cryptoSel ? "" : "hidden"}>
       <div class="row" style="justify-content:flex-start; gap:18px; flex-wrap:wrap">
         <div class="cryptoName"><span class="cryptoIcon">${c.icon}</span><div><b>${c.name}</b><div class="muted">${c.sym}</div></div></div>
         <div><div class="muted">Live price</div><div class="bigValue" id="cprice-${c.sym}">–</div></div>
@@ -370,6 +373,8 @@ function renderCrypto() {
         <div class="segGroup">
           <button class="seg long" data-tside="${c.sym}" data-side="long">▲ Long</button><button class="seg short" data-tside="${c.sym}" data-side="short">▼ Short</button></div>
         <div class="segGroup">${LEVERAGES.map(l => `<button class="seg" data-tlev="${c.sym}" data-lev="${l}">×${l}</button>`).join("")}</div>
+      </div>
+      <div class="tradePanel">
         <input id="cbuy-${c.sym}" type="number" min="${CRYPTO_MIN}" placeholder="Amount (min 1,000)">
         <button class="btn ghost small" data-cpct="${c.sym}" data-pct="0.05">5%</button>
         <button class="btn ghost small" data-cpct="${c.sym}" data-pct="0.1">10%</button>
@@ -377,7 +382,6 @@ function renderCrypto() {
         <button class="btn ghost small" data-cpct="${c.sym}" data-pct="0.5">50%</button>
         <button class="btn ghost small" data-cpct="${c.sym}" data-pct="0.75">75%</button>
         <button class="btn ghost small" data-cpct="${c.sym}" data-pct="1">All</button>
-        <button class="btn" data-copen="${c.sym}" id="copen-${c.sym}">Open</button>
       </div>
       <div class="tradePanel tradeExtra">
         <div class="segGroup">
@@ -388,9 +392,10 @@ function renderCrypto() {
         <label class="tpslBox" title="Close by itself when the loss (after the closing fee) reaches this % of the money you put in">🛑 Stop loss
           <input id="csl-${c.sym}" type="number" min="1" max="95" placeholder="− %"></label>
       </div>
-      <div class="muted" id="cprev-${c.sym}"></div>
+      <div class="openRow"><button class="btn big" data-copen="${c.sym}" id="copen-${c.sym}">Open</button><div class="muted" id="cprev-${c.sym}"></div></div>
       <div id="cmsg-${c.sym}" class="muted"></div>
       <div id="cpos-${c.sym}"></div>
+      <div class="muted cposHint" id="cposh-${c.sym}"></div>
     </div>`).join("");
   if (typeof updateChartTools === "function") updateChartTools();
   updateTradePanels();
@@ -404,7 +409,7 @@ function updateTradePanels() {
     document.querySelectorAll(`[data-ttype="${c.sym}"]`).forEach(b => b.classList.toggle("on", b.dataset.type === t.type));
     if ($("climit-" + c.sym)) $("climit-" + c.sym).hidden = t.type !== "limit";
     const btn = $("copen-" + c.sym);
-    if (btn) { btn.textContent = `${t.type === "limit" ? "Place limit" : "Open"} ${t.side === "long" ? "Long" : "Short"} ×${t.lev}`; btn.className = "btn " + (t.side === "long" ? "longBtn" : "shortBtn"); }
+    if (btn) { btn.textContent = `${t.type === "limit" ? "Place limit" : "Open"} ${t.side === "long" ? "Long" : "Short"} ×${t.lev}`; btn.className = "btn big " + (t.side === "long" ? "longBtn" : "shortBtn"); }
   }
 }
 function renderCryptoNumbers() {
@@ -415,6 +420,7 @@ function renderCryptoNumbers() {
   const f = cryptoFee();
   $("cryptoFeeText").textContent = `Trading fee: ${(f * 100).toFixed(1)}% when you open and when you close` +
     (f > 0 ? ` (Investor level ${investLevel()}; next −0.1% at level ${investLevel() >= 90 ? 99 : (Math.floor(investLevel() / 10) + 1) * 10})` : " (Investor level 99: free!)");
+  const allPos = [], allOrd = [];
   for (const c of CRYPTOS) {
     const L = live[c.sym];
     if (!$("cprice-" + c.sym)) return;
@@ -443,23 +449,30 @@ function renderCryptoNumbers() {
     // open positions and recent closed trades
     const log = inv.tradeLog.filter(x => x.sym === c.sym).slice(0, 5);
     const orders = inv.orders.filter(o => o.sym === c.sym);
-    $("cpos-" + c.sym).innerHTML = (mine.length ? `<table class="posTable"><thead><tr><th>Position</th><th>Size</th><th>Entry</th><th>Now</th><th>Profit / loss</th><th>Liquidation</th><th>Auto-close</th><th>Open for</th><th></th></tr></thead><tbody>` +
-      mine.map(p => {
-        const val = posValue(p, price), res = val - p.paid, pct = res / p.paid * 100;
-        const liq = p.lev === 1 && p.side === "long" ? "–" : priceText(liqPrice(p));
-        return `<tr><td>${sideTag(p.side, p.lev)}</td><td>${fmt(p.qty * p.entry)}</td><td>${priceText(p.entry)}</td><td>${priceText(price)}</td>
-          <td class="${res >= 0 ? "up" : "down"}"><b>${res >= 0 ? "+" : "−"}${fmt(Math.abs(res))}</b> (${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%)</td>
-          <td>${liq}</td><td class="tpslCell">${tpslText(p)}<button class="btn ghost small" data-ctpsl="${p.id}" title="Set take profit / stop loss">✏️</button></td><td>${ago(Date.now() - p.at)}</td>
-          <td><button class="btn ghost small" data-cclose="${p.id}">Close</button></td></tr>`;
-      }).join("") + `</tbody></table>` : "") +
-      (orders.length ? `<table class="posTable orderTable"><thead><tr><th>⏳ Limit order</th><th>Amount</th><th>Opens at</th><th>Now</th><th>Auto-close</th><th>Waiting for</th><th></th></tr></thead><tbody>` +
-        orders.map(o => `<tr><td>${sideTag(o.side, o.lev)}</td><td>${fmt(o.amount)}</td><td><b>${priceText(o.at)}</b></td>
-          <td>${priceText(price)} <small class="muted">(${((o.at / price - 1) * 100).toFixed(2)}%)</small></td><td>${tpslText(o)}</td><td>${ago(Date.now() - o.placed)}</td>
-          <td><button class="btn ghost small" data-ccancel="${o.id}">Cancel</button></td></tr>`).join("") + `</tbody></table>` : "") +
-      (log.length ? `<div class="tradeLog"><span class="muted">Recent trades:</span> ${log.map(x =>
+    const chgT = $("ctabc-" + c.sym); if (chgT) { $("ctabp-" + c.sym).textContent = L.price ? priceText(L.price) : "–"; chgT.textContent = chg === null ? "" : (chg >= 0 ? "+" : "") + chg.toFixed(2) + "%"; chgT.className = "coinTabChg " + (chg > 0 ? "up" : chg < 0 ? "down" : ""); }
+    const nT = $("ctabn-" + c.sym); if (nT) { const n = mine.length + orders.length; nT.textContent = n || ""; nT.hidden = !n; }
+    $("cposh-" + c.sym).textContent = mine.length + orders.length ? `Your ${c.sym} positions are in the list at the top.` : "";
+    allPos.push(...mine.map(p => ({ p, c, price })));
+    allOrd.push(...orders.map(o => ({ o, c, price })));
+    $("cpos-" + c.sym).innerHTML =       (log.length ? `<div class="tradeLog"><span class="muted">Recent trades:</span> ${log.map(x =>
         `<span class="${x.result >= 0 ? "up" : "down"}">${sideTag(x.side, x.lev)} ${priceText(x.entry)} → ${priceText(x.exit)}
           <b>${x.liq ? ivIco("crash") + "liquidated " : x.why === "tp" ? "🎯 " : x.why === "sl" ? "🛑 " : ""}${x.result >= 0 ? "+" : "−"}${fmt(Math.abs(x.result))}</b> <small class="muted">(${ago(x.at - x.opened)})</small></span>`).join("")}</div>` : "");
   }
+  // 📋 every open position and limit order, all coins together
+  const box = $("cposAll");
+  if (box) box.innerHTML = allPos.length || allOrd.length ? `<div class="cposAll"><h4>📋 Open positions (${allPos.length})${allOrd.length ? ` · ⏳ limit orders (${allOrd.length})` : ""}</h4><div class="posWrap">` +
+    (allPos.length ? `<table class="posTable"><thead><tr><th>Coin</th><th>Position</th><th>Size</th><th>Entry</th><th>Now</th><th>Profit / loss</th><th>Liquidation</th><th>Auto-close</th><th>Open for</th><th></th></tr></thead><tbody>` +
+      allPos.map(({ p, c, price }) => {
+        const val = posValue(p, price), res = val - p.paid, pct = res / p.paid * 100;
+        const liq = p.lev === 1 && p.side === "long" ? "–" : priceText(liqPrice(p));
+        return `<tr><td><b>${c.icon} ${c.sym}</b></td><td>${sideTag(p.side, p.lev)}</td><td>${fmt(p.qty * p.entry)}</td><td>${priceText(p.entry)}</td><td>${priceText(price)}</td>
+          <td class="${res >= 0 ? "up" : "down"}"><b>${res >= 0 ? "+" : "−"}${fmt(Math.abs(res))}</b> (${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%)</td>
+          <td>${liq}</td><td class="tpslCell">${tpslText(p)}<button class="btn ghost small" data-ctpsl="${p.id}" title="Set take profit / stop loss">✏️</button></td><td>${ago(Date.now() - p.at)}</td>
+          <td><button class="btn ghost small" data-cclose="${p.id}">Close</button></td></tr>`; }).join("") + `</tbody></table>` : "") +
+    (allOrd.length ? `<table class="posTable orderTable"><thead><tr><th>Coin</th><th>⏳ Limit order</th><th>Amount</th><th>Opens at</th><th>Now</th><th>Auto-close</th><th>Waiting for</th><th></th></tr></thead><tbody>` +
+      allOrd.map(({ o, c, price }) => `<tr><td><b>${c.icon} ${c.sym}</b></td><td>${sideTag(o.side, o.lev)}</td><td>${fmt(o.amount)}</td><td><b>${priceText(o.at)}</b></td>
+        <td>${priceText(price)} <small class="muted">(${((o.at / price - 1) * 100).toFixed(2)}%)</small></td><td>${tpslText(o)}</td><td>${ago(Date.now() - o.placed)}</td>
+        <td><button class="btn ghost small" data-ccancel="${o.id}">Cancel</button></td></tr>`).join("") + `</tbody></table>` : "") + `</div></div>` : "";
 }
 // every second: numbers; every 5 seconds: one chart point (keeps the last ~20 minutes)
 let cryptoTicks = 0;
@@ -472,6 +485,9 @@ setInterval(() => {
 
 $("cryptoList").addEventListener("click", (e) => {
   const pct = e.target.closest("[data-cpct]");
+  const cs = e.target.closest("[data-csel]");
+  if (cs) { state.cryptoSel = cs.dataset.csel; document.querySelectorAll("[data-crow]").forEach(r => r.hidden = r.dataset.crow !== state.cryptoSel);
+    document.querySelectorAll("[data-csel]").forEach(b => b.classList.toggle("on", b.dataset.csel === state.cryptoSel)); drawCryptoCharts(); save(); return; }
   if (pct) { $("cbuy-" + pct.dataset.cpct).value = Math.floor(state.money * Number(pct.dataset.pct)); renderCryptoNumbers(); return; }
   const sd = e.target.closest("[data-tside]");
   if (sd) { tradeSel[sd.dataset.tside].side = sd.dataset.side; updateTradePanels(); renderCryptoNumbers(); return; }

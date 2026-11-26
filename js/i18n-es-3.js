@@ -1624,6 +1624,13 @@ rx(String.raw`(\d+) (property|properties)`, (m, n, x) => `${n} ${x === "property
 rx(String.raw`Investor level · (max level|([\d.,]+) \/ ([\d.,]+) XP)`, (m, x, a, b) => `Nivel de inversor · ${a ? `${a} / ${b} XP` : "nivel máximo"}`);
 H("📈 Investing is tidier: one slim bar shows your level, money and holdings, and the Investing page starts with a portfolio list (worth, profit and a mini chart for each investment). Pick one to open its chart and buy/sell controls.",
   "📈 Inversiones más ordenadas: una barra fina muestra tu nivel, tu dinero y tus inversiones, y la página de Inversiones empieza con una lista de cartera (valor, beneficio y un minigráfico de cada inversión). Elige una para abrir su gráfico y sus controles de compra y venta.");
+// 🪙 live trading tabs and positions list
+Object.assign(ES, { "Coin": "Moneda", "₿ BTC": "₿ BTC", "Ξ ETH": "Ξ ETH", "◎ SOL": "◎ SOL" });
+rx(String.raw`Open positions \((\d+)\)`, "Posiciones abiertas ($1)");
+hrx(String.raw`📋 Open positions \((\d+)\)( · ⏳ limit orders \((\d+)\))?`, (m, a, x, b) => `📋 Posiciones abiertas (${a})${x ? ` · ⏳ órdenes límite (${b})` : ""}`);
+rx(String.raw`Your (BTC|ETH|SOL) positions are in the list at the top\.`, "Tus posiciones de $1 están en la lista de arriba.");
+H("🪙 Live trading is easier: one coin at a time with tabs (price, 24h change and how many positions you have), a big Open button with its preview right under it, and all your open positions and limit orders together in one list at the top.",
+  "🪙 El trading en vivo es más cómodo: una moneda a la vez con pestañas (precio, cambio en 24 h y cuántas posiciones tienes), un botón grande de Abrir con su vista previa justo debajo, y todas tus posiciones abiertas y órdenes límite juntas en una lista arriba.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
