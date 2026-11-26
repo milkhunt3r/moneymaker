@@ -624,10 +624,17 @@ function spSosHtml() {
       ${can ? "" : `<div class="muted">You have ${spSci2()} scientists.</div>`}</div></div>`;
 }
 // ❗ red warnings: on the 🚢 Logistics tab (see refreshUnlocks) and on the 🌌 Space page button
+// 🔔 "!" on the Space sub-tabs: red for an alien emergency, gold for things worth a look (js/34e-space-fleet.js: spTabAlerts)
+const SP_TAB_LBL = { space: ["ico-lg-space", "Space"], market: ["ico-lg-market", "Market"], contracts: ["ico-lg-contracts", "Contracts"], research: ["ico-lg-research", "Research"] };
 function spRefreshWarn() {
-  const sb = document.querySelector('[data-logipage="space"]');
-  if (sb) { const html = (spOpen() ? "" : '<img class="ico lockS" src="assets/icons/ico-lock.webp" alt="">') + '<img class="ico" src="assets/icons/ico-lg-space.webp" alt="">Space' + (SP.sos ? ' <span class="tabWarn" title="Alien emergency">!</span>' : "");
-    if (sb.innerHTML !== html) sb.innerHTML = html; }
+  const al = spOpen() && typeof spTabAlerts === "function" ? spTabAlerts() : {};
+  for (const [k, [ico, name]] of Object.entries(SP_TAB_LBL)) {
+    const b = document.querySelector(`[data-logipage="${k}"]`); if (!b) continue;
+    const why = al[k] || [];
+    const html = (k === "space" && !spOpen() ? '<img class="ico lockS" src="assets/icons/ico-lock.webp" alt="">' : "") + `<img class="ico" src="assets/icons/${ico}.webp" alt="">${name}`
+      + (k === "space" && SP.sos ? ' <span class="tabWarn" title="Alien emergency">!</span>' : why.length ? ` <span class="tabWarn gold" title="${why.join(" · ")}">!</span>` : "");
+    if (b.dataset.h !== html) { b.dataset.h = html; b.innerHTML = html; }   // compare with what we wrote (the Spanish text differs)
+  }
 }
 /* ----- 🏪 MARKET: sell alien goods. Each good's price moves every 30 minutes (the same for everyone at the same time). ----- */
 const SP_GOOD_RACE = Object.fromEntries(Object.entries(SP_RACES).map(([k, R]) => [R.good, k]));
@@ -840,7 +847,7 @@ const spShowViewOrig = showView;
 showView = function (v) { spShowViewOrig(v); if (v === "logistics") spApplyPage(); };
 setInterval(() => {
   if (spSci().space && !SP.unlocked) { SP.unlocked = true; save(); showNotice("🌌 New in 🚢 Logistics: <b>Space</b>! Explore the galaxy and meet alien races."); spApplyPage(); }
-  spProcess(); spSosTick(); spAnimate();
+  spProcess(); spSosTick(); spAnimate(); spRefreshWarn();
 }, 1000);
 // the first catch-up (ships that arrived while the game was closed) runs at the end of js/34e-space-fleet.js,
 // once the contracts and research code is loaded too

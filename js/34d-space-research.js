@@ -98,7 +98,7 @@ function spResTick(now, msgs) {
   let changed = false;
   const J = SP.craft;
   if (J && now >= J.t1) {
-    SP.crafted[J.c] = (SP.crafted[J.c] || 0) + J.n; SP.craft = null; changed = true;
+    SP.crafted[J.c] = (SP.crafted[J.c] || 0) + J.n; SP.craft = null; changed = true; SP.alert = SP.alert || {}; SP.alert.craft = true;
     SP.stats.crafted = (SP.stats.crafted || 0) + J.n;
     msgs.push(`🛠️ Crafting done: ${SP_CRAFT[J.c].emoji} ${J.n} ${SP_CRAFT[J.c].name}.`);
   }

@@ -462,7 +462,8 @@ function refreshUnlocks(first) {
   // ⚠️ red warning on the tab while a truck is broken down and not repaired yet
   const broken = open && (logi.trucks || []).some(v => v.broken);
   const sos = open && state.space && state.space.sos;   // 🆘 an alien race needs scientists (🌌 Space)
-  const html = (open ? "" : ico("lock", "lockS")) + '<img class="tabIco" src="assets/icons/tab-logistics.webp" alt="">Logistics' + (broken ? ' <span class="tabWarn" title="A truck is broken down: repair it in 🚢 Logistics">!</span>' : sos ? ' <span class="tabWarn" title="An alien race needs help: see 🚢 Logistics → 🌌 Space">!</span>' : "");
+  const html = (open ? "" : ico("lock", "lockS")) + '<img class="tabIco" src="assets/icons/tab-logistics.webp" alt="">Logistics' + (broken ? ' <span class="tabWarn" title="A truck is broken down: repair it in 🚢 Logistics">!</span>' : sos ? ' <span class="tabWarn" title="An alien race needs help: see 🚢 Logistics → 🌌 Space">!</span>'
+    : open && typeof spTabAlerts === "function" && spOpen() && Object.values(spTabAlerts()).some(a => a.length) ? ' <span class="tabWarn gold" title="Something is ready in 🌌 Space">!</span>' : "");
   if (tab && tab.innerHTML !== html) tab.innerHTML = html;
   $("logisticsView").classList.toggle("locked", !open);
   $("logiLocked").hidden = open;

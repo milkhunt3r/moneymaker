@@ -27,6 +27,7 @@ SP_RESEARCH.ships.name = "Extra courier ships";
 SP.drift = SP.drift || { found: false };
 SP.harvest = SP.harvest || [];
 SP.fleet = SP.fleet || { frigates: 0, lost: 0, escortOn: true };
+SP.alert = SP.alert || {};   // 🔔 one-time tab alerts: harv (a harvester came home), craft (a crafting batch is done)
 // research gives frigates: new ones arrive ready
 function spFrigSync() { const cap = SP_FRIG_N[spRL("frigate")]; if ((SP.fleet.got || 0) < cap) { SP.fleet.frigates += cap - (SP.fleet.got || 0); SP.fleet.got = cap; } }
 spFrigSync();
@@ -93,6 +94,7 @@ function spFleetTick(now, msgs) {
       if (!state.shooter) state.shooter = {};
       state.shooter.dust = (state.shooter.dust || 0) + got;
       SP.stats.dustFarmed = (SP.stats.dustFarmed || 0) + got; SP.stats.harvests = (SP.stats.harvests || 0) + 1;
+      SP.alert.harv = true;
       msgs.push(`✨ Your harvester is back from the Stardust Drift with <b>${got.toLocaleString()}</b> stardust${h.lost ? ` (pirates took ${h.lost.toLocaleString()})` : ""}.`);
     }
   }
@@ -173,6 +175,20 @@ document.addEventListener("change", (e) => {
   SP.fleet.escortOn = b.checked; save();
 });
 
+/* ----- 🔔 tab alerts: what is worth a look on each Space page ----- */
+function spTabAlerts() {
+  const A = SP.alert, out = { space: [], contracts: [], research: [] };
+  // seen: opening the page (or the Drift) clears the one-time alerts
+  if (spShown() && state.logiPage === "research") A.craft = false;
+  if (spShown() && state.logiPage === "space" && spSel === "drift") A.harv = false;
+  if (A.harv && spHarvFree()) out.space.push("A harvester is back from the Stardust Drift");
+  const C = SP.con || { active: [], offers: [] };
+  if (C.active.some(c => !c.sent && spConHave(c)) && spFree()) out.contracts.push("A contract is ready to deliver");
+  else if (C.active.length < SP_CON.maxActive && C.offers.some(spConHave)) out.contracts.push("You already have the goods for a contract offer");
+  if (A.craft) out.research.push("Crafting is done");
+  if (Object.keys(SP_RESEARCH).some(k => spResCan(spResCost(k)))) out.research.push("You can afford a research level");
+  return out;
+}
 spProcess();   // catch up on everything that happened while the game was closed (needs all the space files)
 
 /* ----- 🗺️ harvesters (and their escorts) flying to the Drift and farming there ----- */

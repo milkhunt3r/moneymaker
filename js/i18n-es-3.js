@@ -1556,6 +1556,13 @@ rx(String.raw`They send back (\d+) per gift \(more when you level up\)`, "Te dev
 rx(String.raw`Rivals: friendship you earn here costs (\d+)% of it with them`, "Rivales: la amistad que ganes aquí te cuesta un $1 % de ella con ellos");
 rx(String.raw`−(\d+) friendship an hour \(never below Friendly\)`, "−$1 de amistad por hora (nunca por debajo de Amistosa)");
 rx(String.raw`You have (\d+) paintings? in your collection\.`, "Tienes $1 cuadros en tu colección.");
+// 🔔 Space tab alerts
+Object.assign(ES, { "Something is ready in 🌌 Space": "Hay algo listo en 🌌 Espacio", "A harvester is back from the Stardust Drift": "Una cosechadora ha vuelto de la Deriva de Polvo Estelar",
+  "You already have the goods for a contract offer": "Ya tienes los bienes para una oferta de contrato", "A contract is ready to deliver": "Hay un contrato listo para entregar",
+  "Crafting is done": "La artesanía ha terminado", "You can afford a research level": "Puedes pagar un nivel de investigación",
+  "Crafting is done · You can afford a research level": "La artesanía ha terminado · Puedes pagar un nivel de investigación" });
+H("🌌 Space is easier to use: the system panel now sits beside the star map (a slide-up sheet on phones), race panels are shorter, and a gold <b>!</b> on the Space tabs shows when a harvester is back, a contract can be delivered, crafting is done or you can afford research.",
+  "🌌 El Espacio es más cómodo: el panel del sistema está ahora junto al mapa estelar (una hoja que sube desde abajo en el móvil), los paneles de las razas son más cortos y un <b>!</b> dorado en las pestañas del Espacio avisa cuando vuelve una cosechadora, puedes entregar un contrato, termina la artesanía o puedes pagar una investigación.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

@@ -2930,6 +2930,13 @@ rx(String.raw`They send back (\d+) per gift \(more when you level up\)`, "Te dev
 rx(String.raw`Rivals: friendship you earn here costs (\d+)% of it with them`, "Rivales: la amistad que ganes aquí te cuesta un $1 % de ella con ellos");
 rx(String.raw`−(\d+) friendship an hour \(never below Friendly\)`, "−$1 de amistad por hora (nunca por debajo de Amistosa)");
 rx(String.raw`You have (\d+) paintings? in your collection\.`, "Tienes $1 cuadros en tu colección.");
+// 🔔 Space tab alerts
+Object.assign(ES, { "Something is ready in 🌌 Space": "Hay algo listo en 🌌 Espacio", "A harvester is back from the Stardust Drift": "Una cosechadora ha vuelto de la Deriva de Polvo Estelar",
+  "You already have the goods for a contract offer": "Ya tienes los bienes para una oferta de contrato", "A contract is ready to deliver": "Hay un contrato listo para entregar",
+  "Crafting is done": "La artesanía ha terminado", "You can afford a research level": "Puedes pagar un nivel de investigación",
+  "Crafting is done · You can afford a research level": "La artesanía ha terminado · Puedes pagar un nivel de investigación" });
+H("🌌 Space is easier to use: the system panel now sits beside the star map (a slide-up sheet on phones), race panels are shorter, and a gold <b>!</b> on the Space tabs shows when a harvester is back, a contract can be delivered, crafting is done or you can afford research.",
+  "🌌 El Espacio es más cómodo: el panel del sistema está ahora junto al mapa estelar (una hoja que sube desde abajo en el móvil), los paneles de las razas son más cortos y un <b>!</b> dorado en las pestañas del Espacio avisa cuando vuelve una cosechadora, puedes entregar un contrato, termina la artesanía o puedes pagar una investigación.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -13038,7 +13045,8 @@ function refreshUnlocks(first) {
   // ⚠️ red warning on the tab while a truck is broken down and not repaired yet
   const broken = open && (logi.trucks || []).some(v => v.broken);
   const sos = open && state.space && state.space.sos;   // 🆘 an alien race needs scientists (🌌 Space)
-  const html = (open ? "" : ico("lock", "lockS")) + '<img class="tabIco" src="assets/icons/tab-logistics.webp" alt="">Logistics' + (broken ? ' <span class="tabWarn" title="A truck is broken down: repair it in 🚢 Logistics">!</span>' : sos ? ' <span class="tabWarn" title="An alien race needs help: see 🚢 Logistics → 🌌 Space">!</span>' : "");
+  const html = (open ? "" : ico("lock", "lockS")) + '<img class="tabIco" src="assets/icons/tab-logistics.webp" alt="">Logistics' + (broken ? ' <span class="tabWarn" title="A truck is broken down: repair it in 🚢 Logistics">!</span>' : sos ? ' <span class="tabWarn" title="An alien race needs help: see 🚢 Logistics → 🌌 Space">!</span>'
+    : open && (__eocLoaded >= 46 && typeof spTabAlerts === "function") && spOpen() && Object.values(spTabAlerts()).some(a => a.length) ? ' <span class="tabWarn gold" title="Something is ready in 🌌 Space">!</span>' : "");
   if (tab && tab.innerHTML !== html) tab.innerHTML = html;
   $("logisticsView").classList.toggle("locked", !open);
   $("logiLocked").hidden = open;
@@ -13426,6 +13434,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "🌌 Space is easier to use: the system panel now sits beside the star map (a slide-up sheet on phones), race panels are shorter, and a gold <b>!</b> on the Space tabs shows when a harvester is back, a contract can be delivered, crafting is done or you can afford research.",
     "🔁 Market: you can now <b>trade goods</b> with 😊 Friendly races. Give 2 of any alien good, get 1 of theirs (🏺 Ancient Relics can't be traded).",
     "🛸 New spaceships! ✨ <b>Stardust Harvesters</b> farm stardust and 🛡️ <b>Escort Frigates</b> protect your ships from pirates. Research them in 🌌 Space → Research. Your old ships are now called 🚀 <b>courier ships</b>.",
     "🌫️ A new area on the star map: the <b>Stardust Drift</b>. Explore it, then send harvesters to farm stardust for an hour, but watch out for pirates!",
@@ -18841,10 +18850,17 @@ function spSosHtml() {
       ${can ? "" : `<div class="muted">You have ${spSci2()} scientists.</div>`}</div></div>`;
 }
 // ❗ red warnings: on the 🚢 Logistics tab (see refreshUnlocks) and on the 🌌 Space page button
+// 🔔 "!" on the Space sub-tabs: red for an alien emergency, gold for things worth a look (js/34e-space-fleet.js: spTabAlerts)
+var SP_TAB_LBL = { space: ["ico-lg-space", "Space"], market: ["ico-lg-market", "Market"], contracts: ["ico-lg-contracts", "Contracts"], research: ["ico-lg-research", "Research"] };
 function spRefreshWarn() {
-  const sb = document.querySelector('[data-logipage="space"]');
-  if (sb) { const html = (spOpen() ? "" : '<img class="ico lockS" src="assets/icons/ico-lock.webp" alt="">') + '<img class="ico" src="assets/icons/ico-lg-space.webp" alt="">Space' + (SP.sos ? ' <span class="tabWarn" title="Alien emergency">!</span>' : "");
-    if (sb.innerHTML !== html) sb.innerHTML = html; }
+  const al = spOpen() && (__eocLoaded >= 46 && typeof spTabAlerts === "function") ? spTabAlerts() : {};
+  for (const [k, [ico, name]] of Object.entries(SP_TAB_LBL)) {
+    const b = document.querySelector(`[data-logipage="${k}"]`); if (!b) continue;
+    const why = al[k] || [];
+    const html = (k === "space" && !spOpen() ? '<img class="ico lockS" src="assets/icons/ico-lock.webp" alt="">' : "") + `<img class="ico" src="assets/icons/${ico}.webp" alt="">${name}`
+      + (k === "space" && SP.sos ? ' <span class="tabWarn" title="Alien emergency">!</span>' : why.length ? ` <span class="tabWarn gold" title="${why.join(" · ")}">!</span>` : "");
+    if (b.dataset.h !== html) { b.dataset.h = html; b.innerHTML = html; }   // compare with what we wrote (the Spanish text differs)
+  }
 }
 /* ----- 🏪 MARKET: sell alien goods. Each good's price moves every 30 minutes (the same for everyone at the same time). ----- */
 var SP_GOOD_RACE = Object.fromEntries(Object.entries(SP_RACES).map(([k, R]) => [R.good, k]));
@@ -19057,7 +19073,7 @@ var spShowViewOrig = showView;
 showView = function (v) { spShowViewOrig(v); if (v === "logistics") spApplyPage(); };
 setInterval(() => {
   if (spSci().space && !SP.unlocked) { SP.unlocked = true; save(); showNotice("🌌 New in 🚢 Logistics: <b>Space</b>! Explore the galaxy and meet alien races."); spApplyPage(); }
-  spProcess(); spSosTick(); spAnimate();
+  spProcess(); spSosTick(); spAnimate(); spRefreshWarn();
 }, 1000);
 // the first catch-up (ships that arrived while the game was closed) runs at the end of js/34e-space-fleet.js,
 // once the contracts and research code is loaded too
@@ -19410,7 +19426,7 @@ function spResTick(now, msgs) {
   let changed = false;
   const J = SP.craft;
   if (J && now >= J.t1) {
-    SP.crafted[J.c] = (SP.crafted[J.c] || 0) + J.n; SP.craft = null; changed = true;
+    SP.crafted[J.c] = (SP.crafted[J.c] || 0) + J.n; SP.craft = null; changed = true; SP.alert = SP.alert || {}; SP.alert.craft = true;
     SP.stats.crafted = (SP.stats.crafted || 0) + J.n;
     msgs.push(`🛠️ Crafting done: ${SP_CRAFT[J.c].emoji} ${J.n} ${SP_CRAFT[J.c].name}.`);
   }
@@ -19510,6 +19526,7 @@ SP_RESEARCH.ships.name = "Extra courier ships";
 SP.drift = SP.drift || { found: false };
 SP.harvest = SP.harvest || [];
 SP.fleet = SP.fleet || { frigates: 0, lost: 0, escortOn: true };
+SP.alert = SP.alert || {};   // 🔔 one-time tab alerts: harv (a harvester came home), craft (a crafting batch is done)
 // research gives frigates: new ones arrive ready
 function spFrigSync() { const cap = SP_FRIG_N[spRL("frigate")]; if ((SP.fleet.got || 0) < cap) { SP.fleet.frigates += cap - (SP.fleet.got || 0); SP.fleet.got = cap; } }
 spFrigSync();
@@ -19576,6 +19593,7 @@ function spFleetTick(now, msgs) {
       if (!state.shooter) state.shooter = {};
       state.shooter.dust = (state.shooter.dust || 0) + got;
       SP.stats.dustFarmed = (SP.stats.dustFarmed || 0) + got; SP.stats.harvests = (SP.stats.harvests || 0) + 1;
+      SP.alert.harv = true;
       msgs.push(`✨ Your harvester is back from the Stardust Drift with <b>${got.toLocaleString()}</b> stardust${h.lost ? ` (pirates took ${h.lost.toLocaleString()})` : ""}.`);
     }
   }
@@ -19656,6 +19674,20 @@ document.addEventListener("change", (e) => {
   SP.fleet.escortOn = b.checked; save();
 });
 
+/* ----- 🔔 tab alerts: what is worth a look on each Space page ----- */
+function spTabAlerts() {
+  const A = SP.alert, out = { space: [], contracts: [], research: [] };
+  // seen: opening the page (or the Drift) clears the one-time alerts
+  if (spShown() && state.logiPage === "research") A.craft = false;
+  if (spShown() && state.logiPage === "space" && spSel === "drift") A.harv = false;
+  if (A.harv && spHarvFree()) out.space.push("A harvester is back from the Stardust Drift");
+  const C = SP.con || { active: [], offers: [] };
+  if (C.active.some(c => !c.sent && spConHave(c)) && spFree()) out.contracts.push("A contract is ready to deliver");
+  else if (C.active.length < SP_CON.maxActive && C.offers.some(spConHave)) out.contracts.push("You already have the goods for a contract offer");
+  if (A.craft) out.research.push("Crafting is done");
+  if (Object.keys(SP_RESEARCH).some(k => spResCan(spResCost(k)))) out.research.push("You can afford a research level");
+  return out;
+}
 spProcess();   // catch up on everything that happened while the game was closed (needs all the space files)
 
 /* ----- 🗺️ harvesters (and their escorts) flying to the Drift and farming there ----- */
