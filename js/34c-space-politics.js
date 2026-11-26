@@ -231,3 +231,15 @@ document.addEventListener("click", (e) => {
   const el = e.target.closest('[data-spb="go"], [data-spb="max"]'); if (!el || !e.target.closest("#spaceView")) return;
   if (el.dataset.spb === "max") { spBarter.n = Math.max(1, spBarterMax()); renderSpace(); } else spBarterDo();
 });
+
+// compact chips for the race panel: ⚔️ rival and 🔥/❄️ warmth (details in the "Relations & bonuses" tab)
+function spPoliticsChips(k) {
+  const r = SP.races[k], rk = SP_RIVALS[k], now = Date.now(); let out = "";
+  if (rk) out += `<span class="spChip" title="Rivals: friendship you earn here costs ${SP_RIVAL_CUT * 100}% of it with them">${spI("rivals")}${SP.races[rk].found ? SP_RACES[rk].name : "?"}</span>`;
+  if ((r.best || 0) >= SP_COOL.from && r.pts > SP_FRIENDLY) {
+    if (spRouteOf(k)) out += `<span class="spChip warm" title="Your trade route keeps them happy">🔥 Warm</span>`;
+    else if (spCooling(k)) out += `<span class="spChip cool" title="−${SP_COOL.perHour} friendship an hour (never below Friendly)">${spI("cooling")}Cooling off</span>`;
+    else out += `<span class="spChip" title="They start to cool off without a gift, a contract or a trade route">🔥 <span data-spt="${(r.warmAt || now) + SP_COOL.after}">${spClock((r.warmAt || now) + SP_COOL.after - now)}</span></span>`;
+  }
+  return out;
+}

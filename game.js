@@ -2920,6 +2920,16 @@ H("🔁 <b>Trading goods</b> (🌌 Space → Market): swap your alien goods with
   "🔁 <b>Intercambio de bienes</b> (🌌 Espacio → Mercado): intercambia tus bienes alienígenas con razas con las que tengas una amistad 😊 Amistosa o mejor: das 2 de cualquier bien y recibes 1 del suyo. Las 🏺 Reliquias antiguas no se pueden intercambiar.");
 H("🔁 Market: you can now <b>trade goods</b> with 😊 Friendly races. Give 2 of any alien good, get 1 of theirs (🏺 Ancient Relics can't be traded).",
   "🔁 Mercado: ahora puedes <b>intercambiar bienes</b> con razas 😊 Amistosas. Da 2 de cualquier bien alienígena y recibe 1 del suyo (las 🏺 Reliquias antiguas no se pueden intercambiar).");
+// 🪧 compact race panel (chips + tabs)
+Object.assign(ES, { "Relations & bonuses": "Relaciones y bonificaciones", "Distance: one way": "Distancia: solo ida", "Your trade route keeps them happy": "Tu ruta comercial los mantiene contentos",
+  "They start to cool off without a gift, a contract or a trade route": "Empiezan a enfriarse sin un regalo, un contrato o una ruta comercial", "Close": "Cerrar" });
+rx(String.raw`Favourite gift: \+(\d+) friendship`, "Regalo favorito: +$1 de amistad");
+rx(String.raw`Also likes: \+(\d+) friendship`, "También le gusta: +$1 de amistad");
+rx(String.raw`Wants a mix of these goods \(\+(\d+) friendship\)`, "Quiere una mezcla de estos bienes (+$1 de amistad)");
+rx(String.raw`They send back (\d+) per gift \(more when you level up\)`, "Te devuelven $1 por regalo (más al subir de nivel)");
+rx(String.raw`Rivals: friendship you earn here costs (\d+)% of it with them`, "Rivales: la amistad que ganes aquí te cuesta un $1 % de ella con ellos");
+rx(String.raw`−(\d+) friendship an hour \(never below Friendly\)`, "−$1 de amistad por hora (nunca por debajo de Amistosa)");
+rx(String.raw`You have (\d+) paintings? in your collection\.`, "Tienes $1 cuadros en tu colección.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -18729,19 +18739,23 @@ function spPanelHtml() {
         <p class="spBio">${R.bio}</p></div></div>
     <div class="spFriend"><span class="muted">${next ? `${r.pts.toLocaleString()} / ${next.pts.toLocaleString()} friendship to ${next.name}` : `${r.pts.toLocaleString()} friendship · best friends!`}</span>
       <div class="xpBar"><div class="xpFill" style="width:${pct}%"></div></div></div>
-    <div class="spInfo">${R.mix ? `<div class="spRow">${spI("fav")}<span><b>Wants a mix of:</b> ${R.wants.map(spKindName).join(", ")} <span class="muted">(+${SP_FAV_PTS} friendship)</span></span></div>`
-      : `<div class="spRow">${spI("fav")}<span><b>Favourite:</b> ${spKindName(R.wants[0])} <span class="muted">(+${SP_FAV_PTS} friendship)</span></span></div>
-      <div class="spRow">${spI("likes")}<span><b>Also likes:</b> ${spKindName(R.wants[1])} <span class="muted">(+${SP_PTS})</span></span></div>`}
-      <div class="spRow">${spI("sendback")}<span><b>They send back:</b> ${spGood(R.good)} <span class="muted">(${spReturnGoods(L)} per gift, more when you level up)</span></span></div>
-      <div class="spRow">${spI("distance")}<span><b>Distance:</b> ${spMin(spSel)} min each way</span></div></div>
-    ${(__eocLoaded >= 44 && typeof spPoliticsHtml === "function") ? spPoliticsHtml(spSel) : ""}
     ${trip ? spTripLine(trip) : q ? `<div class="spReq ${q.special ? "special" : ""}">${q.special ? `<div class="spSpecial spRow">${spI("special")}<span>Special request! Bring it in time for extra friendship and goods, or they will be offended (−${SP_SPECIAL.offend}).</span></div>` : ""}<div class="spRow">${spI("request")}<span><b>Their request:</b> ${spReqText(q)}</span></div>
         <div class="muted">+${spReqPts(q)} friendship${q.fav ? " (their favourite!)" : ""} · ${q.special ? "time left" : "a new request in"} <span data-spt="${q.until}">${spClock(q.until - Date.now())}</span></div>
         <div class="spBtns"><button class="btn big" data-spx="gift" ${can && spFree() ? "" : "disabled"}>${spI("gift", "spI btnI")}Send gift</button>
           <button class="btn ghost" data-spx="reroll" ${rerollLeft > 0 ? "disabled" : ""}>${spI("reroll", "spI btnI")}Ask for something else${rerollLeft > 0 ? ` (${spClock(rerollLeft)})` : ""}</button></div>
         ${!spFree() ? `<div class="muted">All your ships are busy.</div>` : !can ? `<div class="muted">You don't have enough for this gift yet.</div>` : ""}</div>` : ""}
-    ${(__eocLoaded >= 47 && typeof pipOfferHtml === "function") ? pipOfferHtml(spSel) : ""}${spRouteHtml(spSel)}${(__eocLoaded >= 45 && typeof spOutpostHtml === "function") ? spOutpostHtml(spSel) : ""}${spBonusHtml(spSel)}`;
+    <div class="spChips">${R.mix ? `<span class="spChip" title="Wants a mix of these goods (+${SP_FAV_PTS} friendship)">${spI("fav")}${R.wants.map(w => spGI(w.slice(2))).join("")}</span>`
+      : `<span class="spChip" title="Favourite gift: +${SP_FAV_PTS} friendship">${spI("fav")}${spKindName(R.wants[0])}</span>
+      <span class="spChip" title="Also likes: +${SP_PTS} friendship">${spI("likes")}${spKindName(R.wants[1])}</span>`}
+      <span class="spChip" title="They send back ${spReturnGoods(L)} per gift (more when you level up)">${spI("sendback")}${spGI(R.good)} ×${spReturnGoods(L)}</span>
+      <span class="spChip" title="Distance: one way">${spI("distance")}${spMin(spSel)} min</span>
+      ${(__eocLoaded >= 44 && typeof spPoliticsChips === "function") ? spPoliticsChips(spSel) : ""}</div>
+    ${(__eocLoaded >= 47 && typeof pipOfferHtml === "function") ? pipOfferHtml(spSel) : ""}
+    <div class="spTabs"><button class="spTab ${spPTab === "trade" ? "on" : ""}" data-sptab="trade">${spI("route")}Trade</button><button class="spTab ${spPTab === "bonus" ? "on" : ""}" data-sptab="bonus">${spI("bonus")}Relations & bonuses</button></div>
+    ${spPTab === "trade" ? spRouteHtml(spSel) + ((__eocLoaded >= 45 && typeof spOutpostHtml === "function") ? spOutpostHtml(spSel) : "")
+      : ((__eocLoaded >= 44 && typeof spPoliticsHtml === "function") ? spPoliticsHtml(spSel) : "") + spBonusHtml(spSel)}`;
 }
+var spPTab = "trade";   // race panel tab: 🛣️ trade (route, outpost) or 🏅 relations & bonuses
 function spBonusHtml(k) {
   const B = SP_BONUS[k], L = spLevel(k);
   return `<div class="spBonus"><div class="spRow">${spI("bonus")}<b>Alliance bonus</b></div>
@@ -18997,6 +19011,7 @@ document.addEventListener("click", (e) => {
   const node = e.target.closest("[data-sp]");
   if (node) { spSel = SP.sel = node.dataset.sp; spSheetNew = spSheet = document.body.classList.contains("phone"); renderSpace(); return; }
   if (e.target.closest('[data-spsheet="close"]')) { spSheet = false; renderSpace(); return; }
+  const ptab = e.target.closest("[data-sptab]"); if (ptab) { spPTab = ptab.dataset.sptab; renderSpace(); return; }
   const x = e.target.closest("[data-spx]");
   if (!x || isPaused()) return;
   if (x.dataset.spx === "explore") spExplore(spSel);
@@ -19281,6 +19296,18 @@ document.addEventListener("click", (e) => {
   const el = e.target.closest('[data-spb="go"], [data-spb="max"]'); if (!el || !e.target.closest("#spaceView")) return;
   if (el.dataset.spb === "max") { spBarter.n = Math.max(1, spBarterMax()); renderSpace(); } else spBarterDo();
 });
+
+// compact chips for the race panel: ⚔️ rival and 🔥/❄️ warmth (details in the "Relations & bonuses" tab)
+function spPoliticsChips(k) {
+  const r = SP.races[k], rk = SP_RIVALS[k], now = Date.now(); let out = "";
+  if (rk) out += `<span class="spChip" title="Rivals: friendship you earn here costs ${SP_RIVAL_CUT * 100}% of it with them">${spI("rivals")}${SP.races[rk].found ? SP_RACES[rk].name : "?"}</span>`;
+  if ((r.best || 0) >= SP_COOL.from && r.pts > SP_FRIENDLY) {
+    if (spRouteOf(k)) out += `<span class="spChip warm" title="Your trade route keeps them happy">🔥 Warm</span>`;
+    else if (spCooling(k)) out += `<span class="spChip cool" title="−${SP_COOL.perHour} friendship an hour (never below Friendly)">${spI("cooling")}Cooling off</span>`;
+    else out += `<span class="spChip" title="They start to cool off without a gift, a contract or a trade route">🔥 <span data-spt="${(r.warmAt || now) + SP_COOL.after}">${spClock((r.warmAt || now) + SP_COOL.after - now)}</span></span>`;
+  }
+  return out;
+}
 
 // ===== js/34d-space-research.js =====
 __eocLoaded = 45;

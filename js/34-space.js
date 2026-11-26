@@ -522,19 +522,23 @@ function spPanelHtml() {
         <p class="spBio">${R.bio}</p></div></div>
     <div class="spFriend"><span class="muted">${next ? `${r.pts.toLocaleString()} / ${next.pts.toLocaleString()} friendship to ${next.name}` : `${r.pts.toLocaleString()} friendship · best friends!`}</span>
       <div class="xpBar"><div class="xpFill" style="width:${pct}%"></div></div></div>
-    <div class="spInfo">${R.mix ? `<div class="spRow">${spI("fav")}<span><b>Wants a mix of:</b> ${R.wants.map(spKindName).join(", ")} <span class="muted">(+${SP_FAV_PTS} friendship)</span></span></div>`
-      : `<div class="spRow">${spI("fav")}<span><b>Favourite:</b> ${spKindName(R.wants[0])} <span class="muted">(+${SP_FAV_PTS} friendship)</span></span></div>
-      <div class="spRow">${spI("likes")}<span><b>Also likes:</b> ${spKindName(R.wants[1])} <span class="muted">(+${SP_PTS})</span></span></div>`}
-      <div class="spRow">${spI("sendback")}<span><b>They send back:</b> ${spGood(R.good)} <span class="muted">(${spReturnGoods(L)} per gift, more when you level up)</span></span></div>
-      <div class="spRow">${spI("distance")}<span><b>Distance:</b> ${spMin(spSel)} min each way</span></div></div>
-    ${typeof spPoliticsHtml === "function" ? spPoliticsHtml(spSel) : ""}
     ${trip ? spTripLine(trip) : q ? `<div class="spReq ${q.special ? "special" : ""}">${q.special ? `<div class="spSpecial spRow">${spI("special")}<span>Special request! Bring it in time for extra friendship and goods, or they will be offended (−${SP_SPECIAL.offend}).</span></div>` : ""}<div class="spRow">${spI("request")}<span><b>Their request:</b> ${spReqText(q)}</span></div>
         <div class="muted">+${spReqPts(q)} friendship${q.fav ? " (their favourite!)" : ""} · ${q.special ? "time left" : "a new request in"} <span data-spt="${q.until}">${spClock(q.until - Date.now())}</span></div>
         <div class="spBtns"><button class="btn big" data-spx="gift" ${can && spFree() ? "" : "disabled"}>${spI("gift", "spI btnI")}Send gift</button>
           <button class="btn ghost" data-spx="reroll" ${rerollLeft > 0 ? "disabled" : ""}>${spI("reroll", "spI btnI")}Ask for something else${rerollLeft > 0 ? ` (${spClock(rerollLeft)})` : ""}</button></div>
         ${!spFree() ? `<div class="muted">All your ships are busy.</div>` : !can ? `<div class="muted">You don't have enough for this gift yet.</div>` : ""}</div>` : ""}
-    ${typeof pipOfferHtml === "function" ? pipOfferHtml(spSel) : ""}${spRouteHtml(spSel)}${typeof spOutpostHtml === "function" ? spOutpostHtml(spSel) : ""}${spBonusHtml(spSel)}`;
+    <div class="spChips">${R.mix ? `<span class="spChip" title="Wants a mix of these goods (+${SP_FAV_PTS} friendship)">${spI("fav")}${R.wants.map(w => spGI(w.slice(2))).join("")}</span>`
+      : `<span class="spChip" title="Favourite gift: +${SP_FAV_PTS} friendship">${spI("fav")}${spKindName(R.wants[0])}</span>
+      <span class="spChip" title="Also likes: +${SP_PTS} friendship">${spI("likes")}${spKindName(R.wants[1])}</span>`}
+      <span class="spChip" title="They send back ${spReturnGoods(L)} per gift (more when you level up)">${spI("sendback")}${spGI(R.good)} ×${spReturnGoods(L)}</span>
+      <span class="spChip" title="Distance: one way">${spI("distance")}${spMin(spSel)} min</span>
+      ${typeof spPoliticsChips === "function" ? spPoliticsChips(spSel) : ""}</div>
+    ${typeof pipOfferHtml === "function" ? pipOfferHtml(spSel) : ""}
+    <div class="spTabs"><button class="spTab ${spPTab === "trade" ? "on" : ""}" data-sptab="trade">${spI("route")}Trade</button><button class="spTab ${spPTab === "bonus" ? "on" : ""}" data-sptab="bonus">${spI("bonus")}Relations & bonuses</button></div>
+    ${spPTab === "trade" ? spRouteHtml(spSel) + (typeof spOutpostHtml === "function" ? spOutpostHtml(spSel) : "")
+      : (typeof spPoliticsHtml === "function" ? spPoliticsHtml(spSel) : "") + spBonusHtml(spSel)}`;
 }
+let spPTab = "trade";   // race panel tab: 🛣️ trade (route, outpost) or 🏅 relations & bonuses
 function spBonusHtml(k) {
   const B = SP_BONUS[k], L = spLevel(k);
   return `<div class="spBonus"><div class="spRow">${spI("bonus")}<b>Alliance bonus</b></div>
@@ -790,6 +794,7 @@ document.addEventListener("click", (e) => {
   const node = e.target.closest("[data-sp]");
   if (node) { spSel = SP.sel = node.dataset.sp; spSheetNew = spSheet = document.body.classList.contains("phone"); renderSpace(); return; }
   if (e.target.closest('[data-spsheet="close"]')) { spSheet = false; renderSpace(); return; }
+  const ptab = e.target.closest("[data-sptab]"); if (ptab) { spPTab = ptab.dataset.sptab; renderSpace(); return; }
   const x = e.target.closest("[data-spx]");
   if (!x || isPaused()) return;
   if (x.dataset.spx === "explore") spExplore(spSel);

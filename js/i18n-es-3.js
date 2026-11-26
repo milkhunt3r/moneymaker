@@ -1546,6 +1546,16 @@ H("🔁 <b>Trading goods</b> (🌌 Space → Market): swap your alien goods with
   "🔁 <b>Intercambio de bienes</b> (🌌 Espacio → Mercado): intercambia tus bienes alienígenas con razas con las que tengas una amistad 😊 Amistosa o mejor: das 2 de cualquier bien y recibes 1 del suyo. Las 🏺 Reliquias antiguas no se pueden intercambiar.");
 H("🔁 Market: you can now <b>trade goods</b> with 😊 Friendly races. Give 2 of any alien good, get 1 of theirs (🏺 Ancient Relics can't be traded).",
   "🔁 Mercado: ahora puedes <b>intercambiar bienes</b> con razas 😊 Amistosas. Da 2 de cualquier bien alienígena y recibe 1 del suyo (las 🏺 Reliquias antiguas no se pueden intercambiar).");
+// 🪧 compact race panel (chips + tabs)
+Object.assign(ES, { "Relations & bonuses": "Relaciones y bonificaciones", "Distance: one way": "Distancia: solo ida", "Your trade route keeps them happy": "Tu ruta comercial los mantiene contentos",
+  "They start to cool off without a gift, a contract or a trade route": "Empiezan a enfriarse sin un regalo, un contrato o una ruta comercial", "Close": "Cerrar" });
+rx(String.raw`Favourite gift: \+(\d+) friendship`, "Regalo favorito: +$1 de amistad");
+rx(String.raw`Also likes: \+(\d+) friendship`, "También le gusta: +$1 de amistad");
+rx(String.raw`Wants a mix of these goods \(\+(\d+) friendship\)`, "Quiere una mezcla de estos bienes (+$1 de amistad)");
+rx(String.raw`They send back (\d+) per gift \(more when you level up\)`, "Te devuelven $1 por regalo (más al subir de nivel)");
+rx(String.raw`Rivals: friendship you earn here costs (\d+)% of it with them`, "Rivales: la amistad que ganes aquí te cuesta un $1 % de ella con ellos");
+rx(String.raw`−(\d+) friendship an hour \(never below Friendly\)`, "−$1 de amistad por hora (nunca por debajo de Amistosa)");
+rx(String.raw`You have (\d+) paintings? in your collection\.`, "Tienes $1 cuadros en tu colección.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

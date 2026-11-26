@@ -2363,3 +2363,19 @@ body.phone .spPanel.sheet .spSheetX { display: block; position: sticky; top: -22
 body.phone .spPanel.sheet::before { content: ""; position: absolute; top: 8px; left: 50%; width: 44px; height: 5px; margin-left: -22px; border-radius: 3px; background: rgba(255,255,255,0.3); }
 @keyframes spSheetUp { from { transform: translateY(40%); opacity: 0.4; } to { transform: none; opacity: 1; } }
 body.phone .spMapLayout.sheetOpen { padding-bottom: 54vh; }
+/* 🪧 compact race panel: chips + tabs */
+.spChips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 8px; }
+.spChip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px 4px 6px; border-radius: 999px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); font-size: 13px; white-space: nowrap; cursor: help; }
+.spChip .spI { width: 20px; height: 20px; vertical-align: 0; }
+.spChip .spGi { width: 20px; height: 20px; vertical-align: 0; }
+.spChip.cool { border-color: #7cc6ff; color: #bfe4ff; background: rgba(90,170,255,0.12); }
+.spChip.warm { border-color: rgba(255,150,60,0.5); }
+.spTabs { display: flex; gap: 6px; margin: 12px 0 4px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+.spTab { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border: 0; border-bottom: 3px solid transparent; background: none; color: #c9c9da; font: inherit; font-weight: 700; cursor: pointer; }
+.spTab .spI { width: 20px; height: 20px; vertical-align: 0; }
+.spTab.on { color: #ffd34d; border-bottom-color: #ffd34d; }
+/* 📱 compact header inside the bottom sheet */
+body.phone .spPanel.sheet .spCardHead { flex-direction: row; text-align: left; gap: 10px; padding: 10px 12px; }
+body.phone .spPanel.sheet .spPortrait { width: 76px; height: 76px; }
+body.phone .spPanel.sheet .spHeadTxt h3 { font-size: 17px; }
+body.phone .spPanel.sheet .spBio { font-size: 12.5px; margin-top: 4px; }
