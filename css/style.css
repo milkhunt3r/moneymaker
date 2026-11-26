@@ -707,14 +707,14 @@ button.btn.dangerBtn:hover:not(:disabled) { background: #e63939; }
 @media (max-width: 640px) { .bjSeats { gap: 4px; } .bjHand .pcard { width: 38px; height: 61px; font-size: 18px; } }
 
 /* ================= Plinko ================= */
-#plinkoCanvas { display: block; width: 100%; max-width: 680px; margin: 10px auto 0; border-radius: 14px;
-                background: radial-gradient(ellipse at 50% 0%, #2b2d52 0%, #15162a 80%); }
+#plinkoCanvas { display: block; width: 100%; max-width: 560px; margin: 10px auto 0; border-radius: 14px; background: #160d22; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.plinkoDrop .ico { width: 30px; height: 30px; vertical-align: -9px; margin-right: 4px; } .ballCount .ico { width: 30px; height: 30px; }
 .plinkoControls { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: center; margin-top: 12px; }
 .ballCount { display: flex; align-items: center; gap: 6px; }
 .ballCount input[type=range] { width: 160px; accent-color: #ffd34d; }
 .ballCount b { min-width: 28px; text-align: center; font-size: 18px; }
 #plinkoHistory { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; margin-top: 8px; min-height: 24px; }
-#plinkoHistory span { font-size: 12px; font-weight: 800; padding: 2px 7px; border-radius: 6px; color: #1b1b1b; }
+#plinkoHistory span { font-size: 12px; font-weight: 800; padding: 2px 7px; border-radius: 6px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.6); }
 
 /* ================= Sky Climb ================= */
 .climbWrap { display: grid; grid-template-columns: 1fr 230px; gap: 16px; margin-top: 12px; }

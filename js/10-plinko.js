@@ -28,21 +28,21 @@ else {
 }
 
 // Board geometry (canvas pixels)
-const PW = 680, PH = 552, P_TOP = 50, P_GAP_Y = 38, P_GAP_X = 46, PEG_R = 4, BALL_R = 8;
+// (the board sits inside the cabinet picture assets/plinko/bg.webp, 680 × 850)
+const PW = 680, PH = 850, P_TOP = 172, P_GAP_Y = 41, P_GAP_X = 37, PEG_R = 5, BALL_R = 8, P_DROP_Y = 132, CUP_BOTTOM = 706;
 const P_CX = PW / 2;
 const pegY = (r) => P_TOP + r * P_GAP_Y;
-const slotY = () => pegY(PLINKO_ROWS - 1) + 34;
+const slotY = () => CUP_BOTTOM - 44;
 const slotX = (k) => P_CX + (k - PLINKO_ROWS / 2) * P_GAP_X;
 
-function multColor(m) {
-  if (m >= 100) return "#ff3d3d";
-  if (m >= 10) return "#ff6b3d";
-  if (m >= 3) return "#ff9f2e";
-  if (m >= 1.5) return "#ffc02e";
-  if (m >= 1) return "#ffd34d";
-  if (m >= 0.6) return "#c9c27a";
-  return "#9a9ab0";
-}
+// 🎨 the prize cups (assets/plinko/cup-0..6): ruby 250× · orange 10× · yellow 3× · green 1.5× · teal 1× · blue 0.6× · purple 0.3×
+const PLINKO_CUP = (m) => m >= 100 ? 0 : m >= 10 ? 1 : m >= 3 ? 2 : m >= 1.5 ? 3 : m >= 1 ? 4 : m >= 0.6 ? 5 : 6;
+const PLINKO_CUP_COLORS = ["#e3262e", "#ff7a1a", "#ffc928", "#7ccf2a", "#1fc9a8", "#2a9bff", "#8a3dff"];
+function multColor(m) { return PLINKO_CUP_COLORS[PLINKO_CUP(m)]; }
+const PIMG = {};
+["bg", "peg", "peg-lit", "ball", "ball-ruby", "fx-small", "fx-big", "fx-crown", "cup-0", "cup-1", "cup-2", "cup-3", "cup-4", "cup-5", "cup-6"].forEach(n => { const i = new Image(); i.src = `assets/plinko/${n}.webp`; PIMG[n] = i; });
+const pOk = (i) => i && i.complete && i.naturalWidth > 0;
+plinko.fx = []; plinko.lit = {};
 
 function plinkoDrop() {
   if (isPaused()) return;
@@ -88,7 +88,7 @@ function ballPos(ball, t) {
     return P_CX + (rights - row / 2) * P_GAP_X;
   };
   const yAt = (row) => pegY(row) - PEG_R - BALL_R;
-  if (seg === 0) return { x: P_CX, y: 4 + (yAt(0) - 4) * f * f };
+  if (seg === 0) return { x: P_CX, y: P_DROP_Y + (yAt(0) - P_DROP_Y) * f * f };
   if (seg <= PLINKO_ROWS - 1) {
     const r0 = seg - 1, r1 = seg;
     const x = xAt(r0) + (xAt(r1) - xAt(r0)) * f;
@@ -115,6 +115,7 @@ function plinkoLand(ball) {
   plinko.roundWin += win + cashback;
   plinko.history = [mult, ...plinko.history].slice(0, 14);
   plinko.hits[ball.slot] = performance.now();
+  plinko.fx.push({ x: slotX(ball.slot), y: slotY() + 10, t: performance.now(), kind: mult >= 100 ? "fx-crown" : mult >= 10 ? "fx-big" : "fx-small" });
   plinko.lastWin = { mult, win };
   updateCounter();
 }
@@ -136,45 +137,61 @@ function plinkoFrame(now) {
       renderPlinkoControls();
     }
   }
-  plinko.raf = plinko.balls.length ? requestAnimationFrame(plinkoFrame) : null;
+  plinko.raf = plinko.balls.length || plinko.fx.length ? requestAnimationFrame(plinkoFrame) : null;
   if (!plinko.raf && cv) setTimeout(() => { const c = $("plinkoCanvas"); if (c) drawPlinko(c.getContext("2d"), performance.now()); }, 400);
 }
 
 function drawPlinko(ctx, now) {
   ctx.clearRect(0, 0, PW, PH);
+  if (pOk(PIMG.bg)) ctx.drawImage(PIMG.bg, 0, 0, PW, PH);
+  // which pegs a ball is touching right now light up for a moment
+  const pos = [];
+  for (const ball of plinko.balls) { const t = now - ball.start; if (t < 0) continue; const p = ballPos(ball, t); if (p) pos.push([p, ball]); }
+  for (const [p] of pos) {
+    const r = Math.round((p.y + PEG_R + BALL_R - P_TOP) / P_GAP_Y);
+    if (r < 0 || r >= PLINKO_ROWS) continue;
+    const n = r + 3, j = Math.round((p.x - P_CX) / P_GAP_X + (n - 1) / 2), x = P_CX + (j - (n - 1) / 2) * P_GAP_X;
+    if (j >= 0 && j < n && Math.abs(p.x - x) < 14 && Math.abs(p.y - pegY(r)) < 16) plinko.lit[r + "_" + j] = now;
+  }
   // pegs: row r has r + 3 pegs
-  ctx.fillStyle = "#e6e6f5";
+  const ps = PEG_R * 2.6;
   for (let r = 0; r < PLINKO_ROWS; r++) {
     const n = r + 3;
     for (let j = 0; j < n; j++) {
-      const x = P_CX + (j - (n - 1) / 2) * P_GAP_X;
-      ctx.beginPath(); ctx.arc(x, pegY(r), PEG_R, 0, Math.PI * 2); ctx.fill();
+      const x = P_CX + (j - (n - 1) / 2) * P_GAP_X, y = pegY(r), lit = now - (plinko.lit[r + "_" + j] || -1e9) < 220;
+      const img = lit ? PIMG["peg-lit"] : PIMG.peg, sz = lit ? ps * 1.35 : ps;
+      if (pOk(img)) ctx.drawImage(img, x - sz / 2, y - sz / 2, sz, sz);
+      else { ctx.fillStyle = "#ffd34d"; ctx.beginPath(); ctx.arc(x, y, PEG_R, 0, Math.PI * 2); ctx.fill(); }
     }
   }
-  // slots
-  const sy = slotY() + 6;
+  // prize cups with their multiplier
+  const cw = P_GAP_X - 2, ch = cw * 159 / 120;
   PLINKO_MULTS.forEach((m, k) => {
-    const x = slotX(k), w = P_GAP_X - 6;
-    const hit = plinko.hits[k] && now - plinko.hits[k] < 350;
-    const lift = hit ? 6 * (1 - (now - plinko.hits[k]) / 350) : 0;
-    ctx.fillStyle = multColor(m);
-    ctx.globalAlpha = hit ? 1 : 0.9;
-    roundRect(ctx, x - w / 2, sy + lift, w, 30, 6); ctx.fill();
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = "#1b1b1b";
-    ctx.font = "bold 12px system-ui, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.fillText(m + "×", x, sy + 15 + lift);
+    const x = slotX(k), hit = plinko.hits[k] && now - plinko.hits[k] < 400;
+    const lift = hit ? -7 * Math.sin(Math.PI * (now - plinko.hits[k]) / 400) : 0;
+    const img = PIMG["cup-" + PLINKO_CUP(m)], top = CUP_BOTTOM - ch + lift;
+    if (pOk(img)) ctx.drawImage(img, x - cw / 2, top, cw, ch);
+    else { ctx.fillStyle = multColor(m); roundRect(ctx, x - cw / 2, top + ch * 0.4, cw, ch * 0.6, 6); ctx.fill(); }
+    const label = m + "×";
+    ctx.font = `900 ${label.length > 3 ? 10 : 12}px system-ui, sans-serif`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.lineWidth = 3; ctx.strokeStyle = "rgba(40,20,0,0.85)"; ctx.strokeText(label, x, top + ch * 0.68);
+    ctx.fillStyle = "#fff"; ctx.fillText(label, x, top + ch * 0.68);
   });
-  // balls
-  for (const ball of plinko.balls) {
-    const t = now - ball.start;
-    if (t < 0) continue;
-    const p = ballPos(ball, t);
-    if (!p) continue;
-    const g = ctx.createRadialGradient(p.x - 3, p.y - 3, 1, p.x, p.y, BALL_R);
-    g.addColorStop(0, "#fff6c2"); g.addColorStop(0.5, "#ffd34d"); g.addColorStop(1, "#c98a00");
-    ctx.fillStyle = g;
-    ctx.beginPath(); ctx.arc(p.x, p.y, BALL_R, 0, Math.PI * 2); ctx.fill();
+  // balls (now and then a ruby one, just for looks)
+  for (const [p, ball] of pos) {
+    const img = (ball.id || 0) % 9 === 4 ? PIMG["ball-ruby"] : PIMG.ball, sz = BALL_R * 2.2;
+    if (pOk(img)) ctx.drawImage(img, p.x - sz / 2, p.y - sz / 2, sz, sz);
+    else { ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(p.x, p.y, BALL_R, 0, Math.PI * 2); ctx.fill(); }
+  }
+  // landing bursts
+  plinko.fx = plinko.fx.filter(f => now - f.t < 900);
+  for (const f of plinko.fx) {
+    const k = (now - f.t) / 900, img = PIMG[f.kind], base = f.kind === "fx-small" ? 46 : f.kind === "fx-big" ? 130 : 200;
+    if (!pOk(img)) continue;
+    const sz = base * (0.5 + 0.7 * Math.min(1, k * 2.5));
+    ctx.globalAlpha = 1 - Math.max(0, (k - 0.55) / 0.45);
+    ctx.drawImage(img, f.x - sz / 2, f.y - sz * (f.kind === "fx-small" ? 0.5 : 0.75), sz, sz);
+    ctx.globalAlpha = 1;
   }
 }
 function roundRect(ctx, x, y, w, h, r) {
@@ -212,9 +229,9 @@ function renderPlinkoControls() {
          style="background:${CHIP_COLORS[v].bg}; color:${CHIP_COLORS[v].text}">${chipLabel(v)}</button>`).join("")}
     </div>
     <div class="plinkoControls">
-      <div class="ballCount"><span class="muted">Balls:</span>
+      <div class="ballCount"><img class="ico" src="assets/plinko/ico-balls.webp" alt=""><span class="muted">Balls:</span>
         <input type="range" min="1" max="${PLINKO_MAX_BALLS}" value="${plinko.count}" id="plinkoCount"><b id="plinkoCountText">${plinko.count}</b></div>
-      <button class="btn big" data-plinko="drop" style="margin-top:0">🔻 Drop ${plinko.count > 1 ? plinko.count + " balls" : "ball"} (${fmt(total)})</button>
+      <button class="btn big plinkoDrop" data-plinko="drop" style="margin-top:0"><img class="ico" src="assets/plinko/ico-drop.webp" alt="">Drop ${plinko.count > 1 ? plinko.count + " balls" : "ball"} (${fmt(total)})</button>
       <span class="muted">${flying ? flying + " in the air" : ""}</span>
     </div>
     <div id="plinkoHistory">${plinko.history.map(m => `<span style="background:${multColor(m)}">${m}×</span>`).join("")}</div>
