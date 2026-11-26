@@ -3036,6 +3036,12 @@ Object.assign(ES, { "BROKEN DOWN": "AVERIADO", "This truck needs repairs before 
 Object.assign(ES, { "⤢ Full map": "⤢ Mapa completo", "⤡ Smaller map": "⤡ Mapa más pequeño", "How to read the map": "Cómo leer el mapa" });
 H("🗺️ The world map is smaller by default (⤢ Full map makes it full width again), its help text moved into an ℹ️ button, and on phones it starts folded.",
   "🗺️ El mapa del mundo es más pequeño por defecto (⤢ Mapa completo lo vuelve a poner a todo el ancho), su texto de ayuda está ahora en un botón ℹ️, y en el móvil empieza plegado.");
+// 🏆 achievements layout
+Object.assign(ES, { "Almost there": "Casi lo tienes", "⭐ Almost there": "⭐ Casi lo tienes", "Fold ▴": "Plegar ▴" });
+rx(String.raw`(\d+) \/ (\d+) · Show ▸`, "$1 / $2 · Ver ▸");
+rx(String.raw`Unlocked (\d+\/\d+\/\d+)`, "Desbloqueado el $1");
+H("🏆 Achievements are easier to browse: smaller cards (3 per row), finished categories fold into one line, and a new <b>⭐ Almost there</b> box shows the achievements you are closest to.",
+  "🏆 Los logros son más fáciles de ver: tarjetas más pequeñas (3 por fila), las categorías terminadas se pliegan en una línea, y un nuevo recuadro <b>⭐ Casi lo tienes</b> muestra los logros que tienes más cerca.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -10830,6 +10836,8 @@ function showAchPage(p) {
   if (state.achPage === "rewards") renderRewards();
 }
 $("achList").addEventListener("click", (e) => {
+  const op = e.target.closest("[data-achopen]");
+  if (op) { const k = op.dataset.achopen; achOpenCats.has(k) ? achOpenCats.delete(k) : achOpenCats.add(k); return renderAchievements(); }
   const cat = e.target.closest("[data-achcat]");
   if (cat) { state.achCat = cat.dataset.achcat; save(); return renderAchievements(); }
   if (!e.target.closest("#achHideToggle")) return;
@@ -10842,6 +10850,17 @@ $("achNav").addEventListener("click", (e) => {
 });
 setInterval(grantRewards, 2000);
 
+// ⭐ the locked achievements you are closest to (only ones with a goal that counts up)
+var achOpenCats = new Set();
+function achAlmostHtml(sel) {
+  const pool = achShown().filter(a => !state.achievements[a.id] && a.goal > 1 && (sel === "all" || a.cat === sel))
+    .map(a => ({ a, p: Math.min(1, achValue(a) / a.goal) })).filter(x => x.p > 0 && x.p < 1).sort((x, y) => y.p - x.p).slice(0, 4);
+  if (!pool.length) return "";
+  return `<div class="card achAlmost"><h3 style="margin:0 0 8px">⭐ Almost there</h3><div class="achGrid">${pool.map(({ a, p }) => {
+    const show = (x) => a.money ? fmt(x) : Math.floor(x).toLocaleString();
+    return `<div class="ach almost"><div class="ico ${ACH_PICS.has(a.id) ? "pic" : ""}">${achIcon(a)}</div><div style="flex:1; min-width:0"><div class="nm">${a.name}</div><div class="muted">${a.desc}</div>
+      <div class="bar"><div style="width:${p * 100}%"></div></div><div class="muted">${show(Math.min(a.goal, achValue(a)))} / ${show(a.goal)} · <b>${Math.floor(p * 100)}%</b></div></div></div>`; }).join("")}</div></div>`;
+}
 function renderAchievements() {
   showAchPage(state.achPage);
   $("achTotal").textContent = `${achDone()} / ${achShown().length}`;
@@ -10852,22 +10871,25 @@ function renderAchievements() {
   $("achList").innerHTML = `<div class="achCats">${chip("all", ico("ui-trophy") + "All", achDone(), achShown().length)}${achCatsShown().map(c =>
         chip(c.id, catLabel(c), doneIn(c.id), ACHIEVEMENTS.filter(a => a.cat === c.id).length)).join("")}</div>
     <div class="achFilter"><button class="btn ghost small" id="achHideToggle">${hide ? "👁️ Show completed" : ico("ui-hide") + "Hide completed"}</button>
-      <span class="muted">${hide ? "Completed achievements are hidden." : ""}</span></div>` + achCatsShown().filter(c => sel === "all" || c.id === sel).map(c => {
+      <span class="muted">${hide ? "Completed achievements are hidden." : ""}</span></div>` + achAlmostHtml(sel) + achCatsShown().filter(c => sel === "all" || c.id === sel).map(c => {
     const all = ACHIEVEMENTS.filter(a => a.cat === c.id);
     const done = all.filter(a => state.achievements[a.id]).length;
+    // ✅ a finished category folds to one line (open it with "Show")
+    if (done === all.length && all.length && !achOpenCats.has(c.id) && sel === "all")
+      return `<button class="achHead achDoneRow" data-achopen="${c.id}"><span class="achDoneName">✅ ${catLabel(c)}</span><span class="muted">${done} / ${all.length} · Show ▸</span></button>`;
     const list = hide ? all.filter(a => !state.achievements[a.id]) : all;
-    return `<div class="achHead"><h2 style="margin:0">${catLabel(c)}</h2><span class="muted">${done} / ${all.length}</span></div>
+    return `<div class="achHead"><h2 style="margin:0">${catLabel(c)}</h2><span class="muted">${done} / ${all.length}${done === all.length && sel === "all" ? ` · <button class="linkBtn" data-achopen="${c.id}">Fold ▴</button>` : ""}</span></div>
       ${list.length ? "" : `<div class="muted" style="margin:4px 0 14px">✅ All done in this category!</div>`}
       <div class="achGrid">${list.map(a => {
         const got = state.achievements[a.id];
         const v = Math.min(a.goal, achValue(a));
         const show = (x) => a.money ? fmt(x) : x.toLocaleString();
-        return `<div class="ach ${got ? "done" : ""}">
+        return `<div class="ach ${got ? "done" : ""}" ${got ? `title="Unlocked ${new Date(got).toLocaleDateString()}"` : ""}>
           <div class="ico ${ACH_PICS.has(a.id) ? "pic" : ""}">${achIcon(a)}</div>
           <div style="flex:1; min-width:0">
             <div class="nm">${a.name}</div>
             <div class="muted">${a.desc}</div>
-            ${got ? `<div class="muted" style="color:#ffd34d">✔ Unlocked ${new Date(got).toLocaleDateString()}</div>`
+            ${got ? ``
                   : a.goal > 1 ? `<div class="bar"><div data-achbar="${a.id}" style="width:${100 * v / a.goal}%"></div></div><div class="muted" data-achnum="${a.id}">${show(Math.floor(v))} / ${show(a.goal)}</div>` : ""}
           </div></div>`;
       }).join("")}</div>`;
@@ -13732,6 +13754,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "🏆 Achievements are easier to browse: smaller cards (3 per row), finished categories fold into one line, and a new <b>⭐ Almost there</b> box shows the achievements you are closest to.",
     "🗺️ The world map is smaller by default (⤢ Full map makes it full width again), its help text moved into an ℹ️ button, and on phones it starts folded.",
     "🌍 Earth logistics is tidier: one slim bar shows your level, money, vehicles on the road and contracts, and Trucks · Tankers · Planes tabs show one fleet at a time (with a <b>!</b> when vehicles wait or break down). The world map follows the tab you pick.",
     "🚚 Logistics is faster to run: every vehicle is one compact row, idle ones show their ⭐ best offer (most money per second) with a <b>Send</b> button, and <b>⭐ Send all</b> puts every waiting vehicle on its best contract at once. \"Other offers\" still opens all 4.",

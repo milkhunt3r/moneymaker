@@ -1662,6 +1662,12 @@ Object.assign(ES, { "BROKEN DOWN": "AVERIADO", "This truck needs repairs before 
 Object.assign(ES, { "⤢ Full map": "⤢ Mapa completo", "⤡ Smaller map": "⤡ Mapa más pequeño", "How to read the map": "Cómo leer el mapa" });
 H("🗺️ The world map is smaller by default (⤢ Full map makes it full width again), its help text moved into an ℹ️ button, and on phones it starts folded.",
   "🗺️ El mapa del mundo es más pequeño por defecto (⤢ Mapa completo lo vuelve a poner a todo el ancho), su texto de ayuda está ahora en un botón ℹ️, y en el móvil empieza plegado.");
+// 🏆 achievements layout
+Object.assign(ES, { "Almost there": "Casi lo tienes", "⭐ Almost there": "⭐ Casi lo tienes", "Fold ▴": "Plegar ▴" });
+rx(String.raw`(\d+) \/ (\d+) · Show ▸`, "$1 / $2 · Ver ▸");
+rx(String.raw`Unlocked (\d+\/\d+\/\d+)`, "Desbloqueado el $1");
+H("🏆 Achievements are easier to browse: smaller cards (3 per row), finished categories fold into one line, and a new <b>⭐ Almost there</b> box shows the achievements you are closest to.",
+  "🏆 Los logros son más fáciles de ver: tarjetas más pequeñas (3 por fila), las categorías terminadas se pliegan en una línea, y un nuevo recuadro <b>⭐ Casi lo tienes</b> muestra los logros que tienes más cerca.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
