@@ -54,7 +54,7 @@ function freeRebet(id, need) {
     if (i >= 0) pl.splice(i, 1);
     state.freeChips[v] = (state.freeChips[v] || 0) + 1;
   });
-  return { covered, undo };
+  return { covered, undo, taken };
 }
 function freeDone(id, which = "inPlay") { freeTbl(id)[which] = []; }   // played: they are used up
 const purse = (id) => vipOn(id) ? state.vip.coins : state.casinoChips;
@@ -398,7 +398,10 @@ if (!state.rouletteBets || !state.rouletteBets.tables) {
 for (const id in ROULETTE_TABLES) {
   ROULETTE_TABLES[id].bets = state.rouletteBets.tables[id] = state.rouletteBets.tables[id] || {};
 }
-const setBets = (table, bets) => { table.bets = state.rouletteBets.tables[table.id] = bets; };
+const setBets = (table, bets) => { table.bets = state.rouletteBets.tables[table.id] = bets; rlUndo[table.id] = []; };
+// ↶ Undo: every chip (or ↺ repeat) placed since the last spin, newest last. Only kept while the page is open.
+const rlUndo = {};
+const rlUndoList = (t) => rlUndo[t.id] || (rlUndo[t.id] = []);
 
 const totalBets = (table = roulette) => Object.values(table.bets).reduce((a, b) => a + b, 0);
 // Chip labels: up to 999k in bcoin ("250k"), from 1 scoin up in scoin ("10sc", "500sc")
@@ -528,6 +531,7 @@ function renderRoulette() {
 
       <div class="moneyRow" style="margin-top:12px">
         <button class="btn" id="spin" ${roulette.spinning || totalBets() === 0 ? "disabled" : ""}>🎡 Spin (bet ${fmt(totalBets())})</button>
+        <button class="btn ghost" id="undoBet" ${roulette.spinning || !rlUndoList(roulette).length ? "disabled" : ""}>↶ Undo last bet</button>
         <button class="btn ghost" id="clearBets" ${roulette.spinning ? "disabled" : ""}>Clear bets</button>
         <button class="btn ghost" id="rebet" ${roulette.spinning || !hasLast ? "disabled" : ""}>↺ Repeat last bets</button>
       </div>
@@ -557,7 +561,19 @@ $("casinoGame").addEventListener("click", (e) => {
       return casinoMessage("Table limit: max " + fmt(roulette.max) + " on one spot.");
     if (free) freeTake(roulette.id, roulette.chip); else payFrom(roulette.id, roulette.chip);
     roulette.bets[key] = (roulette.bets[key] || 0) + roulette.chip;
+    rlUndoList(roulette).push({ bets: { [key]: roulette.chip }, paid: free ? 0 : roulette.chip, free: free ? [roulette.chip] : [] });
     roulette.lastResult = null;
+    updateCounter(); renderRoulette(); save();
+    return;
+  }
+
+  if (e.target.closest("#undoBet") && !roulette.spinning) {   // ↶ take back the last chip (or the last ↺ repeat)
+    const u = rlUndoList(roulette).pop();
+    if (!u) return;
+    for (const k in u.bets) { roulette.bets[k] = (roulette.bets[k] || 0) - u.bets[k]; if (roulette.bets[k] <= 0) delete roulette.bets[k]; }
+    const pl = freeTbl(roulette.id).placed;
+    u.free.forEach(v => { const i = pl.lastIndexOf(v); if (i >= 0) { pl.splice(i, 1); state.freeChips[v] = (state.freeChips[v] || 0) + 1; } });
+    refundTo(roulette.id, u.paid);
     updateCounter(); renderRoulette(); save();
     return;
   }
@@ -578,6 +594,7 @@ $("casinoGame").addEventListener("click", (e) => {
     if (purse(roulette.id) < rest) { fr.undo(); return casinoMessage(`Not enough ${purseName(roulette.id)} to repeat (` + fmt(rest) + " needed)."); }
     payFrom(roulette.id, rest);
     for (const k in roulette.lastBets) roulette.bets[k] = (roulette.bets[k] || 0) + roulette.lastBets[k];
+    rlUndoList(roulette).push({ bets: { ...roulette.lastBets }, paid: rest, free: fr.taken });
     roulette.lastResult = null;
     updateCounter(); renderRoulette(); save();
     return;

@@ -2768,6 +2768,11 @@ H("🌌 Space politics: races now have ⚔️ <b>rivals</b> (helping one makes i
   "🌌 Política espacial: ahora las razas tienen ⚔️ <b>rivales</b> (ayudar a una pone un poco celosa a su rival), 💖 los viejos aliados se enfrían poco a poco si no les envías un regalo o mantienes una ruta comercial (nunca por debajo de 😊 Amistosa), y vender mucho de un mismo bien 📉 baja su precio durante unas horas.");
 H("📜 New in 🌌 Space: the <b>Contracts board</b>. Races post timed jobs: bring them goods from other worlds before the deadline for money and friendship.",
   "📜 Novedad en 🌌 Espacio: el <b>tablón de contratos</b>. Las razas publican encargos con plazo: llévales bienes de otros mundos antes de que se acabe para ganar dinero y amistad.");
+Object.assign(ES, { "↶ Undo last bet": "↶ Deshacer última apuesta", "Undo last bet": "Deshacer última apuesta" });
+H("🎡 Roulette: new <b>↶ Undo last bet</b> button. It takes back your last chip (or your last ↺ Repeat last bets), and you can press it again and again.",
+  "🎡 Ruleta: nuevo botón <b>↶ Deshacer última apuesta</b>. Retira tu última ficha (o tu último ↺ Repetir últimas apuestas), y puedes pulsarlo una y otra vez.");
+ES["Free bet chips: what the bet pays goes to your money."] = "Fichas de apuesta gratis: lo que pague la apuesta va a tu dinero.";
+rx(String.raw`On the table now: (${NUM}) free\.`, "En la mesa ahora: $1 gratis.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -4458,7 +4463,7 @@ function freeRebet(id, need) {
     if (i >= 0) pl.splice(i, 1);
     state.freeChips[v] = (state.freeChips[v] || 0) + 1;
   });
-  return { covered, undo };
+  return { covered, undo, taken };
 }
 function freeDone(id, which = "inPlay") { freeTbl(id)[which] = []; }   // played: they are used up
 var purse = (id) => vipOn(id) ? state.vip.coins : state.casinoChips;
@@ -4802,7 +4807,10 @@ if (!state.rouletteBets || !state.rouletteBets.tables) {
 for (const id in ROULETTE_TABLES) {
   ROULETTE_TABLES[id].bets = state.rouletteBets.tables[id] = state.rouletteBets.tables[id] || {};
 }
-var setBets = (table, bets) => { table.bets = state.rouletteBets.tables[table.id] = bets; };
+var setBets = (table, bets) => { table.bets = state.rouletteBets.tables[table.id] = bets; rlUndo[table.id] = []; };
+// ↶ Undo: every chip (or ↺ repeat) placed since the last spin, newest last. Only kept while the page is open.
+var rlUndo = {};
+var rlUndoList = (t) => rlUndo[t.id] || (rlUndo[t.id] = []);
 
 var totalBets = (table = roulette) => Object.values(table.bets).reduce((a, b) => a + b, 0);
 // Chip labels: up to 999k in bcoin ("250k"), from 1 scoin up in scoin ("10sc", "500sc")
@@ -4932,6 +4940,7 @@ function renderRoulette() {
 
       <div class="moneyRow" style="margin-top:12px">
         <button class="btn" id="spin" ${roulette.spinning || totalBets() === 0 ? "disabled" : ""}>🎡 Spin (bet ${fmt(totalBets())})</button>
+        <button class="btn ghost" id="undoBet" ${roulette.spinning || !rlUndoList(roulette).length ? "disabled" : ""}>↶ Undo last bet</button>
         <button class="btn ghost" id="clearBets" ${roulette.spinning ? "disabled" : ""}>Clear bets</button>
         <button class="btn ghost" id="rebet" ${roulette.spinning || !hasLast ? "disabled" : ""}>↺ Repeat last bets</button>
       </div>
@@ -4961,7 +4970,19 @@ $("casinoGame").addEventListener("click", (e) => {
       return casinoMessage("Table limit: max " + fmt(roulette.max) + " on one spot.");
     if (free) freeTake(roulette.id, roulette.chip); else payFrom(roulette.id, roulette.chip);
     roulette.bets[key] = (roulette.bets[key] || 0) + roulette.chip;
+    rlUndoList(roulette).push({ bets: { [key]: roulette.chip }, paid: free ? 0 : roulette.chip, free: free ? [roulette.chip] : [] });
     roulette.lastResult = null;
+    updateCounter(); renderRoulette(); save();
+    return;
+  }
+
+  if (e.target.closest("#undoBet") && !roulette.spinning) {   // ↶ take back the last chip (or the last ↺ repeat)
+    const u = rlUndoList(roulette).pop();
+    if (!u) return;
+    for (const k in u.bets) { roulette.bets[k] = (roulette.bets[k] || 0) - u.bets[k]; if (roulette.bets[k] <= 0) delete roulette.bets[k]; }
+    const pl = freeTbl(roulette.id).placed;
+    u.free.forEach(v => { const i = pl.lastIndexOf(v); if (i >= 0) { pl.splice(i, 1); state.freeChips[v] = (state.freeChips[v] || 0) + 1; } });
+    refundTo(roulette.id, u.paid);
     updateCounter(); renderRoulette(); save();
     return;
   }
@@ -4982,6 +5003,7 @@ $("casinoGame").addEventListener("click", (e) => {
     if (purse(roulette.id) < rest) { fr.undo(); return casinoMessage(`Not enough ${purseName(roulette.id)} to repeat (` + fmt(rest) + " needed)."); }
     payFrom(roulette.id, rest);
     for (const k in roulette.lastBets) roulette.bets[k] = (roulette.bets[k] || 0) + roulette.lastBets[k];
+    rlUndoList(roulette).push({ bets: { ...roulette.lastBets }, paid: rest, free: fr.taken });
     roulette.lastResult = null;
     updateCounter(); renderRoulette(); save();
     return;
@@ -13235,6 +13257,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "🎡 Roulette: new <b>↶ Undo last bet</b> button. It takes back your last chip (or your last ↺ Repeat last bets), and you can press it again and again.",
     "🌌 Space politics: races now have ⚔️ <b>rivals</b> (helping one makes its rival a little jealous), 💖 old allies slowly cool off unless you send a gift or keep a trade route running (never below 😊 Friendly), and selling lots of one good 📉 lowers its price for a few hours.",
     "📜 New in 🌌 Space: the <b>Contracts board</b>. Races post timed jobs: bring them goods from other worlds before the deadline for money and friendship.",
     "💎 New coin: <b>pcoin</b> (platinum). 1 pcoin = 1,000,000 gcoin; money switches to pcoin from 1,000,000 gcoin. The money boxes can be set to pcoin too.",

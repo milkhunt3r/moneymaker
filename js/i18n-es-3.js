@@ -1394,6 +1394,11 @@ H("🌌 Space politics: races now have ⚔️ <b>rivals</b> (helping one makes i
   "🌌 Política espacial: ahora las razas tienen ⚔️ <b>rivales</b> (ayudar a una pone un poco celosa a su rival), 💖 los viejos aliados se enfrían poco a poco si no les envías un regalo o mantienes una ruta comercial (nunca por debajo de 😊 Amistosa), y vender mucho de un mismo bien 📉 baja su precio durante unas horas.");
 H("📜 New in 🌌 Space: the <b>Contracts board</b>. Races post timed jobs: bring them goods from other worlds before the deadline for money and friendship.",
   "📜 Novedad en 🌌 Espacio: el <b>tablón de contratos</b>. Las razas publican encargos con plazo: llévales bienes de otros mundos antes de que se acabe para ganar dinero y amistad.");
+Object.assign(ES, { "↶ Undo last bet": "↶ Deshacer última apuesta", "Undo last bet": "Deshacer última apuesta" });
+H("🎡 Roulette: new <b>↶ Undo last bet</b> button. It takes back your last chip (or your last ↺ Repeat last bets), and you can press it again and again.",
+  "🎡 Ruleta: nuevo botón <b>↶ Deshacer última apuesta</b>. Retira tu última ficha (o tu último ↺ Repetir últimas apuestas), y puedes pulsarlo una y otra vez.");
+ES["Free bet chips: what the bet pays goes to your money."] = "Fichas de apuesta gratis: lo que pague la apuesta va a tu dinero.";
+rx(String.raw`On the table now: (${NUM}) free\.`, "En la mesa ahora: $1 gratis.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

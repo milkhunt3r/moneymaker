@@ -52,6 +52,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "🎡 Roulette: new <b>↶ Undo last bet</b> button. It takes back your last chip (or your last ↺ Repeat last bets), and you can press it again and again.",
     "🌌 Space politics: races now have ⚔️ <b>rivals</b> (helping one makes its rival a little jealous), 💖 old allies slowly cool off unless you send a gift or keep a trade route running (never below 😊 Friendly), and selling lots of one good 📉 lowers its price for a few hours.",
     "📜 New in 🌌 Space: the <b>Contracts board</b>. Races post timed jobs: bring them goods from other worlds before the deadline for money and friendship.",
     "💎 New coin: <b>pcoin</b> (platinum). 1 pcoin = 1,000,000 gcoin; money switches to pcoin from 1,000,000 gcoin. The money boxes can be set to pcoin too.",
