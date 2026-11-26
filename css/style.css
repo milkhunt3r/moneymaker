@@ -1928,7 +1928,7 @@ p.guestWarn { font-size: 14px; background: rgba(255, 170, 0, 0.1); border: 1px s
 .mapTipHr { border: 0; border-top: 1px solid rgba(255, 255, 255, 0.15); margin: 4px 0; }
 
 /* 🌌 Space logistics (js/34-space.js) */
-#logisticsView.spaceMode #logiMain > :not(#spaceView):not(#logiLevel) { display: none !important; }
+#logisticsView.spaceMode #logiMain > :not(#spaceView) { display: none !important; }   /* 🌌 Space pages: no Earth Logistics level card either */
 #logiMain > .card:first-child, #logiMain > #spaceView > .card:first-child { margin-top: 0; }
 #spaceView[hidden] { display: none; }
 .spMap { position: relative; width: 100%; aspect-ratio: 16 / 9; margin-top: 10px; border-radius: 12px; overflow: hidden;
