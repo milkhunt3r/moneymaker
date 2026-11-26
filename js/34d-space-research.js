@@ -165,3 +165,5 @@ document.addEventListener("click", (e) => {
     <div class="row" style="justify-content:center;gap:10px"><button class="btn ghost" data-modal="close">Keep it</button><button class="btn dangerBtn" data-spo2="${spSel}">Close it</button></div>`);
 });
 $("modal").addEventListener("click", (e) => { const b = e.target.closest("[data-spo2]"); if (b) spOutpostClose(b.dataset.spo2); });
+
+spProcess();   // catch up on everything that happened while the game was closed (needs all three space files)

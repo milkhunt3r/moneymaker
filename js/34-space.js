@@ -815,4 +815,5 @@ setInterval(() => {
   if (spSci().space && !SP.unlocked) { SP.unlocked = true; save(); showNotice("🌌 New in 🚢 Logistics: <b>Space</b>! Explore the galaxy and meet alien races."); spApplyPage(); }
   spProcess(); spSosTick(); spAnimate();
 }, 1000);
-spProcess();
+// the first catch-up (ships that arrived while the game was closed) runs at the end of js/34d-space-research.js,
+// once the contracts and research code is loaded too

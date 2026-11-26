@@ -18937,7 +18937,8 @@ setInterval(() => {
   if (spSci().space && !SP.unlocked) { SP.unlocked = true; save(); showNotice("🌌 New in 🚢 Logistics: <b>Space</b>! Explore the galaxy and meet alien races."); spApplyPage(); }
   spProcess(); spSosTick(); spAnimate();
 }, 1000);
-spProcess();
+// the first catch-up (ships that arrived while the game was closed) runs at the end of js/34d-space-research.js,
+// once the contracts and research code is loaded too
 
 // ===== js/34c-space-politics.js =====
 __eocLoaded = 44;
@@ -19025,6 +19026,13 @@ function spConTick(now, msgs) {
     }
   }
   C.active = C.active.filter(c => !c.gone);
+  // 🔧 a sent contract whose ship already got there (or is gone) but was never paid: settle it now
+  for (const c of [...C.active]) {
+    if (!c.sent) continue;
+    const tr = SP.trips.find(t => t.k === "contract" && t.cargo && t.cargo.cid === c.id);
+    if (tr && !tr.arrived) continue;
+    spConArrive(tr || { to: c.to, cargo: { cid: c.id }, t1: Math.min(now, c.deadline), lost: false }, msgs);
+  }
 }
 var spConHave = (c) => Object.entries(c.need).every(([g, n]) => (SP.goods[g] || 0) >= n);
 function spConAccept(id) {
@@ -19282,6 +19290,8 @@ document.addEventListener("click", (e) => {
     <div class="row" style="justify-content:center;gap:10px"><button class="btn ghost" data-modal="close">Keep it</button><button class="btn dangerBtn" data-spo2="${spSel}">Close it</button></div>`);
 });
 $("modal").addEventListener("click", (e) => { const b = e.target.closest("[data-spo2]"); if (b) spOutpostClose(b.dataset.spo2); });
+
+spProcess();   // catch up on everything that happened while the game was closed (needs all three space files)
 
 // ===== js/36-pip.js =====
 __eocLoaded = 46;

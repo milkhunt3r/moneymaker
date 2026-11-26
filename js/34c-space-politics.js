@@ -83,6 +83,13 @@ function spConTick(now, msgs) {
     }
   }
   C.active = C.active.filter(c => !c.gone);
+  // 🔧 a sent contract whose ship already got there (or is gone) but was never paid: settle it now
+  for (const c of [...C.active]) {
+    if (!c.sent) continue;
+    const tr = SP.trips.find(t => t.k === "contract" && t.cargo && t.cargo.cid === c.id);
+    if (tr && !tr.arrived) continue;
+    spConArrive(tr || { to: c.to, cargo: { cid: c.id }, t1: Math.min(now, c.deadline), lost: false }, msgs);
+  }
 }
 const spConHave = (c) => Object.entries(c.need).every(([g, n]) => (SP.goods[g] || 0) >= n);
 function spConAccept(id) {
