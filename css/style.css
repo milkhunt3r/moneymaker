@@ -2475,3 +2475,8 @@ body.phone .casHudTiers { margin-left: 0; }
 .bizNeed:hover { background: rgba(255,198,26,0.2); }
 .bizNeedGo { margin-left: auto; color: #ffd34d; font-weight: 700; }
 #shop .choices { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+/* 💡 income hints: best value, Max buy, "hire workers" */
+.bestBuy { border-color: rgba(255,211,77,0.7); box-shadow: 0 0 14px rgba(255,211,77,0.18); position: relative; }
+.bestTag { position: absolute; top: -10px; left: 12px; padding: 2px 9px; border-radius: 999px; background: #ffd34d; color: #2b2200; font-size: 11.5px; font-weight: 800; }
+.buyBtns { display: grid; gap: 5px; justify-items: stretch; flex: none; }
+.bizHint { color: #ffc61a; font-weight: 700; font-size: 12.5px; }

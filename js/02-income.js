@@ -206,7 +206,7 @@ function render() {
   const page = ["biz", "special", "science"].includes(state.incomePage) ? state.incomePage : "biz";
   const sciOpen = typeof scienceOpen === "function" && scienceOpen();
   const tabs = `<nav class="incomeTabs">
-    <button class="incomeTab ${page === "biz" ? "active" : ""}" data-ipage="biz">${ico("business")}Businesses</button>
+    <button class="incomeTab ${page === "biz" ? "active" : ""}" data-ipage="biz">${ico("business")}Businesses${bizNeedCount() ? ' <span class="tabWarn gold" title="A business has free worker slots">!</span>' : ""}</button>
     <button class="incomeTab ${page === "special" ? "active" : ""}" data-ipage="special">${ico("special")}Special</button>
     <button class="incomeTab ${page === "science" ? "active" : ""}" data-ipage="science">${sciOpen ? "" : ico("lock")}${ico("science")}Science</button></nav>`;
   // ⚠️ businesses that need you: a free worker slot, or no accountant / HR yet
@@ -228,6 +228,7 @@ function render() {
         <div class="row"><h3>${bizIco(t.id)}${title}</h3><span class="income" id="c-income-${ci}">+0 / sec</span></div>
         <div class="bizUnitLine">${t.noStaff ? "" : `${staffIco(c.accountant, ACCOUNTANTS[c.accountant])}${staffIco(c.hr, HR_OPTIONS[c.hr])}`}
           <span class="bizSlots"><i style="width:${c.workers.length / maxWorkers(c) * 100}%"></i></span><span class="muted">${c.workers.length} / ${maxWorkers(c)} workers</span>
+          ${c.workers.length ? "" : `<span class="bizHint">Hire workers to start earning</span>`}
           ${free ? `<button class="btn small" data-action="toggle" data-company="${ci}">👷 Hire · ${free} free</button>` : `<span class="bizFull">✅ Full</span><button class="btn ghost small" data-action="toggle" data-company="${ci}">▸ Details</button>`}</div></div>`;
     }
     html += `<div class="card bizUnit ${staffReady(c) ? "open" : "open setup"}" id="c-card-${ci}">
@@ -310,6 +311,10 @@ function render() {
     return html;
   };
 
+  // ⭐ best value: the business you can buy now with the most worker income per coin
+  const bizValue = (t) => (t.minIncome + t.maxIncome) / 2 * (t.maxEmployees - (t.noStaff ? 0 : 2)) / businessPrice(t);
+  const buyable = BUSINESS_TYPES.filter(t => { const o = ownedOf(t.id); return o < t.maxOwned && o < allowedToOwn(t); });
+  const best = buyable.length > 1 ? buyable.reduce((a, b) => bizValue(b) > bizValue(a) ? b : a) : null;
   // Businesses grouped by type: group header, your companies, then the buy card
   BUSINESS_TYPES.forEach(t => {
     const mine = state.companies.map((c, ci) => ({ c, ci })).filter(x => x.c.typeId === t.id);
@@ -341,13 +346,16 @@ function render() {
         <span class="muted">${fmt(businessPrice(t))}</span></div></div>`;
       return;
     }
-    html += `<div class="card">
+    const maxN = bizMaxBuy(t);
+    html += `<div class="card ${best === t ? "bestBuy" : ""}">
+      ${best === t ? `<div class="bestTag" title="The most worker income for each coin you spend">⭐ Best value</div>` : ""}
       <div class="row">
         <div><h3>${bizIco(t.id)}${t.name}</h3>
           <div class="muted">${t.noStaff ? `${t.maxEmployees} workers · no accountant or HR` : `Up to ${t.maxEmployees} employees (incl. accountant &amp; HR)`} · workers earn ${t.minIncome}–${t.maxIncome} / sec</div>
           ${t.perk ? `<div class="muted">⭐ ${t.perk}</div>` : ""}
           <div class="muted">Owned: ${owned} / ${t.maxOwned}</div></div>
-        <button class="btn" data-action="buy" data-type="${t.id}" data-cost="${businessPrice(t)}">Buy ${fmt(businessPrice(t))}</button>
+        <span class="buyBtns"><button class="btn" data-action="buy" data-type="${t.id}" data-cost="${businessPrice(t)}" data-buylbl="Buy ${fmt(businessPrice(t))}">Buy ${fmt(businessPrice(t))}</button>
+          ${maxN.n > 1 ? `<button class="btn ghost small" data-action="buyMax" data-type="${t.id}">Max ×${maxN.n} · ${fmt(maxN.cost)}</button>` : ""}</span>
       </div></div>`;
   });
 
@@ -358,13 +366,35 @@ function render() {
   updateAffordability();
 }
 
-// Grey out buttons you cannot afford
+// Grey out buttons you cannot afford (a Buy button says how much is missing)
 function updateAffordability() {
   if (energyReady) updateEnergy();   // grey out the energy drink if you can't afford it
   document.querySelectorAll("[data-cost]").forEach(btn => {
-    btn.disabled = state.money < Number(btn.dataset.cost);
+    const cost = Number(btn.dataset.cost), no = state.money < cost;
+    btn.disabled = no;
+    if (btn.dataset.buylbl) { const t = no ? `Need ${fmt(cost - state.money)} more` : btn.dataset.buylbl; if (btn.dataset.shown !== t) { btn.dataset.shown = t; btn.textContent = t; } }
+  });
+  // the Max button appears / changes as your money grows
+  document.querySelectorAll('[data-action="buyMax"]').forEach(btn => {
+    const t = BUSINESS_TYPES.find(x => x.id === btn.dataset.type), m = t && bizMaxBuy(t);
+    if (!m || m.n < 2) { btn.hidden = true; return; }
+    btn.hidden = false; const lbl = `Max ×${m.n} · ${fmt(m.cost)}`; if (btn.dataset.shown !== lbl) { btn.dataset.shown = lbl; btn.textContent = lbl; }
   });
 }
+// how many of this business you can buy right now, and what they cost together
+function bizMaxBuy(t) {
+  let n = 0, cost = 0, owned = ownedOf(t.id);
+  const cap = Math.min(t.maxOwned, allowedToOwn(t));
+  while (owned + n < cap) { const p = t.price * Math.pow(t.priceMultiplier || 1, owned + n); if (cost + p > state.money) break; cost += p; n++; }
+  return { n, cost };
+}
+// businesses that need you: a free worker slot, or no accountant / HR yet
+const bizNeedCount = () => state.companies.filter(c => !staffReady(c) || c.workers.length < maxWorkers(c)).length;
+function bizNeedTabs() {
+  const n = bizNeedCount(), tab = document.querySelector('.tab[data-view="income"]');
+  if (tab) { const has = !!tab.querySelector(".tabWarn"); if (n && !has) tab.insertAdjacentHTML("beforeend", ' <span class="tabWarn gold" title="A business has free worker slots">!</span>'); if (!n && has) tab.querySelector(".tabWarn").remove(); }
+}
+setInterval(bizNeedTabs, 1000);
 
 let counterQueued = false;
 function updateCounter() {   // batched: many calls in one frame (fast clicks, income) update the page once
@@ -414,6 +444,12 @@ $("shop").addEventListener("click", (event) => {
     if (owned >= allowedToOwn(t)) return;
     state.money -= price;
     state.companies.push({ typeId: t.id, accountant: null, hr: null, workers: [], candidates: null });
+  }
+  if (action === "buyMax") {
+    const t = BUSINESS_TYPES.find(x => x.id === btn.dataset.type), m = t && bizMaxBuy(t);
+    if (!m || m.n < 1) return;
+    for (let i = 0; i < m.n; i++) { state.money -= businessPrice(t); state.companies.push({ typeId: t.id, accountant: null, hr: null, workers: [], candidates: null }); }
+    showNotice(`🏢 Bought ${m.n} × ${t.name} for ${fmt(m.cost)}.`);
   }
   if (action === "toggle") company.open = !company.open;
   if (action === "jumpFree") {   // open the first business that needs staff and scroll to it

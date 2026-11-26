@@ -1608,6 +1608,14 @@ rx(String.raw`(\d+) (business|businesses) · (\d+) \/ (\d+) workers`, (m, n, x, 
 rx(String.raw`Hire · (\d+) free`, "Contratar · $1 libres");
 H("🏢 Businesses are easier to manage: the shop is wider on big screens, each business is one compact row (2 per line) with its workers bar, and a gold banner takes you straight to businesses that still have free worker slots. Tap <b>👷 Hire</b> or <b>Details</b> to open one.",
   "🏢 Los negocios son más fáciles de gestionar: la tienda es más ancha en pantallas grandes, cada negocio es una fila compacta (2 por línea) con su barra de trabajadores, y un aviso dorado te lleva directamente a los negocios que aún tienen plazas libres. Pulsa <b>👷 Contratar</b> o <b>Detalles</b> para abrir uno.");
+// 💡 income hints
+Object.assign(ES, { "Hire workers to start earning": "Contrata trabajadores para empezar a ganar", "A business has free worker slots": "Un negocio tiene plazas de trabajador libres",
+  "The most worker income for each coin you spend": "Los mayores ingresos de trabajadores por cada moneda que gastas", "Best value": "Mejor valor" });
+rx(String.raw`Need (${NUM}) more`, "Faltan $1");
+rx(String.raw`Max ×(\d+) · (${NUM})`, "Máx. ×$1 · $2");
+rx(String.raw`(🏢 )?Bought (\d+) × (.+) for (${NUM})\.`, (m, e, n, b, x) => `${e || ""}Has comprado ${n} × ${ES[b] || b} por ${x}.`);
+H("💡 Income tips: a gold <b>!</b> on Income and Businesses when a business has free worker slots, a <b>⭐ Best value</b> tag on the business with the most income per coin, a <b>Max</b> button to buy several at once, and Buy buttons now say how much money is missing.",
+  "💡 Ayudas en Ingresos: un <b>!</b> dorado en Ingresos y Negocios cuando un negocio tiene plazas libres, una etiqueta <b>⭐ Mejor valor</b> en el negocio con más ingresos por moneda, un botón <b>Máx.</b> para comprar varios a la vez, y los botones de compra ahora dicen cuánto dinero falta.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
