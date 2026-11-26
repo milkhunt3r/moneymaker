@@ -3005,6 +3005,14 @@ hrx(String.raw`📋 Open positions \((\d+)\)( · ⏳ limit orders \((\d+)\))?`, 
 rx(String.raw`Your (BTC|ETH|SOL) positions are in the list at the top\.`, "Tus posiciones de $1 están en la lista de arriba.");
 H("🪙 Live trading is easier: one coin at a time with tabs (price, 24h change and how many positions you have), a big Open button with its preview right under it, and all your open positions and limit orders together in one list at the top.",
   "🪙 El trading en vivo es más cómodo: una moneda a la vez con pestañas (precio, cambio en 24 h y cuántas posiciones tienes), un botón grande de Abrir con su vista previa justo debajo, y todas tus posiciones abiertas y órdenes límite juntas en una lista arriba.");
+// 🔁 investing Buy | Sell
+rx(String.raw`You put in (${NUM}) · (${NUM}) left`, "Inviertes $1 · te quedan $2");
+rx(String.raw`You only have (${NUM})\.`, "Solo tienes $1.");
+rx(String.raw`You get (${NUM}) \(no fee\)`, "Recibes $1 (sin comisión)");
+H("🔁 Investing: each investment now has one <b>Buy | Sell</b> switch with a single amount row. In Sell mode the % buttons fill a share of what you hold, and a line tells you what you put in or get back.",
+  "🔁 Inversiones: cada inversión tiene ahora un interruptor <b>Comprar | Vender</b> con una sola fila de cantidad. En modo Vender, los botones de % rellenan una parte de lo que tienes, y una línea te dice cuánto pones o recibes.");
+rx(String.raw`Sold (${NUM}) of gold \(no fee\)\.`, "Has vendido $1 de oro (sin comisión).");
+rx(String.raw`Next gold sale in ([\d:]+)`, "Próxima venta de oro en $1");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -13651,6 +13659,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "🔁 Investing: each investment now has one <b>Buy | Sell</b> switch with a single amount row. In Sell mode the % buttons fill a share of what you hold, and a line tells you what you put in or get back.",
     "🪙 Live trading is easier: one coin at a time with tabs (price, 24h change and how many positions you have), a big Open button with its preview right under it, and all your open positions and limit orders together in one list at the top.",
     "📈 Investing is tidier: one slim bar shows your level, money and holdings, and the Investing page starts with a portfolio list (worth, profit and a mini chart for each investment). Pick one to open its chart and buy/sell controls.",
     "💡 Income tips: a gold <b>!</b> on Income and Businesses when a business has free worker slots, a <b>⭐ Best value</b> tag on the business with the most income per coin, a <b>Max</b> button to buy several at once, and Buy buttons now say how much money is missing.",
@@ -16113,8 +16122,53 @@ $("investPane").addEventListener("click", (e) => {
   state.ivCard = r.dataset.ivpick; ivApply(); ivRefresh(); save();
   if ((__eocLoaded >= 9 && typeof drawChart === "function")) { drawChart("etfChart", inv.etfPrices); drawChart("goldChart", inv.goldPrices); drawChart("petfChart", inv.petfPrices); drawChart("gfcChart", inv.gfcPrices); }
 });
+/* ----- 🔁 one Buy | Sell switch per investment: one amount row at a time; the % buttons fill % of your money (Buy) or of what you hold (Sell) ----- */
+var IV_TRADE = {
+  etf:  { buy: "Invest", sell: "Cash out", hold: () => inv.etf, fee: () => etfFee() },
+  gold: { buy: "Buy", sell: "Sell", hold: () => inv.gold, fee: () => 0 },
+  gfc:  { buy: "Buy", sell: "Sell", hold: () => inv.gfc, fee: () => etfFee() },
+};
+if (!state.ivMode) state.ivMode = {};
+(function ivTradeSetup() {
+  for (const [k, T] of Object.entries(IV_TRADE)) {
+    const buyRow = $(k + "Amount") && $(k + "Amount").closest(".moneyRow"), sellRow = $(k + "SellAmount") && $(k + "SellAmount").closest(".moneyRow");
+    if (!buyRow || !sellRow) continue;
+    buyRow.dataset.ivrow = k + "-buy"; sellRow.dataset.ivrow = k + "-sell";
+    buyRow.insertAdjacentHTML("beforebegin", `<div class="segGroup ivMode"><button class="seg buy" data-ivmode="${k}" data-mode="buy">${T.buy}</button><button class="seg sell" data-ivmode="${k}" data-mode="sell">${T.sell}</button></div>`);
+    const firstBtn = sellRow.querySelector("button");
+    firstBtn.insertAdjacentHTML("beforebegin", [0.25, 0.5, 0.75].map(p => `<button class="btn ghost small" data-ivsell="${k}" data-pct="${p}">${p * 100}%</button>`).join(""));
+    sellRow.insertAdjacentHTML("afterend", `<div class="muted ivPrev" id="ivprev-${k}"></div>`);
+  }
+})();
+function ivModeApply() {
+  for (const k of Object.keys(IV_TRADE)) {
+    const m = state.ivMode[k] === "sell" ? "sell" : "buy";
+    document.querySelectorAll(`[data-ivmode="${k}"]`).forEach(b => b.classList.toggle("on", b.dataset.mode === m));
+    const b = document.querySelector(`[data-ivrow="${k}-buy"]`), s2 = document.querySelector(`[data-ivrow="${k}-sell"]`);
+    if (b) b.hidden = m !== "buy"; if (s2) s2.hidden = m !== "sell";
+  }
+}
+// what you are about to do, in plain words (updated every second and while typing)
+function ivPreview() {
+  for (const [k, T] of Object.entries(IV_TRADE)) {
+    const el = $("ivprev-" + k); if (!el) continue;
+    const sell = state.ivMode[k] === "sell";
+    if (sell) { const v = Math.min(Math.floor(Number($(k + "SellAmount").value) || 0), T.hold());   // ETF and freight shares also show "You get …" in their row
+      el.textContent = k === "gold" && v > 0 ? `You get ${fmt(v)} (no fee)` : ""; continue; }
+    const a = Math.floor(Number($(k + "Amount").value) || 0);
+    el.textContent = a > 0 ? (a > state.money ? `You only have ${fmt(state.money)}.` : `You put in ${fmt(a)} · ${fmt(state.money - a)} left`) : "";
+  }
+}
+$("investPane").addEventListener("click", (e) => {
+  const m = e.target.closest("[data-ivmode]");
+  if (m) { state.ivMode[m.dataset.ivmode] = m.dataset.mode; ivModeApply(); ivPreview(); save(); return; }
+  const sp = e.target.closest("[data-ivsell]");
+  if (sp) { const k = sp.dataset.ivsell, box = $(k + "SellAmount"); box.value = Math.floor(IV_TRADE[k].hold() * Number(sp.dataset.pct)); box.dispatchEvent(new Event("input", { bubbles: true })); ivPreview(); }
+});
+$("investPane").addEventListener("input", ivPreview);
+ivModeApply();
 ivApply(); ivRefresh();
-setInterval(ivRefresh, 1000);
+setInterval(() => { ivRefresh(); ivPreview(); }, 1000);
 
 // ===== js/29-cloud.js =====
 __eocLoaded = 38;

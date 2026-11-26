@@ -2520,3 +2520,9 @@ body.phone .ivHud { gap: 6px 10px; }
 body.phone .coinTabs { gap: 5px; } body.phone .coinTab { padding: 6px; gap: 5px; flex-wrap: wrap; } body.phone .coinTab .cryptoIcon { width: 24px; height: 24px; font-size: 14px; }
 body.phone .coinTabChg { margin-left: 0; font-size: 11px; width: 100%; }
 body.phone .openRow .btn.big { width: 100%; }
+/* 🔁 investing Buy | Sell switch */
+.ivMode { margin: 12px 0 4px; }
+.ivMode .seg { min-width: 90px; font-weight: 800; }
+.ivMode .seg.buy.on { background: #2fbf71; color: #fff; } .ivMode .seg.sell.on { background: #e5534b; color: #fff; }
+.moneyRow[hidden] { display: none; }
+.ivPrev { font-size: 13px; margin-top: 4px; } .ivPrev:empty { display: none; }

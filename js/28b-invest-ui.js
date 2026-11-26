@@ -69,5 +69,50 @@ $("investPane").addEventListener("click", (e) => {
   state.ivCard = r.dataset.ivpick; ivApply(); ivRefresh(); save();
   if (typeof drawChart === "function") { drawChart("etfChart", inv.etfPrices); drawChart("goldChart", inv.goldPrices); drawChart("petfChart", inv.petfPrices); drawChart("gfcChart", inv.gfcPrices); }
 });
+/* ----- 🔁 one Buy | Sell switch per investment: one amount row at a time; the % buttons fill % of your money (Buy) or of what you hold (Sell) ----- */
+const IV_TRADE = {
+  etf:  { buy: "Invest", sell: "Cash out", hold: () => inv.etf, fee: () => etfFee() },
+  gold: { buy: "Buy", sell: "Sell", hold: () => inv.gold, fee: () => 0 },
+  gfc:  { buy: "Buy", sell: "Sell", hold: () => inv.gfc, fee: () => etfFee() },
+};
+if (!state.ivMode) state.ivMode = {};
+(function ivTradeSetup() {
+  for (const [k, T] of Object.entries(IV_TRADE)) {
+    const buyRow = $(k + "Amount") && $(k + "Amount").closest(".moneyRow"), sellRow = $(k + "SellAmount") && $(k + "SellAmount").closest(".moneyRow");
+    if (!buyRow || !sellRow) continue;
+    buyRow.dataset.ivrow = k + "-buy"; sellRow.dataset.ivrow = k + "-sell";
+    buyRow.insertAdjacentHTML("beforebegin", `<div class="segGroup ivMode"><button class="seg buy" data-ivmode="${k}" data-mode="buy">${T.buy}</button><button class="seg sell" data-ivmode="${k}" data-mode="sell">${T.sell}</button></div>`);
+    const firstBtn = sellRow.querySelector("button");
+    firstBtn.insertAdjacentHTML("beforebegin", [0.25, 0.5, 0.75].map(p => `<button class="btn ghost small" data-ivsell="${k}" data-pct="${p}">${p * 100}%</button>`).join(""));
+    sellRow.insertAdjacentHTML("afterend", `<div class="muted ivPrev" id="ivprev-${k}"></div>`);
+  }
+})();
+function ivModeApply() {
+  for (const k of Object.keys(IV_TRADE)) {
+    const m = state.ivMode[k] === "sell" ? "sell" : "buy";
+    document.querySelectorAll(`[data-ivmode="${k}"]`).forEach(b => b.classList.toggle("on", b.dataset.mode === m));
+    const b = document.querySelector(`[data-ivrow="${k}-buy"]`), s2 = document.querySelector(`[data-ivrow="${k}-sell"]`);
+    if (b) b.hidden = m !== "buy"; if (s2) s2.hidden = m !== "sell";
+  }
+}
+// what you are about to do, in plain words (updated every second and while typing)
+function ivPreview() {
+  for (const [k, T] of Object.entries(IV_TRADE)) {
+    const el = $("ivprev-" + k); if (!el) continue;
+    const sell = state.ivMode[k] === "sell";
+    if (sell) { const v = Math.min(Math.floor(Number($(k + "SellAmount").value) || 0), T.hold());   // ETF and freight shares also show "You get …" in their row
+      el.textContent = k === "gold" && v > 0 ? `You get ${fmt(v)} (no fee)` : ""; continue; }
+    const a = Math.floor(Number($(k + "Amount").value) || 0);
+    el.textContent = a > 0 ? (a > state.money ? `You only have ${fmt(state.money)}.` : `You put in ${fmt(a)} · ${fmt(state.money - a)} left`) : "";
+  }
+}
+$("investPane").addEventListener("click", (e) => {
+  const m = e.target.closest("[data-ivmode]");
+  if (m) { state.ivMode[m.dataset.ivmode] = m.dataset.mode; ivModeApply(); ivPreview(); save(); return; }
+  const sp = e.target.closest("[data-ivsell]");
+  if (sp) { const k = sp.dataset.ivsell, box = $(k + "SellAmount"); box.value = Math.floor(IV_TRADE[k].hold() * Number(sp.dataset.pct)); box.dispatchEvent(new Event("input", { bubbles: true })); ivPreview(); }
+});
+$("investPane").addEventListener("input", ivPreview);
+ivModeApply();
 ivApply(); ivRefresh();
-setInterval(ivRefresh, 1000);
+setInterval(() => { ivRefresh(); ivPreview(); }, 1000);

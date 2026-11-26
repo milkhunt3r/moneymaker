@@ -1631,6 +1631,14 @@ hrx(String.raw`📋 Open positions \((\d+)\)( · ⏳ limit orders \((\d+)\))?`, 
 rx(String.raw`Your (BTC|ETH|SOL) positions are in the list at the top\.`, "Tus posiciones de $1 están en la lista de arriba.");
 H("🪙 Live trading is easier: one coin at a time with tabs (price, 24h change and how many positions you have), a big Open button with its preview right under it, and all your open positions and limit orders together in one list at the top.",
   "🪙 El trading en vivo es más cómodo: una moneda a la vez con pestañas (precio, cambio en 24 h y cuántas posiciones tienes), un botón grande de Abrir con su vista previa justo debajo, y todas tus posiciones abiertas y órdenes límite juntas en una lista arriba.");
+// 🔁 investing Buy | Sell
+rx(String.raw`You put in (${NUM}) · (${NUM}) left`, "Inviertes $1 · te quedan $2");
+rx(String.raw`You only have (${NUM})\.`, "Solo tienes $1.");
+rx(String.raw`You get (${NUM}) \(no fee\)`, "Recibes $1 (sin comisión)");
+H("🔁 Investing: each investment now has one <b>Buy | Sell</b> switch with a single amount row. In Sell mode the % buttons fill a share of what you hold, and a line tells you what you put in or get back.",
+  "🔁 Inversiones: cada inversión tiene ahora un interruptor <b>Comprar | Vender</b> con una sola fila de cantidad. En modo Vender, los botones de % rellenan una parte de lo que tienes, y una línea te dice cuánto pones o recibes.");
+rx(String.raw`Sold (${NUM}) of gold \(no fee\)\.`, "Has vendido $1 de oro (sin comisión).");
+rx(String.raw`Next gold sale in ([\d:]+)`, "Próxima venta de oro en $1");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
