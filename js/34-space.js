@@ -537,12 +537,6 @@ function spRouteHtml(k) {
     <div class="muted">More goods and faster trips at 💛 Trusted and 💖 Allies.</div>
     <div class="spBtns"><button class="btn big" data-spx="route" ${spFree() ? "" : "disabled"}>${spI("route", "spI btnI")}Open trade route</button></div>${spFree() ? "" : `<div class="muted">All your ships are busy.</div>`}</div>`;
 }
-function spGoodsHtml() {
-  const have = Object.keys(SP_GOODS).filter(g => SP.goods[g]);
-  return `<h3>📦 Alien goods</h3>${have.length ? `<div class="spGoods">${have.map(g => `<span>${spGood(g, SP.goods[g])}</span>`).join("")}</div>`
-    : `<p class="muted">Nothing yet. Races send their goods back with your ships.</p>`}
-    <p class="muted">🏪 Sell them in 🌌 Space → Market, or give them to the races that want them (🔮 the Mystics, 🤖 the Machines and 👑 the Ancients).</p>`;
-}
 // 🎒 everything you can give (and the alien goods you got), refreshed every second
 function spResHtml() {
   const it = (ic, n, tip) => `<span class="spRes" title="${tip}">${ic} <b>${n}</b></span>`;
@@ -684,7 +678,7 @@ function renderSpace() {
   if (state.logiPage === "market") { box.innerHTML = spSosHtml() + spMarketHtml(); return; }
   if (state.logiPage === "contracts" && typeof spContractsHtml === "function") { box.innerHTML = spSosHtml() + spContractsHtml(); return; }
   box.innerHTML = `${spSosHtml()}<div class="card spResBar" id="spResBar">${spResHtml()}</div><div class="card spMapCard"><div class="row"><h2 style="margin:0">🌌 Star map</h2><span class="spFreeBadge ${spFree() ? "" : "none"}" title="Free ships">🚀 <b>${spFree()}</b><small>/ ${spShips()}</small><span>${spFree() === 1 ? "ship free" : "ships free"}</span></span></div>${spMapHtml()}</div>
-    <div class="card spPanel">${spPanelHtml()}</div><div class="card">${spGoodsHtml()}</div>`;
+    <div class="card spPanel">${spPanelHtml()}</div>`;
   spZoomApply();
 }
 // every second: move the ships and count down (no full rebuild)
