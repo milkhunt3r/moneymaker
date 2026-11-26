@@ -2445,3 +2445,15 @@ body.phone .casContBtn { flex: none; }
 body.phone .casHudTiers { margin-left: 0; }
 #casMain, #casinoGame, .casCont { min-width: 0; } .subLayout > .subMain { min-width: 0; }
 .casContLbl { white-space: nowrap; } .casContBtn small .hotTag { display: inline; padding: 0 5px; font-size: 10px; } body.phone .casContLbl { font-size: 13px; }
+/* 📏 empty tables between rounds take less room */
+.bjFelt.empty { padding: 10px 14px; }
+.bjFelt.empty .bjDealer { min-height: 0; }
+.bjFelt.empty .bjSeats { margin-top: 8px; }
+.bjFelt.empty .bjSeat { min-height: 100px; }
+.bjFelt.empty .bjSeat .muted[style*="margin-top:30px"] { margin-top: 14px !important; }
+.bjFelt.empty .uthRow .pcard, .bjFelt.empty .uthSeat .pcard { width: 34px; height: 52px; }
+.bjFelt.empty .uthRow .cardsRow, .bjFelt.empty .uthSeat .cardsRow { min-height: 52px; }
+.bjFelt.empty .uthBoard { margin: 8px 0; padding: 6px 0; }
+.bjFelt.empty .uthRow { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.bjFelt.empty .uthRow .bjLabel { margin: 0; }
+.bjFelt.empty .bjDealer .cardsRow { min-height: 0; }

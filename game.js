@@ -2970,6 +2970,8 @@ Object.assign(ES, { "Continue playing": "Seguir jugando", "Classic": "Clásica",
 rx(String.raw`(Classic|High rollers|Super high rollers) · (?:bets )?(${NUM}) – (${NUM})`, (m, t, a, b) => `${{ Classic: "Clásica", "High rollers": "Altas apuestas", "Super high rollers": "Súper altas apuestas" }[t]} · ${a} – ${b}`);
 H("🎰 New casino lobby: one card per game with a quick table switch (Classic, High rollers, Super high rollers), a <b>▶ Continue playing</b> row with the 🔥 hot game and your last tables, and a table switch in the bar while you play.",
   "🎰 Nuevo vestíbulo del casino: una tarjeta por juego con un cambio rápido de mesa (clásica, altas apuestas, súper altas apuestas), una fila <b>▶ Seguir jugando</b> con el juego caliente 🔥 y tus últimas mesas, y un cambio de mesa en la barra mientras juegas.");
+H("🎰 Shorter tables: empty Blackjack and Hold'em tables take less room between rounds, and the Video Poker and Hold'em payout tables start folded after your first 3 rounds (📋 Show opens them again).",
+  "🎰 Mesas más cortas: las mesas vacías de blackjack y Hold'em ocupan menos espacio entre rondas, y las tablas de pagos del videopóquer y del Hold'em empiezan plegadas después de tus 3 primeras rondas (📋 Mostrar las vuelve a abrir).");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -6664,7 +6666,7 @@ function renderBlackjack() {
         <div class="muted">Limits per hand: ${fmt(t.min)} – ${fmt(t.max)} · Blackjack pays 3:2 · Dealer stands on 17</div></div>
         <button class="btn ghost small" data-back="1" ${betting ? "" : "disabled"}>← All games</button></div>
 
-      <div class="bjFelt">
+      <div class="bjFelt ${!t.dealer.length && !t.hands.length ? "empty" : ""}">
         <div class="bjDealer">
           <div class="bjLabel">Dealer</div>
           <div class="cardsRow">${t.dealer.map(cardHtml).join("")}</div>
@@ -6930,6 +6932,8 @@ function vpSettle(t) {
 }
 
 // Counts games played per casino game (for achievements)
+// 📋 payout tables start open; after your first 3 rounds of that game they start folded (until you open them again)
+var payHidden = (key, game) => typeof state[key] === "boolean" ? state[key] : ((state.stats.played || {})[game] || 0) >= 3;
 function countPlay(game, n = 1) {
   if (!state.stats.played) state.stats.played = {};
   state.stats.played[game] = (state.stats.played[game] || 0) + n;
@@ -7000,8 +7004,8 @@ function renderVideoPoker() {
       </div>
 
       <div class="vpPayHead"><b>📋 Payouts</b>
-        <button class="btn ghost small" data-vp="togglePay">${state.vpPayHidden ? "▸ Show" : "▾ Minimize"}</button></div>
-      ${state.vpPayHidden
+        <button class="btn ghost small" data-vp="togglePay">${payHidden("vpPayHidden", "vp") ? "▸ Show" : "▾ Minimize"}</button></div>
+      ${payHidden("vpPayHidden", "vp")
         ? `<div class="muted">Royal Flush ${VP_HANDS[11].pays}× + jackpot · … · Jacks or Better ${VP_HANDS[1].pays}×</div>`
         : `<table class="vpPay"><tbody>${rows}</tbody></table>`}
 
@@ -7059,7 +7063,7 @@ $("casinoGame").addEventListener("click", (e) => {
   if (a === "max") { state.vp[t.id].bet = t.max; t.message = ""; renderVideoPoker(); save(); }
   if (a === "clear") { freeReturn(t.id); state.vp[t.id].bet = 0; t.message = ""; renderVideoPoker(); save(); }
   if ((a === "holdAll" || a === "holdNone") && t.phase === "holding" && !t.busy) { t.held = t.held.map(() => a === "holdAll"); renderVideoPoker(); }
-  if (a === "togglePay") { state.vpPayHidden = !state.vpPayHidden; renderVideoPoker(); save(); }
+  if (a === "togglePay") { state.vpPayHidden = !payHidden("vpPayHidden", "vp"); renderVideoPoker(); save(); }
 });
 
 /* =====================================================================
@@ -7366,15 +7370,15 @@ function renderUth() {
         <button class="btn ghost small" data-back="1" ${betting && !t.busy ? "" : "disabled"}>← All games</button></div>
 
       <div class="vpPayHead"><b>📋 Payouts</b>
-        <button class="btn ghost small" data-uth="togglePay">${state.uthPayHidden ? "▸ Show" : "▾ Minimize"}</button></div>
-      ${state.uthPayHidden ? `<div class="muted">Blind: Royal 500:1 … Straight 1:1 · Trips: Royal 50:1 … Three of a Kind 3:1</div>` : `
+        <button class="btn ghost small" data-uth="togglePay">${payHidden("uthPayHidden", "uth") ? "▸ Show" : "▾ Minimize"}</button></div>
+      ${payHidden("uthPayHidden", "uth") ? `<div class="muted">Blind: Royal 500:1 … Straight 1:1 · Trips: Royal 50:1 … Three of a Kind 3:1</div>` : `
       <div class="uthPayInfo">
         <div><b>Blind</b> (when you win)<table>${[9, 8, 7, 6, 5, 4].map(c => `<tr><td>${PK_NAMES[c]}</td><td>${UTH_BLIND_PAYS[c] === 1.5 ? "3:2" : UTH_BLIND_PAYS[c] + ":1"}</td></tr>`).join("")}
           <tr><td>Lower hands</td><td>push</td></tr></table></div>
         <div><b>Trips</b> (your hand, win or lose)<table>${[9, 8, 7, 6, 5, 4, 3].map(c => `<tr><td>${PK_NAMES[c]}</td><td>${UTH_TRIPS_PAYS[c]}:1</td></tr>`).join("")}</table></div>
       </div>`}
 
-      <div class="bjFelt">
+      <div class="bjFelt ${showCards ? "" : "empty"}">
         <div class="uthRow">
           <div class="bjLabel">Dealer</div>
           <div class="cardsRow">${showCards ? cardsOf(t.dealer, 2) : slotCard + slotCard}</div>
@@ -7451,7 +7455,7 @@ $("casinoGame").addEventListener("click", (e) => {
   const btn = e.target.closest("[data-uth]");
   if (!btn || btn.disabled) return;
   const a = btn.dataset.uth;
-  if (a === "togglePay") { state.uthPayHidden = !state.uthPayHidden; renderUth(); save(); return; }
+  if (a === "togglePay") { state.uthPayHidden = !payHidden("uthPayHidden", "uth"); renderUth(); save(); return; }
   if (a === "undo" && t.phase === "betting" && !t.busy) { if (casUndoPop(t.id)) { t.message = ""; updateCounter(); renderUth(); save(); } return; }
   if (a === "deal" && t.phase === "betting" && !t.busy) { casUndoReset(t.id); uthDeal(); }
   if (a === "clear" && t.phase === "betting") {
@@ -13549,6 +13553,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "🎰 Shorter tables: empty Blackjack and Hold'em tables take less room between rounds, and the Video Poker and Hold'em payout tables start folded after your first 3 rounds (📋 Show opens them again).",
     "🎰 New casino lobby: one card per game with a quick table switch (Classic, High rollers, Super high rollers), a <b>▶ Continue playing</b> row with the 🔥 hot game and your last tables, and a table switch in the bar while you play.",
     "🎰 Casino tables are easier to play: while a game is open, one slim bar shows your level, money, Hot Tables timer and free chips, so the table starts higher. Every chip table (Roulette, Blackjack, Baccarat, Hold'em) now has the same buttons in the same order, with <b>↶ Undo</b> everywhere; on phones they stay at the bottom of the screen.",
     "🔁 Stardust Drift: new <b>Keep harvesting</b> switch. Harvesters fly out again on their own (also while the game is closed), with an escort when a frigate is free, always, or never.",

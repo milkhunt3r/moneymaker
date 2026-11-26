@@ -397,7 +397,7 @@ function renderBlackjack() {
         <div class="muted">Limits per hand: ${fmt(t.min)} – ${fmt(t.max)} · Blackjack pays 3:2 · Dealer stands on 17</div></div>
         <button class="btn ghost small" data-back="1" ${betting ? "" : "disabled"}>← All games</button></div>
 
-      <div class="bjFelt">
+      <div class="bjFelt ${!t.dealer.length && !t.hands.length ? "empty" : ""}">
         <div class="bjDealer">
           <div class="bjLabel">Dealer</div>
           <div class="cardsRow">${t.dealer.map(cardHtml).join("")}</div>
@@ -663,6 +663,8 @@ function vpSettle(t) {
 }
 
 // Counts games played per casino game (for achievements)
+// 📋 payout tables start open; after your first 3 rounds of that game they start folded (until you open them again)
+const payHidden = (key, game) => typeof state[key] === "boolean" ? state[key] : ((state.stats.played || {})[game] || 0) >= 3;
 function countPlay(game, n = 1) {
   if (!state.stats.played) state.stats.played = {};
   state.stats.played[game] = (state.stats.played[game] || 0) + n;
@@ -733,8 +735,8 @@ function renderVideoPoker() {
       </div>
 
       <div class="vpPayHead"><b>📋 Payouts</b>
-        <button class="btn ghost small" data-vp="togglePay">${state.vpPayHidden ? "▸ Show" : "▾ Minimize"}</button></div>
-      ${state.vpPayHidden
+        <button class="btn ghost small" data-vp="togglePay">${payHidden("vpPayHidden", "vp") ? "▸ Show" : "▾ Minimize"}</button></div>
+      ${payHidden("vpPayHidden", "vp")
         ? `<div class="muted">Royal Flush ${VP_HANDS[11].pays}× + jackpot · … · Jacks or Better ${VP_HANDS[1].pays}×</div>`
         : `<table class="vpPay"><tbody>${rows}</tbody></table>`}
 
@@ -792,7 +794,7 @@ $("casinoGame").addEventListener("click", (e) => {
   if (a === "max") { state.vp[t.id].bet = t.max; t.message = ""; renderVideoPoker(); save(); }
   if (a === "clear") { freeReturn(t.id); state.vp[t.id].bet = 0; t.message = ""; renderVideoPoker(); save(); }
   if ((a === "holdAll" || a === "holdNone") && t.phase === "holding" && !t.busy) { t.held = t.held.map(() => a === "holdAll"); renderVideoPoker(); }
-  if (a === "togglePay") { state.vpPayHidden = !state.vpPayHidden; renderVideoPoker(); save(); }
+  if (a === "togglePay") { state.vpPayHidden = !payHidden("vpPayHidden", "vp"); renderVideoPoker(); save(); }
 });
 
 /* =====================================================================
@@ -1099,15 +1101,15 @@ function renderUth() {
         <button class="btn ghost small" data-back="1" ${betting && !t.busy ? "" : "disabled"}>← All games</button></div>
 
       <div class="vpPayHead"><b>📋 Payouts</b>
-        <button class="btn ghost small" data-uth="togglePay">${state.uthPayHidden ? "▸ Show" : "▾ Minimize"}</button></div>
-      ${state.uthPayHidden ? `<div class="muted">Blind: Royal 500:1 … Straight 1:1 · Trips: Royal 50:1 … Three of a Kind 3:1</div>` : `
+        <button class="btn ghost small" data-uth="togglePay">${payHidden("uthPayHidden", "uth") ? "▸ Show" : "▾ Minimize"}</button></div>
+      ${payHidden("uthPayHidden", "uth") ? `<div class="muted">Blind: Royal 500:1 … Straight 1:1 · Trips: Royal 50:1 … Three of a Kind 3:1</div>` : `
       <div class="uthPayInfo">
         <div><b>Blind</b> (when you win)<table>${[9, 8, 7, 6, 5, 4].map(c => `<tr><td>${PK_NAMES[c]}</td><td>${UTH_BLIND_PAYS[c] === 1.5 ? "3:2" : UTH_BLIND_PAYS[c] + ":1"}</td></tr>`).join("")}
           <tr><td>Lower hands</td><td>push</td></tr></table></div>
         <div><b>Trips</b> (your hand, win or lose)<table>${[9, 8, 7, 6, 5, 4, 3].map(c => `<tr><td>${PK_NAMES[c]}</td><td>${UTH_TRIPS_PAYS[c]}:1</td></tr>`).join("")}</table></div>
       </div>`}
 
-      <div class="bjFelt">
+      <div class="bjFelt ${showCards ? "" : "empty"}">
         <div class="uthRow">
           <div class="bjLabel">Dealer</div>
           <div class="cardsRow">${showCards ? cardsOf(t.dealer, 2) : slotCard + slotCard}</div>
@@ -1184,7 +1186,7 @@ $("casinoGame").addEventListener("click", (e) => {
   const btn = e.target.closest("[data-uth]");
   if (!btn || btn.disabled) return;
   const a = btn.dataset.uth;
-  if (a === "togglePay") { state.uthPayHidden = !state.uthPayHidden; renderUth(); save(); return; }
+  if (a === "togglePay") { state.uthPayHidden = !payHidden("uthPayHidden", "uth"); renderUth(); save(); return; }
   if (a === "undo" && t.phase === "betting" && !t.busy) { if (casUndoPop(t.id)) { t.message = ""; updateCounter(); renderUth(); save(); } return; }
   if (a === "deal" && t.phase === "betting" && !t.busy) { casUndoReset(t.id); uthDeal(); }
   if (a === "clear" && t.phase === "betting") {
