@@ -2990,6 +2990,14 @@ rx(String.raw`Max ×(\d+) · (${NUM})`, "Máx. ×$1 · $2");
 rx(String.raw`(🏢 )?Bought (\d+) × (.+) for (${NUM})\.`, (m, e, n, b, x) => `${e || ""}Has comprado ${n} × ${ES[b] || b} por ${x}.`);
 H("💡 Income tips: a gold <b>!</b> on Income and Businesses when a business has free worker slots, a <b>⭐ Best value</b> tag on the business with the most income per coin, a <b>Max</b> button to buy several at once, and Buy buttons now say how much money is missing.",
   "💡 Ayudas en Ingresos: un <b>!</b> dorado en Ingresos y Negocios cuando un negocio tiene plazas libres, una etiqueta <b>⭐ Mejor valor</b> en el negocio con más ingresos por moneda, un botón <b>Máx.</b> para comprar varios a la vez, y los botones de compra ahora dicen cuánto dinero falta.");
+// 📈 investing layout
+Object.assign(ES, { "Profit": "Beneficio", "Worth": "Valor", "Stock market ETF": "ETF de bolsa", "Global Freight Co. shares": "Acciones de Global Freight Co.", "Broker ETF": "ETF del bróker",
+  "needs a Brokerage Firm (Income, Investor level 10)": "necesita una Agencia de Bolsa (Ingresos, nivel de inversor 10)",
+  "opens with Logistics (buy your first Car Salon)": "se abre con Logística (compra tu primer concesionario)", "All-time profits": "Beneficios totales" });
+rx(String.raw`(\d+) (property|properties)`, (m, n, x) => `${n} ${x === "property" ? "propiedad" : "propiedades"}`);
+rx(String.raw`Investor level · (max level|([\d.,]+) \/ ([\d.,]+) XP)`, (m, x, a, b) => `Nivel de inversor · ${a ? `${a} / ${b} XP` : "nivel máximo"}`);
+H("📈 Investing is tidier: one slim bar shows your level, money and holdings, and the Investing page starts with a portfolio list (worth, profit and a mini chart for each investment). Pick one to open its chart and buy/sell controls.",
+  "📈 Inversiones más ordenadas: una barra fina muestra tu nivel, tu dinero y tus inversiones, y la página de Inversiones empieza con una lista de cartera (valor, beneficio y un minigráfico de cada inversión). Elige una para abrir su gráfico y sus controles de compra y venta.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -3308,7 +3316,7 @@ var STAFF_PICS = ["numbers", "criminal", "embezzler", "gambler", "motivator", "f
 var staffIco = (key, o, cls = "staffI") => STAFF_PICS.includes(key) ? ico("st-" + key, cls) : (o ? o.emoji + " " : "");
 // 🧬 Gene Splicer species bonuses: +1% per discovered species of a category (geneCatCount lives in js/24-genetics.js)
 // 👽 alliance bonuses from 🌌 Space (js/34-space.js loads later)
-var alienBonus = (key) => ((__eocLoaded >= 43 && typeof spAllyBonus === "function") ? spAllyBonus(key) : 0);
+var alienBonus = (key) => ((__eocLoaded >= 44 && typeof spAllyBonus === "function") ? spAllyBonus(key) : 0);
 var geneBonus = (cat) => (typeof geneCatCount === "function" ? geneCatCount(cat) * 0.01 : 0);
 var PREF_KEYS = ["view", "coinUnit", "casinoPage", "logiPage", "rewardType", "rewardState", "gamePage", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage",
                    "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage"];
@@ -4636,12 +4644,12 @@ function showView(view) {
   $("investView").hidden = view !== "invest";
   if (view === "shop") view = state.view = "pet";   // the old Shop page became the 🐾 Pet page
   $("petView").hidden = view !== "pet";
-  if (view === "pet" && (__eocLoaded >= 42 && typeof renderPetPage === "function")) renderPetPage();
+  if (view === "pet" && (__eocLoaded >= 43 && typeof renderPetPage === "function")) renderPetPage();
   $("logisticsView").hidden = view !== "logistics";
   $("achievementsView").hidden = view !== "achievements";
   $("wikiView").hidden = view !== "wiki";
   if ($("profileView")) $("profileView").hidden = view !== "profile";
-  if (view === "profile" && (__eocLoaded >= 48 && typeof renderProfile === "function")) renderProfile();
+  if (view === "profile" && (__eocLoaded >= 49 && typeof renderProfile === "function")) renderProfile();
   if ($("profileBtn")) $("profileBtn").classList.toggle("on", view === "profile");
   // 🎮 Mini-games: the hub, or one game page (state.gamePage: null = hub, "art", "mine")
   const gp = view === "games" ? (state.gamePage || null) : undefined;
@@ -6224,7 +6232,7 @@ $("settingsMenu").addEventListener("click", (e) => {
     save(); flushSave();
     settingsNote(saveFailedAt ? "❌ Could not save: browser storage is full." : "✅ Game saved!");
     // ☁️ signed in: also upload to the cloud now (js/29-cloud.js)
-    if (typeof cloud === "object" && cloud.user && (__eocLoaded >= 37 && typeof cloudUpload === "function")) {
+    if (typeof cloud === "object" && cloud.user && (__eocLoaded >= 38 && typeof cloudUpload === "function")) {
       if (cloud.conflict) { cloudSync(); return; }
       cloud.dirty = true;
       cloudUpload().then(ok => { if (!cloud.conflict) settingsNote(ok ? "✅ Game saved, also in the ☁️ cloud!" : "✅ Saved on this device. ❌ The cloud save failed."); });
@@ -13232,7 +13240,7 @@ function refreshUnlocks(first) {
   const broken = open && (logi.trucks || []).some(v => v.broken);
   const sos = open && state.space && state.space.sos;   // 🆘 an alien race needs scientists (🌌 Space)
   const html = (open ? "" : ico("lock", "lockS")) + '<img class="tabIco" src="assets/icons/tab-logistics.webp" alt="">Logistics' + (broken ? ' <span class="tabWarn" title="A truck is broken down: repair it in 🚢 Logistics">!</span>' : sos ? ' <span class="tabWarn" title="An alien race needs help: see 🚢 Logistics → 🌌 Space">!</span>'
-    : open && (__eocLoaded >= 46 && typeof spTabAlerts === "function") && spOpen() && Object.values(spTabAlerts()).some(a => a.length) ? ' <span class="tabWarn gold" title="Something is ready in 🌌 Space">!</span>' : "");
+    : open && (__eocLoaded >= 47 && typeof spTabAlerts === "function") && spOpen() && Object.values(spTabAlerts()).some(a => a.length) ? ' <span class="tabWarn gold" title="Something is ready in 🌌 Space">!</span>' : "");
   if (tab && tab.innerHTML !== html) tab.innerHTML = html;
   $("logisticsView").classList.toggle("locked", !open);
   $("logiLocked").hidden = open;
@@ -13620,6 +13628,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "📈 Investing is tidier: one slim bar shows your level, money and holdings, and the Investing page starts with a portfolio list (worth, profit and a mini chart for each investment). Pick one to open its chart and buy/sell controls.",
     "💡 Income tips: a gold <b>!</b> on Income and Businesses when a business has free worker slots, a <b>⭐ Best value</b> tag on the business with the most income per coin, a <b>Max</b> button to buy several at once, and Buy buttons now say how much money is missing.",
     "🏢 Businesses are easier to manage: the shop is wider on big screens, each business is one compact row (2 per line) with its workers bar, and a gold banner takes you straight to businesses that still have free worker slots. Tap <b>👷 Hire</b> or <b>Details</b> to open one.",
     "🎰 Shorter tables: empty Blackjack and Hold'em tables take less room between rounds, and the Video Poker and Hold'em payout tables start folded after your first 3 rounds (📋 Show opens them again).",
@@ -14817,7 +14826,7 @@ function renderGames() {
   const gv = $("geneView"); if (gv) gv.hidden = page !== "gene";
   const sv = $("shooterView"); if (sv) sv.hidden = page !== "shooter";
   if (page === "mine") return renderMine();
-  if (page === "shooter" && (__eocLoaded >= 38 && typeof renderShooter === "function")) return renderShooter();
+  if (page === "shooter" && (__eocLoaded >= 39 && typeof renderShooter === "function")) return renderShooter();
   if (page === "gene" && (__eocLoaded >= 32 && typeof renderGene === "function")) return renderGene();
   const art = state.art.unlocked, mine = mineUnlocked(), e = mineEnergy();
   $("gamesHub").innerHTML = `<h2 class="gamesTitle">🎮 Mini-games</h2>
@@ -16008,8 +16017,83 @@ drawChart("gfcChart", inv.gfcPrices);
 applyInfo();
 updateInvestLive();
 
-// ===== js/29-cloud.js =====
+// ===== js/28b-invest-ui.js =====
 __eocLoaded = 37;
+/* =====================================================================
+   📈 INVESTING LAYOUT (loaded after js/28-freight-shares.js)
+   · One slim bar (level, money, holdings) instead of the level card and the wallet card, on both Investing pages.
+   · Investing page: a portfolio list (one row per investment: worth, all-time profit, mini chart). The chosen investment's
+     full card (chart, buy and sell) opens under the list. Locked investments fold into one line.
+   ===================================================================== */
+var IV_ITEMS = [
+  { k: "re", name: "Real estate", icon: () => ico("re-key"), prices: null },
+  { k: "etf", name: "Stock market ETF", icon: () => ivIco("etf"), prices: () => inv.etfPrices },
+  { k: "gold", name: "Gold", icon: () => ivIco("gold"), prices: () => inv.goldPrices },
+  { k: "petf", name: "Broker ETF", icon: () => ivIco("petf"), prices: () => inv.petfPrices, locked: () => !hasBroker() && !(inv.petf > 0), lockText: "needs a Brokerage Firm (Income, Investor level 10)" },
+  { k: "gfc", name: "Global Freight Co. shares", icon: () => ico("lg-crates"), prices: () => inv.gfcPrices, locked: () => !gfcOpen() && !(inv.gfc > 0), lockText: "opens with Logistics (buy your first Car Salon)" },
+];
+// the 5 investment cards, in page order
+(function ivSetup() {
+  const pane = $("investPane"); if (!pane) return;
+  const cards = [...pane.children].filter(el => el.classList.contains("card"));
+  IV_ITEMS.forEach((it, i) => { if (cards[i]) { cards[i].dataset.ivcard = it.k; cards[i].classList.add("ivCard"); } });
+  const list = document.createElement("div"); list.id = "ivList"; list.className = "card ivList"; pane.prepend(list);
+  const hud = document.createElement("div"); hud.id = "investHud"; hud.className = "card ivHud";
+  $("investView").querySelector(".subLayout").before(hud);
+})();
+if (!IV_ITEMS.some(it => it.k === state.ivCard)) state.ivCard = "re";
+
+function ivSpark(arr) {
+  const pts = (arr || []).slice(-30); if (pts.length < 2) return `<svg class="ivSpark" viewBox="0 0 100 28"></svg>`;
+  const mx = Math.max(...pts), mn = Math.min(...pts), up = pts[pts.length - 1] >= pts[0];
+  const xy = pts.map((v, i) => `${(i * 100 / (pts.length - 1)).toFixed(1)},${(25 - (v - mn) / Math.max(1e-9, mx - mn) * 22).toFixed(1)}`).join(" ");
+  return `<svg class="ivSpark ${up ? "up" : "down"}" viewBox="0 0 100 28" preserveAspectRatio="none"><polyline points="${xy}"/></svg>`;
+}
+var ivProfit = (k) => { const st = inv.stats && inv.stats[k]; return st ? st.out + investCurrent(k) - st.in : 0; };
+var ivSigned = (n) => `<b class="${n > 0.5 ? "up" : n < -0.5 ? "down" : ""}">${n > 0.5 ? "+" : n < -0.5 ? "−" : ""}${fmt(Math.abs(n))}</b>`;
+
+function ivHudHtml() {
+  const info = levelInfo(inv.xp, INVEST_XP);
+  const hold = [["re", ico("re-key"), investCurrent("re")], ["etf", ivIco("etf"), inv.etf + inv.petf], ["gold", ivIco("gold"), inv.gold]];
+  const total = IV_ITEMS.concat([{ k: "crypto" }]).reduce((a, it) => a + ivProfit(it.k), 0);
+  return `<button class="casHudLv" data-levels="investor" title="Investor level · ${info.max ? "max level" : `${fmtNum(info.into)} / ${fmtNum(info.need)} XP`}">${ivIco("invest")}<span>Lv <b>${info.level}</b></span>
+      <span class="casHudXp"><i style="width:${info.max ? 100 : 100 * info.into / info.need}%"></i></span></button>
+    <span class="casHudMoney" title="Your money"><img class="coinSkinImg" src="assets/coin.webp" alt=""><b>${fmt(state.money)}</b></span>
+    ${hold.map(([k, ic, v]) => `<span class="ivHold" title="${{ re: "Real estate", etf: "ETF", gold: "Gold" }[k]}">${ic}<b>${fmt(v)}</b></span>`).join("")}
+    <span class="ivHold" title="All-time profits">${ivIco("profits")}${ivSigned(total)}</span>`;
+}
+function ivListHtml() {
+  const open = IV_ITEMS.filter(it => !(it.locked && it.locked())), locked = IV_ITEMS.filter(it => it.locked && it.locked());
+  const rows = open.map(it => {
+    const worth = it.k === "etf" ? inv.etf : investCurrent(it.k), pr = ivProfit(it.k);
+    const extra = it.k === "re" ? `<span class="muted">${inv.properties.length} ${inv.properties.length === 1 ? "property" : "properties"}</span>` : ivSpark(it.prices && it.prices());
+    return `<button class="ivRow ${state.ivCard === it.k ? "on" : ""}" data-ivpick="${it.k}">
+      <span class="ivRowName">${it.icon()}<b>${it.name}</b></span>
+      <span class="ivRowVal"><small>Worth</small><b>${fmt(worth)}</b></span>
+      <span class="ivRowVal"><small>Profit</small>${ivSigned(pr)}</span>
+      <span class="ivRowChart">${extra}</span></button>`; }).join("");
+  return `<div class="ivRows">${rows}</div>${locked.length ? `<div class="muted ivLocked">${locked.map(it => `<span>${ico("lock", "lockS")}<b>${it.name}</b> · <span>${it.lockText}</span></span>`).join("")}</div>` : ""}`;
+}
+function ivApply() {
+  document.querySelectorAll("#investPane [data-ivcard]").forEach(c => { c.hidden = c.dataset.ivcard !== state.ivCard; });
+}
+function ivRefresh() {
+  if ($("investView").hidden) return;
+  const hud = $("investHud"), h = ivHudHtml(); if (hud.dataset.h !== h) { hud.dataset.h = h; hud.innerHTML = h; }
+  const pick = IV_ITEMS.find(it => it.k === state.ivCard);
+  if (pick && pick.locked && pick.locked()) { state.ivCard = "re"; ivApply(); }
+  if (!$("investPane").hidden) { const l = $("ivList"), x = ivListHtml(); if (l.dataset.h !== x) { l.dataset.h = x; l.innerHTML = x; } }
+}
+$("investPane").addEventListener("click", (e) => {
+  const r = e.target.closest("[data-ivpick]"); if (!r) return;
+  state.ivCard = r.dataset.ivpick; ivApply(); ivRefresh(); save();
+  if ((__eocLoaded >= 9 && typeof drawChart === "function")) { drawChart("etfChart", inv.etfPrices); drawChart("goldChart", inv.goldPrices); drawChart("petfChart", inv.petfPrices); drawChart("gfcChart", inv.gfcPrices); }
+});
+ivApply(); ivRefresh();
+setInterval(ivRefresh, 1000);
+
+// ===== js/29-cloud.js =====
+__eocLoaded = 38;
 /* =====================================================================
    ☁️ CLOUD SAVE (Supabase): optional Google login; your progress is copied to your account.
    · Playing without an account works exactly as before (the save stays in this browser).
@@ -16294,7 +16378,7 @@ setInterval(() => { if (cloudAuto()) cloudUpload(); }, CLOUD_EVERY);
 document.addEventListener("visibilitychange", () => { if (document.hidden && cloudAuto()) cloudUpload(); });
 
 // ===== js/30-shooter.js =====
-__eocLoaded = 38;
+__eocLoaded = 39;
 /* =====================================================================
    🚀 NEBULA STRIKE (🎮 Mini-games): a side-scrolling space shooter.
    - Unlock: build the 🚀 Space Mission Center once. It stays unlocked for good (also after a prestige).
@@ -16540,7 +16624,7 @@ $("shooterView").addEventListener("change", (e) => {
 });
 
 // ===== js/31-shooter-art.js =====
-__eocLoaded = 39;
+__eocLoaded = 40;
 /* =====================================================================
    🚀 NEBULA STRIKE: pictures.
    Ships and bosses are painted (assets/shooter/*.webp). Enemies, shots, pick-ups and the space
@@ -16766,7 +16850,7 @@ function shPlanet(lv, r) {
 }
 
 // ===== js/32-shooter-game.js =====
-__eocLoaded = 40;
+__eocLoaded = 41;
 /* =====================================================================
    🚀 NEBULA STRIKE: the game (canvas 960 × 540, fixed 60 steps per second).
    - A level is a stream of enemy waves (picked at random from the level's list, closer together as it goes on),
@@ -17985,7 +18069,7 @@ function shSpinReel(E) {
 function shReelDone(E) {
   if (!E || E.opened) return;
   if (E.anim) { E.anim.onfinish = null; E.anim.cancel(); }
-  E.reel = null; E.opened = true; if ((__eocLoaded >= 41 && typeof petReveal === "function")) petReveal();
+  E.reel = null; E.opened = true; if ((__eocLoaded >= 42 && typeof petReveal === "function")) petReveal();
   if (shR && shR.end === E) shShowEnd();
 }
 function shRenderPlay() {
@@ -18007,7 +18091,7 @@ function shRenderPlay() {
   shCanvas.width = SHW * k; shCanvas.height = SHH * k;
   shCtx = shCanvas.getContext("2d"); shCtx.setTransform(k, 0, 0, k, 0, 0);
   shBindTouch();
-  if (shR.end) { shDraw(); if (shR.end.reel) { shR.end.reel = null; shR.end.opened = true; if ((__eocLoaded >= 41 && typeof petReveal === "function")) petReveal(); } shShowEnd(); }
+  if (shR.end) { shDraw(); if (shR.end.reel) { shR.end.reel = null; shR.end.opened = true; if ((__eocLoaded >= 42 && typeof petReveal === "function")) petReveal(); } shShowEnd(); }
   else if (shR.paused) { shR.paused = false; shPause(true); }
   else shKick();
 }
@@ -18123,7 +18207,7 @@ function shChestSpin() {
 function shChestDone() {
   const C = shChest; if (!C || C.stage === "done") return;
   if (C.anim) { C.anim.onfinish = null; C.anim.cancel(); }
-  clearTimeout(C.doneT); C.stage = "done"; if ((__eocLoaded >= 41 && typeof petReveal === "function")) petReveal(); shChestShow();
+  clearTimeout(C.doneT); C.stage = "done"; if ((__eocLoaded >= 42 && typeof petReveal === "function")) petReveal(); shChestShow();
 }
 $("modalBox").addEventListener("click", (e) => {
   const b = e.target.closest("[data-shc]"); if (!b || !shChest) return;
@@ -18143,7 +18227,7 @@ document.addEventListener("click", (e) => { if (e.target.closest("[data-sh-chest
 if (state.view === "games" && state.gamePage === "shooter") renderGames();
 
 // ===== js/33-pet.js =====
-__eocLoaded = 41;
+__eocLoaded = 42;
 /* =====================================================================
    🐾 PET (found in the 🏴‍☠️ pirate loot box of Nebula Strike level 4, only one).
    Lives on the 💰 Income page next to the coin and runs the ⚡ energy drink for you:
@@ -18368,7 +18452,7 @@ document.addEventListener("change", (e) => {
 });
 
 // ===== js/35-pets.js =====
-__eocLoaded = 42;
+__eocLoaded = 43;
 /* =====================================================================
    🐾 PET PAGE (top tab, where the Shop used to be). Room for more pets later.
    - Your pet: picture, name, show on the Income page, what it does, and its stats.
@@ -18420,7 +18504,7 @@ function renderPetPage() {
 setInterval(() => { if (state.view === "pet" && !$("petView").hidden && !(document.activeElement && (document.activeElement.id === "petName" || document.activeElement.id === "pipName"))) renderPetPage(); }, 2000);
 
 // ===== js/34-space.js =====
-__eocLoaded = 43;
+__eocLoaded = 44;
 /* =====================================================================
    🌌 SPACE LOGISTICS (🚢 Logistics → 🌌 Space). Release 1: the star map, exploring and friendship.
    - Opens with the 🚀 Space Mission Center (1 ship). More ships: 🛸 Orbital Space Station +1, 🌕 Moon Base +2, 🔴 Mars Base +2.
@@ -18680,7 +18764,7 @@ $("modal").addEventListener("click", (e) => {
 function spLaunch(k, kind, cargo) {
   const now = Date.now(), ms = spMs(k) * (1 - spAllyBonus("giftSpeed"));
   const tr = { id: SP.nextId++, k: kind, to: k, t0: now, t1: now + ms, t2: now + 2 * ms, cargo };
-  if ((__eocLoaded >= 46 && typeof spEscortFor === "function")) spEscortFor(tr);   // 🛡️ a free frigate flies along
+  if ((__eocLoaded >= 47 && typeof spEscortFor === "function")) spEscortFor(tr);   // 🛡️ a free frigate flies along
   tr.ev = spRollEvent(tr);
   SP.trips.push(tr);
   save(); renderSpace();
@@ -18695,7 +18779,7 @@ function spRouteStart(k) {
   if (isPaused() || !spFree() || spLevel(k) < SP_ROUTE_LV || spRouteOf(k)) return;
   const now = Date.now(), ms = spRouteMs(k);
   const tr = { id: SP.nextId++, k: "route", to: k, t0: now, t1: now + ms, t2: now + 2 * ms, got: 0, loops: 0 };
-  if ((__eocLoaded >= 46 && typeof spEscortFor === "function")) spEscortFor(tr);
+  if ((__eocLoaded >= 47 && typeof spEscortFor === "function")) spEscortFor(tr);
   tr.ev = spRollEvent(tr); SP.trips.push(tr);
   SP.stats.routes = (SP.stats.routes || 0) + 1;
   showNotice(`🛣️ Trade route to the ${SP_RACES[k].name} is open! One ship now flies there and back for good.`);
@@ -18760,14 +18844,14 @@ function spProcess() {
         r.found = true; r.foundAt = now; r.warmAt = now; SP.stats.explored++;
         tr.goods = 3; spMakeReq(tr.to);
         msgs.push(`👽 First contact! Your ship met the <b>${R.name}</b> (${R.title}). See 🚢 Logistics → 🌌 Space.`);
-      } else if (tr.k === "contract") { if ((__eocLoaded >= 44 && typeof spConArrive === "function")) spConArrive(tr, msgs);
+      } else if (tr.k === "contract") { if ((__eocLoaded >= 45 && typeof spConArrive === "function")) spConArrive(tr, msgs);
       } else if (tr.k === "gift" && tr.lost) {   // 🏴‍☠️ robbed on the way
         spMakeReq(tr.to);
         msgs.push(`🏴‍☠️ Pirates stole your gift for the ${R.name}. They will ask for something new.`);
       } else if (tr.k === "gift") {
         const before = spLevel(tr.to), pts = tr.cargo.pts || (tr.cargo.fav ? SP_FAV_PTS : SP_PTS);
         r.pts += pts; r.gifts = (r.gifts || 0) + 1; SP.stats.gifts++;
-        if ((__eocLoaded >= 44 && typeof spWarm === "function")) { spWarm(tr.to); spRivalHit(tr.to, pts, msgs); }
+        if ((__eocLoaded >= 45 && typeof spWarm === "function")) { spWarm(tr.to); spRivalHit(tr.to, pts, msgs); }
         if (tr.cargo.special) SP.stats.specials = (SP.stats.specials || 0) + 1;
         const after = spLevel(tr.to);
         tr.goods = spReturnGoods(after) + (after > before ? 5 * after : 0) + (tr.cargo.special ? 5 * after : 0);
@@ -18796,9 +18880,9 @@ function spProcess() {
       spMakeReq(k, r.req && r.req.kind); changed = true;
     }
   }
-  if ((__eocLoaded >= 45 && typeof spResTick === "function") && spResTick(now, msgs)) changed = true;
-  if ((__eocLoaded >= 46 && typeof spFleetTick === "function") && spFleetTick(now, msgs)) changed = true;
-  if ((__eocLoaded >= 44 && typeof spConTick === "function")) { const n0 = SP.con.offers.length + SP.con.active.length; spCoolTick(now, msgs); spConTick(now, msgs);
+  if ((__eocLoaded >= 46 && typeof spResTick === "function") && spResTick(now, msgs)) changed = true;
+  if ((__eocLoaded >= 47 && typeof spFleetTick === "function") && spFleetTick(now, msgs)) changed = true;
+  if ((__eocLoaded >= 45 && typeof spConTick === "function")) { const n0 = SP.con.offers.length + SP.con.active.length; spCoolTick(now, msgs); spConTick(now, msgs);
     if (n0 !== SP.con.offers.length + SP.con.active.length) changed = true; }
   if (msgs.length > 3) showNotice(`🌌 Space: ${msgs.length} updates while you were away. See 🚢 Logistics → 🌌 Space.`);
   else msgs.forEach(m => showNotice(m));
@@ -18843,9 +18927,9 @@ function spMapHtml() {
   const ships = SP.trips.map(tr => `<img class="spShip ${tr.k} ${tr.k === "explore" ? "" : "courier"}" data-trip="${tr.id}" src="assets/space/${tr.k === "explore" ? "ship-explorer" : "ship-courier"}.webp" alt="" draggable="false" style="${spShipCss(spShipPos(tr, now))}">`
     + (tr.escort ? `<img class="spShip frigate" data-esc="${tr.id}" src="assets/space/ship-frigate.webp" alt="" draggable="false" style="${spShipCss(spShipPos(tr, now - spEscLag(tr)))}">` : "")).join("")
     + (typeof spHarvShipsHtml === "function" ? spHarvShipsHtml(now) : "");
-  return `<div class="spMap" id="spMap"><div class="spWorld" id="spWorld"><svg viewBox="0 0 160 90" preserveAspectRatio="none">${lines}${(__eocLoaded >= 46 && typeof spDriftLine === "function") ? spDriftLine() : ""}</svg>
+  return `<div class="spMap" id="spMap"><div class="spWorld" id="spWorld"><svg viewBox="0 0 160 90" preserveAspectRatio="none">${lines}${(__eocLoaded >= 47 && typeof spDriftLine === "function") ? spDriftLine() : ""}</svg>
     <button class="spNode sol ${spSel === "sol" ? "sel" : ""}" data-sp="sol" style="left:50%;top:50%"><span class="spHalo"></span><img src="assets/space/sys-sol.webp" alt="" draggable="false"><span class="spLbl">Home<small>🌍 Solar System</small></span></button>
-    ${nodes}${(__eocLoaded >= 46 && typeof spDriftNode === "function") ? spDriftNode() : ""}${ships}</div>
+    ${nodes}${(__eocLoaded >= 47 && typeof spDriftNode === "function") ? spDriftNode() : ""}${ships}</div>
     <div class="spZoom"><button data-spz="in" title="Zoom in">+</button><button data-spz="out" title="Zoom out">−</button><button data-spz="reset" title="Whole map">⤢</button></div></div>`;
 }
 /* ----- 🔍 zoom and pan: buttons, mouse wheel, drag, and two-finger pinch on phones ----- */
@@ -18912,7 +18996,7 @@ function spTripLine(tr) {
   return `<div class="spTrip">🚀 ${what} · ${st}${tr.lost ? " · 🏴‍☠️ cargo stolen" : ""}</div>`;
 }
 function spPanelHtml() {
-  if (spSel === "drift") return (__eocLoaded >= 46 && typeof spDriftPanel === "function") ? spDriftPanel() : "";
+  if (spSel === "drift") return (__eocLoaded >= 47 && typeof spDriftPanel === "function") ? spDriftPanel() : "";
   if (spSel === "sol") {
     const ships = spShips(), slots = SP_SLOTS.map(([k, n, name]) => {
       const has = !!spSci()[k], secret = k !== "space" && !has;
@@ -18923,7 +19007,7 @@ function spPanelHtml() {
       <div class="spStats"><span>🚀 Courier ships: <b>${ships - spFree()} / ${ships}</b> busy</span><span>👽 Races met: <b>${Object.values(SP.races).filter(r => r.found).length} / ${Object.keys(SP_RACES).length}</b></span><span>🎁 Gifts delivered: <b>${SP.stats.gifts}</b></span></div>
       ${ships ? "" : `<p class="spWarn">⚠️ You have no ships right now. Build the 🚀 Space Mission Center (💰 Income → 🔬 Science) to get your first one back.</p>`}
       <ul class="spSlots">${slots}</ul>
-      ${(__eocLoaded >= 46 && typeof spFleetHtml === "function") ? spFleetHtml() : ""}
+      ${(__eocLoaded >= 47 && typeof spFleetHtml === "function") ? spFleetHtml() : ""}
       ${spBonusList() ? `<h4>🏅 Your alliance bonuses</h4><ul class="spSlots">${spBonusList()}</ul>` : ""}
       ${SP.trips.length ? `<h4>Ships in flight</h4>${SP.trips.map(spTripLine).join("")}` : ""}`;
   }
@@ -18954,11 +19038,11 @@ function spPanelHtml() {
       <span class="spChip" title="Also likes: +${SP_PTS} friendship">${spI("likes")}${spKindName(R.wants[1])}</span>`}
       <span class="spChip" title="They send back ${spReturnGoods(L)} per gift (more when you level up)">${spI("sendback")}${spGI(R.good)} ×${spReturnGoods(L)}</span>
       <span class="spChip" title="Distance: one way">${spI("distance")}${spMin(spSel)} min</span>
-      ${(__eocLoaded >= 44 && typeof spPoliticsChips === "function") ? spPoliticsChips(spSel) : ""}</div>
-    ${(__eocLoaded >= 47 && typeof pipOfferHtml === "function") ? pipOfferHtml(spSel) : ""}
+      ${(__eocLoaded >= 45 && typeof spPoliticsChips === "function") ? spPoliticsChips(spSel) : ""}</div>
+    ${(__eocLoaded >= 48 && typeof pipOfferHtml === "function") ? pipOfferHtml(spSel) : ""}
     <div class="spTabs"><button class="spTab ${spPTab === "trade" ? "on" : ""}" data-sptab="trade">${spI("route")}Trade</button><button class="spTab ${spPTab === "bonus" ? "on" : ""}" data-sptab="bonus">${spI("bonus")}Relations & bonuses</button></div>
-    ${spPTab === "trade" ? spRouteHtml(spSel) + ((__eocLoaded >= 45 && typeof spOutpostHtml === "function") ? spOutpostHtml(spSel) : "")
-      : ((__eocLoaded >= 44 && typeof spPoliticsHtml === "function") ? spPoliticsHtml(spSel) : "") + spBonusHtml(spSel)}`;
+    ${spPTab === "trade" ? spRouteHtml(spSel) + ((__eocLoaded >= 46 && typeof spOutpostHtml === "function") ? spOutpostHtml(spSel) : "")
+      : ((__eocLoaded >= 45 && typeof spPoliticsHtml === "function") ? spPoliticsHtml(spSel) : "") + spBonusHtml(spSel)}`;
 }
 var spPTab = "trade";   // race panel tab: 🛣️ trade (route, outpost) or 🏅 relations & bonuses
 function spBonusHtml(k) {
@@ -19011,7 +19095,7 @@ function spSosHelp() {
   if (!e || isPaused() || spSci2() < SP_SOS_SCI) return;
   spendScientists(SP_SOS_SCI);
   const r = SP.races[e.k], before = spLevel(e.k);
-  r.pts += SP_SOS_WIN; if ((__eocLoaded >= 44 && typeof spWarm === "function")) spWarm(e.k); SP.sos = null; SP.stats.sosWon = (SP.stats.sosWon || 0) + 1;
+  r.pts += SP_SOS_WIN; if ((__eocLoaded >= 45 && typeof spWarm === "function")) spWarm(e.k); SP.sos = null; SP.stats.sosWon = (SP.stats.sosWon || 0) + 1;
   SP.nextSos = Date.now() + spSosGap();
   const after = spLevel(e.k);
   showNotice(`🆘 Your scientists saved the day! The ${SP_RACES[e.k].name} are grateful: +${SP_SOS_WIN} friendship.`);
@@ -19049,7 +19133,7 @@ function spSosHtml() {
 // 🔔 "!" on the Space sub-tabs: red for an alien emergency, gold for things worth a look (js/34e-space-fleet.js: spTabAlerts)
 var SP_TAB_LBL = { space: ["ico-lg-space", "Space"], market: ["ico-lg-market", "Market"], contracts: ["ico-lg-contracts", "Contracts"], research: ["ico-lg-research", "Research"] };
 function spRefreshWarn() {
-  const al = spOpen() && (__eocLoaded >= 46 && typeof spTabAlerts === "function") ? spTabAlerts() : {};
+  const al = spOpen() && (__eocLoaded >= 47 && typeof spTabAlerts === "function") ? spTabAlerts() : {};
   for (const [k, [ico, name]] of Object.entries(SP_TAB_LBL)) {
     const b = document.querySelector(`[data-logipage="${k}"]`); if (!b) continue;
     const why = al[k] || [];
@@ -19069,7 +19153,7 @@ function spMult(g, slot) {
 var spBase = (g) => mineBase() * 60 * SP_PRICE_MIN * SP_RACES[SP_GOOD_RACE[g]].min;
 // 📉 raw = without the supply & demand drop (js/34c-space-politics.js)
 var spPrice = (g, slot = spSlot(), raw) => Math.max(1, Math.round(spBase(g) * spMult(g, slot) * (1 + spAllyBonus("market")) * (raw || typeof spSatMult !== "function" ? 1 : spSatMult(g))));
-var spSellPay = (g, n) => (__eocLoaded >= 44 && typeof spSellValue === "function") ? Math.max(n, spSellValue(g, n)) : n * spPrice(g);
+var spSellPay = (g, n) => (__eocLoaded >= 45 && typeof spSellValue === "function") ? Math.max(n, spSellValue(g, n)) : n * spPrice(g);
 // 💖 at Allies you can also BUY that race's good. The buy price moves with the market but always stays above the best selling price, so buying to sell back never pays.
 var spBuyPrice = (g, slot = spSlot()) => Math.max(2, Math.round(spBase(g) * (1.75 + 0.5 * spMult(g, slot)) * (1 + spAllyBonus("market"))));
 var spCanBuy = (g) => SP.races[SP_GOOD_RACE[g]].found && spLevel(SP_GOOD_RACE[g]) >= 5;
@@ -19087,7 +19171,7 @@ function spSell(g, all) {
   const have = SP.goods[g] || 0, n = all ? have : Math.min(have, Math.max(1, Math.floor(spQty[g] || 1)));
   if (isPaused() || !n) return;
   const pay = spSellPay(g, n);
-  if ((__eocLoaded >= 44 && typeof spFlood === "function")) spFlood(g, n);
+  if ((__eocLoaded >= 45 && typeof spFlood === "function")) spFlood(g, n);
   SP.goods[g] -= n; state.money += pay; clickedThisSecond += pay;   // counts as income (taxes)
   SP.stats.sold = (SP.stats.sold || 0) + n; SP.stats.soldMoney = (SP.stats.soldMoney || 0) + pay;
   showNotice(`🏪 Sold ${SP_GOODS[g].emoji} ${n} ${SP_GOODS[g].name} for ${fmt(pay)}.`);
@@ -19128,9 +19212,9 @@ function renderSpace() {
   if (!box || !spShown()) return;
   if (!spOpen()) { box.innerHTML = `<div class="card" style="text-align:center"><h2>🔒 🌌 Space</h2><p>Explore the galaxy, meet alien races and trade with them.</p>
     <p><b>Opens when you build the 🚀 Space Mission Center</b> (💰 Income → 🔬 Science).</p></div>`; return; }
-  if (state.logiPage === "market") { box.innerHTML = spSosHtml() + spMarketHtml() + ((__eocLoaded >= 44 && typeof spBarterHtml === "function") ? spBarterHtml() : ""); return; }
-  if (state.logiPage === "research" && (__eocLoaded >= 45 && typeof spResearchHtml === "function")) { box.innerHTML = spSosHtml() + spResearchHtml(); return; }
-  if (state.logiPage === "contracts" && (__eocLoaded >= 44 && typeof spContractsHtml === "function")) { box.innerHTML = spSosHtml() + spContractsHtml(); return; }
+  if (state.logiPage === "market") { box.innerHTML = spSosHtml() + spMarketHtml() + ((__eocLoaded >= 45 && typeof spBarterHtml === "function") ? spBarterHtml() : ""); return; }
+  if (state.logiPage === "research" && (__eocLoaded >= 46 && typeof spResearchHtml === "function")) { box.innerHTML = spSosHtml() + spResearchHtml(); return; }
+  if (state.logiPage === "contracts" && (__eocLoaded >= 45 && typeof spContractsHtml === "function")) { box.innerHTML = spSosHtml() + spContractsHtml(); return; }
   // 🗺️ wide screens: the map on the left, the system panel beside it (sticky). Phones: the panel slides up as a bottom sheet.
   const oldPanel = box.querySelector(".spPanel"), keep = oldPanel && oldPanel.dataset.sel === spSel ? oldPanel.scrollTop : 0;
   box.innerHTML = `${spSosHtml()}<div class="card spResBar" id="spResBar">${spResHtml()}</div><div class="spMapLayout ${spSheet ? "sheetOpen" : ""}"><div class="card spMapCard"><div class="row"><h2 style="margin:0">🌌 Star map</h2><span class="spFreeBadge ${spFree() ? "" : "none"}" title="Free courier ships">🚀 <b>${spFree()}</b><small>/ ${spShips()}</small><span>${spFree() === 1 ? "courier free" : "couriers free"}</span></span></div>${spMapHtml()}</div>
@@ -19151,7 +19235,7 @@ function spAnimate() {
     el.style.cssText = spShipCss(spShipPos(tr, now));
     const es = document.querySelector(`.spShip[data-esc="${tr.id}"]`); if (es) es.style.cssText = spShipCss(spShipPos(tr, now - spEscLag(tr)));
   }
-  if ((__eocLoaded >= 46 && typeof spHarvAnimate === "function")) spHarvAnimate(now);
+  if ((__eocLoaded >= 47 && typeof spHarvAnimate === "function")) spHarvAnimate(now);
   document.querySelectorAll("#spaceView [data-spt]").forEach(el => { el.textContent = spClock(Number(el.dataset.spt) - now); });
 }
 
@@ -19275,7 +19359,7 @@ setInterval(() => {
 // once the contracts and research code is loaded too
 
 // ===== js/34c-space-politics.js =====
-__eocLoaded = 44;
+__eocLoaded = 45;
 /* =====================================================================
    🌌 SPACE POLITICS & ECONOMY (loaded right after js/34-space.js)
    · ⚔️ RIVALRIES: 4 pairs of races dislike each other. Friendship you earn with one costs 30% of it with its rival.
@@ -19522,7 +19606,7 @@ function spPoliticsChips(k) {
 }
 
 // ===== js/34d-space-research.js =====
-__eocLoaded = 45;
+__eocLoaded = 46;
 /* =====================================================================
    🔬 SPACE RESEARCH & CRAFTING (loaded after js/34c-space-politics.js) · 🚢 Logistics → 🌌 Space → 🔬 Research
    · 5 research lines with 3 levels each. A level costs 🔬 scientists, money and space resources
@@ -19693,7 +19777,7 @@ $("modal").addEventListener("click", (e) => { const b = e.target.closest("[data-
 
 
 // ===== js/34e-space-fleet.js =====
-__eocLoaded = 46;
+__eocLoaded = 47;
 /* =====================================================================
    🛸 SPACE FLEET (loaded after js/34d-space-research.js)
    Three kinds of spaceships:
@@ -19937,7 +20021,7 @@ function spHarvAnimate(now) {
 }
 
 // ===== js/36-pip.js =====
-__eocLoaded = 47;
+__eocLoaded = 48;
 /* =====================================================================
    🐾🎨 PIP, the painter pet (an alien mouse from the Lumerians).
    - Adopt him in 🌌 Space Logistics → Lumerians, once you are 😊 Friendly, for 10 paintings from your collection.
@@ -20043,7 +20127,7 @@ function pipAdopt(ids) {
     <h2>🐾 Pip joined you!</h2>
     <p>He set up his easel at the top of the 🎮 Mini-games page. Every 15 minutes he paints a 🟡 Normal painting for your collection (he naps in between).</p>
     <div class="row" style="justify-content:center;gap:10px"><button class="btn big" data-pip="visit">🎮 Go and see him</button><button class="btn ghost" data-modal="close">Later</button></div></div>`);
-  if ((__eocLoaded >= 43 && typeof renderSpace === "function") && state.view === "logistics") renderSpace();
+  if ((__eocLoaded >= 44 && typeof renderSpace === "function") && state.view === "logistics") renderSpace();
   return true;
 }
 
@@ -20139,7 +20223,7 @@ document.addEventListener("click", (e) => {
   if (e.target.closest("#pipSprite")) return pipPoke();
   const b = e.target.closest("[data-pip]"); if (!b) return;
   if (b.dataset.pip === "adopt") {
-    if (pipOwned() || spLevel("art") < PIP_LV || state.art.items.length < PIP_COST || (__eocLoaded < 43 || typeof spRenderPick !== "function")) return;
+    if (pipOwned() || spLevel("art") < PIP_LV || state.art.items.length < PIP_COST || (__eocLoaded < 44 || typeof spRenderPick !== "function")) return;
     spPick = { k: "art", kind: "art", need: PIP_COST, sel: [], pip: true }; spRenderPick();
   }
   if (b.dataset.pip === "visit") { hideModal(); openGame(null); }
@@ -20157,7 +20241,7 @@ if (pipOwned()) pipProcess(true);
 if (state.view === "games" && !state.gamePage) renderPipCorner();   // the page opened straight on 🎮 Mini-games
 
 // ===== js/37-profile.js =====
-__eocLoaded = 48;
+__eocLoaded = 49;
 /* =====================================================================
    👤 PLAYER PROFILE: nickname, avatar (the emblem of one of your 🎁 reward collections), achievements and prestige count.
    · Opened with the round 👤 button next to ⚙️ Settings.
@@ -20317,7 +20401,7 @@ function renderProfile() {
   // 👈 Profile / Friends on the left, like the other pages (.subLayout)
   const tabs = `<div class="subLayout"><nav class="subNav"><button class="subTab ${prof.tab !== "friends" ? "active" : ""}" data-prof="tab-me">👤 Profile</button>
     <button class="subTab ${prof.tab === "friends" ? "active" : ""}" data-prof="tab-friends">👥 Friends${inc ? ` <span class="profBadge">${inc}</span>` : ""}</button></nav><div class="subMain">`;
-  if (prof.tab === "friends" && (__eocLoaded >= 49 && typeof renderFriends === "function")) { box.innerHTML = tabs + `<div id="friendsBox"></div></div></div>`; renderFriends(row); return; }
+  if (prof.tab === "friends" && (__eocLoaded >= 50 && typeof renderFriends === "function")) { box.innerHTML = tabs + `<div id="friendsBox"></div></div></div>`; renderFriends(row); return; }
   const ids = profAvatarIds(), cur = row ? row.avatar : prof.pendingAvatar;
   const shown = prof.showAll ? ids : ids.slice(0, 60);
   const typed = $("profNick") ? $("profNick").value : null;
@@ -20377,10 +20461,10 @@ document.addEventListener("click", (e) => {
     return;
   }
   const b = e.target.closest("[data-prof]"); if (!b) return;
-  if (b.dataset.prof === "signin" && (__eocLoaded >= 37 && typeof cloudSignIn === "function")) cloudSignIn();
+  if (b.dataset.prof === "signin" && (__eocLoaded >= 38 && typeof cloudSignIn === "function")) cloudSignIn();
   if (b.dataset.prof === "nick") profSaveNick($("profNick").value);
   if (b.dataset.prof === "all") { prof.showAll = true; renderProfile(); }
-  if (b.dataset.prof === "tab-me" || b.dataset.prof === "tab-friends") { prof.tab = b.dataset.prof === "tab-friends" ? "friends" : "me"; prof.err = ""; prof.msg = ""; renderProfile(); if (prof.tab === "friends" && (__eocLoaded >= 49 && typeof frLoad === "function")) frLoad(); }
+  if (b.dataset.prof === "tab-me" || b.dataset.prof === "tab-friends") { prof.tab = b.dataset.prof === "tab-friends" ? "friends" : "me"; prof.err = ""; prof.msg = ""; renderProfile(); if (prof.tab === "friends" && (__eocLoaded >= 50 && typeof frLoad === "function")) frLoad(); }
   if (b.dataset.prof === "copy" && prof.row && prof.row.friend_code) {
     const c = prof.row.friend_code;
     (navigator.clipboard ? navigator.clipboard.writeText(c) : Promise.reject()).then(() => showNotice(`📋 Friend code ${c} copied.`), () => showNotice(`📋 Your friend code: ${c}`));
@@ -20407,7 +20491,7 @@ setInterval(() => { const m = $("profMoney"); if (m) { const t = fmt(state.money
 setInterval(() => { const src = profCoinImg(profCoin()).match(/src="([^"]+)"/)[1]; document.querySelectorAll(".coinSkinImg").forEach(i => { if (i.getAttribute("src") !== src) i.setAttribute("src", src); }); }, 1000);
 
 // ===== js/38-friends.js =====
-__eocLoaded = 49;
+__eocLoaded = 50;
 /* =====================================================================
    👥 FRIENDS (👤 Profile → 👥 Friends). Needs a profile (js/37-profile.js) and the tables from docs/supabase-friends.sql.
    · Find players by nickname (start of the name) or by their 8-letter friend code, and send a request.
@@ -20586,7 +20670,7 @@ var frProfLoadOrig = profLoad;
 profLoad = async function () { await frProfLoadOrig(); if (prof.row && prof.friendsOn) frLoad(true); };
 
 // ===== js/39-duels.js =====
-__eocLoaded = 50;
+__eocLoaded = 51;
 /* =====================================================================
    ⚔️ ONLINE CASINO: duels against friends (🎰 Casino → ⚔️ Online casino on the left).
    · ✊✋✌️ Rock Paper Scissors and 🎲 Dice Battle (2 dice each, higher total wins the round): best of 3; a tie is played again.
@@ -20710,7 +20794,7 @@ function duChallenge(oppId) {
   const bet = Math.floor(Number(DU.bet));
   if (!(bet >= 1)) { DU.err = "Choose a bet of at least 1."; return renderDuels(); }
   if (bet > state.money) { DU.err = "You don't have enough money for this bet."; return renderDuels(); }
-  if ((__eocLoaded >= 48 && typeof profPushStats === "function")) profPushStats();   // the referee checks the money on your profile
+  if ((__eocLoaded >= 49 && typeof profPushStats === "function")) profPushStats();   // the referee checks the money on your profile
   duDo("duel_invite", { p_opp: oppId, p_game: DU.game, p_bet: bet }, () => { setTimeout(duPending, 300); });
 }
 
@@ -20881,7 +20965,7 @@ document.addEventListener("click", (e) => {
   const inPage = $("onlineCasino") && $("onlineCasino").contains(b), inModal = $("modalBox").contains(b);
   if (!inPage && !inModal) return;
   const k = b.dataset.du, id = Number(b.dataset.id);
-  if (k === "signin" && (__eocLoaded >= 37 && typeof cloudSignIn === "function")) cloudSignIn();
+  if (k === "signin" && (__eocLoaded >= 38 && typeof cloudSignIn === "function")) cloudSignIn();
   if (k === "profile") showView("profile");
   if (k === "game") { DU.game = b.dataset.g; renderDuels(); }
   if (k === "pct") { DU.bet = String(Math.max(1, Math.floor(state.money * Number(b.dataset.p)))); DU.err = ""; renderDuels(); }
@@ -20940,7 +21024,7 @@ function duMoneyTick() { const m = $("duMoney"); if (m) { const t = fmt(state.mo
 setInterval(duMoneyTick, 500);
 
 // ===== js/40-coin-input.js =====
-__eocLoaded = 51;
+__eocLoaded = 52;
 /* =====================================================================
    🪙 COIN UNIT SWITCH next to every money box: type the amount in bcoin, scoin (1M) or gcoin (1M scoin),
    instead of counting zeros. The rest of the game is not changed: each money box still reports its amount

@@ -2480,3 +2480,23 @@ body.phone .casHudTiers { margin-left: 0; }
 .bestTag { position: absolute; top: -10px; left: 12px; padding: 2px 9px; border-radius: 999px; background: #ffd34d; color: #2b2200; font-size: 11.5px; font-weight: 800; }
 .buyBtns { display: grid; gap: 5px; justify-items: stretch; flex: none; }
 .bizHint { color: #ffc61a; font-weight: 700; font-size: 12.5px; }
+/* 📈 investing: slim bar + portfolio list */
+#investView #investLevel, #investView > .wallet { display: none !important; }
+.ivHud { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 8px 12px; }
+.ivHud .ico { width: 20px; height: 20px; vertical-align: -4px; margin-right: 4px; }
+.ivHold { display: inline-flex; align-items: center; font-size: 14px; }
+.ivHold b.up, .ivRow b.up { color: #5fe08a; } .ivHold b.down, .ivRow b.down { color: #ff7b7b; }
+.ivList { padding: 8px; }
+.ivRows { display: grid; gap: 6px; }
+.ivRow { display: grid; grid-template-columns: minmax(170px, 1.4fr) 1fr 1fr 110px; gap: 10px; align-items: center; padding: 8px 12px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: #fff; font: inherit; text-align: left; cursor: pointer; }
+.ivRow:hover { border-color: rgba(255,211,77,0.5); }
+.ivRow.on { border-color: #ffd34d; background: rgba(255,211,77,0.1); box-shadow: inset 3px 0 0 #ffd34d; }
+.ivRowName { display: flex; align-items: center; gap: 8px; } .ivRowName .ico { width: 26px; height: 26px; }
+.ivRowVal { display: grid; } .ivRowVal small { color: #9aa0b8; font-size: 11px; }
+.ivSpark { width: 100%; height: 28px; } .ivSpark polyline { fill: none; stroke-width: 2; stroke: #5fe08a; vector-effect: non-scaling-stroke; } .ivSpark.down polyline { stroke: #ff7b7b; }
+.ivLocked { margin: 8px 4px 2px; font-size: 13px; }
+body.phone .ivRow { grid-template-columns: 1fr auto; } body.phone .ivRowChart { display: none; }
+body.phone .ivRow .ivRowVal:nth-of-type(3) { display: none; }
+body.phone .ivHud { gap: 6px 10px; }
+.ivLocked { display: grid; gap: 3px; }

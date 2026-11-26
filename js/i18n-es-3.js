@@ -1616,6 +1616,14 @@ rx(String.raw`Max ×(\d+) · (${NUM})`, "Máx. ×$1 · $2");
 rx(String.raw`(🏢 )?Bought (\d+) × (.+) for (${NUM})\.`, (m, e, n, b, x) => `${e || ""}Has comprado ${n} × ${ES[b] || b} por ${x}.`);
 H("💡 Income tips: a gold <b>!</b> on Income and Businesses when a business has free worker slots, a <b>⭐ Best value</b> tag on the business with the most income per coin, a <b>Max</b> button to buy several at once, and Buy buttons now say how much money is missing.",
   "💡 Ayudas en Ingresos: un <b>!</b> dorado en Ingresos y Negocios cuando un negocio tiene plazas libres, una etiqueta <b>⭐ Mejor valor</b> en el negocio con más ingresos por moneda, un botón <b>Máx.</b> para comprar varios a la vez, y los botones de compra ahora dicen cuánto dinero falta.");
+// 📈 investing layout
+Object.assign(ES, { "Profit": "Beneficio", "Worth": "Valor", "Stock market ETF": "ETF de bolsa", "Global Freight Co. shares": "Acciones de Global Freight Co.", "Broker ETF": "ETF del bróker",
+  "needs a Brokerage Firm (Income, Investor level 10)": "necesita una Agencia de Bolsa (Ingresos, nivel de inversor 10)",
+  "opens with Logistics (buy your first Car Salon)": "se abre con Logística (compra tu primer concesionario)", "All-time profits": "Beneficios totales" });
+rx(String.raw`(\d+) (property|properties)`, (m, n, x) => `${n} ${x === "property" ? "propiedad" : "propiedades"}`);
+rx(String.raw`Investor level · (max level|([\d.,]+) \/ ([\d.,]+) XP)`, (m, x, a, b) => `Nivel de inversor · ${a ? `${a} / ${b} XP` : "nivel máximo"}`);
+H("📈 Investing is tidier: one slim bar shows your level, money and holdings, and the Investing page starts with a portfolio list (worth, profit and a mini chart for each investment). Pick one to open its chart and buy/sell controls.",
+  "📈 Inversiones más ordenadas: una barra fina muestra tu nivel, tu dinero y tus inversiones, y la página de Inversiones empieza con una lista de cartera (valor, beneficio y un minigráfico de cada inversión). Elige una para abrir su gráfico y sus controles de compra y venta.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
