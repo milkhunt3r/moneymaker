@@ -2972,6 +2972,9 @@ H("🎰 New casino lobby: one card per game with a quick table switch (Classic, 
   "🎰 Nuevo vestíbulo del casino: una tarjeta por juego con un cambio rápido de mesa (clásica, altas apuestas, súper altas apuestas), una fila <b>▶ Seguir jugando</b> con el juego caliente 🔥 y tus últimas mesas, y un cambio de mesa en la barra mientras juegas.");
 H("🎰 Shorter tables: empty Blackjack and Hold'em tables take less room between rounds, and the Video Poker and Hold'em payout tables start folded after your first 3 rounds (📋 Show opens them again).",
   "🎰 Mesas más cortas: las mesas vacías de blackjack y Hold'em ocupan menos espacio entre rondas, y las tablas de pagos del videopóquer y del Hold'em empiezan plegadas después de tus 3 primeras rondas (📋 Mostrar las vuelve a abrir).");
+hrx(String.raw`(\{i\}|<img[^>]*>)?<span>(.+?)<\/span>&nbsp;in ([\d:]+)`, (m, i, g, t) => `${i || ""}<span>${ES[g] || g}</span>&nbsp;en ${t}`);
+hrx(String.raw`(\{i\}|<img[^>]*>)?<span>(.+?)<\/span> in ([\d:]+)`, (m, i, g, t) => `${i || ""}<span>${ES[g] || g}</span> en ${t}`);
+rx(String.raw`in ([\d:]+)`, "en $1");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
