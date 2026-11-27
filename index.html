@@ -405,7 +405,7 @@
             <div class="card">
               <div class="row"><h3><img class="ico biz" src="assets/icons/ico-re-key.webp" alt="">Real estate</h3>
                 <button class="btn ghost small" data-info="re">ℹ️ Info</button></div>
-              <div class="muted infoBox" id="info-re" hidden>Safe, steady income: earns 1.2% of its value as rent every 45 seconds (about +96% per hour, paid to your money).
+              <div class="muted infoBox" id="info-re" hidden>Safe, steady income: earns 0.6% of its value as rent every 60 seconds (about +36% per hour, paid to your money).
                 Locked for 20 minutes after buying, then sell any time with no fee.
                 Min. 50,000. <img class="ico" src="assets/icons/ico-iv-crash.webp" alt="">Each second there is a small 1 in 21,600 chance (about once every 6 hours) of a market crash: all properties lose 70% of their value.</div>
               <div class="moneyRow">
@@ -426,7 +426,7 @@
             <div class="card">
               <div class="row"><h3><img class="ico h" src="assets/icons/ico-iv-etf.webp" alt="">Stock market ETF</h3>
                 <button class="btn ghost small" data-info="etf">ℹ️ Info</button></div>
-              <div class="muted infoBox" id="info-etf" hidden>Every 10 seconds the market moves: 1 in 10 chance of −4%, 1 in 10 chance of +4%, otherwise 50/50 between +1.5% and −1%.
+              <div class="muted infoBox" id="info-etf" hidden>Every 10 seconds the market moves: 1 in 10 chance of −4%, 1 in 10 chance of +4%, otherwise 50/50 between +1.2% and −1%. On average about +25% an hour, but a lucky (or well-timed) player can do better.
                 Min. 1,000 per investment. Cash-out fee: <span id="etfFeeInline"></span> (lower with every Investor level).</div>
               <div class="row" style="margin-top:10px; justify-content:flex-start; gap:20px; flex-wrap:wrap">
                 <div><div class="muted">Your ETF</div><div class="bigValue" id="etfValue">0</div></div>
@@ -496,7 +496,8 @@
                 <button class="btn ghost small" data-info="petf">ℹ️ Info</button></div>
               <div class="muted infoBox" id="info-petf" hidden>Only for owners of a Brokerage Firm. Works like the normal ETF, with better wins:
                 every 10 seconds, 1 in 10 chance of −4%, 1 in 10 chance of +5%, otherwise 50/50 between +2% and −1%.
-                <b>No cash-out fee.</b> One slot: you invest once (min. 1,000, max. 10,000,000), and cash out everything before investing again. Your investment can still grow past 10M.</div>
+                <b>No cash-out fee.</b> One slot: you invest once (min. 1,000, max. 10,000,000), and cash out everything before investing again. Your investment can still grow past 10M.
+                It grows up to <b>10 gcoin</b> at most. Turn on 🔁 Auto cash-out to cash out at the cap and invest 10,000,000 again on its own.</div>
               <div id="petfLocked" class="muted" style="margin-top:8px"><img class="ico lockS" src="assets/icons/ico-lock.webp" alt="">Buy a <img class="ico" src="assets/icons/ico-biz-broker.webp" alt="">Brokerage Firm (Income tab, needs Investor level 10) to unlock.</div>
               <div id="petfBody" hidden>
                 <div class="row" style="margin-top:10px; justify-content:flex-start; gap:20px; flex-wrap:wrap">
@@ -522,6 +523,8 @@
                   <button class="btn ghost" id="petfSell">Cash out all (no fee)</button>
                   <span class="muted">One slot: cash out to invest again.</span>
                 </div>
+                <label class="muted" style="display:flex; align-items:center; gap:6px; margin-top:8px; cursor:pointer"><input type="checkbox" id="petfAuto" style="width:auto; margin:0"> 🔁 Auto cash-out at 10 gcoin, then invest 10,000,000 again</label>
+                <div class="muted" id="petfCapNote"></div>
 <div class="cardMsg" id="msg-petf"></div>
               </div>
             </div>
@@ -532,9 +535,9 @@
                 <button class="btn ghost small" data-info="gfc">ℹ️ Info</button></div>
               <div class="muted infoBox" id="info-gfc" hidden>A shipping company that lives on <b>your logistics deliveries</b>. Every 10 seconds the share price moves:
                 it compares the contracts your trucks, tankers and planes delivered in the <b>last 20 seconds</b> with the 20 seconds before.
-                More deliveries than before: the price jumps up (+1.1% for every extra contract). Fewer: it drops (−0.9% for every missing one).
-                The same number: a small move around +0.12%. A little random noise is added to every move (±0.5%), and one move is at most +8% / −6%.
-                Ups are a bit bigger than downs, so over time the price rises, and faster the more you deliver.
+                More deliveries than before: the price jumps up (+1% for every extra contract). Fewer: it drops (−1% for every missing one).
+                The same number: a small move around +0.1%. A little random noise is added to every move (±0.5%), and one move is at most +8% / −6%.
+                Over time the price rises, about +35% an hour on average; a bigger fleet makes bigger swings to time.
                 Min. 1,000. Selling has the same fee as the ETF cash-out fee. The price doesn't move while the game is closed.</div>
               <div id="gfcLocked" class="muted" style="margin-top:8px"><img class="ico lockS" src="assets/icons/ico-lock.webp" alt="">Unlocks with 🚢 Logistics (buy your first Car Salon).</div>
               <div id="gfcBody" hidden>
@@ -604,6 +607,6 @@
   <div id="tipCard" hidden role="status"></div>
   <div id="tutBubble" hidden role="dialog" aria-label="Guided start"></div>
   <!-- Game code, split by section. Files share one global scope and must load in this order. -->
-  <script src="game.js?v=b46ac139de"></script>
+  <script src="game.js?v=f7aaa85a65"></script>
 </body>
 </html>

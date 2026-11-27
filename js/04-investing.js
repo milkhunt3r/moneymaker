@@ -5,8 +5,8 @@
    ===================================================================== */
 const RE_MIN = 50000;
 const RE_LOCK = 1200;           // 20 minutes locked after buying
-const RE_RENT_EVERY = 45;       // rent every 45 seconds...
-const RE_RENT_RATE = 0.012;     // ...of 1.2% of the property's value (about +80% per hour after crashes)
+const RE_RENT_EVERY = 60;       // rent every 60 seconds...
+const RE_RENT_RATE = 0.006;     // ...of 0.6% of the property's value (about +36% per hour)
 const RE_CRASH_CHANCE = 1 / 21600;  // about one crash every 6 hours
 const RE_CRASH_LOSS = 0.70;     // a crash wipes out 70% of every property's value
 
@@ -254,6 +254,23 @@ if (!inv.etfPrices)  inv.etfPrices  = [100];
 if (!inv.petfPrices) inv.petfPrices = [100];
 const hasBroker = () => state.companies.some(c => c.typeId === "broker");
 const PETF_MAX = 10000000;   // you can put at most 10M into the Broker ETF
+const PETF_CAP = 10 * GCOIN; // ...and it grows up to 10 gcoin, no further
+if (typeof inv.petfAuto !== "boolean") inv.petfAuto = false;   // 🔁 auto cash-out at the cap + buy back in with 10M
+
+// Broker ETF at its cap: cash out everything, and with auto on, invest 10M again right away
+function petfCapCheck() {
+  if (inv.petf < PETF_CAP) return;
+  inv.petf = PETF_CAP;
+  if (!inv.petfAuto) return;
+  const amount = inv.petf;
+  state.money += amount;
+  investRecord("petf", 0, amount);
+  state.money -= PETF_MAX;
+  inv.petf = PETF_MAX; inv.petfInvested = PETF_MAX;
+  investRecord("petf", PETF_MAX, 0);
+  investMessage(ivIco("petf") + "🔁 Auto cash-out: +" + fmt(amount) + ", and " + fmt(PETF_MAX) + " invested again.", true, "petf");
+  showNotice("🔁 Broker ETF hit " + fmt(PETF_CAP) + ": cashed out and bought back in with " + fmt(PETF_MAX) + ".");
+}
 
 $("petfBuy").addEventListener("click", () => {
   if (isPaused() || !hasBroker()) return;
@@ -271,6 +288,8 @@ $("petfBuy").addEventListener("click", () => {
   investMessage(ivIco("petf") + "Invested " + fmt(amount) + " in the Broker ETF.", true, "petf");
   updateCounter(); updateInvestLive(); save();
 });
+
+$("petfAuto").addEventListener("change", (e) => { inv.petfAuto = e.target.checked; petfCapCheck(); updateCounter(); updateInvestLive(); save(); });
 
 $("petfSell").addEventListener("click", () => {
   if (isPaused() || inv.petf <= 0) return;
@@ -387,7 +406,7 @@ function etfRoll() {
   const r = Math.random();
   if (r < 0.10) return -0.04;
   if (r < 0.20) return 0.04;
-  return Math.random() < 0.5 ? 0.015 : -0.01;
+  return Math.random() < 0.5 ? 0.012 : -0.01;   // simulated: about +25% an hour on average, with big short swings
 }
 
 /* ----- Runs every second from the game loop. Returns rent paid (taxable). ----- */
@@ -449,7 +468,8 @@ function investTick() {
     inv.petfTimer--;
     if (inv.petfTimer <= 0) {
       const move = petfRoll();
-      inv.petf *= 1 + move;
+      inv.petf = Math.min(PETF_CAP, inv.petf * (1 + move));
+      petfCapCheck();
       inv.petfHistory = [move, ...inv.petfHistory].slice(0, 15);
       inv.petfPrices = inv.petfPrices.concat(inv.petfPrices[inv.petfPrices.length - 1] * (1 + move)).slice(-CHART_POINTS - 1);
       inv.petfTimer = ETF_EVERY;
@@ -573,6 +593,8 @@ function updateInvestLive() {
   $("petfTimer").textContent = inv.petfTimer + "s";
   $("petfBuyRow").hidden = inv.petf > 0;
   $("petfSellRow").hidden = inv.petf <= 0;
+  $("petfAuto").checked = inv.petfAuto;
+  $("petfCapNote").textContent = inv.petf >= PETF_CAP ? "🔝 At the " + fmt(PETF_CAP) + " cap: it won't grow more. Cash out to start again." : "";
   const pl = inv.petfHistory[0];
   $("petfLast").textContent = pl === undefined ? "–" : (pl > 0 ? "+" : "") + Math.round(pl * 100) + "%";
   $("petfLast").className = "bigValue " + (pl > 0 ? "up" : pl < 0 ? "down" : "");

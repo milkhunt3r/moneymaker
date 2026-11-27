@@ -51,6 +51,14 @@ addEventListener("resize", fitBrand); fitBrand();
 
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
+  { date: "27 November 2026", title: "Empire of Coins", items: [
+    "⚖️ Balance update: businesses matter for longer. 🚘 Car Salons earn <b>×2</b>. 🎰 Casinos and 🏨 Hotels earn <b>×2</b>, and <b>+0.5 more for every 2 you own</b> (2 owned ×2.5, 4 owned ×3 … 10 owned ×4.5).",
+    "🏠 Real estate now pays <b>0.6% rent every 60 seconds</b> (was 1.2% every 45 seconds), about +36% an hour.",
+    "📈 Stock market ETF: the small up move is now +1.2% (was +1.5%), about <b>+25% an hour</b> on average. It still swings a lot in the short term, so good timing can beat that.",
+    "🚚 Global Freight Co. shares rise about <b>+35% an hour</b> on average: ups and downs are now the same size (±1% per contract) with a small steady drift.",
+    "💼 Broker ETF now grows up to <b>10 gcoin</b> at most. New <b>🔁 Auto cash-out</b>: at the cap it cashes out for you and invests 10,000,000 again.",
+    "🔬 Science opens earlier: it now needs <b>Logistics 30, Investor 30 and Gambler 20</b> (was 50 / 50 / 25).",
+  ] },
   { date: "26 November 2026", title: "Empire of Coins", items: [
     "🎰 The casino now matches the other pages: one slim bar (level, money, Hot Tables, cashback, all-time earnings and free chips) replaces the four big cards in the lobby and the Online casino. Tap the free chips to open their refill timers.",
     "🗂️ Achievements: on big screens the categories are now a list in the left menu with a progress ring each; on phones they are one row you can swipe.",

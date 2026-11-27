@@ -68,7 +68,7 @@ function wikiIncome() {
     let unlock = "Always";
     try { if (t.unlockText) unlock = t.unlockText(0).replace(/\s*\([^)]*\)/g, ""); } catch (e) {}
     return [`${t.emoji} <b>${t.name}</b>`, fmt(t.price) + (t.maxOwned > 1 ? `, then ×${t.priceMultiplier || 2} each` : ""), t.maxOwned,
-            t.noStaff ? `${t.maxEmployees} workers (no accountant or HR)` : `${t.maxEmployees - 2} workers + accountant + HR`, `${t.minIncome}–${t.maxIncome} / sec per worker`, unlock];
+            t.noStaff ? `${t.maxEmployees} workers (no accountant or HR)` : `${t.maxEmployees - 2} workers + accountant + HR`, `${t.minIncome}–${t.maxIncome} / sec per worker` + (BIZ_BOOST[t.id] ? (BIZ_BOOST[t.id].step ? ` · 🚀 ×2, +0.5 every 2 owned` : ` · 🚀 ×2`) : ""), unlock];
   });
   const traitRows = Object.entries(TRAITS).filter(([k]) => k !== "normal").map(([k, t]) =>
     [`${t.emoji} ${t.name}`, t.desc, t.onlyFor ? t.onlyFor.map(id => (BUSINESS_TYPES.find(b => b.id === id) || {}).name).join(", ") : "All", k === "legend" ? "1%" : pctx(t.chance)]);

@@ -1,6 +1,6 @@
 /* Empire of Coins © 2026 milkhunt3r. All rights reserved. */
 /* =====================================================================
-   🔬 SCIENCE (Income tab → Science). Unlocks at Logistics 50, Investor 50 and Gambler 25.
+   🔬 SCIENCE (Income tab → Science). Unlocks at Logistics 30, Investor 30 and Gambler 20.
    🎓 University (100 scoin): 1 scientist every 2 min, up to 50. Costs 5 / sec per empty scientist place
       (starts at −250 / sec); with all 50 scientists it earns +500 / sec.
    🧪 Research lab (500 scoin + 20 scientists from the University): every second a 1 in 7,200 chance of a scientific breakthrough,
@@ -13,7 +13,7 @@
       cargo plane contracts pay +5%, tanker contracts take 10% less time, broken trucks repair themselves for free after 5 seconds.
    A prestige resets Science (the Nobel Prize count stays in your statistics).
    ===================================================================== */
-const SCI_REQ = { logistics: 50, investor: 50, gambler: 25 };
+const SCI_REQ = { logistics: 30, investor: 30, gambler: 20 };
 const UNI_PRICE = 1e8, UNI_MAX = 50, UNI_EVERY = 120, UNI_COST_PER_EMPTY = 5, UNI_FULL_INCOME = 500;
 const LAB_PRICE = 5e8, LAB_ODDS = 7200, LAB_REWARD = 1e9;
 const SPACE_PRICE = 1e10, SPACE_NEED = 2, SPACE_EVERY = 1200, SPACE_MIN = 2000, SPACE_MAX = 5000;

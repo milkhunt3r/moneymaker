@@ -11,6 +11,21 @@ function activeTrait(w) {
   return w.trait === "copycat" ? (w.copied || "normal") : w.trait;
 }
 
+// 🚀 Business income boosts: Car Salon ×2; Casino and Hotel ×2, and +0.5 for every 2 you own (2 → ×2.5, 4 → ×3 … 10 → ×4.5)
+const BIZ_BOOST = { salon: { base: 2 }, casino: { base: 2, step: 0.5 }, hotel: { base: 2, step: 0.5 } };
+function bizBoost(typeId, owned) {
+  const b = BIZ_BOOST[typeId]; if (!b) return 1;
+  if (owned === undefined) owned = ownedOf(typeId);
+  return b.base + (b.step || 0) * Math.floor(owned / 2);
+}
+function bizBoostLine(typeId) {
+  const b = BIZ_BOOST[typeId]; if (!b) return "";
+  const owned = ownedOf(typeId), max = (BUSINESS_TYPES.find(t => t.id === typeId) || {}).maxOwned || 0;
+  const nextAt = (Math.floor(owned / 2) + 1) * 2;
+  const next = b.step && nextAt <= max ? ` · ×${bizBoost(typeId, nextAt)} at ${nextAt} owned` : "";
+  return `<div class="muted bizBoost">🚀 Income ×${bizBoost(typeId, Math.max(owned, 1))}${next}</div>`;
+}
+
 function runCompany(company) {
   const result = { total: 0, perWorker: [], status: [], flash: "" };
   const workers = company.workers;
@@ -157,6 +172,9 @@ function runCompany(company) {
       .reduce((a, c) => a + c.workers.filter(w => activeTrait(w) === "promoter").length, 0);
     total *= 1 + 0.02 * promoters;
   }
+
+  // 🚀 income boost: Car Salon ×2; Casino and Hotel ×2, +0.5 for every 2 you own
+  total *= bizBoost(company.typeId);
 
   // ----- Accountant -----
   const acc = company.accountant;
@@ -312,7 +330,7 @@ function render() {
   };
 
   // ⭐ best value: the business you can buy now with the most worker income per coin
-  const bizValue = (t) => (t.minIncome + t.maxIncome) / 2 * (t.maxEmployees - (t.noStaff ? 0 : 2)) / businessPrice(t);
+  const bizValue = (t) => (t.minIncome + t.maxIncome) / 2 * bizBoost(t.id, ownedOf(t.id) + 1) * (t.maxEmployees - (t.noStaff ? 0 : 2)) / businessPrice(t);
   const buyable = BUSINESS_TYPES.filter(t => { const o = ownedOf(t.id); return o < t.maxOwned && o < allowedToOwn(t); });
   const best = buyable.length > 1 ? buyable.reduce((a, b) => bizValue(b) > bizValue(a) ? b : a) : null;
   // Businesses grouped by type: group header, your companies, then the buy card
@@ -332,6 +350,7 @@ function render() {
           </span>
         </div>
         <div class="muted">${owned} ${owned === 1 ? "business" : "businesses"} · ${workers} / ${mine.reduce((a, x) => a + maxWorkers(x.c), 0)} workers</div>
+        ${bizBoostLine(t.id)}
       </div>`;
       if (!collapsed) { html += `<div class="bizUnits">`; mine.forEach(x => { html += companyCard(x.c, x.ci); }); html += `</div>`; }
     }
@@ -353,6 +372,7 @@ function render() {
         <div><h3>${bizIco(t.id)}${t.name}</h3>
           <div class="muted">${t.noStaff ? `${t.maxEmployees} workers · no accountant or HR` : `Up to ${t.maxEmployees} employees (incl. accountant &amp; HR)`} · workers earn ${t.minIncome}–${t.maxIncome} / sec</div>
           ${t.perk ? `<div class="muted">⭐ ${t.perk}</div>` : ""}
+          ${owned === 0 ? bizBoostLine(t.id) : ""}
           <div class="muted">Owned: ${owned} / ${t.maxOwned}</div></div>
         <span class="buyBtns"><button class="btn" data-action="buy" data-type="${t.id}" data-cost="${businessPrice(t)}" data-buylbl="Buy ${fmt(businessPrice(t))}">Buy ${fmt(businessPrice(t))}</button>
           ${maxN.n > 1 ? `<button class="btn ghost small" data-action="buyMax" data-type="${t.id}">Max ×${maxN.n} · ${fmt(maxN.cost)}</button>` : ""}</span>

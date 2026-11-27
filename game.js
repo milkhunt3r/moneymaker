@@ -682,12 +682,12 @@ Object.assign(ES, {
   "No win this time.": "Esta vez no hay premio.", "Lab spots": "Casillas de laboratorio", "DNA vials": "Viales de ADN", "added": "se suman",
 
   // ===================== 📈 INVESTING =====================
-  "Safe, steady income: earns 1.2% of its value as rent every 45 seconds (about +96% per hour, paid to your money). Locked for 20 minutes after buying, then sell any time with no fee. Min. 50,000.":
-    "Ingresos seguros y constantes: gana el 1,2% de su valor en alquiler cada 45 segundos (unos +96% por hora, a tu dinero). Bloqueado 20 minutos tras comprarlo; después véndelo cuando quieras sin comisión. Mín. 50.000.",
+  "Safe, steady income: earns 0.6% of its value as rent every 60 seconds (about +36% per hour, paid to your money). Locked for 20 minutes after buying, then sell any time with no fee. Min. 50,000.":
+    "Ingresos seguros y constantes: gana el 0,6% de su valor en alquiler cada 60 segundos (unos +36% por hora, a tu dinero). Bloqueado 20 minutos tras comprarlo; después véndelo cuando quieras sin comisión. Mín. 50.000.",
   "Each second there is a small 1 in 21,600 chance (about once every 6 hours) of a market crash: all properties lose 70% of their value.":
     "Cada segundo hay una pequeña probabilidad de 1 entre 21.600 (más o menos una vez cada 6 horas) de un desplome del mercado: todos los inmuebles pierden el 70% de su valor.",
-  "Every 10 seconds the market moves: 1 in 10 chance of −4%, 1 in 10 chance of +4%, otherwise 50/50 between +1.5% and −1%. Min. 1,000 per investment. Cash-out fee":
-    "Cada 10 segundos el mercado se mueve: 1 entre 10 de −4%, 1 entre 10 de +4%; si no, 50/50 entre +1,5% y −1%. Mín. 1.000 por inversión. Comisión de retirada",
+  "Every 10 seconds the market moves: 1 in 10 chance of −4%, 1 in 10 chance of +4%, otherwise 50/50 between +1.2% and −1%. On average about +25% an hour, but a lucky (or well-timed) player can do better. Min. 1,000 per investment. Cash-out fee":
+    "Cada 10 segundos el mercado se mueve: 1 entre 10 de −4%, 1 entre 10 de +4%; si no, 50/50 entre +1,2% y −1%. De media unos +25% por hora, pero con suerte (o buen ojo) se puede ganar más. Mín. 1.000 por inversión. Comisión de retirada",
   "(lower with every Investor level).": "(baja con cada nivel de inversor).",
   "Buy a": "Compra una", "Brokerage Firm (Income tab, needs Investor level 10) to unlock.": "Agencia de valores (pestaña Ingresos, requiere nivel de inversor 10) para desbloquearlo.",
   "One slot: you invest once (min. 1,000, max. 10,000,000), and cash out everything before investing again. Your investment can still grow past 10M.":
@@ -719,8 +719,8 @@ Object.assign(ES, {
 
 H("The safest, slowest investment. Gold moves together with the stock market, every 10 seconds: 24% chance of +0.4%, 41% chance of +0.2%, 35% chance of −0.15%. That is about <b>+50–60% per hour</b>, and it almost never loses over a few minutes. Min. 1,000. <b>No cash-out fee</b>. After you sell gold, you have to wait <b>5 minutes</b> before selling again.",
   "La inversión más segura y más lenta. El oro se mueve a la vez que la bolsa, cada 10 segundos: 24% de probabilidad de +0,4%, 41% de +0,2% y 35% de −0,15%. Son unos <b>+50–60% por hora</b>, y casi nunca pierde en unos pocos minutos. Mín. 1.000. <b>Sin comisión de retirada</b>. Después de vender oro tienes que esperar <b>5 minutos</b> para volver a vender.");
-H("Only for owners of a Brokerage Firm. Works like the normal ETF, with better wins: every 10 seconds, 1 in 10 chance of −4%, 1 in 10 chance of +5%, otherwise 50/50 between +2% and −1%. <b>No cash-out fee.</b> One slot: you invest once (min. 1,000, max. 10,000,000), and cash out everything before investing again. Your investment can still grow past 10M.",
-  "Solo para propietarios de una Agencia de valores. Funciona como el ETF normal, con mejores subidas: cada 10 segundos, 1 entre 10 de −4%, 1 entre 10 de +5%; si no, 50/50 entre +2% y −1%. <b>Sin comisión de retirada.</b> Una sola plaza: inviertes una vez (mín. 1.000, máx. 10.000.000) y lo retiras todo antes de volver a invertir. Tu inversión puede seguir creciendo por encima de 10 M.");
+H("Only for owners of a Brokerage Firm. Works like the normal ETF, with better wins: every 10 seconds, 1 in 10 chance of −4%, 1 in 10 chance of +5%, otherwise 50/50 between +2% and −1%. <b>No cash-out fee.</b> One slot: you invest once (min. 1,000, max. 10,000,000), and cash out everything before investing again. Your investment can still grow past 10M. It grows up to <b>10 gcoin</b> at most. Turn on 🔁 Auto cash-out to cash out at the cap and invest 10,000,000 again on its own.",
+  "Solo para propietarios de una Agencia de valores. Funciona como el ETF normal, con mejores subidas: cada 10 segundos, 1 entre 10 de −4%, 1 entre 10 de +5%; si no, 50/50 entre +2% y −1%. <b>Sin comisión de retirada.</b> Una sola plaza: inviertes una vez (mín. 1.000, máx. 10.000.000) y lo retiras todo antes de volver a invertir. Tu inversión puede seguir creciendo por encima de 10 M. Crece hasta <b>10 gcoin</b> como máximo. Activa 🔁 Retirada automática para retirarlo al llegar al tope y volver a invertir 10.000.000 solo.");
 H("Trade <b>Bitcoin, Ethereum and Solana at their real, live prices</b> (1 US dollar = 1 bcoin), streamed every second from Binance (or Coinbase if Binance isn't reachable). Prices move with the real market, 24/7, up or down. <br><br><b>Positions:</b> every trade opens its own position. <b>Long</b> earns when the price goes up, <b>Short</b> when it goes down. <b>Leverage ×20 / ×50</b> multiplies your profit and loss: at ×50, a 1% price move changes your position by 50%. If the price moves 1/leverage against you (5% at ×20, 2% at ×50; 100% up for a ×1 Short) the position is <b>liquidated</b> and you lose the money you put in. Liquidations are checked while the game is open. <br><br><b>Fee:</b> 2% of the money you put in when you open and of what you get back when you close, 0.1% less for every 10 Investor levels (level 10, 20, 30…). At Investor level 99 trading is free. <br><b>XP:</b> every trade gives Investor XP based on its size (1,000 → 1 XP, 1 scoin → 4 XP, 1 gcoin → 10 XP), at most once a minute. Coins you hold also count as invested money for the per-minute Investor XP. Min. trade 1,000. Trading pauses if the live prices stop. <br><br><b>⏳ Limit orders:</b> open a position only when the price reaches your limit: a Long when the price drops to it, a Short when it rises to it. The money is set aside until then (Cancel gives it back). At most 10 orders. <b>🎯 Take profit / 🛑 Stop loss:</b> a position closes by itself when its profit or loss (after the closing fee) reaches the % of the money you put in that you chose. Set them when opening, or later with ✏️. Orders, take profit and stop loss are checked while the game is open (also in a background tab).",
   "Opera con <b>Bitcoin, Ethereum y Solana a sus precios reales en directo</b> (1 dólar estadounidense = 1 bcoin), actualizados cada segundo desde Binance (o Coinbase si Binance no responde). Los precios se mueven con el mercado real, 24/7, al alza o a la baja. <br><br><b>Posiciones:</b> cada operación abre su propia posición. <b>Largo</b> gana cuando el precio sube; <b>Corto</b>, cuando baja. <b>Apalancamiento ×20 / ×50</b> multiplica tus ganancias y pérdidas: a ×50, un movimiento del 1% cambia tu posición un 50%. Si el precio se mueve 1/apalancamiento en tu contra (5% a ×20, 2% a ×50; una subida del 100% en un Corto ×1), la posición queda <b>liquidada</b> y pierdes el dinero que pusiste. Las liquidaciones se comprueban mientras el juego está abierto. <br><br><b>Comisión:</b> 2% del dinero que pones al abrir y de lo que recibes al cerrar, un 0,1% menos por cada 10 niveles de inversor (nivel 10, 20, 30…). En el nivel de inversor 99 operar es gratis. <br><b>XP:</b> cada operación da XP de inversor según su tamaño (1.000 → 1 XP, 1 scoin → 4 XP, 1 gcoin → 10 XP), como mucho una vez por minuto. Las monedas que tienes también cuentan como dinero invertido para la XP de inversor por minuto. Operación mínima: 1.000. El trading se pausa si se detienen los precios en directo. <br><br><b>⏳ Órdenes límite:</b> abren una posición solo cuando el precio llega a tu límite: un largo cuando el precio baja hasta él, un corto cuando sube hasta él. El dinero queda apartado hasta entonces (Cancelar lo devuelve). Máximo 10 órdenes. <b>🎯 Toma de beneficios / 🛑 Stop loss:</b> una posición se cierra sola cuando su beneficio o pérdida (tras la comisión de cierre) llega al % del dinero que pusiste que hayas elegido. Fíjalos al abrir o después con ✏️. Las órdenes, la toma de beneficios y el stop loss se comprueban con el juego abierto (también en una pestaña en segundo plano).");
 H("Buy a semi-truck (150,000) for one of your 15 slots. Each free truck gets <b>4 contract offers</b> on roads around the world: pick one and it drives. When it arrives, the whole contract is paid to your money. Longer routes pay more per second. A truck earns back its price in about 1.5 hours. Trips keep moving while the game is closed. <br><br>{i}<b>Breakdowns:</b> after each delivery there is a 1 in 100 chance the truck breaks down. It can't take new contracts until you pay for repairs (500 – 5,000). <br><br>{i}<b>Logistics agent</b> (unlocks at Logistics level 5): turn it on and it picks a random contract for any waiting truck 5 seconds after the offers appear. It charges 2% of that contract's profit, taken from your money the moment it picks. It waits if you can't afford the fee.",
@@ -1511,8 +1511,8 @@ Object.assign(ES, {
   "Logistics level 20; max 1": "Nivel de logística 20; máx. 1",
   "Choose 1 agent upgrade (fee 1%, best contract, or 3-second picks); the other two cost 1 scoin each": "Elige 1 mejora de agentes (comisión del 1%, mejor contrato o elección en 3 segundos); las otras dos cuestan 1 scoin cada una",
   "When all 10 slots are filled, you can fire any attorney and choose a replacement from 3 offers for 1 scoin.": "Cuando las 10 plazas están ocupadas, puedes despedir a cualquier abogado y elegir un sustituto entre 3 ofertas por 1 scoin.",
-  "The 💰 Income tab has three pages: 🏢 Businesses, ⭐ Special and 🔬 Science. Science unlocks at Logistics level 50, Investor level 50 and Gambler level 25.":
-    "La pestaña 💰 Ingresos tiene tres páginas: 🏢 Negocios, ⭐ Especiales y 🔬 Ciencia. Ciencia se desbloquea con nivel de logística 50, nivel de inversor 50 y nivel de jugador 25.",
+  "The 💰 Income tab has three pages: 🏢 Businesses, ⭐ Special and 🔬 Science. Science unlocks at Logistics level 30, Investor level 30 and Gambler level 20.":
+    "La pestaña 💰 Ingresos tiene tres páginas: 🏢 Negocios, ⭐ Especiales y 🔬 Ciencia. Ciencia se desbloquea con nivel de logística 30, nivel de inversor 30 y nivel de jugador 20.",
   "Science unlocked": "Ciencia desbloqueada",
   "1 scientist every 2 min, up to 50. Costs 5 / sec per empty place (−250 / sec at first); full: +500 / sec": "1 científico cada 2 min, hasta 50. Cuesta 5 / s por plaza vacía (−250 / s al principio); llena: +500 / s",
   "Every second a 1 in 7,200 chance of a breakthrough (guaranteed after 2 hours): a Nobel Prize and 1000 scoin. The game pauses until you accept it. Offline: at most 1":
@@ -1797,8 +1797,8 @@ rx(String.raw`(\d+) s before: (\d+)`, "$1 s antes: $2");
 rx(String.raw`Bought (${NUM}) of Global Freight Co\. shares\.`, "Has comprado $1 en acciones de Global Freight Co.");
 rx(String.raw`Sold (${NUM}) of shares \(fee (${NUM})\): \+(${NUM}) to your money\.`, "Has vendido $1 en acciones (comisión $2): +$3 a tu dinero.");
 rx(String.raw`Shares need at least (${NUM})\.`, "Las acciones necesitan al menos $1.");
-H("A shipping company that lives on <b>your logistics deliveries</b>. Every 10 seconds the share price moves: it compares the contracts your trucks, tankers and planes delivered in the <b>last 20 seconds</b> with the 20 seconds before. More deliveries than before: the price jumps up (+1.1% for every extra contract). Fewer: it drops (−0.9% for every missing one). The same number: a small move around +0.12%. A little random noise is added to every move (±0.5%), and one move is at most +8% / −6%. Ups are a bit bigger than downs, so over time the price rises, and faster the more you deliver. Min. 1,000. Selling has the same fee as the ETF cash-out fee. The price doesn't move while the game is closed.",
-  "Una naviera que vive de <b>tus entregas logísticas</b>. Cada 10 segundos se mueve el precio de la acción: compara los contratos que tus camiones, petroleros y aviones han entregado en los <b>últimos 20 segundos</b> con los 20 segundos anteriores. Más entregas que antes: el precio sube (+1,1% por cada contrato de más). Menos: baja (−0,9% por cada uno que falte). El mismo número: un pequeño movimiento de alrededor de +0,12%. A cada movimiento se le suma un poco de azar (±0,5%), y un movimiento es como mucho de +8% / −6%. Las subidas son algo mayores que las bajadas, así que con el tiempo el precio sube, y más rápido cuanto más entregas. Mín. 1.000. Vender tiene la misma comisión que la retirada del ETF. El precio no se mueve con el juego cerrado.");
+H("A shipping company that lives on <b>your logistics deliveries</b>. Every 10 seconds the share price moves: it compares the contracts your trucks, tankers and planes delivered in the <b>last 20 seconds</b> with the 20 seconds before. More deliveries than before: the price jumps up (+1% for every extra contract). Fewer: it drops (−1% for every missing one). The same number: a small move around +0.1%. A little random noise is added to every move (±0.5%), and one move is at most +8% / −6%. Over time the price rises, about +35% an hour on average; a bigger fleet makes bigger swings to time. Min. 1,000. Selling has the same fee as the ETF cash-out fee. The price doesn't move while the game is closed.",
+  "Una naviera que vive de <b>tus entregas logísticas</b>. Cada 10 segundos se mueve el precio de la acción: compara los contratos que tus camiones, petroleros y aviones han entregado en los <b>últimos 20 segundos</b> con los 20 segundos anteriores. Más entregas que antes: el precio sube (+1% por cada contrato de más). Menos: baja (−1% por cada uno que falte). El mismo número: un pequeño movimiento de alrededor de +0,1%. A cada movimiento se le suma un poco de azar (±0,5%), y un movimiento es como mucho de +8% / −6%. Con el tiempo el precio sube, unos +35% por hora de media; una flota más grande da oscilaciones más grandes que aprovechar. Mín. 1.000. Vender tiene la misma comisión que la retirada del ETF. El precio no se mueve con el juego cerrado.");
 
 Object.assign(ES, { "Unlocks with 🚢 Logistics.": "Se desbloquea con 🚢 Logística." });
 H("📡 <b>Live trading</b>: <b>⏳ limit orders</b> (open a Long when the price drops to your price, or a Short when it rises to it) and <b>🎯 take profit / 🛑 stop loss</b> on every position.",
@@ -3060,6 +3060,27 @@ H("🎰 The casino now matches the other pages: one slim bar (level, money, Hot 
   "🎰 El casino ya se parece a las demás páginas: una barra fina (nivel, dinero, mesas calientes, reembolso, ganancias totales y fichas gratis) sustituye a las cuatro tarjetas grandes en el vestíbulo y en el casino online. Toca las fichas gratis para ver sus temporizadores de recarga.");
 rx(String.raw`in ([\d:]+)`, "en $1");
 rx(String.raw`· ([\d:]+)`, "· $1");
+// ⚖️ balance update (businesses, rent, ETF, GFC, Broker ETF cap, Science gate)
+rx(String.raw`Income ×([\d.]+)`, (m, a) => `Ingresos ×${a.replace(".", ",")}`);
+rx(String.raw`Income ×([\d.]+) · ×([\d.]+) at (\d+) owned`, (m, a, b, n) => `Ingresos ×${a.replace(".", ",")} · ×${b.replace(".", ",")} con ${n} en propiedad`);
+rx(String.raw`(.*) · 🚀 ×2, \+0\.5 every 2 owned`, (m, a) => `${es(a)} · 🚀 ×2, +0,5 cada 2 en propiedad`);
+rx(String.raw`(.*) · 🚀 ×2`, (m, a) => `${es(a)} · 🚀 ×2`);
+rx(String.raw`Auto cash-out: \+(${NUM}), and (${NUM}) invested again\.`, "Retirada automática: +$1, y $2 invertidos de nuevo.");
+rx(String.raw`Broker ETF hit (${NUM}): cashed out and bought back in with (${NUM})\.`, "El ETF del bróker llegó a $1: retirado y reinvertido con $2.");
+rx(String.raw`At the (${NUM}) cap: it won't grow more\. Cash out to start again\.`, "En el tope de $1: no crecerá más. Retíralo para empezar de nuevo.");
+Object.assign(ES, { "Auto cash-out at 10 gcoin, then invest 10,000,000 again": "Retirada automática a 10 gcoin, y volver a invertir 10.000.000" });
+H("⚖️ Balance update: businesses matter for longer. 🚘 Car Salons earn <b>×2</b>. 🎰 Casinos and 🏨 Hotels earn <b>×2</b>, and <b>+0.5 more for every 2 you own</b> (2 owned ×2.5, 4 owned ×3 … 10 owned ×4.5).",
+  "⚖️ Ajuste de equilibrio: los negocios importan durante más tiempo. Los 🚘 concesionarios ganan <b>×2</b>. Los 🎰 casinos y 🏨 hoteles ganan <b>×2</b>, y <b>+0,5 más por cada 2 que tengas</b> (con 2 ×2,5, con 4 ×3 … con 10 ×4,5).");
+H("🏠 Real estate now pays <b>0.6% rent every 60 seconds</b> (was 1.2% every 45 seconds), about +36% an hour.",
+  "🏠 Los inmuebles pagan ahora <b>un 0,6% de alquiler cada 60 segundos</b> (antes 1,2% cada 45 segundos), unos +36% por hora.");
+H("📈 Stock market ETF: the small up move is now +1.2% (was +1.5%), about <b>+25% an hour</b> on average. It still swings a lot in the short term, so good timing can beat that.",
+  "📈 ETF de bolsa: la subida pequeña es ahora +1,2% (antes +1,5%), unos <b>+25% por hora</b> de media. Sigue moviéndose mucho a corto plazo, así que con buen ojo puedes ganar más.");
+H("🚚 Global Freight Co. shares rise about <b>+35% an hour</b> on average: ups and downs are now the same size (±1% per contract) with a small steady drift.",
+  "🚚 Las acciones de Global Freight Co. suben unos <b>+35% por hora</b> de media: las subidas y bajadas son ahora del mismo tamaño (±1% por contrato) con una pequeña subida constante.");
+H("💼 Broker ETF now grows up to <b>10 gcoin</b> at most. New <b>🔁 Auto cash-out</b>: at the cap it cashes out for you and invests 10,000,000 again.",
+  "💼 El ETF del bróker crece ahora hasta <b>10 gcoin</b> como máximo. Nuevo <b>🔁 Retirada automática</b>: al llegar al tope lo retira por ti y vuelve a invertir 10.000.000.");
+H("🔬 Science opens earlier: it now needs <b>Logistics 30, Investor 30 and Gambler 20</b> (was 50 / 50 / 25).",
+  "🔬 La ciencia se abre antes: ahora pide <b>Logística 30, Inversor 30 y Jugador 20</b> (antes 50 / 50 / 25).");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -3763,6 +3784,21 @@ function activeTrait(w) {
   return w.trait === "copycat" ? (w.copied || "normal") : w.trait;
 }
 
+// 🚀 Business income boosts: Car Salon ×2; Casino and Hotel ×2, and +0.5 for every 2 you own (2 → ×2.5, 4 → ×3 … 10 → ×4.5)
+var BIZ_BOOST = { salon: { base: 2 }, casino: { base: 2, step: 0.5 }, hotel: { base: 2, step: 0.5 } };
+function bizBoost(typeId, owned) {
+  const b = BIZ_BOOST[typeId]; if (!b) return 1;
+  if (owned === undefined) owned = ownedOf(typeId);
+  return b.base + (b.step || 0) * Math.floor(owned / 2);
+}
+function bizBoostLine(typeId) {
+  const b = BIZ_BOOST[typeId]; if (!b) return "";
+  const owned = ownedOf(typeId), max = (BUSINESS_TYPES.find(t => t.id === typeId) || {}).maxOwned || 0;
+  const nextAt = (Math.floor(owned / 2) + 1) * 2;
+  const next = b.step && nextAt <= max ? ` · ×${bizBoost(typeId, nextAt)} at ${nextAt} owned` : "";
+  return `<div class="muted bizBoost">🚀 Income ×${bizBoost(typeId, Math.max(owned, 1))}${next}</div>`;
+}
+
 function runCompany(company) {
   const result = { total: 0, perWorker: [], status: [], flash: "" };
   const workers = company.workers;
@@ -3909,6 +3945,9 @@ function runCompany(company) {
       .reduce((a, c) => a + c.workers.filter(w => activeTrait(w) === "promoter").length, 0);
     total *= 1 + 0.02 * promoters;
   }
+
+  // 🚀 income boost: Car Salon ×2; Casino and Hotel ×2, +0.5 for every 2 you own
+  total *= bizBoost(company.typeId);
 
   // ----- Accountant -----
   const acc = company.accountant;
@@ -4064,7 +4103,7 @@ function render() {
   };
 
   // ⭐ best value: the business you can buy now with the most worker income per coin
-  const bizValue = (t) => (t.minIncome + t.maxIncome) / 2 * (t.maxEmployees - (t.noStaff ? 0 : 2)) / businessPrice(t);
+  const bizValue = (t) => (t.minIncome + t.maxIncome) / 2 * bizBoost(t.id, ownedOf(t.id) + 1) * (t.maxEmployees - (t.noStaff ? 0 : 2)) / businessPrice(t);
   const buyable = BUSINESS_TYPES.filter(t => { const o = ownedOf(t.id); return o < t.maxOwned && o < allowedToOwn(t); });
   const best = buyable.length > 1 ? buyable.reduce((a, b) => bizValue(b) > bizValue(a) ? b : a) : null;
   // Businesses grouped by type: group header, your companies, then the buy card
@@ -4084,6 +4123,7 @@ function render() {
           </span>
         </div>
         <div class="muted">${owned} ${owned === 1 ? "business" : "businesses"} · ${workers} / ${mine.reduce((a, x) => a + maxWorkers(x.c), 0)} workers</div>
+        ${bizBoostLine(t.id)}
       </div>`;
       if (!collapsed) { html += `<div class="bizUnits">`; mine.forEach(x => { html += companyCard(x.c, x.ci); }); html += `</div>`; }
     }
@@ -4105,6 +4145,7 @@ function render() {
         <div><h3>${bizIco(t.id)}${t.name}</h3>
           <div class="muted">${t.noStaff ? `${t.maxEmployees} workers · no accountant or HR` : `Up to ${t.maxEmployees} employees (incl. accountant &amp; HR)`} · workers earn ${t.minIncome}–${t.maxIncome} / sec</div>
           ${t.perk ? `<div class="muted">⭐ ${t.perk}</div>` : ""}
+          ${owned === 0 ? bizBoostLine(t.id) : ""}
           <div class="muted">Owned: ${owned} / ${t.maxOwned}</div></div>
         <span class="buyBtns"><button class="btn" data-action="buy" data-type="${t.id}" data-cost="${businessPrice(t)}" data-buylbl="Buy ${fmt(businessPrice(t))}">Buy ${fmt(businessPrice(t))}</button>
           ${maxN.n > 1 ? `<button class="btn ghost small" data-action="buyMax" data-type="${t.id}">Max ×${maxN.n} · ${fmt(maxN.cost)}</button>` : ""}</span>
@@ -5589,8 +5630,8 @@ __eocLoaded = 9;
    ===================================================================== */
 var RE_MIN = 50000;
 var RE_LOCK = 1200;           // 20 minutes locked after buying
-var RE_RENT_EVERY = 45;       // rent every 45 seconds...
-var RE_RENT_RATE = 0.012;     // ...of 1.2% of the property's value (about +80% per hour after crashes)
+var RE_RENT_EVERY = 60;       // rent every 60 seconds...
+var RE_RENT_RATE = 0.006;     // ...of 0.6% of the property's value (about +36% per hour)
 var RE_CRASH_CHANCE = 1 / 21600;  // about one crash every 6 hours
 var RE_CRASH_LOSS = 0.70;     // a crash wipes out 70% of every property's value
 
@@ -5838,6 +5879,23 @@ if (!inv.etfPrices)  inv.etfPrices  = [100];
 if (!inv.petfPrices) inv.petfPrices = [100];
 var hasBroker = () => state.companies.some(c => c.typeId === "broker");
 var PETF_MAX = 10000000;   // you can put at most 10M into the Broker ETF
+var PETF_CAP = 10 * GCOIN; // ...and it grows up to 10 gcoin, no further
+if (typeof inv.petfAuto !== "boolean") inv.petfAuto = false;   // 🔁 auto cash-out at the cap + buy back in with 10M
+
+// Broker ETF at its cap: cash out everything, and with auto on, invest 10M again right away
+function petfCapCheck() {
+  if (inv.petf < PETF_CAP) return;
+  inv.petf = PETF_CAP;
+  if (!inv.petfAuto) return;
+  const amount = inv.petf;
+  state.money += amount;
+  investRecord("petf", 0, amount);
+  state.money -= PETF_MAX;
+  inv.petf = PETF_MAX; inv.petfInvested = PETF_MAX;
+  investRecord("petf", PETF_MAX, 0);
+  investMessage(ivIco("petf") + "🔁 Auto cash-out: +" + fmt(amount) + ", and " + fmt(PETF_MAX) + " invested again.", true, "petf");
+  showNotice("🔁 Broker ETF hit " + fmt(PETF_CAP) + ": cashed out and bought back in with " + fmt(PETF_MAX) + ".");
+}
 
 $("petfBuy").addEventListener("click", () => {
   if (isPaused() || !hasBroker()) return;
@@ -5855,6 +5913,8 @@ $("petfBuy").addEventListener("click", () => {
   investMessage(ivIco("petf") + "Invested " + fmt(amount) + " in the Broker ETF.", true, "petf");
   updateCounter(); updateInvestLive(); save();
 });
+
+$("petfAuto").addEventListener("change", (e) => { inv.petfAuto = e.target.checked; petfCapCheck(); updateCounter(); updateInvestLive(); save(); });
 
 $("petfSell").addEventListener("click", () => {
   if (isPaused() || inv.petf <= 0) return;
@@ -5971,7 +6031,7 @@ function etfRoll() {
   const r = Math.random();
   if (r < 0.10) return -0.04;
   if (r < 0.20) return 0.04;
-  return Math.random() < 0.5 ? 0.015 : -0.01;
+  return Math.random() < 0.5 ? 0.012 : -0.01;   // simulated: about +25% an hour on average, with big short swings
 }
 
 /* ----- Runs every second from the game loop. Returns rent paid (taxable). ----- */
@@ -6033,7 +6093,8 @@ function investTick() {
     inv.petfTimer--;
     if (inv.petfTimer <= 0) {
       const move = petfRoll();
-      inv.petf *= 1 + move;
+      inv.petf = Math.min(PETF_CAP, inv.petf * (1 + move));
+      petfCapCheck();
       inv.petfHistory = [move, ...inv.petfHistory].slice(0, 15);
       inv.petfPrices = inv.petfPrices.concat(inv.petfPrices[inv.petfPrices.length - 1] * (1 + move)).slice(-CHART_POINTS - 1);
       inv.petfTimer = ETF_EVERY;
@@ -6157,6 +6218,8 @@ function updateInvestLive() {
   $("petfTimer").textContent = inv.petfTimer + "s";
   $("petfBuyRow").hidden = inv.petf > 0;
   $("petfSellRow").hidden = inv.petf <= 0;
+  $("petfAuto").checked = inv.petfAuto;
+  $("petfCapNote").textContent = inv.petf >= PETF_CAP ? "🔝 At the " + fmt(PETF_CAP) + " cap: it won't grow more. Cash out to start again." : "";
   const pl = inv.petfHistory[0];
   $("petfLast").textContent = pl === undefined ? "–" : (pl > 0 ? "+" : "") + Math.round(pl * 100) + "%";
   $("petfLast").className = "bigValue " + (pl > 0 ? "up" : pl < 0 ? "down" : "");
@@ -11347,7 +11410,7 @@ function wikiIncome() {
     let unlock = "Always";
     try { if (t.unlockText) unlock = t.unlockText(0).replace(/\s*\([^)]*\)/g, ""); } catch (e) {}
     return [`${t.emoji} <b>${t.name}</b>`, fmt(t.price) + (t.maxOwned > 1 ? `, then ×${t.priceMultiplier || 2} each` : ""), t.maxOwned,
-            t.noStaff ? `${t.maxEmployees} workers (no accountant or HR)` : `${t.maxEmployees - 2} workers + accountant + HR`, `${t.minIncome}–${t.maxIncome} / sec per worker`, unlock];
+            t.noStaff ? `${t.maxEmployees} workers (no accountant or HR)` : `${t.maxEmployees - 2} workers + accountant + HR`, `${t.minIncome}–${t.maxIncome} / sec per worker` + (BIZ_BOOST[t.id] ? (BIZ_BOOST[t.id].step ? ` · 🚀 ×2, +0.5 every 2 owned` : ` · 🚀 ×2`) : ""), unlock];
   });
   const traitRows = Object.entries(TRAITS).filter(([k]) => k !== "normal").map(([k, t]) =>
     [`${t.emoji} ${t.name}`, t.desc, t.onlyFor ? t.onlyFor.map(id => (BUSINESS_TYPES.find(b => b.id === id) || {}).name).join(", ") : "All", k === "legend" ? "1%" : pctx(t.chance)]);
@@ -12943,7 +13006,7 @@ if (state.art.unlocked) { paintArt($("artRef").getContext("2d"), state.art.tier,
 // ===== js/19-science.js =====
 __eocLoaded = 26;
 /* =====================================================================
-   🔬 SCIENCE (Income tab → Science). Unlocks at Logistics 50, Investor 50 and Gambler 25.
+   🔬 SCIENCE (Income tab → Science). Unlocks at Logistics 30, Investor 30 and Gambler 20.
    🎓 University (100 scoin): 1 scientist every 2 min, up to 50. Costs 5 / sec per empty scientist place
       (starts at −250 / sec); with all 50 scientists it earns +500 / sec.
    🧪 Research lab (500 scoin + 20 scientists from the University): every second a 1 in 7,200 chance of a scientific breakthrough,
@@ -12956,7 +13019,7 @@ __eocLoaded = 26;
       cargo plane contracts pay +5%, tanker contracts take 10% less time, broken trucks repair themselves for free after 5 seconds.
    A prestige resets Science (the Nobel Prize count stays in your statistics).
    ===================================================================== */
-var SCI_REQ = { logistics: 50, investor: 50, gambler: 25 };
+var SCI_REQ = { logistics: 30, investor: 30, gambler: 20 };
 var UNI_PRICE = 1e8, UNI_MAX = 50, UNI_EVERY = 120, UNI_COST_PER_EMPTY = 5, UNI_FULL_INCOME = 500;
 var LAB_PRICE = 5e8, LAB_ODDS = 7200, LAB_REWARD = 1e9;
 var SPACE_PRICE = 1e10, SPACE_NEED = 2, SPACE_EVERY = 1200, SPACE_MIN = 2000, SPACE_MAX = 5000;
@@ -13793,6 +13856,14 @@ addEventListener("resize", fitBrand); fitBrand();
 
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
+  { date: "27 November 2026", title: "Empire of Coins", items: [
+    "⚖️ Balance update: businesses matter for longer. 🚘 Car Salons earn <b>×2</b>. 🎰 Casinos and 🏨 Hotels earn <b>×2</b>, and <b>+0.5 more for every 2 you own</b> (2 owned ×2.5, 4 owned ×3 … 10 owned ×4.5).",
+    "🏠 Real estate now pays <b>0.6% rent every 60 seconds</b> (was 1.2% every 45 seconds), about +36% an hour.",
+    "📈 Stock market ETF: the small up move is now +1.2% (was +1.5%), about <b>+25% an hour</b> on average. It still swings a lot in the short term, so good timing can beat that.",
+    "🚚 Global Freight Co. shares rise about <b>+35% an hour</b> on average: ups and downs are now the same size (±1% per contract) with a small steady drift.",
+    "💼 Broker ETF now grows up to <b>10 gcoin</b> at most. New <b>🔁 Auto cash-out</b>: at the cap it cashes out for you and invests 10,000,000 again.",
+    "🔬 Science opens earlier: it now needs <b>Logistics 30, Investor 30 and Gambler 20</b> (was 50 / 50 / 25).",
+  ] },
   { date: "26 November 2026", title: "Empire of Coins", items: [
     "🎰 The casino now matches the other pages: one slim bar (level, money, Hot Tables, cashback, all-time earnings and free chips) replaces the four big cards in the lobby and the Online casino. Tap the free chips to open their refill timers.",
     "🗂️ Achievements: on big screens the categories are now a list in the left menu with a progress ring each; on phones they are one row you can swipe.",
@@ -16095,15 +16166,15 @@ __eocLoaded = 36;
 /* =====================================================================
    🚚 GLOBAL FREIGHT CO. SHARES (📈 Investing): a share price that follows your logistics deliveries.
    Every 10 game seconds: deliveries in the last 20 seconds (n) vs the 20 seconds before (m).
-     move = +0.12% + 1.1% for every extra delivery (n > m) or −0.9% for every missing one (n < m) + noise (±0.5%),
+     move = +0.095% + 1% for every extra delivery (n > m) or −1% for every missing one (n < m) + noise (±0.5%),
      at most +8% / −6% per move
-   More deliveries than before → up, fewer → down; a bigger fleet makes bigger swings. Ups are a bit bigger than downs,
-   so over time the price rises (simulated: about +54% an hour with no fleet, +94% with 1.5 deliveries a minute).
+   More deliveries than before → up, fewer → down; a bigger fleet makes bigger swings. A small steady drift
+   makes the price rise over time (simulated: about +35% an hour).
    Your shares are a value that moves with the price (like the ETF); selling pays the ETF cash-out fee.
    The price doesn't move while the game is closed (offline time runs no market moves).
    ===================================================================== */
 var GFC_EVERY = 10, GFC_WINDOW = 20, GFC_MAX_UP = 0.08, GFC_MAX_DOWN = 0.06;
-var GFC_DRIFT = 0.0012, GFC_UP = 0.011, GFC_DOWN = 0.009;
+var GFC_DRIFT = 0.00095, GFC_UP = 0.01, GFC_DOWN = 0.01;   // simulated: about +35% an hour (a bit less with a very busy fleet, but bigger swings)
 if (typeof inv.gfc !== "number") { inv.gfc = 0; inv.gfcInvested = 0; }
 if (!Array.isArray(inv.gfcPrices)) inv.gfcPrices = [100];
 if (!Array.isArray(inv.gfcHistory)) inv.gfcHistory = [];

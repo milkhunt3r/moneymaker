@@ -2,15 +2,15 @@
 /* =====================================================================
    🚚 GLOBAL FREIGHT CO. SHARES (📈 Investing): a share price that follows your logistics deliveries.
    Every 10 game seconds: deliveries in the last 20 seconds (n) vs the 20 seconds before (m).
-     move = +0.12% + 1.1% for every extra delivery (n > m) or −0.9% for every missing one (n < m) + noise (±0.5%),
+     move = +0.095% + 1% for every extra delivery (n > m) or −1% for every missing one (n < m) + noise (±0.5%),
      at most +8% / −6% per move
-   More deliveries than before → up, fewer → down; a bigger fleet makes bigger swings. Ups are a bit bigger than downs,
-   so over time the price rises (simulated: about +54% an hour with no fleet, +94% with 1.5 deliveries a minute).
+   More deliveries than before → up, fewer → down; a bigger fleet makes bigger swings. A small steady drift
+   makes the price rise over time (simulated: about +35% an hour).
    Your shares are a value that moves with the price (like the ETF); selling pays the ETF cash-out fee.
    The price doesn't move while the game is closed (offline time runs no market moves).
    ===================================================================== */
 const GFC_EVERY = 10, GFC_WINDOW = 20, GFC_MAX_UP = 0.08, GFC_MAX_DOWN = 0.06;
-const GFC_DRIFT = 0.0012, GFC_UP = 0.011, GFC_DOWN = 0.009;
+const GFC_DRIFT = 0.00095, GFC_UP = 0.01, GFC_DOWN = 0.01;   // simulated: about +35% an hour (a bit less with a very busy fleet, but bigger swings)
 if (typeof inv.gfc !== "number") { inv.gfc = 0; inv.gfcInvested = 0; }
 if (!Array.isArray(inv.gfcPrices)) inv.gfcPrices = [100];
 if (!Array.isArray(inv.gfcHistory)) inv.gfcHistory = [];

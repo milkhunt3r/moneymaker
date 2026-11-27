@@ -137,8 +137,8 @@ Object.assign(ES, {
   "Logistics level 20; max 1": "Nivel de logística 20; máx. 1",
   "Choose 1 agent upgrade (fee 1%, best contract, or 3-second picks); the other two cost 1 scoin each": "Elige 1 mejora de agentes (comisión del 1%, mejor contrato o elección en 3 segundos); las otras dos cuestan 1 scoin cada una",
   "When all 10 slots are filled, you can fire any attorney and choose a replacement from 3 offers for 1 scoin.": "Cuando las 10 plazas están ocupadas, puedes despedir a cualquier abogado y elegir un sustituto entre 3 ofertas por 1 scoin.",
-  "The 💰 Income tab has three pages: 🏢 Businesses, ⭐ Special and 🔬 Science. Science unlocks at Logistics level 50, Investor level 50 and Gambler level 25.":
-    "La pestaña 💰 Ingresos tiene tres páginas: 🏢 Negocios, ⭐ Especiales y 🔬 Ciencia. Ciencia se desbloquea con nivel de logística 50, nivel de inversor 50 y nivel de jugador 25.",
+  "The 💰 Income tab has three pages: 🏢 Businesses, ⭐ Special and 🔬 Science. Science unlocks at Logistics level 30, Investor level 30 and Gambler level 20.":
+    "La pestaña 💰 Ingresos tiene tres páginas: 🏢 Negocios, ⭐ Especiales y 🔬 Ciencia. Ciencia se desbloquea con nivel de logística 30, nivel de inversor 30 y nivel de jugador 20.",
   "Science unlocked": "Ciencia desbloqueada",
   "1 scientist every 2 min, up to 50. Costs 5 / sec per empty place (−250 / sec at first); full: +500 / sec": "1 científico cada 2 min, hasta 50. Cuesta 5 / s por plaza vacía (−250 / s al principio); llena: +500 / s",
   "Every second a 1 in 7,200 chance of a breakthrough (guaranteed after 2 hours): a Nobel Prize and 1000 scoin. The game pauses until you accept it. Offline: at most 1":
@@ -423,8 +423,8 @@ rx(String.raw`(\d+) s before: (\d+)`, "$1 s antes: $2");
 rx(String.raw`Bought (${NUM}) of Global Freight Co\. shares\.`, "Has comprado $1 en acciones de Global Freight Co.");
 rx(String.raw`Sold (${NUM}) of shares \(fee (${NUM})\): \+(${NUM}) to your money\.`, "Has vendido $1 en acciones (comisión $2): +$3 a tu dinero.");
 rx(String.raw`Shares need at least (${NUM})\.`, "Las acciones necesitan al menos $1.");
-H("A shipping company that lives on <b>your logistics deliveries</b>. Every 10 seconds the share price moves: it compares the contracts your trucks, tankers and planes delivered in the <b>last 20 seconds</b> with the 20 seconds before. More deliveries than before: the price jumps up (+1.1% for every extra contract). Fewer: it drops (−0.9% for every missing one). The same number: a small move around +0.12%. A little random noise is added to every move (±0.5%), and one move is at most +8% / −6%. Ups are a bit bigger than downs, so over time the price rises, and faster the more you deliver. Min. 1,000. Selling has the same fee as the ETF cash-out fee. The price doesn't move while the game is closed.",
-  "Una naviera que vive de <b>tus entregas logísticas</b>. Cada 10 segundos se mueve el precio de la acción: compara los contratos que tus camiones, petroleros y aviones han entregado en los <b>últimos 20 segundos</b> con los 20 segundos anteriores. Más entregas que antes: el precio sube (+1,1% por cada contrato de más). Menos: baja (−0,9% por cada uno que falte). El mismo número: un pequeño movimiento de alrededor de +0,12%. A cada movimiento se le suma un poco de azar (±0,5%), y un movimiento es como mucho de +8% / −6%. Las subidas son algo mayores que las bajadas, así que con el tiempo el precio sube, y más rápido cuanto más entregas. Mín. 1.000. Vender tiene la misma comisión que la retirada del ETF. El precio no se mueve con el juego cerrado.");
+H("A shipping company that lives on <b>your logistics deliveries</b>. Every 10 seconds the share price moves: it compares the contracts your trucks, tankers and planes delivered in the <b>last 20 seconds</b> with the 20 seconds before. More deliveries than before: the price jumps up (+1% for every extra contract). Fewer: it drops (−1% for every missing one). The same number: a small move around +0.1%. A little random noise is added to every move (±0.5%), and one move is at most +8% / −6%. Over time the price rises, about +35% an hour on average; a bigger fleet makes bigger swings to time. Min. 1,000. Selling has the same fee as the ETF cash-out fee. The price doesn't move while the game is closed.",
+  "Una naviera que vive de <b>tus entregas logísticas</b>. Cada 10 segundos se mueve el precio de la acción: compara los contratos que tus camiones, petroleros y aviones han entregado en los <b>últimos 20 segundos</b> con los 20 segundos anteriores. Más entregas que antes: el precio sube (+1% por cada contrato de más). Menos: baja (−1% por cada uno que falte). El mismo número: un pequeño movimiento de alrededor de +0,1%. A cada movimiento se le suma un poco de azar (±0,5%), y un movimiento es como mucho de +8% / −6%. Con el tiempo el precio sube, unos +35% por hora de media; una flota más grande da oscilaciones más grandes que aprovechar. Mín. 1.000. Vender tiene la misma comisión que la retirada del ETF. El precio no se mueve con el juego cerrado.");
 
 Object.assign(ES, { "Unlocks with 🚢 Logistics.": "Se desbloquea con 🚢 Logística." });
 H("📡 <b>Live trading</b>: <b>⏳ limit orders</b> (open a Long when the price drops to your price, or a Short when it rises to it) and <b>🎯 take profit / 🛑 stop loss</b> on every position.",
@@ -1686,6 +1686,27 @@ H("🎰 The casino now matches the other pages: one slim bar (level, money, Hot 
   "🎰 El casino ya se parece a las demás páginas: una barra fina (nivel, dinero, mesas calientes, reembolso, ganancias totales y fichas gratis) sustituye a las cuatro tarjetas grandes en el vestíbulo y en el casino online. Toca las fichas gratis para ver sus temporizadores de recarga.");
 rx(String.raw`in ([\d:]+)`, "en $1");
 rx(String.raw`· ([\d:]+)`, "· $1");
+// ⚖️ balance update (businesses, rent, ETF, GFC, Broker ETF cap, Science gate)
+rx(String.raw`Income ×([\d.]+)`, (m, a) => `Ingresos ×${a.replace(".", ",")}`);
+rx(String.raw`Income ×([\d.]+) · ×([\d.]+) at (\d+) owned`, (m, a, b, n) => `Ingresos ×${a.replace(".", ",")} · ×${b.replace(".", ",")} con ${n} en propiedad`);
+rx(String.raw`(.*) · 🚀 ×2, \+0\.5 every 2 owned`, (m, a) => `${es(a)} · 🚀 ×2, +0,5 cada 2 en propiedad`);
+rx(String.raw`(.*) · 🚀 ×2`, (m, a) => `${es(a)} · 🚀 ×2`);
+rx(String.raw`Auto cash-out: \+(${NUM}), and (${NUM}) invested again\.`, "Retirada automática: +$1, y $2 invertidos de nuevo.");
+rx(String.raw`Broker ETF hit (${NUM}): cashed out and bought back in with (${NUM})\.`, "El ETF del bróker llegó a $1: retirado y reinvertido con $2.");
+rx(String.raw`At the (${NUM}) cap: it won't grow more\. Cash out to start again\.`, "En el tope de $1: no crecerá más. Retíralo para empezar de nuevo.");
+Object.assign(ES, { "Auto cash-out at 10 gcoin, then invest 10,000,000 again": "Retirada automática a 10 gcoin, y volver a invertir 10.000.000" });
+H("⚖️ Balance update: businesses matter for longer. 🚘 Car Salons earn <b>×2</b>. 🎰 Casinos and 🏨 Hotels earn <b>×2</b>, and <b>+0.5 more for every 2 you own</b> (2 owned ×2.5, 4 owned ×3 … 10 owned ×4.5).",
+  "⚖️ Ajuste de equilibrio: los negocios importan durante más tiempo. Los 🚘 concesionarios ganan <b>×2</b>. Los 🎰 casinos y 🏨 hoteles ganan <b>×2</b>, y <b>+0,5 más por cada 2 que tengas</b> (con 2 ×2,5, con 4 ×3 … con 10 ×4,5).");
+H("🏠 Real estate now pays <b>0.6% rent every 60 seconds</b> (was 1.2% every 45 seconds), about +36% an hour.",
+  "🏠 Los inmuebles pagan ahora <b>un 0,6% de alquiler cada 60 segundos</b> (antes 1,2% cada 45 segundos), unos +36% por hora.");
+H("📈 Stock market ETF: the small up move is now +1.2% (was +1.5%), about <b>+25% an hour</b> on average. It still swings a lot in the short term, so good timing can beat that.",
+  "📈 ETF de bolsa: la subida pequeña es ahora +1,2% (antes +1,5%), unos <b>+25% por hora</b> de media. Sigue moviéndose mucho a corto plazo, así que con buen ojo puedes ganar más.");
+H("🚚 Global Freight Co. shares rise about <b>+35% an hour</b> on average: ups and downs are now the same size (±1% per contract) with a small steady drift.",
+  "🚚 Las acciones de Global Freight Co. suben unos <b>+35% por hora</b> de media: las subidas y bajadas son ahora del mismo tamaño (±1% por contrato) con una pequeña subida constante.");
+H("💼 Broker ETF now grows up to <b>10 gcoin</b> at most. New <b>🔁 Auto cash-out</b>: at the cap it cashes out for you and invests 10,000,000 again.",
+  "💼 El ETF del bróker crece ahora hasta <b>10 gcoin</b> como máximo. Nuevo <b>🔁 Retirada automática</b>: al llegar al tope lo retira por ti y vuelve a invertir 10.000.000.");
+H("🔬 Science opens earlier: it now needs <b>Logistics 30, Investor 30 and Gambler 20</b> (was 50 / 50 / 25).",
+  "🔬 La ciencia se abre antes: ahora pide <b>Logística 30, Inversor 30 y Jugador 20</b> (antes 50 / 50 / 25).");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
