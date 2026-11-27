@@ -1678,6 +1678,14 @@ H("🎁 Rewards are easier to use: the page shows what you're wearing now, your 
   "🎁 Las recompensas son más cómodas: la página muestra lo que llevas ahora, tus colecciones desbloqueadas aparecen primero con botones <b>👕 Llevar</b>, y las bloqueadas son filas cortas ordenadas por lo cerca que estás (toca una para ver sus objetos).");
 H("🗂️ Achievements: on big screens the categories are now a list in the left menu with a progress ring each; on phones they are one row you can swipe.",
   "🗂️ Logros: en pantallas grandes, las categorías son ahora una lista en el menú de la izquierda con un anillo de progreso cada una; en el móvil son una fila que puedes deslizar.");
+// 🎰 casino slim bar in the lobby
+Object.assign(ES, { "Cashback on lost bets": "Reembolso de apuestas perdidas", "Free bet chips: refill over time": "Fichas de apuesta gratis: se recargan con el tiempo", "All-time earnings": "Ganancias totales" });
+Object.assign(ES, { "free chips ▾": "fichas gratis ▾", "free chips ▴": "fichas gratis ▴" });
+rx(String.raw`All-time earnings · total bet (${NUM})`, "Ganancias totales · apostado en total $1");
+H("🎰 The casino now matches the other pages: one slim bar (level, money, Hot Tables, cashback, all-time earnings and free chips) replaces the four big cards in the lobby and the Online casino. Tap the free chips to open their refill timers.",
+  "🎰 El casino ya se parece a las demás páginas: una barra fina (nivel, dinero, mesas calientes, reembolso, ganancias totales y fichas gratis) sustituye a las cuatro tarjetas grandes en el vestíbulo y en el casino online. Toca las fichas gratis para ver sus temporizadores de recarga.");
+rx(String.raw`in ([\d:]+)`, "en $1");
+rx(String.raw`· ([\d:]+)`, "· $1");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

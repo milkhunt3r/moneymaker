@@ -3052,6 +3052,14 @@ H("🎁 Rewards are easier to use: the page shows what you're wearing now, your 
   "🎁 Las recompensas son más cómodas: la página muestra lo que llevas ahora, tus colecciones desbloqueadas aparecen primero con botones <b>👕 Llevar</b>, y las bloqueadas son filas cortas ordenadas por lo cerca que estás (toca una para ver sus objetos).");
 H("🗂️ Achievements: on big screens the categories are now a list in the left menu with a progress ring each; on phones they are one row you can swipe.",
   "🗂️ Logros: en pantallas grandes, las categorías son ahora una lista en el menú de la izquierda con un anillo de progreso cada una; en el móvil son una fila que puedes deslizar.");
+// 🎰 casino slim bar in the lobby
+Object.assign(ES, { "Cashback on lost bets": "Reembolso de apuestas perdidas", "Free bet chips: refill over time": "Fichas de apuesta gratis: se recargan con el tiempo", "All-time earnings": "Ganancias totales" });
+Object.assign(ES, { "free chips ▾": "fichas gratis ▾", "free chips ▴": "fichas gratis ▴" });
+rx(String.raw`All-time earnings · total bet (${NUM})`, "Ganancias totales · apostado en total $1");
+H("🎰 The casino now matches the other pages: one slim bar (level, money, Hot Tables, cashback, all-time earnings and free chips) replaces the four big cards in the lobby and the Online casino. Tap the free chips to open their refill timers.",
+  "🎰 El casino ya se parece a las demás páginas: una barra fina (nivel, dinero, mesas calientes, reembolso, ganancias totales y fichas gratis) sustituye a las cuatro tarjetas grandes en el vestíbulo y en el casino online. Toca las fichas gratis para ver sus temporizadores de recarga.");
+rx(String.raw`in ([\d:]+)`, "en $1");
+rx(String.raw`· ([\d:]+)`, "· $1");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -5080,14 +5088,19 @@ function casHudHtml() {
   return `<button class="casHudLv" data-levels="gambler" title="Gambler level · ${info.max ? "max level" : `${fmtNum(info.into)} / ${fmtNum(info.need)} XP`}">${ico("ui-dice")}<span>Lv <b>${info.level}</b></span>
       <span class="casHudXp"><i style="width:${info.max ? 100 : 100 * info.into / info.need}%"></i></span></button>
     <span class="casHudMoney" title="Your money: you bet straight from it"><img class="coinSkinImg" src="assets/coin.webp" alt=""><b>${fmt(state.money)}</b></span>
-    <span class="casHudHot ${h.active ? "on" : ""} ${hotHere ? "here" : ""}" title="${h.active ? `Hot Tables: ${h.game.name} · +${hotBonus()} XP multiplier` : `Next hot game: ${h.next.name}`}">${ico("ui-hot")}${h.active ? `<b>${h.game.name}</b>&nbsp;· ${mm}` : `<span>${h.next.name}</span>&nbsp;in ${mm}`}</span>
-    <span class="casHudXpM" title="XP multiplier at this table">✨ ×${xpMult()}</span>
-    ${free ? `<span class="casHudFree" title="Free bet chips you own">${ico("ui-freechip")}<b>${free}</b></span>` : ""}
+    <span class="casHudHot ${h.active ? "on" : ""} ${hotHere ? "here" : ""}" title="${h.active ? `Hot Tables: ${h.game.name} · +${hotBonus()} XP multiplier` : `Next hot game: ${h.next.name}`}">${ico("ui-hot")}${h.active ? `<b>${h.game.name}</b><span class="hotT">· ${mm}</span>` : `<span>${h.next.name}</span><span class="hotT">in ${mm}</span>`}</span>
+    ${currentGame ? `<span class="casHudXpM" title="XP multiplier at this table">✨ ×${xpMult()}</span>` : ""}
+    <span class="ivHold" title="Cashback on lost bets">↩️ <b>${pct(cashbackRate())}</b></span>
+    ${(() => { const st = state.casinoStats || { wagered: 0, returned: 0 }, n = st.returned - st.wagered;
+      return `<span class="ivHold" title="All-time earnings${st.wagered ? ` · total bet ${fmt(st.wagered)}` : ""}">${ico("ui-earnings")}<b class="${n > 0 ? "up" : n < 0 ? "down" : ""}">${n > 0 ? "+" : n < 0 ? "−" : ""}${fmt(Math.abs(n))}</b></span>`; })()}
+    ${currentGame ? (free ? `<span class="casHudFree" title="Free bet chips you own">${ico("ui-freechip")}<b>${free}</b></span>` : "")
+      : `<button class="casHudChips ${state.casChipsOpen ? "on" : ""}" data-caschips title="Free bet chips: refill over time">${ico("ui-freechip")}<b>${free}</b> free chips ${state.casChipsOpen ? "▴" : "▾"}</button>`}
     ${casFamOf(currentGame) ? `<span class="casHudTiers" title="Switch table">${casFamOf(currentGame).tables.map(id => { const L = casLock(id);
       return `<button class="${id === currentGame ? "on" : ""}" ${L ? "disabled" : `data-castier="${id}"`} title="${casTierName(id)}${CAS_RANGE[id] ? ` · ${fmt(CAS_RANGE[id][0])} – ${fmt(CAS_RANGE[id][1])}` : ""}">${L ? "🔒 " : ""}${casTierName(id) === "Classic" ? "Classic" : casTierName(id) === "High rollers" ? "High" : "Super"}</button>`; }).join("")}</span>` : ""}`;
 }
 function casHudUpdate() {
-  const el = $("casHud"); if (!el || $("casinoView").hidden || !currentGame) return;
+  const el = $("casHud"); if (!el || $("casinoView").hidden) return;
+  $("freeChipsCard").classList.toggle("casChipsShut", !state.casChipsOpen);
   const h = casHudHtml(); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; }
 }
 setInterval(casHudUpdate, 500);
@@ -5129,6 +5142,8 @@ $("casinoGame").addEventListener("click", (e) => {
 function casCanLeave() {
   return !roulette.spinning && !(bj && bj.phase !== "betting") && !(CLIMBS[currentGame] && climb.active) && !(PLINKO_TABLES[currentGame] && plinko.balls.length) && !(VP_TABLES[currentGame] && vp.phase !== "betting") && !(UTH_TABLES[currentGame] && uth.phase !== "betting") && !(typeof BAC_TABLES !== "undefined" && BAC_TABLES[currentGame] && bac.phase !== "betting") && !(typeof GC_TABLES !== "undefined" && GC_TABLES[currentGame] && gcBusy);
 }
+// 🪙 the free chips card opens from the slim bar (lobby)
+document.addEventListener("click", (e) => { if (!e.target.closest("[data-caschips]")) return; state.casChipsOpen = !state.casChipsOpen; casHudUpdate(); save(); });
 // 🎚️ table switch in the slim bar
 document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-castier]"); if (!b || b.disabled || isPaused()) return;
@@ -13779,6 +13794,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "🎰 The casino now matches the other pages: one slim bar (level, money, Hot Tables, cashback, all-time earnings and free chips) replaces the four big cards in the lobby and the Online casino. Tap the free chips to open their refill timers.",
     "🗂️ Achievements: on big screens the categories are now a list in the left menu with a progress ring each; on phones they are one row you can swipe.",
     "🎁 Rewards are easier to use: the page shows what you're wearing now, your unlocked collections come first with <b>👕 Wear</b> buttons, and locked collections are short rows sorted by how close you are (tap one to preview its items).",
     "🏆 Achievements are easier to browse: smaller cards (3 per row), finished categories fold into one line, and a new <b>⭐ Almost there</b> box shows the achievements you are closest to.",

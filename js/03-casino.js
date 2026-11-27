@@ -343,14 +343,19 @@ function casHudHtml() {
   return `<button class="casHudLv" data-levels="gambler" title="Gambler level · ${info.max ? "max level" : `${fmtNum(info.into)} / ${fmtNum(info.need)} XP`}">${ico("ui-dice")}<span>Lv <b>${info.level}</b></span>
       <span class="casHudXp"><i style="width:${info.max ? 100 : 100 * info.into / info.need}%"></i></span></button>
     <span class="casHudMoney" title="Your money: you bet straight from it"><img class="coinSkinImg" src="assets/coin.webp" alt=""><b>${fmt(state.money)}</b></span>
-    <span class="casHudHot ${h.active ? "on" : ""} ${hotHere ? "here" : ""}" title="${h.active ? `Hot Tables: ${h.game.name} · +${hotBonus()} XP multiplier` : `Next hot game: ${h.next.name}`}">${ico("ui-hot")}${h.active ? `<b>${h.game.name}</b>&nbsp;· ${mm}` : `<span>${h.next.name}</span>&nbsp;in ${mm}`}</span>
-    <span class="casHudXpM" title="XP multiplier at this table">✨ ×${xpMult()}</span>
-    ${free ? `<span class="casHudFree" title="Free bet chips you own">${ico("ui-freechip")}<b>${free}</b></span>` : ""}
+    <span class="casHudHot ${h.active ? "on" : ""} ${hotHere ? "here" : ""}" title="${h.active ? `Hot Tables: ${h.game.name} · +${hotBonus()} XP multiplier` : `Next hot game: ${h.next.name}`}">${ico("ui-hot")}${h.active ? `<b>${h.game.name}</b><span class="hotT">· ${mm}</span>` : `<span>${h.next.name}</span><span class="hotT">in ${mm}</span>`}</span>
+    ${currentGame ? `<span class="casHudXpM" title="XP multiplier at this table">✨ ×${xpMult()}</span>` : ""}
+    <span class="ivHold" title="Cashback on lost bets">↩️ <b>${pct(cashbackRate())}</b></span>
+    ${(() => { const st = state.casinoStats || { wagered: 0, returned: 0 }, n = st.returned - st.wagered;
+      return `<span class="ivHold" title="All-time earnings${st.wagered ? ` · total bet ${fmt(st.wagered)}` : ""}">${ico("ui-earnings")}<b class="${n > 0 ? "up" : n < 0 ? "down" : ""}">${n > 0 ? "+" : n < 0 ? "−" : ""}${fmt(Math.abs(n))}</b></span>`; })()}
+    ${currentGame ? (free ? `<span class="casHudFree" title="Free bet chips you own">${ico("ui-freechip")}<b>${free}</b></span>` : "")
+      : `<button class="casHudChips ${state.casChipsOpen ? "on" : ""}" data-caschips title="Free bet chips: refill over time">${ico("ui-freechip")}<b>${free}</b> free chips ${state.casChipsOpen ? "▴" : "▾"}</button>`}
     ${casFamOf(currentGame) ? `<span class="casHudTiers" title="Switch table">${casFamOf(currentGame).tables.map(id => { const L = casLock(id);
       return `<button class="${id === currentGame ? "on" : ""}" ${L ? "disabled" : `data-castier="${id}"`} title="${casTierName(id)}${CAS_RANGE[id] ? ` · ${fmt(CAS_RANGE[id][0])} – ${fmt(CAS_RANGE[id][1])}` : ""}">${L ? "🔒 " : ""}${casTierName(id) === "Classic" ? "Classic" : casTierName(id) === "High rollers" ? "High" : "Super"}</button>`; }).join("")}</span>` : ""}`;
 }
 function casHudUpdate() {
-  const el = $("casHud"); if (!el || $("casinoView").hidden || !currentGame) return;
+  const el = $("casHud"); if (!el || $("casinoView").hidden) return;
+  $("freeChipsCard").classList.toggle("casChipsShut", !state.casChipsOpen);
   const h = casHudHtml(); if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; }
 }
 setInterval(casHudUpdate, 500);
@@ -392,6 +397,8 @@ $("casinoGame").addEventListener("click", (e) => {
 function casCanLeave() {
   return !roulette.spinning && !(bj && bj.phase !== "betting") && !(CLIMBS[currentGame] && climb.active) && !(PLINKO_TABLES[currentGame] && plinko.balls.length) && !(VP_TABLES[currentGame] && vp.phase !== "betting") && !(UTH_TABLES[currentGame] && uth.phase !== "betting") && !(typeof BAC_TABLES !== "undefined" && BAC_TABLES[currentGame] && bac.phase !== "betting") && !(typeof GC_TABLES !== "undefined" && GC_TABLES[currentGame] && gcBusy);
 }
+// 🪙 the free chips card opens from the slim bar (lobby)
+document.addEventListener("click", (e) => { if (!e.target.closest("[data-caschips]")) return; state.casChipsOpen = !state.casChipsOpen; casHudUpdate(); save(); });
 // 🎚️ table switch in the slim bar
 document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-castier]"); if (!b || b.disabled || isPaused()) return;
