@@ -52,6 +52,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "🎁 Rewards are easier to use: the page shows what you're wearing now, your unlocked collections come first with <b>👕 Wear</b> buttons, and locked collections are short rows sorted by how close you are (tap one to preview its items).",
     "🏆 Achievements are easier to browse: smaller cards (3 per row), finished categories fold into one line, and a new <b>⭐ Almost there</b> box shows the achievements you are closest to.",
     "🗺️ The world map is smaller by default (⤢ Full map makes it full width again), its help text moved into an ℹ️ button, and on phones it starts folded.",
     "🌍 Earth logistics is tidier: one slim bar shows your level, money, vehicles on the road and contracts, and Trucks · Tankers · Planes tabs show one fleet at a time (with a <b>!</b> when vehicles wait or break down). The world map follows the tab you pick.",

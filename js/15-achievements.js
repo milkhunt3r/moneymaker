@@ -372,28 +372,36 @@ function grantRewards() {   // checked with the achievements; a reward, once ear
 // 🔎 filters: item type (coin / cards / background) and unlocked / locked
 const REWARD_TYPES = [["all", "All"], ["coin", "🪙 Coins"], ["cards", "🃏 Cards"], ["background", "🖼️ Backgrounds"]];
 const REWARD_STATES = [["all", "All"], ["got", "✅ Unlocked"], ["locked", "🔒 Locked"]];
+// 🎁 Rewards: what you're wearing, your unlocked collections, then locked ones as compact rows (closest first; tap to see the items)
+const REWARD_SLOTS = [["coin", "🪙 Coin"], ["cards", "🃏 Cards"], ["background", "🖼️ Background"]];
+const rwOpen = new Set();
 function renderRewards() {
-  const ty = state.rewardType || "all", st = state.rewardState || "all";
-  const chips = (list, cur, key) => list.map(([id, name]) => `<button class="achCat ${cur === id ? "active" : ""}" data-rw${key}="${id}">${name}</button>`).join("");
-  const cols = COLLECTIONS.filter(c => c.reward && !(c.hidden && c.hidden())).filter(col => {
-    const items = COSMETICS.filter(c => c.collection === col.id), got = items.every(c => state.cosmetics.owned[c.id]);
-    return (ty === "all" || items.some(c => c.slot === ty)) && (st === "all" || (st === "got") === got);
-  });
-  $("rewardList").innerHTML = `<div class="card"><h2 style="margin:0 0 4px">${ico("ui-rewards", "h")}Rewards</h2>
-      <div class="muted">Finish the achievements a collection needs to unlock it. Then turn its items on or off here any time.</div>
-      <div class="achCats rwFilters">${chips(REWARD_TYPES, ty, "t")}</div><div class="achCats rwFilters">${chips(REWARD_STATES, st, "s")}</div></div>` +
-    (cols.length ? "" : `<div class="card muted" style="text-align:center">Nothing matches these filters.</div>`) +
-    cols.map(col => {
-      const p = rewardProgress(col), all = COSMETICS.filter(c => c.collection === col.id), got = all.every(c => state.cosmetics.owned[c.id]);
-      const items = ty === "all" ? all : all.filter(c => c.slot === ty);
-      return `<div class="card rewardCard ${got ? "got" : ""}">
-        <div class="row"><h2 style="margin:0">${got ? "" : ico("lock", "lockS")}${colTitle(col)}</h2><span class="muted">${got ? "✅ Unlocked" : `${p.done} / ${p.total}`}</span></div>
-        <div class="muted">${col.reward.text}</div>
-        ${col.reward.ids && !got ? `<div class="rewardNeeds">${ACHIEVEMENTS.filter(x => col.reward.ids.includes(x.id)).map(x =>
-          `<span class="${state.achievements[x.id] ? "ok" : ""}">${state.achievements[x.id] ? "✅" : "⬜"} ${x.icon} ${x.name}</span>`).join("")}</div>` : ""}
-        ${got ? "" : `<div class="bar"><div style="width:${100 * p.done / Math.max(1, p.total)}%"></div></div>`}
-        <div class="cosmetics">${items.map(cosmeticCard).join("")}</div></div>`;
-    }).join("");
+  const ty = ["all", "coin", "cards", "background"].includes(state.rewardType) ? state.rewardType : "all";
+  const cols = COLLECTIONS.filter(c => c.reward && !(c.hidden && c.hidden()));
+  const itemsOf = (col) => COSMETICS.filter(c => c.collection === col.id && (ty === "all" || c.slot === ty));
+  const got = cols.filter(col => COSMETICS.filter(c => c.collection === col.id).every(c => state.cosmetics.owned[c.id]) && itemsOf(col).length);
+  const locked = cols.filter(col => !got.includes(col) && itemsOf(col).length)
+    .map(col => ({ col, p: rewardProgress(col) })).sort((a, b) => b.p.done / Math.max(1, b.p.total) - a.p.done / Math.max(1, a.p.total));
+  const wearing = REWARD_SLOTS.map(([slot, name]) => { const c = COSMETICS.find(x => x.slot === slot && state.cosmetics.on[x.id]);
+    return `<span class="rwWear"><small>${name}</small><b>${c ? c.name : "Classic"}</b></span>`; }).join("");
+  const filters = [["all", "All"], ...REWARD_TYPES.slice(1)].map(([id, n]) => `<button class="achCat ${ty === id ? "active" : ""}" data-rwt="${id}">${id === "all" ? "🎁 Collections" : n}</button>`).join("");
+  $("rewardList").innerHTML = `<div class="card"><div class="row" style="flex-wrap:wrap;gap:8px"><h2 style="margin:0">${ico("ui-rewards", "h")}Rewards</h2>
+      <span class="muted">${got.length} / ${cols.length} collections unlocked</span></div>
+      <div class="rwWearing"><span class="muted">Wearing now:</span>${wearing}</div>
+      <div class="achCats rwFilters">${filters}</div></div>` +
+    (got.length ? `<h3 class="rwHead">✅ Your collections</h3>` + got.map(col => `<div class="card rewardCard got">
+        <div class="row"><h2 style="margin:0">${colTitle(col)}</h2><span class="muted">${col.reward.text}</span></div>
+        <div class="cosmetics">${itemsOf(col).map(cosmeticCard).join("")}</div></div>`).join("") : "") +
+    (locked.length ? `<h3 class="rwHead">🔒 Still to unlock <span class="muted">· closest first</span></h3><div class="rwLocked">` + locked.map(({ col, p }) => {
+      const open = rwOpen.has(col.id), need = col.reward.ids ? ACHIEVEMENTS.filter(x => col.reward.ids.includes(x.id)) : null;
+      return `<div class="card rwRow ${open ? "open" : ""}">
+        <button class="rwRowHead" data-rwopen="${col.id}"><span class="rwRowName">${ico("lock", "lockS")}${colTitle(col)}</span>
+          <span class="rwRowBar"><span class="bar"><span style="width:${100 * p.done / Math.max(1, p.total)}%"></span></span><b>${p.done} / ${p.total}</b></span>
+          <span class="muted rwRowGo">${open ? "▴" : "▸"}</span></button>
+        <div class="muted rwRowText">${col.reward.text}</div>
+        ${need ? `<div class="rewardNeeds">${need.map(x => `<span class="${state.achievements[x.id] ? "ok" : ""}">${state.achievements[x.id] ? "✅" : "⬜"} ${x.icon} ${x.name}</span>`).join("")}</div>` : ""}
+        ${open ? `<div class="cosmetics">${itemsOf(col).map(cosmeticCard).join("")}</div>` : ""}</div>`; }).join("") + `</div>` : "") +
+    (got.length || locked.length ? "" : `<div class="card muted" style="text-align:center">Nothing matches this filter.</div>`);
 }
 function showAchPage(p) {
   state.achPage = p === "rewards" ? "rewards" : "list";

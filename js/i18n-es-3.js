@@ -1668,6 +1668,14 @@ rx(String.raw`(\d+) \/ (\d+) · Show ▸`, "$1 / $2 · Ver ▸");
 rx(String.raw`Unlocked (\d+\/\d+\/\d+)`, "Desbloqueado el $1");
 H("🏆 Achievements are easier to browse: smaller cards (3 per row), finished categories fold into one line, and a new <b>⭐ Almost there</b> box shows the achievements you are closest to.",
   "🏆 Los logros son más fáciles de ver: tarjetas más pequeñas (3 por fila), las categorías terminadas se pliegan en una línea, y un nuevo recuadro <b>⭐ Casi lo tienes</b> muestra los logros que tienes más cerca.");
+// 🎁 rewards layout
+Object.assign(ES, { "Wearing now:": "Llevas ahora:", "Wearing now": "Llevas ahora", "🪙 Coin": "🪙 Moneda", "🃏 Cards": "🃏 Cartas", "🖼️ Background": "🖼️ Fondo", "Coin": "Moneda", "Cards": "Cartas", "Background": "Fondo", "Classic": "Clásica",
+  "🎁 Collections": "🎁 Colecciones", "Collections": "Colecciones", "✅ Your collections": "✅ Tus colecciones", "Your collections": "Tus colecciones", "Still to unlock": "Por desbloquear", "closest first": "las más cercanas primero",
+  "👕 Wear": "👕 Llevar", "Wear": "Llevar", "✓ Wearing · take off": "✓ Puesto · quitar", "Wearing · take off": "Puesto · quitar", "Nothing matches this filter.": "Nada coincide con este filtro." });
+rx(String.raw`(\d+) \/ (\d+) collections unlocked`, "$1 / $2 colecciones desbloqueadas");
+hrx(String.raw`🔒 Still to unlock <span>· closest first<\/span>`, "🔒 Por desbloquear <span>· las más cercanas primero</span>");
+H("🎁 Rewards are easier to use: the page shows what you're wearing now, your unlocked collections come first with <b>👕 Wear</b> buttons, and locked collections are short rows sorted by how close you are (tap one to preview its items).",
+  "🎁 Las recompensas son más cómodas: la página muestra lo que llevas ahora, tus colecciones desbloqueadas aparecen primero con botones <b>👕 Llevar</b>, y las bloqueadas son filas cortas ordenadas por lo cerca que estás (toca una para ver sus objetos).");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

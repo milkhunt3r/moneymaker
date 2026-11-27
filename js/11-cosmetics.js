@@ -171,8 +171,7 @@ function applyCosmetics() {
 function cosmeticCard(c) {
     const owned = !!state.cosmetics.owned[c.id], on = !!state.cosmetics.on[c.id];
     const action = owned
-      ? `<span class="muted">${on ? "On" : "Off"}</span>
-         <button class="switch ${on ? "on" : ""}" data-cosmetic-toggle="${c.id}" aria-label="Turn ${c.name} ${on ? "off" : "on"}"></button>`
+      ? `<button class="btn ${on ? "ghost wearOn" : ""} small" data-cosmetic-toggle="${c.id}">${on ? "✓ Wearing · take off" : "👕 Wear"}</button>`
       : c.price === 0 ? `<span class="muted">🔒 Reward</span>`
       : `<span><b>${coins(c.price)}</b></span>
          <button class="btn" data-cosmetic-buy="${c.id}" data-cost="${c.price}" ${state.money < c.price ? "disabled" : ""}>Buy</button>`;
@@ -215,6 +214,8 @@ if ($("cosmetics")) $("cosmetics").addEventListener("click", (e) => {
 $("rewardList").addEventListener("click", (e) => {
   const f = e.target.closest("[data-rwt], [data-rws]");
   if (f) { if (f.dataset.rwt) state.rewardType = f.dataset.rwt; else state.rewardState = f.dataset.rws; save(); renderRewards(); return; }
+  const ro = e.target.closest("[data-rwopen]");
+  if (ro) { const k = ro.dataset.rwopen; rwOpen.has(k) ? rwOpen.delete(k) : rwOpen.add(k); renderRewards(); return; }
   const tog = e.target.closest("[data-cosmetic-toggle]");
   if (!tog) return;
   const id = tog.dataset.cosmeticToggle;

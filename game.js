@@ -3042,6 +3042,14 @@ rx(String.raw`(\d+) \/ (\d+) · Show ▸`, "$1 / $2 · Ver ▸");
 rx(String.raw`Unlocked (\d+\/\d+\/\d+)`, "Desbloqueado el $1");
 H("🏆 Achievements are easier to browse: smaller cards (3 per row), finished categories fold into one line, and a new <b>⭐ Almost there</b> box shows the achievements you are closest to.",
   "🏆 Los logros son más fáciles de ver: tarjetas más pequeñas (3 por fila), las categorías terminadas se pliegan en una línea, y un nuevo recuadro <b>⭐ Casi lo tienes</b> muestra los logros que tienes más cerca.");
+// 🎁 rewards layout
+Object.assign(ES, { "Wearing now:": "Llevas ahora:", "Wearing now": "Llevas ahora", "🪙 Coin": "🪙 Moneda", "🃏 Cards": "🃏 Cartas", "🖼️ Background": "🖼️ Fondo", "Coin": "Moneda", "Cards": "Cartas", "Background": "Fondo", "Classic": "Clásica",
+  "🎁 Collections": "🎁 Colecciones", "Collections": "Colecciones", "✅ Your collections": "✅ Tus colecciones", "Your collections": "Tus colecciones", "Still to unlock": "Por desbloquear", "closest first": "las más cercanas primero",
+  "👕 Wear": "👕 Llevar", "Wear": "Llevar", "✓ Wearing · take off": "✓ Puesto · quitar", "Wearing · take off": "Puesto · quitar", "Nothing matches this filter.": "Nada coincide con este filtro." });
+rx(String.raw`(\d+) \/ (\d+) collections unlocked`, "$1 / $2 colecciones desbloqueadas");
+hrx(String.raw`🔒 Still to unlock <span>· closest first<\/span>`, "🔒 Por desbloquear <span>· las más cercanas primero</span>");
+H("🎁 Rewards are easier to use: the page shows what you're wearing now, your unlocked collections come first with <b>👕 Wear</b> buttons, and locked collections are short rows sorted by how close you are (tap one to preview its items).",
+  "🎁 Las recompensas son más cómodas: la página muestra lo que llevas ahora, tus colecciones desbloqueadas aparecen primero con botones <b>👕 Llevar</b>, y las bloqueadas son filas cortas ordenadas por lo cerca que estás (toca una para ver sus objetos).");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -9102,8 +9110,7 @@ function applyCosmetics() {
 function cosmeticCard(c) {
     const owned = !!state.cosmetics.owned[c.id], on = !!state.cosmetics.on[c.id];
     const action = owned
-      ? `<span class="muted">${on ? "On" : "Off"}</span>
-         <button class="switch ${on ? "on" : ""}" data-cosmetic-toggle="${c.id}" aria-label="Turn ${c.name} ${on ? "off" : "on"}"></button>`
+      ? `<button class="btn ${on ? "ghost wearOn" : ""} small" data-cosmetic-toggle="${c.id}">${on ? "✓ Wearing · take off" : "👕 Wear"}</button>`
       : c.price === 0 ? `<span class="muted">🔒 Reward</span>`
       : `<span><b>${coins(c.price)}</b></span>
          <button class="btn" data-cosmetic-buy="${c.id}" data-cost="${c.price}" ${state.money < c.price ? "disabled" : ""}>Buy</button>`;
@@ -9146,6 +9153,8 @@ if ($("cosmetics")) $("cosmetics").addEventListener("click", (e) => {
 $("rewardList").addEventListener("click", (e) => {
   const f = e.target.closest("[data-rwt], [data-rws]");
   if (f) { if (f.dataset.rwt) state.rewardType = f.dataset.rwt; else state.rewardState = f.dataset.rws; save(); renderRewards(); return; }
+  const ro = e.target.closest("[data-rwopen]");
+  if (ro) { const k = ro.dataset.rwopen; rwOpen.has(k) ? rwOpen.delete(k) : rwOpen.add(k); renderRewards(); return; }
   const tog = e.target.closest("[data-cosmetic-toggle]");
   if (!tog) return;
   const id = tog.dataset.cosmeticToggle;
@@ -10805,28 +10814,36 @@ function grantRewards() {   // checked with the achievements; a reward, once ear
 // 🔎 filters: item type (coin / cards / background) and unlocked / locked
 var REWARD_TYPES = [["all", "All"], ["coin", "🪙 Coins"], ["cards", "🃏 Cards"], ["background", "🖼️ Backgrounds"]];
 var REWARD_STATES = [["all", "All"], ["got", "✅ Unlocked"], ["locked", "🔒 Locked"]];
+// 🎁 Rewards: what you're wearing, your unlocked collections, then locked ones as compact rows (closest first; tap to see the items)
+var REWARD_SLOTS = [["coin", "🪙 Coin"], ["cards", "🃏 Cards"], ["background", "🖼️ Background"]];
+var rwOpen = new Set();
 function renderRewards() {
-  const ty = state.rewardType || "all", st = state.rewardState || "all";
-  const chips = (list, cur, key) => list.map(([id, name]) => `<button class="achCat ${cur === id ? "active" : ""}" data-rw${key}="${id}">${name}</button>`).join("");
-  const cols = COLLECTIONS.filter(c => c.reward && !(c.hidden && c.hidden())).filter(col => {
-    const items = COSMETICS.filter(c => c.collection === col.id), got = items.every(c => state.cosmetics.owned[c.id]);
-    return (ty === "all" || items.some(c => c.slot === ty)) && (st === "all" || (st === "got") === got);
-  });
-  $("rewardList").innerHTML = `<div class="card"><h2 style="margin:0 0 4px">${ico("ui-rewards", "h")}Rewards</h2>
-      <div class="muted">Finish the achievements a collection needs to unlock it. Then turn its items on or off here any time.</div>
-      <div class="achCats rwFilters">${chips(REWARD_TYPES, ty, "t")}</div><div class="achCats rwFilters">${chips(REWARD_STATES, st, "s")}</div></div>` +
-    (cols.length ? "" : `<div class="card muted" style="text-align:center">Nothing matches these filters.</div>`) +
-    cols.map(col => {
-      const p = rewardProgress(col), all = COSMETICS.filter(c => c.collection === col.id), got = all.every(c => state.cosmetics.owned[c.id]);
-      const items = ty === "all" ? all : all.filter(c => c.slot === ty);
-      return `<div class="card rewardCard ${got ? "got" : ""}">
-        <div class="row"><h2 style="margin:0">${got ? "" : ico("lock", "lockS")}${colTitle(col)}</h2><span class="muted">${got ? "✅ Unlocked" : `${p.done} / ${p.total}`}</span></div>
-        <div class="muted">${col.reward.text}</div>
-        ${col.reward.ids && !got ? `<div class="rewardNeeds">${ACHIEVEMENTS.filter(x => col.reward.ids.includes(x.id)).map(x =>
-          `<span class="${state.achievements[x.id] ? "ok" : ""}">${state.achievements[x.id] ? "✅" : "⬜"} ${x.icon} ${x.name}</span>`).join("")}</div>` : ""}
-        ${got ? "" : `<div class="bar"><div style="width:${100 * p.done / Math.max(1, p.total)}%"></div></div>`}
-        <div class="cosmetics">${items.map(cosmeticCard).join("")}</div></div>`;
-    }).join("");
+  const ty = ["all", "coin", "cards", "background"].includes(state.rewardType) ? state.rewardType : "all";
+  const cols = COLLECTIONS.filter(c => c.reward && !(c.hidden && c.hidden()));
+  const itemsOf = (col) => COSMETICS.filter(c => c.collection === col.id && (ty === "all" || c.slot === ty));
+  const got = cols.filter(col => COSMETICS.filter(c => c.collection === col.id).every(c => state.cosmetics.owned[c.id]) && itemsOf(col).length);
+  const locked = cols.filter(col => !got.includes(col) && itemsOf(col).length)
+    .map(col => ({ col, p: rewardProgress(col) })).sort((a, b) => b.p.done / Math.max(1, b.p.total) - a.p.done / Math.max(1, a.p.total));
+  const wearing = REWARD_SLOTS.map(([slot, name]) => { const c = COSMETICS.find(x => x.slot === slot && state.cosmetics.on[x.id]);
+    return `<span class="rwWear"><small>${name}</small><b>${c ? c.name : "Classic"}</b></span>`; }).join("");
+  const filters = [["all", "All"], ...REWARD_TYPES.slice(1)].map(([id, n]) => `<button class="achCat ${ty === id ? "active" : ""}" data-rwt="${id}">${id === "all" ? "🎁 Collections" : n}</button>`).join("");
+  $("rewardList").innerHTML = `<div class="card"><div class="row" style="flex-wrap:wrap;gap:8px"><h2 style="margin:0">${ico("ui-rewards", "h")}Rewards</h2>
+      <span class="muted">${got.length} / ${cols.length} collections unlocked</span></div>
+      <div class="rwWearing"><span class="muted">Wearing now:</span>${wearing}</div>
+      <div class="achCats rwFilters">${filters}</div></div>` +
+    (got.length ? `<h3 class="rwHead">✅ Your collections</h3>` + got.map(col => `<div class="card rewardCard got">
+        <div class="row"><h2 style="margin:0">${colTitle(col)}</h2><span class="muted">${col.reward.text}</span></div>
+        <div class="cosmetics">${itemsOf(col).map(cosmeticCard).join("")}</div></div>`).join("") : "") +
+    (locked.length ? `<h3 class="rwHead">🔒 Still to unlock <span class="muted">· closest first</span></h3><div class="rwLocked">` + locked.map(({ col, p }) => {
+      const open = rwOpen.has(col.id), need = col.reward.ids ? ACHIEVEMENTS.filter(x => col.reward.ids.includes(x.id)) : null;
+      return `<div class="card rwRow ${open ? "open" : ""}">
+        <button class="rwRowHead" data-rwopen="${col.id}"><span class="rwRowName">${ico("lock", "lockS")}${colTitle(col)}</span>
+          <span class="rwRowBar"><span class="bar"><span style="width:${100 * p.done / Math.max(1, p.total)}%"></span></span><b>${p.done} / ${p.total}</b></span>
+          <span class="muted rwRowGo">${open ? "▴" : "▸"}</span></button>
+        <div class="muted rwRowText">${col.reward.text}</div>
+        ${need ? `<div class="rewardNeeds">${need.map(x => `<span class="${state.achievements[x.id] ? "ok" : ""}">${state.achievements[x.id] ? "✅" : "⬜"} ${x.icon} ${x.name}</span>`).join("")}</div>` : ""}
+        ${open ? `<div class="cosmetics">${itemsOf(col).map(cosmeticCard).join("")}</div>` : ""}</div>`; }).join("") + `</div>` : "") +
+    (got.length || locked.length ? "" : `<div class="card muted" style="text-align:center">Nothing matches this filter.</div>`);
 }
 function showAchPage(p) {
   state.achPage = p === "rewards" ? "rewards" : "list";
@@ -13754,6 +13771,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "🎁 Rewards are easier to use: the page shows what you're wearing now, your unlocked collections come first with <b>👕 Wear</b> buttons, and locked collections are short rows sorted by how close you are (tap one to preview its items).",
     "🏆 Achievements are easier to browse: smaller cards (3 per row), finished categories fold into one line, and a new <b>⭐ Almost there</b> box shows the achievements you are closest to.",
     "🗺️ The world map is smaller by default (⤢ Full map makes it full width again), its help text moved into an ℹ️ button, and on phones it starts folded.",
     "🌍 Earth logistics is tidier: one slim bar shows your level, money, vehicles on the road and contracts, and Trucks · Tankers · Planes tabs show one fleet at a time (with a <b>!</b> when vehicles wait or break down). The world map follows the tab you pick.",

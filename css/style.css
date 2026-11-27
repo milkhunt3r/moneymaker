@@ -2580,3 +2580,19 @@ body.phone #mapBig { display: none; }
 body.phone #achList .achGrid { grid-template-columns: 1fr 1fr; gap: 6px; }
 body.phone #achList .ach { flex-direction: column; text-align: center; padding: 8px 6px; gap: 4px; }
 body.phone #achList .ach > div:last-child { width: 100%; }
+/* 🎁 rewards: wearing now, your collections, locked rows */
+.rwWearing { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 10px 0 4px; }
+.rwWear { display: grid; padding: 4px 12px; border-radius: 10px; border: 1px solid rgba(255,211,77,0.35); background: rgba(255,211,77,0.07); }
+.rwWear small { font-size: 11px; color: #c9c9da; }
+.rwHead { margin: 16px 0 8px; }
+.rwLocked { display: grid; gap: 8px; }
+.rwRow { margin: 0; padding: 10px 12px; }
+.rwRowHead { display: grid; grid-template-columns: minmax(200px, 1.3fr) 1fr 20px; gap: 12px; align-items: center; width: 100%; background: none; border: 0; color: #fff; font: inherit; cursor: pointer; text-align: left; padding: 0; }
+.rwRowName { font-weight: 800; font-size: 15px; display: flex; align-items: center; gap: 6px; } .rwRowName .ico, .rwRowName img { max-width: 34px; max-height: 34px; }
+.rwRowBar { display: flex; align-items: center; gap: 8px; } .rwRowBar .bar { flex: 1; height: 7px; border-radius: 4px; background: rgba(255,255,255,0.1); overflow: hidden; display: block; }
+.rwRowBar .bar span { display: block; height: 100%; background: linear-gradient(90deg, #ffd34d, #ffb300); }
+.rwRowText { font-size: 12.5px; margin-top: 4px; }
+.rwRow .rewardNeeds { margin-top: 6px; }
+.rwRow.open { border-color: rgba(255,211,77,0.45); }
+.btn.wearOn { border-color: #3ddc6a; color: #8fe3a0; }
+body.phone .rwRowHead { grid-template-columns: 1fr 20px; } body.phone .rwRowBar { grid-column: 1 / -1; grid-row: 2; }
