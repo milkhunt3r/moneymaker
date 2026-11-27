@@ -115,8 +115,8 @@ Object.assign(ES, {
   "No win this time.": "Esta vez no hay premio.", "Lab spots": "Casillas de laboratorio", "DNA vials": "Viales de ADN", "added": "se suman",
 
   // ===================== 📈 INVESTING =====================
-  "Safe, steady income: earns 0.6% of its value as rent every 60 seconds (about +36% per hour, paid to your money). Locked for 20 minutes after buying, then sell any time with no fee. Min. 50,000.":
-    "Ingresos seguros y constantes: gana el 0,6% de su valor en alquiler cada 60 segundos (unos +36% por hora, a tu dinero). Bloqueado 20 minutos tras comprarlo; después véndelo cuando quieras sin comisión. Mín. 50.000.",
+  "Safe, steady income: earns 0.8% of its value as rent every 60 seconds (about +48% per hour, paid to your money). Locked for 20 minutes after buying, then sell any time with no fee. Min. 50,000.":
+    "Ingresos seguros y constantes: gana el 0,8% de su valor en alquiler cada 60 segundos (unos +48% por hora, a tu dinero). Bloqueado 20 minutos tras comprarlo; después véndelo cuando quieras sin comisión. Mín. 50.000.",
   "Each second there is a small 1 in 21,600 chance (about once every 6 hours) of a market crash: all properties lose 70% of their value.":
     "Cada segundo hay una pequeña probabilidad de 1 entre 21.600 (más o menos una vez cada 6 horas) de un desplome del mercado: todos los inmuebles pierden el 70% de su valor.",
   "Every 10 seconds the market moves: 1 in 10 chance of −4%, 1 in 10 chance of +4%, otherwise 50/50 between +1.2% and −1%. On average about +25% an hour, but a lucky (or well-timed) player can do better. Min. 1,000 per investment. Cash-out fee":

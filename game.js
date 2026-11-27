@@ -682,8 +682,8 @@ Object.assign(ES, {
   "No win this time.": "Esta vez no hay premio.", "Lab spots": "Casillas de laboratorio", "DNA vials": "Viales de ADN", "added": "se suman",
 
   // ===================== 📈 INVESTING =====================
-  "Safe, steady income: earns 0.6% of its value as rent every 60 seconds (about +36% per hour, paid to your money). Locked for 20 minutes after buying, then sell any time with no fee. Min. 50,000.":
-    "Ingresos seguros y constantes: gana el 0,6% de su valor en alquiler cada 60 segundos (unos +36% por hora, a tu dinero). Bloqueado 20 minutos tras comprarlo; después véndelo cuando quieras sin comisión. Mín. 50.000.",
+  "Safe, steady income: earns 0.8% of its value as rent every 60 seconds (about +48% per hour, paid to your money). Locked for 20 minutes after buying, then sell any time with no fee. Min. 50,000.":
+    "Ingresos seguros y constantes: gana el 0,8% de su valor en alquiler cada 60 segundos (unos +48% por hora, a tu dinero). Bloqueado 20 minutos tras comprarlo; después véndelo cuando quieras sin comisión. Mín. 50.000.",
   "Each second there is a small 1 in 21,600 chance (about once every 6 hours) of a market crash: all properties lose 70% of their value.":
     "Cada segundo hay una pequeña probabilidad de 1 entre 21.600 (más o menos una vez cada 6 horas) de un desplome del mercado: todos los inmuebles pierden el 70% de su valor.",
   "Every 10 seconds the market moves: 1 in 10 chance of −4%, 1 in 10 chance of +4%, otherwise 50/50 between +1.2% and −1%. On average about +25% an hour, but a lucky (or well-timed) player can do better. Min. 1,000 per investment. Cash-out fee":
@@ -3071,8 +3071,8 @@ rx(String.raw`At the (${NUM}) cap: it won't grow more\. Cash out to start again\
 Object.assign(ES, { "Auto cash-out at 10 gcoin, then invest 10,000,000 again": "Retirada automática a 10 gcoin, y volver a invertir 10.000.000" });
 H("⚖️ Balance update: businesses matter for longer. 🚘 Car Salons earn <b>×2</b>. 🎰 Casinos and 🏨 Hotels earn <b>×2</b>, and <b>+0.5 more for every 2 you own</b> (2 owned ×2.5, 4 owned ×3 … 10 owned ×4.5).",
   "⚖️ Ajuste de equilibrio: los negocios importan durante más tiempo. Los 🚘 concesionarios ganan <b>×2</b>. Los 🎰 casinos y 🏨 hoteles ganan <b>×2</b>, y <b>+0,5 más por cada 2 que tengas</b> (con 2 ×2,5, con 4 ×3 … con 10 ×4,5).");
-H("🏠 Real estate now pays <b>0.6% rent every 60 seconds</b> (was 1.2% every 45 seconds), about +36% an hour.",
-  "🏠 Los inmuebles pagan ahora <b>un 0,6% de alquiler cada 60 segundos</b> (antes 1,2% cada 45 segundos), unos +36% por hora.");
+H("🏠 Real estate now pays <b>0.8% rent every 60 seconds</b> (was 1.2% every 45 seconds), about +48% an hour.",
+  "🏠 Los inmuebles pagan ahora <b>un 0,8% de alquiler cada 60 segundos</b> (antes 1,2% cada 45 segundos), unos +48% por hora.");
 H("📈 Stock market ETF: the small up move is now +1.2% (was +1.5%), about <b>+25% an hour</b> on average. It still swings a lot in the short term, so good timing can beat that.",
   "📈 ETF de bolsa: la subida pequeña es ahora +1,2% (antes +1,5%), unos <b>+25% por hora</b> de media. Sigue moviéndose mucho a corto plazo, así que con buen ojo puedes ganar más.");
 H("🚚 Global Freight Co. shares rise about <b>+35% an hour</b> on average: ups and downs are now the same size (±1% per contract) with a small steady drift.",
@@ -5631,7 +5631,7 @@ __eocLoaded = 9;
 var RE_MIN = 50000;
 var RE_LOCK = 1200;           // 20 minutes locked after buying
 var RE_RENT_EVERY = 60;       // rent every 60 seconds...
-var RE_RENT_RATE = 0.006;     // ...of 0.6% of the property's value (about +36% per hour)
+var RE_RENT_RATE = 0.008;     // ...of 0.8% of the property's value (about +48% per hour)
 var RE_CRASH_CHANCE = 1 / 21600;  // about one crash every 6 hours
 var RE_CRASH_LOSS = 0.70;     // a crash wipes out 70% of every property's value
 
@@ -13858,7 +13858,7 @@ addEventListener("resize", fitBrand); fitBrand();
 var PATCH_NOTES = [
   { date: "27 November 2026", title: "Empire of Coins", items: [
     "⚖️ Balance update: businesses matter for longer. 🚘 Car Salons earn <b>×2</b>. 🎰 Casinos and 🏨 Hotels earn <b>×2</b>, and <b>+0.5 more for every 2 you own</b> (2 owned ×2.5, 4 owned ×3 … 10 owned ×4.5).",
-    "🏠 Real estate now pays <b>0.6% rent every 60 seconds</b> (was 1.2% every 45 seconds), about +36% an hour.",
+    "🏠 Real estate now pays <b>0.8% rent every 60 seconds</b> (was 1.2% every 45 seconds), about +48% an hour.",
     "📈 Stock market ETF: the small up move is now +1.2% (was +1.5%), about <b>+25% an hour</b> on average. It still swings a lot in the short term, so good timing can beat that.",
     "🚚 Global Freight Co. shares rise about <b>+35% an hour</b> on average: ups and downs are now the same size (±1% per contract) with a small steady drift.",
     "💼 Broker ETF now grows up to <b>10 gcoin</b> at most. New <b>🔁 Auto cash-out</b>: at the cap it cashes out for you and invests 10,000,000 again.",

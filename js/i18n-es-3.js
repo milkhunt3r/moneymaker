@@ -1697,8 +1697,8 @@ rx(String.raw`At the (${NUM}) cap: it won't grow more\. Cash out to start again\
 Object.assign(ES, { "Auto cash-out at 10 gcoin, then invest 10,000,000 again": "Retirada automática a 10 gcoin, y volver a invertir 10.000.000" });
 H("⚖️ Balance update: businesses matter for longer. 🚘 Car Salons earn <b>×2</b>. 🎰 Casinos and 🏨 Hotels earn <b>×2</b>, and <b>+0.5 more for every 2 you own</b> (2 owned ×2.5, 4 owned ×3 … 10 owned ×4.5).",
   "⚖️ Ajuste de equilibrio: los negocios importan durante más tiempo. Los 🚘 concesionarios ganan <b>×2</b>. Los 🎰 casinos y 🏨 hoteles ganan <b>×2</b>, y <b>+0,5 más por cada 2 que tengas</b> (con 2 ×2,5, con 4 ×3 … con 10 ×4,5).");
-H("🏠 Real estate now pays <b>0.6% rent every 60 seconds</b> (was 1.2% every 45 seconds), about +36% an hour.",
-  "🏠 Los inmuebles pagan ahora <b>un 0,6% de alquiler cada 60 segundos</b> (antes 1,2% cada 45 segundos), unos +36% por hora.");
+H("🏠 Real estate now pays <b>0.8% rent every 60 seconds</b> (was 1.2% every 45 seconds), about +48% an hour.",
+  "🏠 Los inmuebles pagan ahora <b>un 0,8% de alquiler cada 60 segundos</b> (antes 1,2% cada 45 segundos), unos +48% por hora.");
 H("📈 Stock market ETF: the small up move is now +1.2% (was +1.5%), about <b>+25% an hour</b> on average. It still swings a lot in the short term, so good timing can beat that.",
   "📈 ETF de bolsa: la subida pequeña es ahora +1,2% (antes +1,5%), unos <b>+25% por hora</b> de media. Sigue moviéndose mucho a corto plazo, así que con buen ojo puedes ganar más.");
 H("🚚 Global Freight Co. shares rise about <b>+35% an hour</b> on average: ups and downs are now the same size (±1% per contract) with a small steady drift.",

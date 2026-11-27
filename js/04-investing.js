@@ -6,7 +6,7 @@
 const RE_MIN = 50000;
 const RE_LOCK = 1200;           // 20 minutes locked after buying
 const RE_RENT_EVERY = 60;       // rent every 60 seconds...
-const RE_RENT_RATE = 0.006;     // ...of 0.6% of the property's value (about +36% per hour)
+const RE_RENT_RATE = 0.008;     // ...of 0.8% of the property's value (about +48% per hour)
 const RE_CRASH_CHANCE = 1 / 21600;  // about one crash every 6 hours
 const RE_CRASH_LOSS = 0.70;     // a crash wipes out 70% of every property's value
 
