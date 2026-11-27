@@ -52,6 +52,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "🗂️ Achievements: on big screens the categories are now a list in the left menu with a progress ring each; on phones they are one row you can swipe.",
     "🎁 Rewards are easier to use: the page shows what you're wearing now, your unlocked collections come first with <b>👕 Wear</b> buttons, and locked collections are short rows sorted by how close you are (tap one to preview its items).",
     "🏆 Achievements are easier to browse: smaller cards (3 per row), finished categories fold into one line, and a new <b>⭐ Almost there</b> box shows the achievements you are closest to.",
     "🗺️ The world map is smaller by default (⤢ Full map makes it full width again), its help text moved into an ℹ️ button, and on phones it starts folded.",

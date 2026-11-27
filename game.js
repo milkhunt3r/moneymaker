@@ -3050,6 +3050,8 @@ rx(String.raw`(\d+) \/ (\d+) collections unlocked`, "$1 / $2 colecciones desbloq
 hrx(String.raw`🔒 Still to unlock <span>· closest first<\/span>`, "🔒 Por desbloquear <span>· las más cercanas primero</span>");
 H("🎁 Rewards are easier to use: the page shows what you're wearing now, your unlocked collections come first with <b>👕 Wear</b> buttons, and locked collections are short rows sorted by how close you are (tap one to preview its items).",
   "🎁 Las recompensas son más cómodas: la página muestra lo que llevas ahora, tus colecciones desbloqueadas aparecen primero con botones <b>👕 Llevar</b>, y las bloqueadas son filas cortas ordenadas por lo cerca que estás (toca una para ver sus objetos).");
+H("🗂️ Achievements: on big screens the categories are now a list in the left menu with a progress ring each; on phones they are one row you can swipe.",
+  "🗂️ Logros: en pantallas grandes, las categorías son ahora una lista en el menú de la izquierda con un anillo de progreso cada una; en el móvil son una fila que puedes deslizar.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -10850,7 +10852,7 @@ function showAchPage(p) {
   $("achList").hidden = state.achPage !== "list";
   $("rewardList").hidden = state.achPage !== "rewards";
   document.querySelectorAll("[data-achpage]").forEach(b => b.classList.toggle("active", b.dataset.achpage === state.achPage));
-  if (state.achPage === "rewards") renderRewards();
+  if (state.achPage === "rewards") { renderRewards(); $("achSideCats").innerHTML = ""; }
 }
 $("achList").addEventListener("click", (e) => {
   const op = e.target.closest("[data-achopen]");
@@ -10862,8 +10864,10 @@ $("achList").addEventListener("click", (e) => {
   renderAchievements();
 });
 $("achNav").addEventListener("click", (e) => {
+  const cat = e.target.closest("[data-achcat]");
+  if (cat) { state.achCat = cat.dataset.achcat; save(); renderAchievements(); $("achievementsView").scrollIntoView({ block: "start" }); return; }
   const b = e.target.closest("[data-achpage]"); if (!b) return;
-  showAchPage(b.dataset.achpage); save();
+  showAchPage(b.dataset.achpage); renderAchievements(); save();
 });
 setInterval(grantRewards, 2000);
 
@@ -10885,6 +10889,10 @@ function renderAchievements() {
   const sel = achCatsShown().some(c => c.id === state.achCat) ? state.achCat : "all";
   const chip = (id, name, done, total) => `<button class="achCat ${sel === id ? "active" : ""}" data-achcat="${id}">${name} <span>${done}/${total}</span></button>`;
   const doneIn = (id) => ACHIEVEMENTS.filter(a => a.cat === id && state.achievements[a.id]).length;
+  // 🗂️ desktop: categories as a list in the left menu (with a small progress ring); phones: one sideways chip row
+  const ring = (d, t) => `<i class="achRing" style="--p:${Math.round(100 * d / Math.max(1, t))}"></i>`;
+  const side = (id, name, d, t) => `<button class="subTab subSub achSide ${sel === id ? "active" : ""} ${d === t && t ? "done" : ""}" data-achcat="${id}">${ring(d, t)}<span>${name}</span><small>${d}/${t}</small></button>`;
+  $("achSideCats").innerHTML = state.achPage === "list" ? side("all", "All", achDone(), achShown().length) + achCatsShown().map(c => side(c.id, catLabel(c), doneIn(c.id), ACHIEVEMENTS.filter(a => a.cat === c.id).length)).join("") : "";
   $("achList").innerHTML = `<div class="achCats">${chip("all", ico("ui-trophy") + "All", achDone(), achShown().length)}${achCatsShown().map(c =>
         chip(c.id, catLabel(c), doneIn(c.id), ACHIEVEMENTS.filter(a => a.cat === c.id).length)).join("")}</div>
     <div class="achFilter"><button class="btn ghost small" id="achHideToggle">${hide ? "👁️ Show completed" : ico("ui-hide") + "Hide completed"}</button>
@@ -13771,6 +13779,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "26 November 2026", title: "Empire of Coins", items: [
+    "🗂️ Achievements: on big screens the categories are now a list in the left menu with a progress ring each; on phones they are one row you can swipe.",
     "🎁 Rewards are easier to use: the page shows what you're wearing now, your unlocked collections come first with <b>👕 Wear</b> buttons, and locked collections are short rows sorted by how close you are (tap one to preview its items).",
     "🏆 Achievements are easier to browse: smaller cards (3 per row), finished categories fold into one line, and a new <b>⭐ Almost there</b> box shows the achievements you are closest to.",
     "🗺️ The world map is smaller by default (⤢ Full map makes it full width again), its help text moved into an ℹ️ button, and on phones it starts folded.",

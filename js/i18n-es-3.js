@@ -1676,6 +1676,8 @@ rx(String.raw`(\d+) \/ (\d+) collections unlocked`, "$1 / $2 colecciones desbloq
 hrx(String.raw`🔒 Still to unlock <span>· closest first<\/span>`, "🔒 Por desbloquear <span>· las más cercanas primero</span>");
 H("🎁 Rewards are easier to use: the page shows what you're wearing now, your unlocked collections come first with <b>👕 Wear</b> buttons, and locked collections are short rows sorted by how close you are (tap one to preview its items).",
   "🎁 Las recompensas son más cómodas: la página muestra lo que llevas ahora, tus colecciones desbloqueadas aparecen primero con botones <b>👕 Llevar</b>, y las bloqueadas son filas cortas ordenadas por lo cerca que estás (toca una para ver sus objetos).");
+H("🗂️ Achievements: on big screens the categories are now a list in the left menu with a progress ring each; on phones they are one row you can swipe.",
+  "🗂️ Logros: en pantallas grandes, las categorías son ahora una lista en el menú de la izquierda con un anillo de progreso cada una; en el móvil son una fila que puedes deslizar.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

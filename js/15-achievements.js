@@ -408,7 +408,7 @@ function showAchPage(p) {
   $("achList").hidden = state.achPage !== "list";
   $("rewardList").hidden = state.achPage !== "rewards";
   document.querySelectorAll("[data-achpage]").forEach(b => b.classList.toggle("active", b.dataset.achpage === state.achPage));
-  if (state.achPage === "rewards") renderRewards();
+  if (state.achPage === "rewards") { renderRewards(); $("achSideCats").innerHTML = ""; }
 }
 $("achList").addEventListener("click", (e) => {
   const op = e.target.closest("[data-achopen]");
@@ -420,8 +420,10 @@ $("achList").addEventListener("click", (e) => {
   renderAchievements();
 });
 $("achNav").addEventListener("click", (e) => {
+  const cat = e.target.closest("[data-achcat]");
+  if (cat) { state.achCat = cat.dataset.achcat; save(); renderAchievements(); $("achievementsView").scrollIntoView({ block: "start" }); return; }
   const b = e.target.closest("[data-achpage]"); if (!b) return;
-  showAchPage(b.dataset.achpage); save();
+  showAchPage(b.dataset.achpage); renderAchievements(); save();
 });
 setInterval(grantRewards, 2000);
 
@@ -443,6 +445,10 @@ function renderAchievements() {
   const sel = achCatsShown().some(c => c.id === state.achCat) ? state.achCat : "all";
   const chip = (id, name, done, total) => `<button class="achCat ${sel === id ? "active" : ""}" data-achcat="${id}">${name} <span>${done}/${total}</span></button>`;
   const doneIn = (id) => ACHIEVEMENTS.filter(a => a.cat === id && state.achievements[a.id]).length;
+  // 🗂️ desktop: categories as a list in the left menu (with a small progress ring); phones: one sideways chip row
+  const ring = (d, t) => `<i class="achRing" style="--p:${Math.round(100 * d / Math.max(1, t))}"></i>`;
+  const side = (id, name, d, t) => `<button class="subTab subSub achSide ${sel === id ? "active" : ""} ${d === t && t ? "done" : ""}" data-achcat="${id}">${ring(d, t)}<span>${name}</span><small>${d}/${t}</small></button>`;
+  $("achSideCats").innerHTML = state.achPage === "list" ? side("all", "All", achDone(), achShown().length) + achCatsShown().map(c => side(c.id, catLabel(c), doneIn(c.id), ACHIEVEMENTS.filter(a => a.cat === c.id).length)).join("") : "";
   $("achList").innerHTML = `<div class="achCats">${chip("all", ico("ui-trophy") + "All", achDone(), achShown().length)}${achCatsShown().map(c =>
         chip(c.id, catLabel(c), doneIn(c.id), ACHIEVEMENTS.filter(a => a.cat === c.id).length)).join("")}</div>
     <div class="achFilter"><button class="btn ghost small" id="achHideToggle">${hide ? "👁️ Show completed" : ico("ui-hide") + "Hide completed"}</button>

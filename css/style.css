@@ -2596,3 +2596,20 @@ body.phone #achList .ach > div:last-child { width: 100%; }
 .rwRow.open { border-color: rgba(255,211,77,0.45); }
 .btn.wearOn { border-color: #3ddc6a; color: #8fe3a0; }
 body.phone .rwRowHead { grid-template-columns: 1fr 20px; } body.phone .rwRowBar { grid-column: 1 / -1; grid-row: 2; }
+/* 🗂️ achievement categories: side list on desktop, one sideways row on phones */
+.achSideCats { display: grid; gap: 4px; }
+.achSideCats:empty { display: none; }
+.achSide { display: flex; align-items: center; gap: 8px; } .achSide span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.achSide span .ico { width: 20px; height: 20px; vertical-align: -4px; } .achSide small { color: #9aa0b8; font-size: 11px; }
+.achSide.done small { color: #8fe3a0; }
+.achRing { flex: none; width: 16px; height: 16px; border-radius: 50%; background: conic-gradient(#ffd34d calc(var(--p) * 1%), rgba(255,255,255,0.15) 0); -webkit-mask: radial-gradient(circle, transparent 4px, #000 5px); mask: radial-gradient(circle, transparent 4px, #000 5px); }
+.achSide.done .achRing { background: #3ddc6a; }
+body:not(.phone) #achList > .achCats { display: none; }
+body.phone .achSideCats { display: none; }
+body.phone #achList > .achCats { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
+body.phone #achList > .achCats .achCat { flex: none; }
+.achSide { width: calc(100% - 18px); box-sizing: border-box; padding: 6px 8px; font-size: 13px; gap: 6px; }
+.achSide span .ico { width: 16px; height: 16px; vertical-align: -3px; margin-right: 2px; }
+#achNav { min-width: 0; }
+.achSideCats { grid-template-columns: minmax(0, 1fr); min-width: 0; } .achSide { min-width: 0; overflow: hidden; }
+#achievementsView .subLayout { grid-template-columns: 230px minmax(0, 1fr); } #achievementsView .subNav { width: 230px; }
