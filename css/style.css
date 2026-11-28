@@ -2826,3 +2826,5 @@ body.phone .shNext .btn { width: 100%; }
 .orSec.orFold:hover .orFoldHint { border-color: #ffd34d; color: #fff; }
 /* 🐾 painted icons in the pets' texts (pi() in js/33-pet.js) */
 .ico.pti { width: 1.25em; height: 1.25em; vertical-align: -0.28em; margin-right: 2px; }
+.gcBanner .ico.pti { width: 1.3em; height: 1.3em; margin-right: 8px; }
+.decision .ico.pti { width: 1.3em; height: 1.3em; }

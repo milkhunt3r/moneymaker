@@ -5205,7 +5205,9 @@ function casUndoPop(id) {
   refundTo(id, u.paid);
   return true;
 }
-var casUndoBtn = (id, attr, on = true) => `<button class="btn ghost" ${attr} ${on && casUndoList(id).length ? "" : "disabled"}>↶ Undo</button>`;
+// 🖼️ the painted casino button / label icons (assets/icons/ico-cs-*.webp)
+var csI = (k) => `<img class="ico pti" src="assets/icons/ico-cs-${k}.webp" alt="">`;
+var casUndoBtn = (id, attr, on = true) => `<button class="btn ghost" ${attr} ${on && casUndoList(id).length ? "" : "disabled"}>${csI("undo")}<span>Undo</span></button>`;
 function freeDone(id, which = "inPlay") { freeTbl(id)[which] = []; }   // played: they are used up
 var purse = (id) => vipOn(id) ? state.vip.coins : state.casinoChips;
 var purseName = (id) => vipOn(id) ? "VIP coins" : "money";
@@ -5284,11 +5286,11 @@ function casLobbyHtml() {
   if (h.active) { const f = CAS_FAMS.find(x => x.id === h.game.id); if (f && !casLock(fav(f))) cont.push({ id: fav(f), hot: true }); }
   (state.casRecent || []).forEach(id => { if (cont.length < 4 && !cont.some(c => c.id === id) && CASINO_GAMES.some(g => g.id === id) && !casLock(id)) cont.push({ id }); });
   const contHtml = cont.length ? `<div class="casCont"><span class="casContLbl">▶ Continue playing</span>${cont.map(c => { const f = casFamOf(c.id);
-    return `<button class="casContBtn ${c.hot ? "hot" : ""}" data-game="${c.id}">${casIco(c.id)}<span><b>${f ? f.name : c.id}</b><small>${casTierName(c.id)}${c.hot ? ` · <span class="hotTag">🔥 HOT</span>` : ""}</small></span></button>`; }).join("")}</div>` : "";
+    return `<button class="casContBtn ${c.hot ? "hot" : ""}" data-game="${c.id}">${casIco(c.id)}<span><b>${f ? f.name : c.id}</b><small>${casTierName(c.id)}${c.hot ? ` · <span class="hotTag">${ico("ui-hot", "pti")}HOT</span>` : ""}</small></span></button>`; }).join("")}</div>` : "";
   const cards = CAS_FAMS.map(f => {
     const allLocked = f.tables.every(id => casLock(id)), hot = h.active && h.game.id === f.id;
     return `<div class="card casFam ${allLocked ? "locked" : ""} ${hot ? "hot" : ""}" ${allLocked ? "" : `data-game="${fav(f)}"`}>
-      <div class="casFamHead">${casIco(f.tables[0])}<div><h3>${f.name}${hot ? ` <span class="hotTag">🔥 HOT</span>` : ""}</h3><div class="muted">${f.desc}</div></div></div>
+      <div class="casFamHead">${casIco(f.tables[0])}<div><h3>${f.name}${hot ? ` <span class="hotTag">${ico("ui-hot", "pti")}HOT</span>` : ""}</h3><div class="muted">${f.desc}</div></div></div>
       ${allLocked ? `<div class="muted casFamLock">${ico("lock", "lockS")}${casLock(f.tables[0])}</div>` : ""}
       <div class="casTiers">${f.tables.map(id => casTierBtn(id)).join("")}</div></div>`; }).join("");
   return `<h2>Choose a game</h2>${contHtml}<div class="casFams">${cards}</div>`;
@@ -5749,9 +5751,9 @@ function renderRoulette() {
       ${freeChipRow(roulette, roulette.chipFree)}
       <div class="bjActions">
         <button class="btn" id="spin" ${roulette.spinning || totalBets() === 0 ? "disabled" : ""}>🎡 Spin (bet ${fmt(totalBets())})</button>
-        <button class="btn ghost" id="undoBet" ${roulette.spinning || !rlUndoList(roulette).length ? "disabled" : ""}>↶ Undo</button>
-        <button class="btn ghost" id="clearBets" ${roulette.spinning ? "disabled" : ""}>Clear bets</button>
-        <button class="btn ghost" id="rebet" ${roulette.spinning || !hasLast ? "disabled" : ""}>↺ Repeat last bets</button>
+        <button class="btn ghost" id="undoBet" ${roulette.spinning || !rlUndoList(roulette).length ? "disabled" : ""}>${csI("undo")}<span>Undo</span></button>
+        <button class="btn ghost" id="clearBets" ${roulette.spinning ? "disabled" : ""}>${csI("clear")}<span>Clear bets</span></button>
+        <button class="btn ghost" id="rebet" ${roulette.spinning || !hasLast ? "disabled" : ""}>${csI("repeat")}<span>Repeat last bets</span></button>
       </div></div>
       <div id="casinoMsg" class="flash" style="margin-top:8px"></div>
       <div class="muted" style="margin-top:6px">Click a number, or the line between numbers: between 2 = split, where 4 meet = corner, bottom edge = street, bottom corner = six line (next to 0: trios 0-1-2 / 0-2-3 where two rows meet the zero, and first four 0-1-2-3 at its bottom).</div>
@@ -7323,10 +7325,10 @@ function renderBlackjack() {
   let actions;
   if (betting) {
     actions = `
-      <button class="btn" data-bj="deal" ${total === 0 ? "disabled" : ""}>🃏 Deal (bet ${fmt(total)})</button>
+      <button class="btn" data-bj="deal" ${total === 0 ? "disabled" : ""}>${csI("deal")}<span>Deal (bet ${fmt(total)})</span></button>
       ${casUndoBtn(t.id, 'data-bj="undo"')}
-      <button class="btn ghost" data-bj="clear" ${total === 0 && !t.hands.length ? "disabled" : ""}>Clear bets</button>
-      <button class="btn ghost" data-bj="rebet" ${lastTotal === 0 ? "disabled" : ""}>↺ Repeat last bets</button>`;
+      <button class="btn ghost" data-bj="clear" ${total === 0 && !t.hands.length ? "disabled" : ""}>${csI("clear")}<span>Clear bets</span></button>
+      <button class="btn ghost" data-bj="rebet" ${lastTotal === 0 ? "disabled" : ""}>${csI("repeat")}<span>Repeat last bets</span></button>`;
   } else if (t.phase === "insurance") {
     const cost = insuranceCost(t);
     actions = `
@@ -7340,7 +7342,7 @@ function renderBlackjack() {
       <button class="btn" data-bj="stand" ${playing ? "" : "disabled"}>Stand</button>
       <button class="btn ghost" data-bj="double" ${playing && bjCanDouble(t) ? "" : "disabled"}>Double</button>
       <button class="btn ghost" data-bj="split" ${playing && bjCanSplit(t) ? "" : "disabled"}>Split</button>
-      <button class="btn ghost" data-bj="surrender" ${playing && bjCanSurrender(t) ? "" : "disabled"}>🏳️ Surrender</button>`;
+      <button class="btn ghost" data-bj="surrender" ${playing && bjCanSurrender(t) ? "" : "disabled"}>${csI("fold")}<span>Surrender</span></button>`;
   }
 
   $("casinoGame").innerHTML = `
@@ -7660,17 +7662,17 @@ function renderVideoPoker() {
   let table;
   if (betting) {
     table = `
-      <button class="decision" data-vp="clear" ${bet && !t.busy ? "" : "disabled"}>✖ Clear<small>bet</small></button>
+      <button class="decision" data-vp="clear" ${bet && !t.busy ? "" : "disabled"}>${csI("clear")}<span>Clear</span><small>bet</small></button>
       <div class="betCircle">${bet ? chipMark(bet) + `<b>${fmt(bet)}</b>` : `<span>Place your bet<br>with the chips below</span>`}</div>
-      <button class="decision" data-vp="max" ${bet < t.max ? "" : "disabled"}>⬆ Max bet<small>${fmt(t.max)}</small></button>
+      <button class="decision" data-vp="max" ${bet < t.max ? "" : "disabled"}>${csI("max")}<span>Max bet</span><small>${fmt(t.max)}</small></button>
       <button class="decision main" data-vp="deal" ${bet >= t.min && !t.busy ? "" : "disabled"}>🎴 Deal</button>`;
   } else {
     const can = t.phase === "holding" && !t.busy;
     table = `
       <button class="decision" data-vp="holdNone" ${can && t.held.some(x => x) ? "" : "disabled"}>✖ Release<small>all cards</small></button>
       <div class="betCircle live">${chipMark(shownBet)}<b>${fmt(shownBet)}</b><span>in play</span></div>
-      <button class="decision" data-vp="holdAll" ${can && !t.held.every(x => x) ? "" : "disabled"}>✋ Hold<small>all cards</small></button>
-      <button class="decision main" data-vp="draw" ${can ? "" : "disabled"}>🔄 Draw</button>`;
+      <button class="decision" data-vp="holdAll" ${can && !t.held.every(x => x) ? "" : "disabled"}>${csI("hold")}<span>Hold</span><small>all cards</small></button>
+      <button class="decision main" data-vp="draw" ${can ? "" : "disabled"}>${csI("draw")}<span>Draw</span></button>`;
   }
 
   $("casinoGame").innerHTML = `
@@ -7680,13 +7682,13 @@ function renderVideoPoker() {
         <button class="btn ghost small" data-back="1" ${betting && !t.busy ? "" : "disabled"}>← All games</button></div>
 
       <div class="vpJackpot ${t.jackpotWon ? "won" : ""}">
-        <div class="sub">💰 JACKPOT</div>
+        <div class="sub">${csI("jackpot")}JACKPOT</div>
         <div class="amt">${coins(t.jackpot)}</div>
         <div class="sub">Royal Flush wins 100% · any Straight Flush wins 20% · paid on top of the normal win.
           ${shownBet ? `Your bet of ${fmt(shownBet)} wins ${pct(shownBet / t.max)} of it${shownBet < t.max ? " (bet the max to win all of it)" : ""}.` : "Your share = your bet ÷ max bet."}</div>
       </div>
 
-      <div class="vpPayHead"><b>📋 Payouts</b>
+      <div class="vpPayHead"><b>${csI("payouts")}<span>Payouts</span></b>
         <button class="btn ghost small" data-vp="togglePay">${payHidden("vpPayHidden", "vp") ? "▸ Show" : "▾ Minimize"}</button></div>
       ${payHidden("vpPayHidden", "vp")
         ? `<div class="muted">Royal Flush ${VP_HANDS[11].pays}× + jackpot · … · Jacks or Better ${VP_HANDS[1].pays}×</div>`
@@ -8031,13 +8033,13 @@ function renderUth() {
     actions = `
       <button class="btn" data-uth="deal" ${seats.some(s => s.ante >= t.min) && !t.busy ? "" : "disabled"}>🤠 Deal (bet ${fmt(total)})</button>
       ${casUndoBtn(t.id, 'data-uth="undo"', !t.busy)}
-      <button class="btn ghost" data-uth="clear" ${total || t.hands.length ? "" : "disabled"}>Clear bets</button>
-      <button class="btn ghost" data-uth="rebet" ${last ? "" : "disabled"}>↺ Repeat last bets${last ? " (" + fmt(last) + ")" : ""}</button>`;
+      <button class="btn ghost" data-uth="clear" ${total || t.hands.length ? "" : "disabled"}>${csI("clear")}<span>Clear bets</span></button>
+      <button class="btn ghost" data-uth="rebet" ${last ? "" : "disabled"}>${csI("repeat")}<span>Repeat last bets${last ? " (" + fmt(last) + ")" : ""}</span></button>`;
   } else if (t.active >= 0 && !t.busy) {
     const h = t.hands[t.active];
     const raises = uthRaises(t).map(x => `<button class="btn" data-uth="raise${x}" ${purse(t.id) >= h.ante * x ? "" : "disabled"}>Raise ${x}× (${fmt(h.ante * x)})</button>`).join("");
     const passive = t.street === "river"
-      ? `<button class="btn ghost" data-uth="fold">🏳️ Fold</button>`
+      ? `<button class="btn ghost" data-uth="fold">${csI("fold")}<span>Fold</span></button>`
       : `<button class="btn ghost" data-uth="check">Check</button>`;
     const where = t.street === "pre" ? "Before the flop" : t.street === "flop" ? "After the flop" : "After the river";
     actions = `<span class="muted" style="align-self:center">Seat ${h.seat + 1} · ${where}:</span>${raises}${passive}`;
@@ -8052,7 +8054,7 @@ function renderUth() {
         <div class="muted">Ante ${fmt(t.min)} – ${fmt(t.max)} per seat · Blind = Ante · Trips optional (up to ${fmt(t.max)}) · Play 1 or 2 seats</div></div>
         <button class="btn ghost small" data-back="1" ${betting && !t.busy ? "" : "disabled"}>← All games</button></div>
 
-      <div class="vpPayHead"><b>📋 Payouts</b>
+      <div class="vpPayHead"><b>${csI("payouts")}<span>Payouts</span></b>
         <button class="btn ghost small" data-uth="togglePay">${payHidden("uthPayHidden", "uth") ? "▸ Show" : "▾ Minimize"}</button></div>
       ${payHidden("uthPayHidden", "uth") ? `<div class="muted">Blind: Royal 500:1 … Straight 1:1 · Trips: Royal 50:1 … Three of a Kind 3:1</div>` : `
       <div class="uthPayInfo">
@@ -8452,7 +8454,7 @@ function renderClimb(mixing = false) {
       <button class="decision main" data-climb="draw" ${climb.busy ? "disabled" : ""}><img class="decIco" src="assets/climb/ico-draw.webp" alt="">Draw a ball</button>`;
   } else {
     table = `
-      <button class="decision" data-climb="clear" ${climb.bet ? "" : "disabled"}>✖ Clear<small>bet</small></button>
+      <button class="decision" data-climb="clear" ${climb.bet ? "" : "disabled"}>${csI("clear")}<span>Clear</span><small>bet</small></button>
       <div class="betCircle">${climb.bet ? chipMark(climb.bet) + `<b>${fmt(climb.bet)}</b>` : `<span>Place your bet<br>with the chips below</span>`}</div>
       <button class="decision" data-climb="rebet" ${climb.lastBet ? "" : "disabled"}>↺ Same bet<small>${climb.lastBet ? fmt(climb.lastBet) : "—"}</small></button>
       <button class="decision main" data-climb="start" ${climb.bet >= climb.min ? "" : "disabled"}>🚀 Start</button>`;
@@ -16391,8 +16393,8 @@ function renderBaccarat() {
       <div class="bjActions">${betting ? `
         <button class="btn" data-bac="deal" ${bacBets(t).player + bacBets(t).banker + bacBets(t).tie >= t.min && !t.busy ? "" : "disabled"}>🎴 Deal (bet ${fmt(total)})</button>
         ${casUndoBtn(t.id, 'data-bac="undo"', !t.busy)}
-        <button class="btn ghost" data-bac="clear" ${total || t.result ? "" : "disabled"}>Clear bets</button>
-        <button class="btn ghost" data-bac="rebet" ${last && !total ? "" : "disabled"}>↺ Repeat last bets${last ? " (" + fmt(last) + ")" : ""}</button>`
+        <button class="btn ghost" data-bac="clear" ${total || t.result ? "" : "disabled"}>${csI("clear")}<span>Clear bets</span></button>
+        <button class="btn ghost" data-bac="rebet" ${last && !total ? "" : "disabled"}>${csI("repeat")}<span>Repeat last bets${last ? " (" + fmt(last) + ")" : ""}</span></button>`
         : `<span class="muted" style="align-self:center">Dealing...</span>`}</div></div>
       <div id="casinoMsg" class="${/won|broke even/.test(t.message) ? "income" : "flash"}" style="margin-top:10px; text-align:center">${t.message}</div>
       <div class="muted" style="margin-top:6px; text-align:center">A = 1 · 10, J, Q, K = 0 · only the last digit counts · Banker wins pay 0.95:1 (5% commission) · On a Tie, Player and Banker bets are returned · The third card is drawn by the standard rules</div>
@@ -16678,7 +16680,7 @@ async function gcSpin(buy = false) {
       hits = ok;
       if (s.free) { given += s.free; gcView = { ...gcView, fall: null, banner: `🧪 +${s.free} FREE SPINS`, wins: null, lines: null }; renderGeneCascade(); await gcWait(1200); gcView.banner = null; }
     }
-    if (round.capped && ok !== false) { gcView = { ...gcView, fall: null, banner: `🏆 MAX WIN ${SL_CAP.toLocaleString()}×!` }; renderGeneCascade(); await gcWait(1600); }
+    if (round.capped && ok !== false) { gcView = { ...gcView, fall: null, banner: `${csI("jackpot")}MAX WIN ${SL_CAP.toLocaleString()}×!` }; renderGeneCascade(); await gcWait(1600); }
   }
   // finished (or the player left: pay at once)
   const away = currentGame !== id;
@@ -16687,7 +16689,7 @@ async function gcSpin(buy = false) {
   if (!away) {
     const m = round.total;
     gcView = { ...(gcView || {}), wins: null, lines: null, popping: false, shown: m, done: true, drop: new Set(), fall: null, out: false,
-      banner: m >= 100 ? `💥 MEGA WIN ${fmt(win)}!` : m >= 20 ? `🎉 BIG WIN ${fmt(win)}!` : null };
+      banner: m >= 100 ? `${csI("megawin")}MEGA WIN ${fmt(win)}!` : m >= 20 ? `${csI("bigwin")}BIG WIN ${fmt(win)}!` : null };
     const shownView = gcView;
     if (shownView.banner) setTimeout(() => { if (gcView === shownView && !gcBusy) { gcView.banner = null; if (currentGame === id) renderGeneCascade(); } }, 2500);
     st.msg = (buy ? `🛒 Bought bonus (${fmt(cost)}): it paid ${fmt(win)} (${+m.toFixed(2)}× your bet, ${round.award} free spins), ${win >= cost ? `+${fmt(win - cost)}` : `−${fmt(cost - win)}`} overall.` +
@@ -16750,7 +16752,7 @@ function renderGeneCascade() {
       </div>
       <div class="gcLines">${lines || "&nbsp;"}</div>
       <div class="gcActions">
-        ${busy ? `<span></span><button class="gcSkipBtn" data-gc="skip">⏩ Skip to the result</button><span></span>`
+        ${busy ? `<span></span><button class="gcSkipBtn" data-gc="skip">${csI("fast")}<span>Skip to the result</span></button><span></span>`
           : `<div class="gcSide left"><button class="gcBtn gcBuyBtn ${armed ? "armed" : ""}" data-gc="buy" ${state.casinoChips >= buyCost ? "" : "disabled"}
                title="Start the free spins at once for ${SL_BUY}× your bet"><b>${armed ? "Tap again to buy" : "Buy free spins"}</b><small>${fmt(buyCost)} · ${SL_BUY}× bet</small></button></div>
              <button class="gcBtn gcSpinBtn" data-gc="spin" ${state.casinoChips >= st.bet ? "" : "disabled"}><b>SPIN</b><small>${fmt(st.bet)}</small></button>

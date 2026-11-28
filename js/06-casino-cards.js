@@ -371,10 +371,10 @@ function renderBlackjack() {
   let actions;
   if (betting) {
     actions = `
-      <button class="btn" data-bj="deal" ${total === 0 ? "disabled" : ""}>🃏 Deal (bet ${fmt(total)})</button>
+      <button class="btn" data-bj="deal" ${total === 0 ? "disabled" : ""}>${csI("deal")}<span>Deal (bet ${fmt(total)})</span></button>
       ${casUndoBtn(t.id, 'data-bj="undo"')}
-      <button class="btn ghost" data-bj="clear" ${total === 0 && !t.hands.length ? "disabled" : ""}>Clear bets</button>
-      <button class="btn ghost" data-bj="rebet" ${lastTotal === 0 ? "disabled" : ""}>↺ Repeat last bets</button>`;
+      <button class="btn ghost" data-bj="clear" ${total === 0 && !t.hands.length ? "disabled" : ""}>${csI("clear")}<span>Clear bets</span></button>
+      <button class="btn ghost" data-bj="rebet" ${lastTotal === 0 ? "disabled" : ""}>${csI("repeat")}<span>Repeat last bets</span></button>`;
   } else if (t.phase === "insurance") {
     const cost = insuranceCost(t);
     actions = `
@@ -388,7 +388,7 @@ function renderBlackjack() {
       <button class="btn" data-bj="stand" ${playing ? "" : "disabled"}>Stand</button>
       <button class="btn ghost" data-bj="double" ${playing && bjCanDouble(t) ? "" : "disabled"}>Double</button>
       <button class="btn ghost" data-bj="split" ${playing && bjCanSplit(t) ? "" : "disabled"}>Split</button>
-      <button class="btn ghost" data-bj="surrender" ${playing && bjCanSurrender(t) ? "" : "disabled"}>🏳️ Surrender</button>`;
+      <button class="btn ghost" data-bj="surrender" ${playing && bjCanSurrender(t) ? "" : "disabled"}>${csI("fold")}<span>Surrender</span></button>`;
   }
 
   $("casinoGame").innerHTML = `
@@ -708,17 +708,17 @@ function renderVideoPoker() {
   let table;
   if (betting) {
     table = `
-      <button class="decision" data-vp="clear" ${bet && !t.busy ? "" : "disabled"}>✖ Clear<small>bet</small></button>
+      <button class="decision" data-vp="clear" ${bet && !t.busy ? "" : "disabled"}>${csI("clear")}<span>Clear</span><small>bet</small></button>
       <div class="betCircle">${bet ? chipMark(bet) + `<b>${fmt(bet)}</b>` : `<span>Place your bet<br>with the chips below</span>`}</div>
-      <button class="decision" data-vp="max" ${bet < t.max ? "" : "disabled"}>⬆ Max bet<small>${fmt(t.max)}</small></button>
+      <button class="decision" data-vp="max" ${bet < t.max ? "" : "disabled"}>${csI("max")}<span>Max bet</span><small>${fmt(t.max)}</small></button>
       <button class="decision main" data-vp="deal" ${bet >= t.min && !t.busy ? "" : "disabled"}>🎴 Deal</button>`;
   } else {
     const can = t.phase === "holding" && !t.busy;
     table = `
       <button class="decision" data-vp="holdNone" ${can && t.held.some(x => x) ? "" : "disabled"}>✖ Release<small>all cards</small></button>
       <div class="betCircle live">${chipMark(shownBet)}<b>${fmt(shownBet)}</b><span>in play</span></div>
-      <button class="decision" data-vp="holdAll" ${can && !t.held.every(x => x) ? "" : "disabled"}>✋ Hold<small>all cards</small></button>
-      <button class="decision main" data-vp="draw" ${can ? "" : "disabled"}>🔄 Draw</button>`;
+      <button class="decision" data-vp="holdAll" ${can && !t.held.every(x => x) ? "" : "disabled"}>${csI("hold")}<span>Hold</span><small>all cards</small></button>
+      <button class="decision main" data-vp="draw" ${can ? "" : "disabled"}>${csI("draw")}<span>Draw</span></button>`;
   }
 
   $("casinoGame").innerHTML = `
@@ -728,13 +728,13 @@ function renderVideoPoker() {
         <button class="btn ghost small" data-back="1" ${betting && !t.busy ? "" : "disabled"}>← All games</button></div>
 
       <div class="vpJackpot ${t.jackpotWon ? "won" : ""}">
-        <div class="sub">💰 JACKPOT</div>
+        <div class="sub">${csI("jackpot")}JACKPOT</div>
         <div class="amt">${coins(t.jackpot)}</div>
         <div class="sub">Royal Flush wins 100% · any Straight Flush wins 20% · paid on top of the normal win.
           ${shownBet ? `Your bet of ${fmt(shownBet)} wins ${pct(shownBet / t.max)} of it${shownBet < t.max ? " (bet the max to win all of it)" : ""}.` : "Your share = your bet ÷ max bet."}</div>
       </div>
 
-      <div class="vpPayHead"><b>📋 Payouts</b>
+      <div class="vpPayHead"><b>${csI("payouts")}<span>Payouts</span></b>
         <button class="btn ghost small" data-vp="togglePay">${payHidden("vpPayHidden", "vp") ? "▸ Show" : "▾ Minimize"}</button></div>
       ${payHidden("vpPayHidden", "vp")
         ? `<div class="muted">Royal Flush ${VP_HANDS[11].pays}× + jackpot · … · Jacks or Better ${VP_HANDS[1].pays}×</div>`
@@ -1079,13 +1079,13 @@ function renderUth() {
     actions = `
       <button class="btn" data-uth="deal" ${seats.some(s => s.ante >= t.min) && !t.busy ? "" : "disabled"}>🤠 Deal (bet ${fmt(total)})</button>
       ${casUndoBtn(t.id, 'data-uth="undo"', !t.busy)}
-      <button class="btn ghost" data-uth="clear" ${total || t.hands.length ? "" : "disabled"}>Clear bets</button>
-      <button class="btn ghost" data-uth="rebet" ${last ? "" : "disabled"}>↺ Repeat last bets${last ? " (" + fmt(last) + ")" : ""}</button>`;
+      <button class="btn ghost" data-uth="clear" ${total || t.hands.length ? "" : "disabled"}>${csI("clear")}<span>Clear bets</span></button>
+      <button class="btn ghost" data-uth="rebet" ${last ? "" : "disabled"}>${csI("repeat")}<span>Repeat last bets${last ? " (" + fmt(last) + ")" : ""}</span></button>`;
   } else if (t.active >= 0 && !t.busy) {
     const h = t.hands[t.active];
     const raises = uthRaises(t).map(x => `<button class="btn" data-uth="raise${x}" ${purse(t.id) >= h.ante * x ? "" : "disabled"}>Raise ${x}× (${fmt(h.ante * x)})</button>`).join("");
     const passive = t.street === "river"
-      ? `<button class="btn ghost" data-uth="fold">🏳️ Fold</button>`
+      ? `<button class="btn ghost" data-uth="fold">${csI("fold")}<span>Fold</span></button>`
       : `<button class="btn ghost" data-uth="check">Check</button>`;
     const where = t.street === "pre" ? "Before the flop" : t.street === "flop" ? "After the flop" : "After the river";
     actions = `<span class="muted" style="align-self:center">Seat ${h.seat + 1} · ${where}:</span>${raises}${passive}`;
@@ -1100,7 +1100,7 @@ function renderUth() {
         <div class="muted">Ante ${fmt(t.min)} – ${fmt(t.max)} per seat · Blind = Ante · Trips optional (up to ${fmt(t.max)}) · Play 1 or 2 seats</div></div>
         <button class="btn ghost small" data-back="1" ${betting && !t.busy ? "" : "disabled"}>← All games</button></div>
 
-      <div class="vpPayHead"><b>📋 Payouts</b>
+      <div class="vpPayHead"><b>${csI("payouts")}<span>Payouts</span></b>
         <button class="btn ghost small" data-uth="togglePay">${payHidden("uthPayHidden", "uth") ? "▸ Show" : "▾ Minimize"}</button></div>
       ${payHidden("uthPayHidden", "uth") ? `<div class="muted">Blind: Royal 500:1 … Straight 1:1 · Trips: Royal 50:1 … Three of a Kind 3:1</div>` : `
       <div class="uthPayInfo">

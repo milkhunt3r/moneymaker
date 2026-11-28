@@ -161,7 +161,7 @@ function renderClimb(mixing = false) {
       <button class="decision main" data-climb="draw" ${climb.busy ? "disabled" : ""}><img class="decIco" src="assets/climb/ico-draw.webp" alt="">Draw a ball</button>`;
   } else {
     table = `
-      <button class="decision" data-climb="clear" ${climb.bet ? "" : "disabled"}>✖ Clear<small>bet</small></button>
+      <button class="decision" data-climb="clear" ${climb.bet ? "" : "disabled"}>${csI("clear")}<span>Clear</span><small>bet</small></button>
       <div class="betCircle">${climb.bet ? chipMark(climb.bet) + `<b>${fmt(climb.bet)}</b>` : `<span>Place your bet<br>with the chips below</span>`}</div>
       <button class="decision" data-climb="rebet" ${climb.lastBet ? "" : "disabled"}>↺ Same bet<small>${climb.lastBet ? fmt(climb.lastBet) : "—"}</small></button>
       <button class="decision main" data-climb="start" ${climb.bet >= climb.min ? "" : "disabled"}>🚀 Start</button>`;

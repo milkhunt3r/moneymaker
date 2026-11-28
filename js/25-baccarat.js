@@ -176,8 +176,8 @@ function renderBaccarat() {
       <div class="bjActions">${betting ? `
         <button class="btn" data-bac="deal" ${bacBets(t).player + bacBets(t).banker + bacBets(t).tie >= t.min && !t.busy ? "" : "disabled"}>🎴 Deal (bet ${fmt(total)})</button>
         ${casUndoBtn(t.id, 'data-bac="undo"', !t.busy)}
-        <button class="btn ghost" data-bac="clear" ${total || t.result ? "" : "disabled"}>Clear bets</button>
-        <button class="btn ghost" data-bac="rebet" ${last && !total ? "" : "disabled"}>↺ Repeat last bets${last ? " (" + fmt(last) + ")" : ""}</button>`
+        <button class="btn ghost" data-bac="clear" ${total || t.result ? "" : "disabled"}>${csI("clear")}<span>Clear bets</span></button>
+        <button class="btn ghost" data-bac="rebet" ${last && !total ? "" : "disabled"}>${csI("repeat")}<span>Repeat last bets${last ? " (" + fmt(last) + ")" : ""}</span></button>`
         : `<span class="muted" style="align-self:center">Dealing...</span>`}</div></div>
       <div id="casinoMsg" class="${/won|broke even/.test(t.message) ? "income" : "flash"}" style="margin-top:10px; text-align:center">${t.message}</div>
       <div class="muted" style="margin-top:6px; text-align:center">A = 1 · 10, J, Q, K = 0 · only the last digit counts · Banker wins pay 0.95:1 (5% commission) · On a Tie, Player and Banker bets are returned · The third card is drawn by the standard rules</div>

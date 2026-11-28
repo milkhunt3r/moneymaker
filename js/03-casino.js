@@ -70,7 +70,9 @@ function casUndoPop(id) {
   refundTo(id, u.paid);
   return true;
 }
-const casUndoBtn = (id, attr, on = true) => `<button class="btn ghost" ${attr} ${on && casUndoList(id).length ? "" : "disabled"}>↶ Undo</button>`;
+// 🖼️ the painted casino button / label icons (assets/icons/ico-cs-*.webp)
+const csI = (k) => `<img class="ico pti" src="assets/icons/ico-cs-${k}.webp" alt="">`;
+const casUndoBtn = (id, attr, on = true) => `<button class="btn ghost" ${attr} ${on && casUndoList(id).length ? "" : "disabled"}>${csI("undo")}<span>Undo</span></button>`;
 function freeDone(id, which = "inPlay") { freeTbl(id)[which] = []; }   // played: they are used up
 const purse = (id) => vipOn(id) ? state.vip.coins : state.casinoChips;
 const purseName = (id) => vipOn(id) ? "VIP coins" : "money";
@@ -149,11 +151,11 @@ function casLobbyHtml() {
   if (h.active) { const f = CAS_FAMS.find(x => x.id === h.game.id); if (f && !casLock(fav(f))) cont.push({ id: fav(f), hot: true }); }
   (state.casRecent || []).forEach(id => { if (cont.length < 4 && !cont.some(c => c.id === id) && CASINO_GAMES.some(g => g.id === id) && !casLock(id)) cont.push({ id }); });
   const contHtml = cont.length ? `<div class="casCont"><span class="casContLbl">▶ Continue playing</span>${cont.map(c => { const f = casFamOf(c.id);
-    return `<button class="casContBtn ${c.hot ? "hot" : ""}" data-game="${c.id}">${casIco(c.id)}<span><b>${f ? f.name : c.id}</b><small>${casTierName(c.id)}${c.hot ? ` · <span class="hotTag">🔥 HOT</span>` : ""}</small></span></button>`; }).join("")}</div>` : "";
+    return `<button class="casContBtn ${c.hot ? "hot" : ""}" data-game="${c.id}">${casIco(c.id)}<span><b>${f ? f.name : c.id}</b><small>${casTierName(c.id)}${c.hot ? ` · <span class="hotTag">${ico("ui-hot", "pti")}HOT</span>` : ""}</small></span></button>`; }).join("")}</div>` : "";
   const cards = CAS_FAMS.map(f => {
     const allLocked = f.tables.every(id => casLock(id)), hot = h.active && h.game.id === f.id;
     return `<div class="card casFam ${allLocked ? "locked" : ""} ${hot ? "hot" : ""}" ${allLocked ? "" : `data-game="${fav(f)}"`}>
-      <div class="casFamHead">${casIco(f.tables[0])}<div><h3>${f.name}${hot ? ` <span class="hotTag">🔥 HOT</span>` : ""}</h3><div class="muted">${f.desc}</div></div></div>
+      <div class="casFamHead">${casIco(f.tables[0])}<div><h3>${f.name}${hot ? ` <span class="hotTag">${ico("ui-hot", "pti")}HOT</span>` : ""}</h3><div class="muted">${f.desc}</div></div></div>
       ${allLocked ? `<div class="muted casFamLock">${ico("lock", "lockS")}${casLock(f.tables[0])}</div>` : ""}
       <div class="casTiers">${f.tables.map(id => casTierBtn(id)).join("")}</div></div>`; }).join("");
   return `<h2>Choose a game</h2>${contHtml}<div class="casFams">${cards}</div>`;
@@ -614,9 +616,9 @@ function renderRoulette() {
       ${freeChipRow(roulette, roulette.chipFree)}
       <div class="bjActions">
         <button class="btn" id="spin" ${roulette.spinning || totalBets() === 0 ? "disabled" : ""}>🎡 Spin (bet ${fmt(totalBets())})</button>
-        <button class="btn ghost" id="undoBet" ${roulette.spinning || !rlUndoList(roulette).length ? "disabled" : ""}>↶ Undo</button>
-        <button class="btn ghost" id="clearBets" ${roulette.spinning ? "disabled" : ""}>Clear bets</button>
-        <button class="btn ghost" id="rebet" ${roulette.spinning || !hasLast ? "disabled" : ""}>↺ Repeat last bets</button>
+        <button class="btn ghost" id="undoBet" ${roulette.spinning || !rlUndoList(roulette).length ? "disabled" : ""}>${csI("undo")}<span>Undo</span></button>
+        <button class="btn ghost" id="clearBets" ${roulette.spinning ? "disabled" : ""}>${csI("clear")}<span>Clear bets</span></button>
+        <button class="btn ghost" id="rebet" ${roulette.spinning || !hasLast ? "disabled" : ""}>${csI("repeat")}<span>Repeat last bets</span></button>
       </div></div>
       <div id="casinoMsg" class="flash" style="margin-top:8px"></div>
       <div class="muted" style="margin-top:6px">Click a number, or the line between numbers: between 2 = split, where 4 meet = corner, bottom edge = street, bottom corner = six line (next to 0: trios 0-1-2 / 0-2-3 where two rows meet the zero, and first four 0-1-2-3 at its bottom).</div>

@@ -99,7 +99,7 @@ async function gcSpin(buy = false) {
       hits = ok;
       if (s.free) { given += s.free; gcView = { ...gcView, fall: null, banner: `🧪 +${s.free} FREE SPINS`, wins: null, lines: null }; renderGeneCascade(); await gcWait(1200); gcView.banner = null; }
     }
-    if (round.capped && ok !== false) { gcView = { ...gcView, fall: null, banner: `🏆 MAX WIN ${SL_CAP.toLocaleString()}×!` }; renderGeneCascade(); await gcWait(1600); }
+    if (round.capped && ok !== false) { gcView = { ...gcView, fall: null, banner: `${csI("jackpot")}MAX WIN ${SL_CAP.toLocaleString()}×!` }; renderGeneCascade(); await gcWait(1600); }
   }
   // finished (or the player left: pay at once)
   const away = currentGame !== id;
@@ -108,7 +108,7 @@ async function gcSpin(buy = false) {
   if (!away) {
     const m = round.total;
     gcView = { ...(gcView || {}), wins: null, lines: null, popping: false, shown: m, done: true, drop: new Set(), fall: null, out: false,
-      banner: m >= 100 ? `💥 MEGA WIN ${fmt(win)}!` : m >= 20 ? `🎉 BIG WIN ${fmt(win)}!` : null };
+      banner: m >= 100 ? `${csI("megawin")}MEGA WIN ${fmt(win)}!` : m >= 20 ? `${csI("bigwin")}BIG WIN ${fmt(win)}!` : null };
     const shownView = gcView;
     if (shownView.banner) setTimeout(() => { if (gcView === shownView && !gcBusy) { gcView.banner = null; if (currentGame === id) renderGeneCascade(); } }, 2500);
     st.msg = (buy ? `🛒 Bought bonus (${fmt(cost)}): it paid ${fmt(win)} (${+m.toFixed(2)}× your bet, ${round.award} free spins), ${win >= cost ? `+${fmt(win - cost)}` : `−${fmt(cost - win)}`} overall.` +
@@ -171,7 +171,7 @@ function renderGeneCascade() {
       </div>
       <div class="gcLines">${lines || "&nbsp;"}</div>
       <div class="gcActions">
-        ${busy ? `<span></span><button class="gcSkipBtn" data-gc="skip">⏩ Skip to the result</button><span></span>`
+        ${busy ? `<span></span><button class="gcSkipBtn" data-gc="skip">${csI("fast")}<span>Skip to the result</span></button><span></span>`
           : `<div class="gcSide left"><button class="gcBtn gcBuyBtn ${armed ? "armed" : ""}" data-gc="buy" ${state.casinoChips >= buyCost ? "" : "disabled"}
                title="Start the free spins at once for ${SL_BUY}× your bet"><b>${armed ? "Tap again to buy" : "Buy free spins"}</b><small>${fmt(buyCost)} · ${SL_BUY}× bet</small></button></div>
              <button class="gcBtn gcSpinBtn" data-gc="spin" ${state.casinoChips >= st.bet ? "" : "disabled"}><b>SPIN</b><small>${fmt(st.bet)}</small></button>
