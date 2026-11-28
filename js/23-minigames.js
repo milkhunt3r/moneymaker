@@ -152,7 +152,7 @@ function digyHaul(t) {
   for (const k in DIGY_HAUL) { M.vault[k] = (M.vault[k] || 0) + DIGY_HAUL[k]; D.ores[k] = (D.ores[k] || 0) + DIGY_HAUL[k]; }
   D.hauls++; D.lastHaul = t;
   if (Date.now() - t > 5000) D.awayHauls = (D.awayHauls || 0) + 1;   // happened while the game was closed: told once, all together
-  else if (typeof showNotice === "function") showNotice(LANG === "es" ? `🤖 ${digyName()} ha llevado un botín a tu 🏦 cámara: 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25.` : `🤖 ${digyName()} brought a haul to your 🏦 vault: 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25.`);
+  else if (typeof showNotice === "function") showNotice(LANG === "es" ? `🐾 ${digyName()} ha llevado un botín de mineral a tu cámara.` : `🐾 ${digyName()} brought a haul of ore to your vault.`);
 }
 function digyAdvance(now = Date.now()) {
   const D = state.digy; if (!digyOwned() || !mineUnlocked()) return;
@@ -831,7 +831,7 @@ function renderMine() {
         ${vaultLine()}
         <div class="moneyRow" style="justify-content:center">
           ${M.pending ? `<button class="btn big" data-mine="pending">${mnIco("bag")}Ore from your last run: sell or keep</button>`
-            : digyBusy() ? `<button class="btn big" disabled>🤖 <span data-noi18n>${digyName()}</span>&nbsp;<span>is digging…</span>&nbsp;<b id="digyLeft">${clockMs(state.digy.dig.end - Date.now())}</b></button>`
+            : digyBusy() ? `<button class="btn big" disabled><img class="digyPetIco" src="assets/icons/tab-pet.webp" alt=""><span data-noi18n>${digyName()}</span>&nbsp;<span>is digging…</span>&nbsp;<b id="digyLeft">${clockMs(state.digy.dig.end - Date.now())}</b></button>`
             : `<button class="btn big" data-mine="start" ${e >= 1 ? "" : "disabled"}>${mnIco("pick")}Start a run (${mnIco("energy")}1)</button>`}
           <button class="btn ghost" data-mine="vault" ${ORE_KEYS.some(k => M.vault[k] > 0) ? "" : "disabled"}>💰 Sell vault ore</button></div>
         <p class="muted">Runs: ${M.runs} · Deepest ever: ${M.best * 2} m · Chests opened: ${M.chests} · Earned: ${fmt(M.earned)}</p>

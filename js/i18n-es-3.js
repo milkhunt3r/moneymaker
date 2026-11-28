@@ -1931,6 +1931,8 @@ Object.assign(ES, { "Digy joined you!": "¡Digy se ha unido a ti!", "is digging�
   "He never digs while you're in a run, and you can't start a run while he digs.": "Nunca excava mientras estás en una partida, y no puedes empezar una partida mientras él excava.",
   "He keeps working while the game is closed (up to 24 hours).": "Sigue trabajando con el juego cerrado (hasta 24 horas).",
   "A digging robot for your mine": "Un robot excavador para tu mina",
+  "Every dig brings this haul to your vault:": "Cada excavación lleva este botín a tu cámara:",
+  "Cada excavación lleva este botín a tu cámara": "Cada excavación lleva este botín a tu cámara",
   "Digy": "Digy",
   "Click him to pet him (5 in a row and he jumps for joy). Don't poke him while he digs: he gets grumpy!": "Haz clic en él para acariciarlo (5 seguidas y salta de alegría). No lo molestes mientras excava: ¡se enfada!",
   "Rumour has it an art-loving alien race has a painter who'd love a new home.": "Se rumorea que una raza alienígena amante del arte tiene un pintor al que le encantaría un nuevo hogar.", "Get Digy": "Conseguir a Digy", "Go and see him": "Ir a verlo" });

@@ -2170,7 +2170,7 @@ body.phone .artPalette { grid-template-columns: repeat(8, 30px); }
 body.phone .pipCard { flex-direction: column; align-items: stretch; }
 body.phone .pipStage { margin: 0 auto; }
 .pipOffer { display: flex; gap: 12px; align-items: center; margin: 10px 0; padding: 10px 12px; border-radius: 12px; background: rgba(255,200,80,0.1); border: 1px solid rgba(255,200,80,0.35); }
-.pipOffer img { width: 84px; height: 84px; object-fit: contain; flex: none; }
+.pipOffer > img { width: 84px; height: 84px; object-fit: contain; flex: none; }   /* only the pet picture, not the icons in the text */
 .pipOffer .btn { margin-top: 6px; }
 .pipOffer.locked { opacity: 0.75; background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.12); }
 .pipOffer.locked img { filter: grayscale(1) brightness(0.6); }
@@ -2751,3 +2751,11 @@ body.phone .digySprite { width: 125px; height: 125px; }
 body.phone .digyDock { width: 88px; margin-left: 18px; }
 body.phone .digyHole { width: 110px; }
 body.phone .digyDirt { width: 70px; }
+/* 🐾 Digy: the in-game pet icon and the mine's painted ore icons in his texts */
+.digyPetIco { width: 1.25em; height: 1.25em; object-fit: contain; vertical-align: -0.25em; margin-right: 6px; display: inline-block; }
+.digyOres { display: inline-flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; vertical-align: middle; }
+.digyOre { display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
+.digyOre .oreIcon { width: 1.4em; height: 1.4em; object-fit: contain; }
+.digyHaulBox { display: flex; justify-content: center; margin: 4px 0 10px; font-size: 17px; }
+.digyHave { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+.pipOffer .ico { width: 1.3em; height: 1.3em; vertical-align: -0.3em; }

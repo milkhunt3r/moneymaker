@@ -40,7 +40,7 @@ function petLive() {
   if (digyHas()) {
     const D = state.digy, o = D.ores || {};
     v.dStatus = digyStatus();
-    v.dStats = `<span>⛏️ Hauls: <b>${(D.hauls || 0).toLocaleString()}</b></span><span>🔴 <b>${(o.ruby || 0).toLocaleString()}</b></span><span>💎 <b>${(o.diamond || 0).toLocaleString()}</b></span><span>🟡 <b>${(o.gold || 0).toLocaleString()}</b></span><span>⚪ <b>${(o.silver || 0).toLocaleString()}</b></span><span>🟠 <b>${(o.copper || 0).toLocaleString()}</b></span><span>⚫ <b>${(o.coal || 0).toLocaleString()}</b></span><span>❤️ Petted: <b>${(D.pets || 0).toLocaleString()}</b></span><span>😤 Disturbed: <b>${(D.pokes || 0).toLocaleString()}</b></span>`;
+    v.dStats = `<span>⛏️ Hauls: <b>${(D.hauls || 0).toLocaleString()}</b></span>${Object.keys(DIGY_HAUL).map(k => `<span class="digyOre">${oreIcon(k)}<b>${(o[k] || 0).toLocaleString()}</b></span>`).join("")}<span>❤️ Petted: <b>${(D.pets || 0).toLocaleString()}</b></span><span>😤 Disturbed: <b>${(D.pokes || 0).toLocaleString()}</b></span>`;
   }
   return v;
 }
@@ -115,7 +115,7 @@ function renderPetPage() {
       <details class="petHow"><summary>ℹ️ How it works</summary>
       <ul class="petDoes">
         <li>🔋 His battery is your ⛏️ mine energy. When it's full, he wakes up and digs for 30 seconds, using ⚡ 3 energy.</li>
-        <li>⛏️ Every dig brings a fixed haul to your 🏦 vault: 🔴 1 ruby, 💎 3 diamonds, 🟡 10 gold, ⚪ 20 silver, 🟠 25 copper and ⚫ 25 coal.</li>
+        <li><span>⛏️ Every dig brings this haul to your vault:</span> ${digyHaulHtml()}</li>
         <li>⏸️ He never digs while you're in a run, and you can't start a run while he digs.</li>
         <li>🌙 He keeps working while the game is closed (up to 24 hours).</li>
         <li>❤️ Click him to pet him (5 in a row and he jumps for joy). Don't poke him while he digs: he gets grumpy!</li>

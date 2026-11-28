@@ -3307,6 +3307,8 @@ Object.assign(ES, { "Digy joined you!": "¡Digy se ha unido a ti!", "is digging�
   "He never digs while you're in a run, and you can't start a run while he digs.": "Nunca excava mientras estás en una partida, y no puedes empezar una partida mientras él excava.",
   "He keeps working while the game is closed (up to 24 hours).": "Sigue trabajando con el juego cerrado (hasta 24 horas).",
   "A digging robot for your mine": "Un robot excavador para tu mina",
+  "Every dig brings this haul to your vault:": "Cada excavación lleva este botín a tu cámara:",
+  "Cada excavación lleva este botín a tu cámara": "Cada excavación lleva este botín a tu cámara",
   "Digy": "Digy",
   "Click him to pet him (5 in a row and he jumps for joy). Don't poke him while he digs: he gets grumpy!": "Haz clic en él para acariciarlo (5 seguidas y salta de alegría). No lo molestes mientras excava: ¡se enfada!",
   "Rumour has it an art-loving alien race has a painter who'd love a new home.": "Se rumorea que una raza alienígena amante del arte tiene un pintor al que le encantaría un nuevo hogar.", "Get Digy": "Conseguir a Digy", "Go and see him": "Ir a verlo" });
@@ -14747,7 +14749,7 @@ function digyHaul(t) {
   for (const k in DIGY_HAUL) { M.vault[k] = (M.vault[k] || 0) + DIGY_HAUL[k]; D.ores[k] = (D.ores[k] || 0) + DIGY_HAUL[k]; }
   D.hauls++; D.lastHaul = t;
   if (Date.now() - t > 5000) D.awayHauls = (D.awayHauls || 0) + 1;   // happened while the game was closed: told once, all together
-  else if ((__eocLoaded >= 7 && typeof showNotice === "function")) showNotice(LANG === "es" ? `🤖 ${digyName()} ha llevado un botín a tu 🏦 cámara: 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25.` : `🤖 ${digyName()} brought a haul to your 🏦 vault: 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25.`);
+  else if ((__eocLoaded >= 7 && typeof showNotice === "function")) showNotice(LANG === "es" ? `🐾 ${digyName()} ha llevado un botín de mineral a tu cámara.` : `🐾 ${digyName()} brought a haul of ore to your vault.`);
 }
 function digyAdvance(now = Date.now()) {
   const D = state.digy; if (!digyOwned() || !mineUnlocked()) return;
@@ -15426,7 +15428,7 @@ function renderMine() {
         ${vaultLine()}
         <div class="moneyRow" style="justify-content:center">
           ${M.pending ? `<button class="btn big" data-mine="pending">${mnIco("bag")}Ore from your last run: sell or keep</button>`
-            : digyBusy() ? `<button class="btn big" disabled>🤖 <span data-noi18n>${digyName()}</span>&nbsp;<span>is digging…</span>&nbsp;<b id="digyLeft">${clockMs(state.digy.dig.end - Date.now())}</b></button>`
+            : digyBusy() ? `<button class="btn big" disabled><img class="digyPetIco" src="assets/icons/tab-pet.webp" alt=""><span data-noi18n>${digyName()}</span>&nbsp;<span>is digging…</span>&nbsp;<b id="digyLeft">${clockMs(state.digy.dig.end - Date.now())}</b></button>`
             : `<button class="btn big" data-mine="start" ${e >= 1 ? "" : "disabled"}>${mnIco("pick")}Start a run (${mnIco("energy")}1)</button>`}
           <button class="btn ghost" data-mine="vault" ${ORE_KEYS.some(k => M.vault[k] > 0) ? "" : "disabled"}>💰 Sell vault ore</button></div>
         <p class="muted">Runs: ${M.runs} · Deepest ever: ${M.best * 2} m · Chests opened: ${M.chests} · Earned: ${fmt(M.earned)}</p>
@@ -19235,7 +19237,7 @@ function petLive() {
   if (digyHas()) {
     const D = state.digy, o = D.ores || {};
     v.dStatus = digyStatus();
-    v.dStats = `<span>⛏️ Hauls: <b>${(D.hauls || 0).toLocaleString()}</b></span><span>🔴 <b>${(o.ruby || 0).toLocaleString()}</b></span><span>💎 <b>${(o.diamond || 0).toLocaleString()}</b></span><span>🟡 <b>${(o.gold || 0).toLocaleString()}</b></span><span>⚪ <b>${(o.silver || 0).toLocaleString()}</b></span><span>🟠 <b>${(o.copper || 0).toLocaleString()}</b></span><span>⚫ <b>${(o.coal || 0).toLocaleString()}</b></span><span>❤️ Petted: <b>${(D.pets || 0).toLocaleString()}</b></span><span>😤 Disturbed: <b>${(D.pokes || 0).toLocaleString()}</b></span>`;
+    v.dStats = `<span>⛏️ Hauls: <b>${(D.hauls || 0).toLocaleString()}</b></span>${Object.keys(DIGY_HAUL).map(k => `<span class="digyOre">${oreIcon(k)}<b>${(o[k] || 0).toLocaleString()}</b></span>`).join("")}<span>❤️ Petted: <b>${(D.pets || 0).toLocaleString()}</b></span><span>😤 Disturbed: <b>${(D.pokes || 0).toLocaleString()}</b></span>`;
   }
   return v;
 }
@@ -19310,7 +19312,7 @@ function renderPetPage() {
       <details class="petHow"><summary>ℹ️ How it works</summary>
       <ul class="petDoes">
         <li>🔋 His battery is your ⛏️ mine energy. When it's full, he wakes up and digs for 30 seconds, using ⚡ 3 energy.</li>
-        <li>⛏️ Every dig brings a fixed haul to your 🏦 vault: 🔴 1 ruby, 💎 3 diamonds, 🟡 10 gold, ⚪ 20 silver, 🟠 25 copper and ⚫ 25 coal.</li>
+        <li><span>⛏️ Every dig brings this haul to your vault:</span> ${digyHaulHtml()}</li>
         <li>⏸️ He never digs while you're in a run, and you can't start a run while he digs.</li>
         <li>🌙 He keeps working while the game is closed (up to 24 hours).</li>
         <li>❤️ Click him to pet him (5 in a row and he jumps for joy). Don't poke him while he digs: he gets grumpy!</li>
@@ -21168,6 +21170,10 @@ var DIGY_FRAMES = ["idle-1", "idle-2", "walk-1", "walk-2", "walk-3", "walk-4", "
   "clean-1", "clean-2", "clean-3", "charge-low-1", "charge-low-2", "charge-mid", "charge-full", "wake", "happy", "petted", "annoyed"];
 var digySrc = (f) => `assets/digy/digy-${f}.webp?v=${DIGY_V}`;
 var digyOn = () => digyOwned() && !state.digy.off;
+// 🖼️ the painted icons: the in-game pet icon, and the mine's own ore / energy / vault pictures
+var digyIco = () => `<img class="digyPetIco" src="assets/icons/tab-pet.webp" alt="">`;
+var digyOres = (list) => Object.keys(list).map(k => `<span class="digyOre">${oreIcon(k)}<b>${list[k]}</b></span>`).join("");
+var digyHaulHtml = () => `<span class="digyOres">${digyOres(DIGY_HAUL)}</span>`;
 if (digyOwned()) { const D = state.digy; D.hauls = D.hauls || 0; D.ores = D.ores || {}; }
 
 /* ----- 🗿 the offer in the Kragg panel (Space Logistics) ----- */
@@ -21176,11 +21182,12 @@ function digyOfferHtml(k) {
   const L = spLevel("rock"), V = (state.mine && state.mine.vault) || {};
   const can = Object.keys(DIGY_PRICE).every(o => (V[o] || 0) >= DIGY_PRICE[o]);
   return `<div class="pipOffer ${L >= DIGY_LV ? "" : "locked"}"><img src="${digySrc("idle-2")}" alt="">
-    <div><b>🤖 A digging robot for your mine</b>
-      <div>${L >= DIGY_LV ? `The Kragg built a little mining robot, <b>Digy</b>. When your ⛏️ mine energy is full, he digs for you and brings a haul of ore to your 🏦 vault. They ask <b>💎 ${DIGY_PRICE.diamond} diamonds and 🔴 ${DIGY_PRICE.ruby} rubies</b> for him.`
-        : `Become <b>😊 Friendly</b> with the Kragg and they may sell you one of their little mining robots.`}</div>
-      ${L >= DIGY_LV ? `<button class="btn" data-digy="buy" ${can ? "" : "disabled"}>🤖 Get Digy · 💎 ${DIGY_PRICE.diamond} · 🔴 ${DIGY_PRICE.ruby}</button>
-        ${can ? "" : `<div class="muted">Your 🏦 vault: 💎 ${V.diamond || 0} / ${DIGY_PRICE.diamond} · 🔴 ${V.ruby || 0} / ${DIGY_PRICE.ruby}</div>`}` : ""}</div></div>`;
+    <div><b>${digyIco()}<span>A digging robot for your mine</span></b>
+      <div data-noi18n>${L >= DIGY_LV ? (LANG === "es" ? `Los Kragg han construido un pequeño robot minero, <b>Digy</b>. Cuando la energía de tu mina ${mnIco("energy")} está llena, excava por ti y lleva un botín de mineral a tu cámara ${mnIco("vault")}.`
+          : `The Kragg built a little mining robot, <b>Digy</b>. When your mine energy ${mnIco("energy")} is full, he digs for you and brings a haul of ore to your vault ${mnIco("vault")}.`)
+        : (LANG === "es" ? `Hazte <b>😊 amigo</b> de los Kragg y puede que te vendan uno de sus pequeños robots mineros.` : `Become <b>😊 Friendly</b> with the Kragg and they may sell you one of their little mining robots.`)}</div>
+      ${L >= DIGY_LV ? `<button class="btn" data-digy="buy" ${can ? "" : "disabled"}>${digyIco()}<span>Get Digy</span> · <span class="digyOres">${digyOres(DIGY_PRICE)}</span></button>
+        ${can ? "" : `<div class="muted digyHave">${mnIco("vault")}<span class="digyOres">${Object.keys(DIGY_PRICE).map(o => `<span class="digyOre">${oreIcon(o)}<b>${V[o] || 0} / ${DIGY_PRICE[o]}</b></span>`).join("")}</span></div>`}` : ""}</div></div>`;
 }
 function digyBuy() {
   if (digyOwned() || typeof spLevel !== "function" || spLevel("rock") < DIGY_LV || !state.mine) return;
@@ -21190,8 +21197,10 @@ function digyBuy() {
   state.digy = { owned: true, name: "Digy", at: Date.now(), hauls: 0, ores: {}, seen: Date.now(), pets: 0 };
   save();
   showModal(`<div style="text-align:center"><img src="${digySrc("charge-full")}" alt="" style="width:180px;height:180px;object-fit:contain">
-    <h2>🤖 Digy joined you!</h2>
-    <p>He set up his charging dock at the top of the ⛏️ Gold Mine Dig page. Every time your mine energy is full, he uses ⚡ 3 energy and digs for 30 seconds, then brings a haul to your 🏦 vault: 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25.</p>
+    <h2>${digyIco()}<span>Digy joined you!</span></h2>
+    <p data-noi18n>${LANG === "es" ? `Ha instalado su base de carga arriba en la página de ⛏️ Excavación en la mina de oro. Cada vez que la energía de la mina está llena, usa ${mnIco("energy")} 3 de energía, excava durante 30 segundos y lleva este botín a tu cámara ${mnIco("vault")}:`
+      : `He set up his charging dock at the top of the ⛏️ Gold Mine Dig page. Every time your mine energy is full, he uses ${mnIco("energy")} 3 energy, digs for 30 seconds and brings this haul to your vault ${mnIco("vault")}:`}</p>
+    <div class="digyHaulBox">${digyHaulHtml()}</div>
     <p class="muted">He never digs while you're in a run, and he keeps working while the game is closed (up to 24 hours).</p>
     <div class="row" style="justify-content:center;gap:10px"><button class="btn big" data-digy="visit">⛏️ Go and see him</button><button class="btn ghost" data-modal="close">Later</button></div></div>`);
   if ((__eocLoaded >= 44 && typeof renderSpace === "function") && state.view === "logistics") renderSpace();
@@ -21219,7 +21228,7 @@ function digyHubLine() {
   const D = state.digy, es = LANG === "es", now = Date.now();
   const t = D.off ? (es ? "descansando" : "resting") : D.dig ? (es ? `⛏️ excavando ${clockMs(D.dig.end - now)}` : `⛏️ digging ${clockMs(D.dig.end - now)}`)
     : (es ? `🔋 cargando ${digyBattery()}%` : `🔋 charging ${digyBattery()}%`);
-  return `<div class="gameStatus digyHub" data-noi18n>🤖 ${digyName()}: <span id="digyHubT">${t}</span></div>`;
+  return `<div class="gameStatus digyHub" data-noi18n>${digyIco()}${digyName()}: <span id="digyHubT">${t}</span></div>`;
 }
 
 /* ----- 🎬 his corner on the Gold Mine Dig page ----- */
@@ -21265,7 +21274,7 @@ function renderDigyCorner() {
   el.hidden = !digyOn() || !!(state.mine && state.mine.run);
   if (el.hidden) { DG.built = false; el.innerHTML = ""; return; }
   if (!DG.built || !el.firstChild) {
-    el.innerHTML = `<div class="card digyCard"><div class="digyHead"><h3 data-noi18n>🤖 ${digyName()}</h3><span class="digyStatus" id="digyStatus" data-noi18n></span></div>
+    el.innerHTML = `<div class="card digyCard"><div class="digyHead"><h3 data-noi18n>${digyIco()}${digyName()}</h3><span class="digyStatus" id="digyStatus" data-noi18n></span></div>
       <div class="digyStage" id="digyStage">
         <img class="digyProp digyDock" src="assets/digy/digy-dock.webp?v=${DIGY_V}" alt="" style="left:${DIGY_DOCK}%">
         <img class="digyProp digyHole" src="assets/digy/digy-hole.webp?v=${DIGY_V}" alt="" style="left:${DIGY_HOLE}%">
@@ -21307,8 +21316,8 @@ setInterval(() => {
 function digyAwayNotice() {
   const D = state.digy; if (!D || !D.awayHauls) return;
   const n = D.awayHauls; D.awayHauls = 0; save();
-  showNotice(LANG === "es" ? `🤖 Mientras no estabas, ${digyName()} excavó ${n} ${n === 1 ? "vez" : "veces"} y llevó ${n === 1 ? "su botín" : "sus botines"} a tu 🏦 cámara.`
-    : `🤖 While you were away, ${digyName()} dug ${n} time${n === 1 ? "" : "s"} and brought ${n === 1 ? "his haul" : "the hauls"} to your 🏦 vault.`);
+  showNotice(LANG === "es" ? `🐾 Mientras no estabas, ${digyName()} excavó ${n} ${n === 1 ? "vez" : "veces"} y llevó ${n === 1 ? "su botín" : "sus botines"} a tu 🏦 cámara.`
+    : `🐾 While you were away, ${digyName()} dug ${n} time${n === 1 ? "" : "s"} and brought ${n === 1 ? "his haul" : "the hauls"} to your 🏦 vault.`);
 }
 
 /* ----- ❤️ petting him (😤 poking him while he digs makes him grumpy) ----- */
