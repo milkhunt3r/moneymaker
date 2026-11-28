@@ -1955,6 +1955,8 @@ p.guestWarn { font-size: 14px; background: rgba(255, 170, 0, 0.1); border: 1px s
 .bugForm .bugCheck { display: flex; gap: 8px; align-items: flex-start; font-weight: 400; font-size: 14px; }
 .bugForm .bugCheck input { margin-top: 3px; width: 16px; height: 16px; flex: none; }
 .bugForm .cloudPick { justify-content: center; }
+.bugForm .cloudPick .btn { flex-direction: row; align-items: center; justify-content: center; gap: 8px; }   /* icon beside the text */
+.bugForm .cloudPick .btn .ico { width: 1.4em; height: 1.4em; margin: 0; }
 .bugAlt { font-size: 13px; text-align: center; }
 .orArrow { opacity: 0.6; font-size: 20px; }
 /* ☕ support pop-up */

@@ -32,7 +32,7 @@ function bugReportText() {
 }
 function showBugReport() {
   showModal(`<div class="bugForm">
-    <h2>🐞 Report a bug</h2>
+    <h2>${ico("bug", "pti")}Report a bug</h2>
     <p class="muted">Tell us what went wrong. Your report goes to <b>${BUG_EMAIL}</b>.</p>
     <label>What are you playing on?<select id="bugDevice">${BUG_DEVICES.map(d => `<option value="${d}" ${d === bugGuessDevice() ? "selected" : ""}>${d === "Phone" ? "📱" : d === "Tablet" ? "📲" : "💻"} ${d}</option>`).join("")}</select></label>
     <label>What kind of problem?<select id="bugKind">${BUG_KINDS.map(k => `<option value="${k}">${k}</option>`).join("")}</select></label>
@@ -40,8 +40,8 @@ function showBugReport() {
       placeholder="For example: I won the level 4 boss but the loot box didn't open."></textarea></label>
     <label class="bugCheck"><input type="checkbox" id="bugInfo" checked> Attach game details (version, page, browser and screen size). No save data or personal details are included.</label>
     <div class="cloudPick">
-      <button class="btn big" id="bugSend">📧 Send by email</button>
-      <button class="btn big ghost" id="bugCopy">📋 Copy report</button>
+      <button class="btn big" id="bugSend">${acI("requests")}<span>Send by email</span></button>
+      <button class="btn big ghost" id="bugCopy">${acI("copy")}<span>Copy report</span></button>
     </div>
     <p class="muted bugAlt">No email app? Press <b>Copy report</b> and send it from your email to <b>${BUG_EMAIL}</b>.</p>
     <button class="btn ghost small" id="bugBack">← Back to settings</button>

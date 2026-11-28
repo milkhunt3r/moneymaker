@@ -29,7 +29,7 @@ function statusHtml(s) {
 }
 // 🎨 plain-text notes (notices, settings and backup messages): a known emoji in front becomes its painted icon, the rest is escaped
 const LEAD_ICO = { "✅": "ac-ok", "❌": "ac-error", "☁️": "ac-cloud", "💡": "ac-tips", "⚠️": "ac-warning", "🗑️": "ac-reset", "📋": "ac-copy",
-  "👥": "ac-friends", "💾": "ac-backup", "🏚️": "ivx-crash", "🔄": "tr-replace", "🔬": "sx-molbio" };
+  "👥": "ac-friends", "💾": "ac-backup", "📧": "ac-requests", "🏚️": "ivx-crash", "🔄": "tr-replace", "🔬": "sx-molbio" };
 function leadIco(s) {
   s = String(s || ""); const e = Object.keys(LEAD_ICO).find(k => s.startsWith(k));
   return e ? `${inIco(LEAD_ICO[e])}<span>${escapeHtml(s.slice(e.length).trim())}</span>` : escapeHtml(s);
