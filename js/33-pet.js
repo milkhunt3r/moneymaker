@@ -2,7 +2,7 @@
 // 🖼️ painted icons for the pets' texts (🐾 Pets page, Pip's and Digy's corners). pi(key, emoji): the painted icon
 // when its file exists (assets/icons/ico-<file>.webp), the emoji until then (PT_NEW lists the new pet set once its art is in).
 const PT_OLD = { money: "money", income: "ui-income", art: "ui-art", pick: "mn-pick", energy: "mn-energy" };
-const PT_NEW = new Set([]);   // pt-heart, pt-grumpy, pt-paintings, pt-match, pt-kept, pt-sold, pt-tap, pt-drink, pt-sleep, pt-awake, pt-painting, pt-resting, pt-charging, pt-digging, pt-waiting, pt-hauls
+const PT_NEW = new Set(["heart", "grumpy", "paintings", "match", "kept", "sold", "tap", "drink", "sleep", "awake", "painting", "resting", "charging", "digging", "waiting", "hauls"]);   // pt-heart, pt-grumpy, pt-paintings, pt-match, pt-kept, pt-sold, pt-tap, pt-drink, pt-sleep, pt-awake, pt-painting, pt-resting, pt-charging, pt-digging, pt-waiting, pt-hauls
 const pi = (k, emoji) => PT_OLD[k] ? `<img class="ico pti" src="assets/icons/ico-${PT_OLD[k]}.webp" alt="">`
   : PT_NEW.has(k) ? `<img class="ico pti" src="assets/icons/ico-pt-${k}.webp" alt="">` : emoji;
 /* =====================================================================
