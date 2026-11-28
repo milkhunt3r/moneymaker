@@ -2261,7 +2261,7 @@ body.phone .frMini { display: none; }
 .duVs { font-size: 34px; font-weight: 900; color: #ffd34d; text-shadow: 0 0 12px rgba(255,120,0,0.8), 0 2px 4px #000; }
 .duDie { width: 86px; height: 86px; filter: drop-shadow(0 6px 8px rgba(0,0,0,0.6)); animation: duRoll 0.5s ease-out; }
 .duDie.wait { display: grid; place-items: center; font-size: 34px; border-radius: 18px; background: rgba(0,0,0,0.35); border: 2px dashed rgba(255,211,77,0.5); animation: duBob 1.2s ease-in-out infinite; }
-.duSum { position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 22px; color: #fff; background: rgba(0,0,0,0.55); border-radius: 12px; padding: 0 10px; }
+.duSum { position: absolute; bottom: -30px; left: 0; right: 0; margin: 0 auto; width: fit-content; font-size: 22px; color: #fff; background: rgba(0,0,0,0.55); border-radius: 12px; padding: 0 10px; }
 .duSay { text-align: center; font-size: 22px; font-weight: 800; text-shadow: 0 2px 6px #000; margin: 10px 0; min-height: 30px; }
 .duSay.win { color: #7be38a; font-size: 28px; } .duSay.lose { color: #ff8a8a; font-size: 26px; }
 .duPicks { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
@@ -2330,6 +2330,43 @@ body.phone .duDie.big { width: 70px; height: 70px; } body.phone .duBust { width:
 .duHIco { width: 20px; height: 20px; object-fit: contain; }
 .duHDice { margin-left: auto; display: flex; gap: 2px; } .duHDice img { width: 18px; height: 18px; }
 body.phone .duHist li { font-size: 12px; } body.phone .duHDice img { width: 15px; height: 15px; }
+/* 🎲 Dice Battle: 2–5 dice, hold to shake, the result lands die by die, winner glows; round dots; Best of 3 / 5 */
+.duBestPick, .duDiceN { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.duBestPick { justify-content: flex-start; margin-top: 12px; }
+.duBestPick .seg, .duDiceN .seg { border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 6px 14px; font-weight: 700; }
+.duDiceN { margin-bottom: 6px; font-weight: 700; text-shadow: 0 1px 3px #000; } .duDiceN .seg { min-width: 44px; font-size: 18px; }
+.duMatch .duTip { text-align: center; font-size: 13px; color: #e6e1f7; text-shadow: 0 1px 3px #000; margin: 4px 0; }
+.duDice { flex-wrap: wrap; align-content: center; max-width: 46%; }
+.duDice.n4 .duDie, .duDice.n5 .duDie { width: 64px; height: 64px; }
+.duDice .duDie.ghost { opacity: 0.45; animation: none; }
+.duDice .duDie.ghost.shaking { opacity: 1; animation: duRattle 0.11s ease-in-out infinite alternate; }
+@keyframes duRattle { from { transform: translate(-3px, 2px) rotate(-9deg); } to { transform: translate(3px, -3px) rotate(9deg); } }
+.duRoll { touch-action: manipulation; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.duRoll.shaking { transform: scale(0.96); filter: brightness(1.15); }
+.duDice .duDie:not(.ghost):not(.wait) { animation: none; position: relative; z-index: 1; }
+.duDice .duDie.land { animation: duTumble 0.55s cubic-bezier(0.2, 0.8, 0.3, 1.2) var(--d, 0ms) both; }
+.duDice .duDie.one { filter: drop-shadow(0 0 10px rgba(255,60,60,0.9)) drop-shadow(0 6px 8px rgba(0,0,0,0.6)); }
+.duDice .duSum { z-index: 2; }
+.duSum.bust { background: rgba(200,30,30,0.85); }
+.duSum.land { animation: duPop 0.3s ease-out var(--d, 0ms) both; }
+.duSum.bust.land { animation: duBustHit 0.7s ease-out var(--d, 0ms) both; }
+.duDice.win::before { content: ""; position: absolute; inset: -18px -10px -40px; border-radius: 30px; z-index: 0; pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(255,211,77,0.5), rgba(255,211,77,0) 70%); }
+.duDice.win .duSum { background: #e0a800; color: #2b2200; }
+.duDice.lose { opacity: 0.55; }
+.duDice.later.win::before { animation: duFade 0.5s ease-out var(--duRev, 0ms) both; }
+@keyframes duFade { from { opacity: 0; } }
+.duDice.later.win .duSum { animation: duPop 0.3s ease-out var(--d, 0ms) both, duGold 0.4s var(--duRev, 0ms) both; }
+.duDice.later.win .duSum.bust { animation: duBustHit 0.7s ease-out var(--d, 0ms) both; }
+@keyframes duGold { from { background: rgba(0,0,0,0.55); color: #fff; } to { background: #e0a800; color: #2b2200; } }
+.duDice.later.lose { animation: duDim 0.4s var(--duRev, 0ms) both; }
+@keyframes duDim { from { opacity: 1; } to { opacity: 0.55; } }
+.duPips { display: inline-flex; gap: 5px; padding: 0 4px; }
+.duPips i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #ffd34d; background: rgba(0,0,0,0.4); box-shadow: 0 1px 3px #000; }
+.duPips i.on { background: radial-gradient(circle at 35% 35%, #fff3b0, #ffd34d 45%, #c99200); }
+body.phone .duDice.n4 .duDie, body.phone .duDice.n5 .duDie { width: 40px; height: 40px; }
+body.phone .duDice.n3 .duDie { width: 46px; height: 46px; }
+body.phone .duPips i { width: 11px; height: 11px; }
 .duMoney { margin-left: auto; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 14px; background: rgba(255,211,77,0.12); border: 1px solid rgba(255,211,77,0.5); }
 .duMoney b { font-size: 24px; color: #ffd34d; white-space: nowrap; } .duMoneyI { width: 34px; height: 34px; object-fit: contain; }
 body.phone .duHead { flex-wrap: wrap; } body.phone .duMoney { margin-left: 0; width: 100%; justify-content: center; } body.phone .duMoney b { font-size: 20px; }

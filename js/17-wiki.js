@@ -140,7 +140,7 @@ function wikiCasino() {
       Random results use your browser's secure random generator.</p>
     <h3>⚔️ Online casino</h3>
     <p>On the left of the Casino, <b>Online casino</b> lets you play against your friends (👤 Profile → 👥 Friends). Pick a game (✊ Rock Paper Scissors, 🎲 Dice Battle, 💰 Bluff Chest or 🏁 Race to 42), choose a bet and challenge a friend who is 🟢 online; both of you need at least the bet in money.</p>
-    <ul><li>Rock Paper Scissors and Dice Battle: best of 3 rounds; a tie is played again. In Dice Battle both roll 2 dice and the higher total wins the round.</li>
+    <ul><li>Rock Paper Scissors: best of 3 rounds; a tie is played again. Dice Battle: best of 3 or 5 (chosen when you challenge). Each round, both pick 2 to 5 dice in secret and roll: any 1 scores 0, otherwise the total counts, and the higher score wins the round (a tie is rolled again). More dice score more but roll a 1 more often, so there's no best choice. Hold Roll to shake the dice.</li>
       <li>You have 15 seconds per move: no pick in time means a random one. Leaving the duel for 30 seconds loses it.</li>
       <li>The winner takes both bets minus a 2% fee, so a win pays +96% of the bet and a loss costs the bet (paid from your money). The server keeps picks secret and rolls the dice, so nobody can cheat.</li>
       <li>A challenge expires after 60 seconds.</li></ul>

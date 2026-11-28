@@ -1,4 +1,4 @@
--- ⚔️ Empire of Coins: online casino duels between friends (✊ Rock Paper Scissors, 🎲 Dice Battle, 💰 Bluff Chest, 🏁 Race to 42).
+-- ⚔️ Empire of Coins: online casino duels between friends (✊ Rock Paper Scissors, 🎲 Dice Battle (2–5 dice, a 1 scores 0, best of 3 or 5), 💰 Bluff Chest, 🏁 Race to 42).
 -- Run AFTER supabase-friends.sql and supabase-profiles-money.sql.
 -- Paste all of this into Supabase → SQL Editor → New query, and click "Run". It is safe to run again.
 --
@@ -36,6 +36,9 @@ alter table public.duels add column if not exists goal int not null default 42; 
 alter table public.duels alter column goal set default 42;
 alter table public.duels drop constraint if exists duels_goal_check;
 alter table public.duels add constraint duels_goal_check check (goal in (21, 42));
+alter table public.duels add column if not exists best int not null default 3;   -- 🎲 Dice Battle: best of 3 or best of 5
+alter table public.duels drop constraint if exists duels_best_check;
+alter table public.duels add constraint duels_best_check check (best in (3, 5));
 create index if not exists duels_a_idx on public.duels (a, status);
 create index if not exists duels_b_idx on public.duels (b, status);
 
@@ -63,6 +66,14 @@ create or replace function public.duel_rand_pick(g text) returns text language s
               else (1 + floor(random() * 6)::int)::text || ',' || (1 + floor(random() * 6)::int)::text end;
 $$;
 
+-- 🎲 Dice Battle: roll n dice ("4,2,6"); a roll with any 1 scores 0, otherwise the total
+create or replace function public.duel_dice_roll(n int) returns text language sql volatile set search_path = '' as $$
+  select string_agg((1 + floor(random() * 6)::int)::text, ',') from generate_series(1, greatest(2, least(5, n)));
+$$;
+create or replace function public.duel_dice_score(p text) returns int language sql immutable set search_path = '' as $$
+  select case when '1' = any(string_to_array(p, ',')) then 0 else (select coalesce(sum(x::int), 0)::int from unnest(string_to_array(p, ',')) x) end;
+$$;
+
 -- the state of a duel as one player sees it (the opponent's pick of the current round stays hidden)
 create or replace function public.duel_view(d public.duels, me uuid) returns jsonb language plpgsql stable set search_path = '' as $$
 declare opp uuid := case when me = d.a then d.b else d.a end; p public.profiles; mine text; opp_moved boolean;
@@ -71,7 +82,7 @@ begin
   select pick into mine from public.duel_moves where duel_id = d.id and round = d.round and player = me;
   opp_moved := exists (select 1 from public.duel_moves where duel_id = d.id and round = d.round and player = opp);
   return jsonb_build_object(
-    'id', d.id, 'game', d.game, 'status', d.status, 'bet', d.bet, 'round', d.round, 'log', d.log, 'st', d.st, 'goal', d.goal,
+    'id', d.id, 'game', d.game, 'status', d.status, 'bet', d.bet, 'round', d.round, 'log', d.log, 'st', d.st, 'goal', d.goal, 'best', d.best,
     'me', case when me = d.a then 'a' else 'b' end,
     'my_score', case when me = d.a then d.score_a else d.score_b end,
     'opp_score', case when me = d.a then d.score_b else d.score_a end,
@@ -116,7 +127,7 @@ revoke all on function public.duel_race(bigint, text, text) from public, anon, a
 
 -- play the current round if both have picked (or the time is up: missing picks are made at random)
 create or replace function public.duel_step(p_id bigint) returns void language plpgsql security definer set search_path = '' as $$
-declare d public.duels; pa text; pb text; w text; sa int; sb int;
+declare d public.duels; pa text; pb text; w text; sa int; sb int; need int;
 begin
   select * into d from public.duels where id = p_id;
   if d.status <> 'active' then return; end if;
@@ -133,8 +144,8 @@ begin
     w := case when pa = pb then null
               when (pa, pb) in (('rock', 'scissors'), ('paper', 'rock'), ('scissors', 'paper')) then 'a' else 'b' end;
   elsif d.game = 'dice' then
-    sa := split_part(pa, ',', 1)::int + split_part(pa, ',', 2)::int;
-    sb := split_part(pb, ',', 1)::int + split_part(pb, ',', 2)::int;
+    sa := public.duel_dice_score(pa);   -- any 1 scores 0
+    sb := public.duel_dice_score(pb);
     w := case when sa = sb then null when sa > sb then 'a' else 'b' end;
   end if;
   if d.game = 'chest' then   -- 💰 odd rounds: a hides, b guesses; even rounds the other way round. Found = the guesser scores, missed = the hider scores
@@ -144,7 +155,8 @@ begin
     log = log || jsonb_build_array(jsonb_build_object('r', round, 'a', pa, 'b', pb, 'w', w)),
     score_a = score_a + coalesce((w = 'a')::int, 0), score_b = score_b + coalesce((w = 'b')::int, 0)
   where id = d.id returning * into d;
-  if d.score_a >= (case when d.game = 'chest' then 3 else 2 end) or d.score_b >= (case when d.game = 'chest' then 3 else 2 end) then
+  need := case when d.game = 'chest' then 3 when d.game = 'dice' and d.best = 5 then 3 else 2 end;   -- best of 3: 2 wins, best of 5: 3 wins
+  if d.score_a >= need or d.score_b >= need then
     update public.duels set status = 'done', reason = 'score', ended_at = now(), deadline = null,
       winner = case when d.score_a > d.score_b then d.a else d.b end where id = d.id;
   else
@@ -155,9 +167,10 @@ revoke all on function public.duel_step(bigint) from public, anon, authenticated
 
 -- ---------- what the game calls ----------
 -- challenge a friend who is online (both players must have at least the bet, as their profiles show)
--- p_goal: kept for game versions that send it; every new race goes to 42
+-- p_goal: kept for game versions that send it; every new race goes to 42 · p_best: 🎲 Dice Battle, best of 3 or 5
 drop function if exists public.duel_invite(uuid, text, double precision);
-create or replace function public.duel_invite(p_opp uuid, p_game text, p_bet double precision, p_goal int default 42) returns bigint
+drop function if exists public.duel_invite(uuid, text, double precision, int);
+create or replace function public.duel_invite(p_opp uuid, p_game text, p_bet double precision, p_goal int default 42, p_best int default 3) returns bigint
 language plpgsql security definer set search_path = '' as $$
 declare me uuid := auth.uid(); new_id bigint;
 begin
@@ -165,6 +178,7 @@ begin
   if p_game not in ('rps', 'dice', 'chest', 'race') then raise exception 'bad_game' using errcode = 'P0001'; end if;
   if p_bet is null or p_bet < 1 or p_bet >= 1e300 then raise exception 'bad_bet' using errcode = 'P0001'; end if;
   p_goal := 42;   -- 🏁 every race goes to 42 (other games don't use it)
+  if p_game <> 'dice' or p_best is null or p_best not in (3, 5) then p_best := 3; end if;
   if not exists (select 1 from public.friendships f where f.status = 'accepted'
                  and ((f.requester = me and f.addressee = p_opp) or (f.requester = p_opp and f.addressee = me))) then
     raise exception 'not_friends' using errcode = 'P0001';
@@ -177,7 +191,7 @@ begin
   update public.duels set status = 'expired', ended_at = now() where status = 'invited' and created_at < now() - interval '60 seconds';
   if exists (select 1 from public.duels where status in ('invited', 'active') and (me in (a, b))) then raise exception 'busy' using errcode = 'P0001'; end if;
   if exists (select 1 from public.duels where status in ('invited', 'active') and (p_opp in (a, b))) then raise exception 'opp_busy' using errcode = 'P0001'; end if;
-  insert into public.duels (game, a, b, bet, seen_a, goal) values (p_game, me, p_opp, p_bet, now(), p_goal) returning id into new_id;
+  insert into public.duels (game, a, b, bet, seen_a, goal, best) values (p_game, me, p_opp, p_bet, now(), p_goal, p_best) returning id into new_id;
   return new_id;
 end; $$;
 
@@ -208,7 +222,7 @@ begin
   return public.duel_view(d, me);
 end; $$;
 
--- make your pick ('rock' / 'paper' / 'scissors'), or roll your dice ('roll'); a pick can't be changed
+-- make your pick ('rock' / 'paper' / 'scissors'), roll your dice ('2'–'5': how many dice; anything else: 2), or 'roll' / 'bank' in a race; a pick can't be changed
 create or replace function public.duel_move(p_id bigint, p_pick text) returns jsonb
 language plpgsql security definer set search_path = '' as $$
 declare me uuid := auth.uid(); d public.duels;
@@ -222,7 +236,7 @@ begin
     else
       if d.game = 'rps' and p_pick not in ('rock', 'paper', 'scissors') then raise exception 'bad_pick' using errcode = 'P0001'; end if;
       if d.game = 'chest' and p_pick not in ('1', '2', '3') then raise exception 'bad_pick' using errcode = 'P0001'; end if;
-      if d.game = 'dice' then p_pick := public.duel_rand_pick('dice'); end if;
+      if d.game = 'dice' then p_pick := public.duel_dice_roll(case when p_pick in ('2', '3', '4', '5') then p_pick::int else 2 end); end if;
       insert into public.duel_moves values (d.id, d.round, me, p_pick) on conflict do nothing;
       perform public.duel_step(d.id);
     end if;
@@ -293,8 +307,8 @@ begin
       or (d.status = 'done' and ((me = d.a and not d.settled_a) or (me = d.b and not d.settled_b))))), '[]'::jsonb);
 end; $$;
 
-revoke all on function public.duel_invite(uuid, text, double precision, int), public.duel_respond(bigint, boolean), public.duel_move(bigint, text),
+revoke all on function public.duel_invite(uuid, text, double precision, int, int), public.duel_respond(bigint, boolean), public.duel_move(bigint, text),
   public.duel_tick(bigint), public.duel_cancel(bigint), public.duel_settle(bigint), public.duel_pending() from public, anon;
-grant execute on function public.duel_invite(uuid, text, double precision, int), public.duel_respond(bigint, boolean), public.duel_move(bigint, text),
+grant execute on function public.duel_invite(uuid, text, double precision, int, int), public.duel_respond(bigint, boolean), public.duel_move(bigint, text),
   public.duel_tick(bigint), public.duel_cancel(bigint), public.duel_settle(bigint), public.duel_pending() to authenticated;
-revoke all on function public.duel_view(public.duels, uuid), public.duel_rand_pick(text) from public, anon, authenticated;
+revoke all on function public.duel_view(public.duels, uuid), public.duel_rand_pick(text), public.duel_dice_roll(int), public.duel_dice_score(text) from public, anon, authenticated;
