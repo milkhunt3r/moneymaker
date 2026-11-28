@@ -11,7 +11,7 @@
      The ship comes back with the race's own goods (alien goods: trading opens in a later update).
    - Friendship: Contacted → Acquainted (300) → Friendly (1,000) → Trusted (2,500) → Allies (5,000).
      Each new level also sends a thank-you shipment of their goods.
-   - A prestige keeps every race and your goods. Ships in flight are lost unless your Science buildings are kept.
+   - A prestige keeps everything in space: races, friendship, goods, crafted items, research and fleet. Ships in flight finish their trip.
    ===================================================================== */
 const SP_RACES = {
   rock:     { name: "Kragg", title: "Rock-eaters", emoji: "🗿", pos: [31, 30], min: 6, wants: ["ore", "money"], good: "crystal",

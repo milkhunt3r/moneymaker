@@ -51,6 +51,9 @@ addEventListener("resize", fitBrand); fitBrand();
 
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
+  { date: "28 November 2026", title: "Empire of Coins", items: [
+    "🌌 Prestige resets no longer touch Space: friendships, goods, stardust, crafted items, research and contracts all stay. Ships in flight finish their trip, and friendships don't cool off while you have no ships.",
+  ] },
   { date: "27 November 2026", title: "Empire of Coins", items: [
     "⚖️ Balance update: businesses matter for longer. 🚘 Car Salons earn <b>×2</b>. 🎰 Casinos and 🏨 Hotels earn <b>×2</b>, and <b>+0.5 more for every 2 you own</b> (2 owned ×2.5, 4 owned ×3 … 10 owned ×4.5).",
     "🏠 Real estate now pays <b>0.8% rent every 60 seconds</b> (was 1.2% every 45 seconds), about +48% an hour.",

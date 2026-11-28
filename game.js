@@ -3081,6 +3081,8 @@ H("💼 Broker ETF now grows up to <b>10 gcoin</b> at most. New <b>🔁 Auto cas
   "💼 El ETF del bróker crece ahora hasta <b>10 gcoin</b> como máximo. Nuevo <b>🔁 Retirada automática</b>: al llegar al tope lo retira por ti y vuelve a invertir 10.000.000.");
 H("🔬 Science opens earlier: it now needs <b>Logistics 30, Investor 30 and Gambler 20</b> (was 50 / 50 / 25).",
   "🔬 La ciencia se abre antes: ahora pide <b>Logística 30, Inversor 30 y Jugador 20</b> (antes 50 / 50 / 25).");
+H("🌌 Prestige resets no longer touch Space: friendships, goods, stardust, crafted items, research and contracts all stay. Ships in flight finish their trip, and friendships don't cool off while you have no ships.",
+  "🌌 El prestigio ya no afecta al espacio: las amistades, los bienes, el polvo estelar, los objetos fabricados, la investigación y los contratos se mantienen. Las naves en vuelo terminan su viaje, y las amistades no se enfrían mientras no tengas naves.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -11106,8 +11108,13 @@ function doPrestige(id) {
   };
   // 💼 Tycoon's Legacy: from the reset it was picked on, every reset keeps the Science buildings (University, Research lab, Space Mission Center…), not the satellite
   if (L.tycoon > 0 && state.science) keep.science = { ...state.science, satellite: false };
-  // 🌌 Space: the aliens remember you (races, friendship, goods). Ships in flight are lost unless the Science buildings are kept.
-  if (state.space) keep.space = { ...state.space, trips: keep.science ? state.space.trips : [] };
+  // 🌌 Space: nothing in space resets: races, friendship, goods, crafted items, research, fleet and contracts all stay.
+  // Ships in flight finish their trip (trade routes stop after the loop they're on), and the friendship cool-off clock starts fresh.
+  if (state.space) {
+    const now = Date.now();
+    keep.space = { ...state.space };
+    Object.values(keep.space.races || {}).forEach(r => { if (r.found) { r.warmAt = now; r.coolT = 0; } });
+  }
   if (L.empire > 0) {   // Global Empire keeps the fleet on every reset after it was picked
     keep.logistics = state.logistics;
     // 🚢 Global Empire level 2 just picked: offers on screen and deliveries under way get the half time right away
@@ -13860,6 +13867,9 @@ addEventListener("resize", fitBrand); fitBrand();
 
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
+  { date: "28 November 2026", title: "Empire of Coins", items: [
+    "🌌 Prestige resets no longer touch Space: friendships, goods, stardust, crafted items, research and contracts all stay. Ships in flight finish their trip, and friendships don't cool off while you have no ships.",
+  ] },
   { date: "27 November 2026", title: "Empire of Coins", items: [
     "⚖️ Balance update: businesses matter for longer. 🚘 Car Salons earn <b>×2</b>. 🎰 Casinos and 🏨 Hotels earn <b>×2</b>, and <b>+0.5 more for every 2 you own</b> (2 owned ×2.5, 4 owned ×3 … 10 owned ×4.5).",
     "🏠 Real estate now pays <b>0.8% rent every 60 seconds</b> (was 1.2% every 45 seconds), about +48% an hour.",
@@ -18812,7 +18822,7 @@ __eocLoaded = 44;
      The ship comes back with the race's own goods (alien goods: trading opens in a later update).
    - Friendship: Contacted → Acquainted (300) → Friendly (1,000) → Trusted (2,500) → Allies (5,000).
      Each new level also sends a thank-you shipment of their goods.
-   - A prestige keeps every race and your goods. Ships in flight are lost unless your Science buildings are kept.
+   - A prestige keeps everything in space: races, friendship, goods, crafted items, research and fleet. Ships in flight finish their trip.
    ===================================================================== */
 var SP_RACES = {
   rock:     { name: "Kragg", title: "Rock-eaters", emoji: "🗿", pos: [31, 30], min: 6, wants: ["ore", "money"], good: "crystal",
@@ -19688,12 +19698,13 @@ function spRivalHit(k, pts, msgs) {
   if (lost && msgs) msgs.push(`😒 The ${SP_RACES[rk].name} didn't like you helping their rivals, the ${SP_RACES[k].name}: −${lost} friendship.`);
   return lost;
 }
-var spCooling = (k) => { const r = SP.races[k]; return r.found && (r.best || 0) >= SP_COOL.from && r.pts > SP_FRIENDLY && !spRouteOf(k) && Date.now() - (r.warmAt || 0) > SP_COOL.after; };
+var spCooling = (k) => { const r = SP.races[k]; return r.found && (r.best || 0) >= SP_COOL.from && r.pts > SP_FRIENDLY && !spRouteOf(k) && spShips() > 0 && Date.now() - (r.warmAt || 0) > SP_COOL.after; };
 function spCoolTick(now, msgs) {
   for (const k of Object.keys(SP_RACES)) {
     const r = SP.races[k]; if (!r.found) continue;
     r.best = Math.max(r.best || 0, r.pts);
     if (spRouteOf(k)) { r.warmAt = now; r.coolT = 0; continue; }   // a running trade route keeps them warm
+    if (!spShips()) { r.warmAt = now; r.coolT = 0; continue; }     // 🔁 no ships (e.g. after a prestige reset, before the Science buildings are back): friendships wait, they don't cool
     if ((r.best || 0) < SP_COOL.from || r.pts <= SP_FRIENDLY) { r.coolT = 0; continue; }
     const start = Math.max((r.warmAt || now) + SP_COOL.after, r.coolT || 0);
     if (now <= start) continue;

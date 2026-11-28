@@ -32,12 +32,13 @@ function spRivalHit(k, pts, msgs) {
   if (lost && msgs) msgs.push(`😒 The ${SP_RACES[rk].name} didn't like you helping their rivals, the ${SP_RACES[k].name}: −${lost} friendship.`);
   return lost;
 }
-const spCooling = (k) => { const r = SP.races[k]; return r.found && (r.best || 0) >= SP_COOL.from && r.pts > SP_FRIENDLY && !spRouteOf(k) && Date.now() - (r.warmAt || 0) > SP_COOL.after; };
+const spCooling = (k) => { const r = SP.races[k]; return r.found && (r.best || 0) >= SP_COOL.from && r.pts > SP_FRIENDLY && !spRouteOf(k) && spShips() > 0 && Date.now() - (r.warmAt || 0) > SP_COOL.after; };
 function spCoolTick(now, msgs) {
   for (const k of Object.keys(SP_RACES)) {
     const r = SP.races[k]; if (!r.found) continue;
     r.best = Math.max(r.best || 0, r.pts);
     if (spRouteOf(k)) { r.warmAt = now; r.coolT = 0; continue; }   // a running trade route keeps them warm
+    if (!spShips()) { r.warmAt = now; r.coolT = 0; continue; }     // 🔁 no ships (e.g. after a prestige reset, before the Science buildings are back): friendships wait, they don't cool
     if ((r.best || 0) < SP_COOL.from || r.pts <= SP_FRIENDLY) { r.coolT = 0; continue; }
     const start = Math.max((r.warmAt || now) + SP_COOL.after, r.coolT || 0);
     if (now <= start) continue;

@@ -99,8 +99,13 @@ function doPrestige(id) {
   };
   // 💼 Tycoon's Legacy: from the reset it was picked on, every reset keeps the Science buildings (University, Research lab, Space Mission Center…), not the satellite
   if (L.tycoon > 0 && state.science) keep.science = { ...state.science, satellite: false };
-  // 🌌 Space: the aliens remember you (races, friendship, goods). Ships in flight are lost unless the Science buildings are kept.
-  if (state.space) keep.space = { ...state.space, trips: keep.science ? state.space.trips : [] };
+  // 🌌 Space: nothing in space resets: races, friendship, goods, crafted items, research, fleet and contracts all stay.
+  // Ships in flight finish their trip (trade routes stop after the loop they're on), and the friendship cool-off clock starts fresh.
+  if (state.space) {
+    const now = Date.now();
+    keep.space = { ...state.space };
+    Object.values(keep.space.races || {}).forEach(r => { if (r.found) { r.warmAt = now; r.coolT = 0; } });
+  }
   if (L.empire > 0) {   // Global Empire keeps the fleet on every reset after it was picked
     keep.logistics = state.logistics;
     // 🚢 Global Empire level 2 just picked: offers on screen and deliveries under way get the half time right away

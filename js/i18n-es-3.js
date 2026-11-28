@@ -1707,6 +1707,8 @@ H("💼 Broker ETF now grows up to <b>10 gcoin</b> at most. New <b>🔁 Auto cas
   "💼 El ETF del bróker crece ahora hasta <b>10 gcoin</b> como máximo. Nuevo <b>🔁 Retirada automática</b>: al llegar al tope lo retira por ti y vuelve a invertir 10.000.000.");
 H("🔬 Science opens earlier: it now needs <b>Logistics 30, Investor 30 and Gambler 20</b> (was 50 / 50 / 25).",
   "🔬 La ciencia se abre antes: ahora pide <b>Logística 30, Inversor 30 y Jugador 20</b> (antes 50 / 50 / 25).");
+H("🌌 Prestige resets no longer touch Space: friendships, goods, stardust, crafted items, research and contracts all stay. Ships in flight finish their trip, and friendships don't cool off while you have no ships.",
+  "🌌 El prestigio ya no afecta al espacio: las amistades, los bienes, el polvo estelar, los objetos fabricados, la investigación y los contratos se mantienen. Las naves en vuelo terminan su viaje, y las amistades no se enfrían mientras no tengas naves.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
