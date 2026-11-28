@@ -151,6 +151,10 @@ function renderShooter() {
       <label class="shAuto"><input type="checkbox" data-sh="auto" ${SH.auto ? "checked" : ""}> ${ico("sh-auto", "shAutoIco")} Auto-fire (turn it off to shoot by holding Space)</label>`, !SH.runs)}
     <div class="subLayout">${mgNav("sh", [["levels", "🚀 Levels"], ["hangar", "🛸 Hangar", shShipBuyable()], ["ups", "⬆️ Upgrades", shUpBuyable()]], shTabNow)}<div class="subMain">
     <div ${mgSec("sh", "levels", shTabNow)}>
+    ${(() => { const L = SH_LEVELS[Math.min(SH.done, SH_LEVELS.length - 1)], all = SH.done >= SH_LEVELS.length;   // ▶ the next level, big and on top
+      return `<div class="card shNext"><img src="assets/shooter/${L.img}.webp" alt=""><div><div class="muted">${all ? "All levels cleared! Play again for more stardust:" : `Next: level ${L.n} of ${SH_LEVELS.length}`}</div>
+        <h3>Level ${L.n}: ${L.name}</h3><div class="muted">${L.diff} · ${L.time}${L.boss ? ` · Boss: <b>${L.boss}</b>` : ""}</div></div>
+        <button class="btn big" data-sh-play="${L.n}">▶ ${all ? "Play again" : SH.done ? "Continue" : "Start"}</button></div>`; })()}
     <div class="shLevels">${SH_LEVELS.map(L => {
       const open = SH.done >= L.n - 1, done = SH.done >= L.n;
       return `<div class="card shLevel ${open ? "" : "locked"} ${done ? "done" : ""}">
@@ -165,9 +169,9 @@ function renderShooter() {
         ${open ? `<button class="btn" data-sh-play="${L.n}">▶ Play</button>` : `<button class="btn" disabled>🔒 Beat level ${L.n - 1} first</button>`}
       </div>`;
     }).join("")}</div>
-    ${shChestCard()}
     </div>
     <div ${mgSec("sh", "hangar", shTabNow)}>
+    ${shChestCard()}
     <div class="card shHangar">
       <h3>🛸 Hangar</h3>
       <div class="shShips">${SH_SHIP_IDS.map(id => {

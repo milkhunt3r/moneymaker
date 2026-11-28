@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
   <meta property="og:image" content="assets/logo/share.jpg">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="stylesheet" href="css/style.css?v=2404449883">
+  <link rel="stylesheet" href="css/style.css?v=ddce0a83a3">
 </head>
 <body>
   <!-- ===== Loading screen (removed when the game has started) ===== -->
@@ -322,14 +322,16 @@
                 <div class="artToolRow">
                   <span class="segGroup" id="artToolBtns"></span>
                   <span class="segGroup" id="artShapeBtns"></span>
+                </div>
+                <div class="artToolRow">
                   <span class="segGroup" id="artTips"></span>
                   <span class="segGroup" id="artSizes"></span>
                   <span id="artAngleBox" class="artAngle" hidden title="Turn the shape: drag the slider or use the mouse wheel over the canvas (also right after drawing it)">
                     ↻ <input type="range" id="artAngle" min="0" max="179" step="1" value="0"> <b id="artAngleVal">0°</b></span>
-                  <button class="btn ghost small" id="artUndo">↶ Undo</button>
-                  <button class="btn ghost small" id="artClear">🗑️ Clear</button>
-                  <button class="btn ghost small" id="artNew">🔄 New painting</button>
-                  <button class="btn" id="artSubmit">✅ Submit copy</button>
+                  <span class="artEdit"><button class="btn ghost small" id="artUndo">↶ Undo</button>
+                  <button class="btn ghost small" id="artClear">🗑️ Clear</button></span>
+                  <span class="artGo"><button class="btn ghost small" id="artNew">🔄 New painting</button>
+                  <button class="btn" id="artSubmit">✅ Submit copy</button></span>
                 </div>
               </div>
               <div id="artResult"></div>
@@ -609,6 +611,6 @@
   <div id="tipCard" hidden role="status"></div>
   <div id="tutBubble" hidden role="dialog" aria-label="Guided start"></div>
   <!-- Game code, split by section. Files share one global scope and must load in this order. -->
-  <script src="game.js?v=b743a22ff0"></script>
+  <script src="game.js?v=174ebd3531"></script>
 </body>
 </html>

@@ -870,7 +870,13 @@ $("artView").addEventListener("click", (e) => {
   if (tier && tier.dataset.atier !== state.art.tier && artTierOpen(tier.dataset.atier)) { state.art.tier = tier.dataset.atier; renderArtTools(); artNewPainting(false); return; }
   if (e.target.closest("#artUndo")) { artUI.lastShape = null; const u = artUI.undo.pop(); if (u) drawCtx().putImageData(u, 0, 0); return; }
   if (e.target.closest("#artClear")) { artUI.lastShape = null; artPushUndo(); artClearCanvas(); return; }
-  if (e.target.closest("#artNew")) { artNewPainting(false); return; }
+  if (e.target.closest("#artNew")) {   // 🔄 ask first if there's a copy in progress (one wrong tap shouldn't throw it away)
+    if (!artUI.undo.length || artUI.result) { artNewPainting(false); return; }
+    showModal(`<h2>🔄 Start a new painting?</h2><p>Your copy of this painting will be lost.</p>
+      <div class="row" style="justify-content:center;gap:10px"><button class="btn ghost" data-modal="close">Keep painting</button><button class="btn dangerBtn" id="artNewYes">Start over</button></div>`);
+    $("artNewYes").onclick = () => { hideModal(); artNewPainting(false); };
+    return;
+  }
   if (e.target.closest("#artSubmit")) { artSubmit(); return; }
   if (e.target.closest("#artSell")) { artFinish(false); return; }
   if (e.target.closest("#artRetry")) { artUI.result = null; $("artResult").innerHTML = ""; $("artSubmit").disabled = false; return; }

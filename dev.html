@@ -324,14 +324,16 @@
                 <div class="artToolRow">
                   <span class="segGroup" id="artToolBtns"></span>
                   <span class="segGroup" id="artShapeBtns"></span>
+                </div>
+                <div class="artToolRow">
                   <span class="segGroup" id="artTips"></span>
                   <span class="segGroup" id="artSizes"></span>
                   <span id="artAngleBox" class="artAngle" hidden title="Turn the shape: drag the slider or use the mouse wheel over the canvas (also right after drawing it)">
                     ↻ <input type="range" id="artAngle" min="0" max="179" step="1" value="0"> <b id="artAngleVal">0°</b></span>
-                  <button class="btn ghost small" id="artUndo">↶ Undo</button>
-                  <button class="btn ghost small" id="artClear">🗑️ Clear</button>
-                  <button class="btn ghost small" id="artNew">🔄 New painting</button>
-                  <button class="btn" id="artSubmit">✅ Submit copy</button>
+                  <span class="artEdit"><button class="btn ghost small" id="artUndo">↶ Undo</button>
+                  <button class="btn ghost small" id="artClear">🗑️ Clear</button></span>
+                  <span class="artGo"><button class="btn ghost small" id="artNew">🔄 New painting</button>
+                  <button class="btn" id="artSubmit">✅ Submit copy</button></span>
                 </div>
               </div>
               <div id="artResult"></div>

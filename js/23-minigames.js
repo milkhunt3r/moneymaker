@@ -829,14 +829,19 @@ function renderMine() {
       <div ${mgSec("mine", "dig", mineTabNow)}>
       <div id="digyCorner"></div>
       <div class="card mineIntro">
-        <div class="mineOreRow">${ORE_KEYS.map(k => `<span>${oreIcon(k)} ${ORES[k].name}: <b>${fmt(oreValue(k))}</b></span>`).join("")}</div>
-        ${vaultLine()}
         <div class="moneyRow" style="justify-content:center">
           ${M.pending ? `<button class="btn big" data-mine="pending">${mnIco("bag")}Ore from your last run: sell or keep</button>`
             : digyBusy() ? `<button class="btn big" disabled><img class="digyPetIco" src="assets/icons/tab-pet.webp" alt=""><span data-noi18n>${digyName()}</span>&nbsp;<span>is digging…</span>&nbsp;<b id="digyLeft">${clockMs(state.digy.dig.end - Date.now())}</b></button>`
-            : `<button class="btn big" data-mine="start" ${e >= 1 ? "" : "disabled"}>${mnIco("pick")}Start a run (${mnIco("energy")}1)</button>`}
-          <button class="btn ghost" data-mine="vault" ${ORE_KEYS.some(k => M.vault[k] > 0) ? "" : "disabled"}>💰 Sell vault ore</button></div>
+            : `<button class="btn big" data-mine="start" ${e >= 1 ? "" : "disabled"}>${mnIco("pick")}Start a run (${mnIco("energy")}1)</button>`}</div>
         <p class="muted">Runs: ${M.runs} · Deepest ever: ${M.best * 2} m · Chests opened: ${M.chests} · Earned: ${fmt(M.earned)}</p>
+      </div>
+      <div class="card mineVaultBox">
+        <div class="mineVaultHead"><h3>${mnIco("vault")}Vault</h3>
+          <span class="muted">Worth now: <b>${fmt(ORE_KEYS.reduce((t, k) => t + (M.vault[k] || 0) * oreValue(k), 0))}</b></span>
+          <button class="btn ghost small" data-mine="vault" ${ORE_KEYS.some(k => M.vault[k] > 0) ? "" : "disabled"}>💰 Sell vault ore</button></div>
+        <div class="mineVaultGrid">${ORE_KEYS.map(k => `<div class="mineVaultOre ${(M.vault[k] || 0) ? "" : "none"}">${oreIcon(k)}
+          <div><b>${(M.vault[k] || 0).toLocaleString()}</b> <span>${ORES[k].name}</span><small>${fmt(oreValue(k))} each</small></div></div>`).join("")}</div>
+        <p class="muted mineVaultNote">Keep ore here to pay for ⬆️ upgrades, or sell it. Ore is worth seconds of your income, so it sells for more as you earn more.</p>
       </div>
       </div>
       <div ${mgSec("mine", "ups", mineTabNow)}>

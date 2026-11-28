@@ -340,6 +340,7 @@ function renderGene() {
       <button class="subTab ${geneTab === "mutants" ? "active" : ""}" data-gtab="mutants">${gx("mutant")} Mutants (${mutantCount()})</button>
       <button class="subTab ${geneTab === "perks" ? "active" : ""}" data-gtab="perks">🏆 Bonuses</button></nav><div class="subMain">
     <div class="card geneLab">
+      ${!found && !A && !B ? `<div class="geneStart">👋 <b>Start here:</b> tap a sample in your ❄️ Freezer below to put it in the splicer, then a second one (the same one twice works too), and press <b>🧬 Splice</b>. Try 🐟 Fish + 🐟 Fish!</div>` : ""}
       <div class="geneSplicer">${slot(0)}<div class="genePlus">+</div>${slot(1)}
         <button class="btn big ${knownRecipe ? "ghost" : ""}" data-gene="splice" ${canSplice && !tried ? "" : "disabled"}>🧬 Splice</button></div>
       <div class="muted geneNote ${knownRecipe ? "geneKnownWarn" : ""}">${!A || !B ? "Pick two samples from your freezer (the same one twice works too)."
@@ -348,12 +349,12 @@ function renderGene() {
         : canSplice ? `Uses 1 DNA of each sample${A === B ? " (2 of this one)" : ""}. A pair that isn't a real recipe makes a 🧪 mutant.`
         : "Not enough DNA: each sample refills by 1 every 10 minutes (max 3)."}</div>
       ${result}
-    </div>
     <div class="geneBar">
       <span>${gx("dna")} Next DNA for every sample in <b id="geneRegen">${clockMs(Math.max(0, (G.regenAt || Date.now()) - Date.now()))}</b></span>
       <button class="btn small" data-gene="hint" ${sciHave >= GENE_HINT_SCI && hintOpts ? "" : "disabled"}
         title="${!sci().uni ? "Needs a University with scientists" : hintOpts ? "" : "No new recipe is possible with what you have"}">${gx("hint")} Hint · 👩‍🔬 ${GENE_HINT_SCI} scientists</button>
       <span class="muted">You have ${ico("sci-scientist")}${sciHave} scientists</span>
+    </div>
     </div>
     ${geneTab === "perks" ? `<div class="card"><div class="genePerkTitle">🏆 Species bonuses <span class="muted">+1% for every species you discover in each category, for good</span></div>
     <div class="genePerks" title="Every species you discover in these categories gives +1% for good">${GENE_PERKS.map(([c, e, what]) =>
