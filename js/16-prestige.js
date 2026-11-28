@@ -37,7 +37,7 @@ function showPrestigeOffer() {
     <p>You can <b>prestige</b>: start the game over and choose a permanent Legacy bonus.</p>
     <p><b style="color:#ffd34d">Prestige ${n} of ${PRESTIGE_MAX}</b>${n === PRESTIGE_MAX ? " · this is the final one: it finishes the game" : ""}</p>
     <p class="muted">Always kept: achievements, levels, cosmetics, statistics and your 🖼️ Art Gallery (unlock, slots and paintings)${state.legacy.count ? ` · Prestiges so far: ${state.legacy.count}` : ""}.
-      After every prestige: 🛡️ no tax inspections for the first 10 minutes.</p>
+      After every prestige: <img class="ico pti" src="assets/icons/ico-in-shield.webp" alt=""> no tax inspections for the first 10 minutes.</p>
     <div class="prestigeChoices">${PRESTIGE_CHOICES.map(c => {
       const maxed = c.max && state.legacy[c.id] >= c.max;
       const level = c.max ? ` <span class="muted">(${state.legacy[c.id] || 0}/${c.max})</span>` : "";
@@ -61,7 +61,7 @@ function showPrestigeConfirm(id) {
   showModal(`<h2>${c.icon} ${c.name}</h2>
     <p>Are you sure? This <b>resets</b> ${lost}.</p>
     <p class="muted">Kept: achievements, levels, cosmetics, statistics, Legacy bonuses, free bet chips, Art Gallery unlock, slots and paintings.
-      🛡️ No tax inspections for the first 10 minutes after the reset.</p>
+      <img class="ico pti" src="assets/icons/ico-in-shield.webp" alt=""> No tax inspections for the first 10 minutes after the reset.</p>
     <p>This can't be undone.</p>
     ${state.legacy.count + 1 === PRESTIGE_MAX ? `<p style="color:#ffd34d"><b>This is your final prestige.</b> After it, no more resets are possible, but you can keep playing.</p>` : ""}
     <button class="btn big" data-prestige="confirm" data-choice="${id}">⭐ Prestige now</button>

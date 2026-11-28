@@ -4099,12 +4099,21 @@ function bizBoost(typeId, owned) {
   if (owned === undefined) owned = ownedOf(typeId);
   return b.base + (b.step || 0) * Math.floor(owned / 2);
 }
+// 🖼️ painted icons for worker statuses and business-card labels (emoji until a picture exists)
+var IN_ICO = { "⭐": "in-boosted", "🎓": "in-trained", "🧑‍🏫": "in-mentored", "✋": "in-quick", "🛎️": "in-offduty", "🦉": "in-owl", "☀️": "in-early",
+  "🧹": "in-busy", "🥵": "in-burnout", "😡": "in-complaint", "🧳": "in-viptip", "😴": "pt-sleep", "🤑": "st-criminal" };
+var inIco = (f) => `<img class="ico pti" src="assets/icons/ico-${f}.webp" alt="">`;
+function statusHtml(s) {
+  if (!s) return "";
+  const e = Object.keys(IN_ICO).find(k => s.startsWith(k));
+  return e ? `${inIco(IN_ICO[e])}<span>${s.slice(e.length).trim()}</span>` : escapeHtml(s);
+}
 function bizBoostLine(typeId) {
   const b = BIZ_BOOST[typeId]; if (!b) return "";
   const owned = ownedOf(typeId), max = (BUSINESS_TYPES.find(t => t.id === typeId) || {}).maxOwned || 0;
   const nextAt = (Math.floor(owned / 2) + 1) * 2;
   const next = b.step && nextAt <= max ? ` · ×${bizBoost(typeId, nextAt)} at ${nextAt} owned` : "";
-  return `<div class="muted bizBoost">🚀 Income ×${bizBoost(typeId, Math.max(owned, 1))}${next}</div>`;
+  return `<div class="muted bizBoost">${inIco("in-boost")}Income ×${bizBoost(typeId, Math.max(owned, 1))}${next}</div>`;
 }
 
 function runCompany(company) {
@@ -4311,7 +4320,7 @@ function render() {
   // ⚠️ businesses that need you: a free worker slot, or no accountant / HR yet
   const needYou = state.companies.map((c, ci) => ({ c, ci })).filter(x => !staffReady(x.c) || x.c.workers.length < maxWorkers(x.c));
   let html = `<div ${page === "biz" ? "" : "hidden"} id="incBiz"><h2>🏢 Businesses</h2>${needYou.length ? `<button class="card bizNeed" data-action="jumpFree" data-company="${needYou[0].ci}">
-    👷 <b>${needYou.length} ${needYou.length === 1 ? "business needs" : "businesses need"} staff</b> <span class="muted">· free worker slots earn nothing</span> <span class="bizNeedGo">Show ›</span></button>` : ""}`;
+    ${inIco("in-hire")} <b>${needYou.length} ${needYou.length === 1 ? "business needs" : "businesses need"} staff</b> <span class="muted">· free worker slots earn nothing</span> <span class="bizNeedGo">Show ›</span></button>` : ""}`;
 
   // One owned company as a card
   const companyCard = (c, ci) => {
@@ -4328,7 +4337,7 @@ function render() {
         <div class="bizUnitLine">${t.noStaff ? "" : `${staffIco(c.accountant, ACCOUNTANTS[c.accountant])}${staffIco(c.hr, HR_OPTIONS[c.hr])}`}
           <span class="bizSlots"><i style="width:${c.workers.length / maxWorkers(c) * 100}%"></i></span><span class="muted">${c.workers.length} / ${maxWorkers(c)} workers</span>
           ${c.workers.length ? "" : `<span class="bizHint">Hire workers to start earning</span>`}
-          ${free ? `<button class="btn small" data-action="toggle" data-company="${ci}">👷 Hire · ${free} free</button>` : `<span class="bizFull">✅ Full</span><button class="btn ghost small" data-action="toggle" data-company="${ci}">▸ Details</button>`}</div></div>`;
+          ${free ? `<button class="btn small" data-action="toggle" data-company="${ci}">${inIco("in-hire")}<span>Hire · ${free} free</span></button>` : `<span class="bizFull">✅ Full</span><button class="btn ghost small" data-action="toggle" data-company="${ci}">▸ Details</button>`}</div></div>`;
     }
     html += `<div class="card bizUnit ${staffReady(c) ? "open" : "open setup"}" id="c-card-${ci}">
       <div class="row">
@@ -4448,7 +4457,7 @@ function render() {
     }
     const maxN = bizMaxBuy(t);
     html += `<div class="card ${best === t ? "bestBuy" : ""}">
-      ${best === t ? `<div class="bestTag" title="The most worker income for each coin you spend">⭐ Best value</div>` : ""}
+      ${best === t ? `<div class="bestTag" title="The most worker income for each coin you spend">${inIco("in-best")}<span>Best value</span></div>` : ""}
       <div class="row">
         <div><h3>${bizIco(t.id)}${t.name}</h3>
           <div class="muted">${t.noStaff ? `${t.maxEmployees} workers · no accountant or HR` : `Up to ${t.maxEmployees} employees (incl. accountant &amp; HR)`} · workers earn ${t.minIncome}–${t.maxIncome} / sec</div>
@@ -5027,7 +5036,7 @@ function gameTick() {
       const statusEl = $("w-status-" + ci + "-" + wi);
       const copyEl = $("w-copy-" + ci + "-" + wi);
       if (earnEl) earnEl.textContent = amount.toFixed(1);
-      if (statusEl) statusEl.textContent = r.status[wi];
+      if (statusEl && statusEl.dataset.s !== r.status[wi]) { statusEl.dataset.s = r.status[wi]; statusEl.innerHTML = statusHtml(r.status[wi]); }
       if (copyEl) {
         const w = c.workers[wi];
         copyEl.textContent = w.copied ? " as " + TRAITS[w.copied].emoji + " " + TRAITS[w.copied].name : "";
@@ -11516,7 +11525,7 @@ function showPrestigeOffer() {
     <p>You can <b>prestige</b>: start the game over and choose a permanent Legacy bonus.</p>
     <p><b style="color:#ffd34d">Prestige ${n} of ${PRESTIGE_MAX}</b>${n === PRESTIGE_MAX ? " · this is the final one: it finishes the game" : ""}</p>
     <p class="muted">Always kept: achievements, levels, cosmetics, statistics and your 🖼️ Art Gallery (unlock, slots and paintings)${state.legacy.count ? ` · Prestiges so far: ${state.legacy.count}` : ""}.
-      After every prestige: 🛡️ no tax inspections for the first 10 minutes.</p>
+      After every prestige: <img class="ico pti" src="assets/icons/ico-in-shield.webp" alt=""> no tax inspections for the first 10 minutes.</p>
     <div class="prestigeChoices">${PRESTIGE_CHOICES.map(c => {
       const maxed = c.max && state.legacy[c.id] >= c.max;
       const level = c.max ? ` <span class="muted">(${state.legacy[c.id] || 0}/${c.max})</span>` : "";
@@ -11540,7 +11549,7 @@ function showPrestigeConfirm(id) {
   showModal(`<h2>${c.icon} ${c.name}</h2>
     <p>Are you sure? This <b>resets</b> ${lost}.</p>
     <p class="muted">Kept: achievements, levels, cosmetics, statistics, Legacy bonuses, free bet chips, Art Gallery unlock, slots and paintings.
-      🛡️ No tax inspections for the first 10 minutes after the reset.</p>
+      <img class="ico pti" src="assets/icons/ico-in-shield.webp" alt=""> No tax inspections for the first 10 minutes after the reset.</p>
     <p>This can't be undone.</p>
     ${state.legacy.count + 1 === PRESTIGE_MAX ? `<p style="color:#ffd34d"><b>This is your final prestige.</b> After it, no more resets are possible, but you can keep playing.</p>` : ""}
     <button class="btn big" data-prestige="confirm" data-choice="${id}">⭐ Prestige now</button>
