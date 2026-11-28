@@ -88,7 +88,7 @@ function spOutpostHtml(k) {
   if (o) return `<div class="spRoute on"><div class="spRow">${spRI("outpost", "spI")}<span><b>Outpost</b> · makes ${spGI(R.good)} <b>${SP_OUTPOST_RATE}</b> ${G.name} an hour, even while the game is closed.</span></div>
     <div class="muted">Goods made so far: ${(o.got || 0).toLocaleString()}</div>
     <div class="spBtns"><button class="btn ghost small" data-spo="close">Close the outpost</button></div></div>`;
-  if (spLevel(k) < SP_OUTPOST_LV) return `<div class="spRoute locked spRow">${spRI("outpost", "spI")}<span><b>Outpost:</b> you can build one here when you are <b>😊 Friendly</b> with the ${R.name}.</span></div>`;
+  if (spLevel(k) < SP_OUTPOST_LV) return `<div class="spRoute locked spRow">${spRI("outpost", "spI")}<span><b>Outpost:</b> you can build one here when you are <b>${lgxI("friendly")}Friendly</b> with the ${R.name}.</span></div>`;
   return `<div class="spRoute"><div class="spRow">${spRI("outpost", "spI")}<span><b>Outpost:</b> a base in this system that makes ${spGI(R.good)} <b>${SP_OUTPOST_RATE}</b> ${G.name} an hour, no ship needed. One per system.</span></div>
     <div class="spBtns"><button class="btn" data-spo="build" ${spOutpostFree() > 0 && state.money >= SP_OUTPOST_MONEY && spSci2() >= SP_OUTPOST_SCI ? "" : "disabled"}>${spRI("outpost", "spI btnI")}Build outpost · ${fmt(SP_OUTPOST_MONEY)} + 🔬 ${SP_OUTPOST_SCI}</button></div>
     <div class="muted">Outposts: ${spOutpostCount()} / ${spRL("outpost")} built${spOutpostFree() > 0 ? "" : " · research more 🏗️ Outposts or close one to build here"}.</div></div>`;
@@ -128,7 +128,7 @@ function spResearchHtml() {
       ${c ? `<button class="btn" data-spr="${k}" ${spResCan(c) ? "" : "disabled"}>🔬 Research level ${L + 1}</button>` : ""}</div>`;
   }).join("");
   let craft;
-  if (!spRL("craft")) craft = `<p class="muted">🔒 Research <b>🛠️ Space crafting</b> to unlock crafting.</p>`;
+  if (!spRL("craft")) craft = `<p class="muted">🔒 Research <b>${lgxI("crafting")}Space crafting</b> to unlock crafting.</p>`;
   else if (SP.craft) {
     const J = SP.craft, pct = Math.min(100, (now - J.t0) / (J.t1 - J.t0) * 100);
     craft = `<div class="spCraftJob"><div class="spCraftHead">${spCI(J.c, "spCraftBig")}<span>Crafting <b>${J.n}</b> ${SP_CRAFT[J.c].name} · ready in <b data-spt="${J.t1}">${spClock(J.t1 - now)}</b></span></div>

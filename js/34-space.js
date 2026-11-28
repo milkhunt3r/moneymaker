@@ -71,9 +71,11 @@ const SP_LEVELS = [
 ];
 const SP_KINDS = { money: "💰 Money", ore: "⛏️ Ore", dna: "🧬 DNA samples", art: "🖼️ Paintings", dust: "✨ Stardust" };
 // 🎨 painted icons for the alien card (assets/space/sp-ico-*.webp, sp-kind-*.webp) and portraits (assets/space/aliens/)
-const spI = (n, cls = "spI") => `<img class="${cls}" src="assets/space/sp-ico-${n}.webp" alt="">`;
+// friendship levels, gifts, routes and bonuses use the painted Logistics set (assets/icons/ico-lgx-*)
+const SP_LGX = { contacted: 1, acquainted: 1, friendly: 1, trusted: 1, allies: 1, gift: 1, route: 1, bonus: 1, unknown: 1 };
+const spI = (n, cls = "spI") => `<img class="${cls}" src="${SP_LGX[n] ? `assets/icons/ico-lgx-${n}` : `assets/space/sp-ico-${n}`}.webp" alt="">`;
 const SP_LV_ICO = [null, "contacted", "acquainted", "friendly", "trusted", "allies"];
-const spLvI = (L, cls) => L ? spI(SP_LV_ICO[L], cls) : "❔";
+const spLvI = (L, cls) => spI(L ? SP_LV_ICO[L] : "unknown", cls);
 const SP_KIND_ICO = { money: "money", ore: "ore", art: "art", dust: "dust" };
 const spKindI = (kind) => SP_KIND_ICO[kind] ? `<img class="spI" src="assets/space/sp-kind-${SP_KIND_ICO[kind]}.webp" alt="">` : SP_KINDS[kind].split(" ")[0];
 const spPortrait = (k) => `assets/space/aliens/alien-${k}${spLevel(k) >= 4 ? "-happy" : ""}.webp`;
@@ -231,10 +233,10 @@ function spEventStep(tr, now, msgs = []) {
 const spToll = () => Math.max(1e6, spRound(mineBase() * 60 * SP_EV.toll));
 function spAskPirates(tr) {
   spAsk = { id: tr.id, toll: spToll() };
-  showModal(`<h2>🏴‍☠️ Pirates!</h2><p>Space pirates stopped your ship on its way to the <b>${SP_RACES[tr.to].name}</b>.</p>
+  showModal(`<h2>${lgxI("pirates")}Pirates!</h2><p>Space pirates stopped your ship on its way to the <b>${SP_RACES[tr.to].name}</b>.</p>
     <p>💰 Pay them <b>${fmt(spAsk.toll)}</b> to pass, or 🚀 run for it: a 50% chance they take your cargo${tr.k === "explore" ? " (exploring ships carry nothing worth taking)" : ""}.</p>
     <div class="row" style="justify-content:center;gap:10px"><button class="btn big" data-spp="pay" ${state.money >= spAsk.toll ? "" : "disabled"}>💰 Pay ${fmt(spAsk.toll)}</button>
-    <button class="btn big dangerBtn" data-spp="run">🚀 Run for it</button></div><p class="muted">No answer in 1 minute: your captain runs for it.</p>`);
+    <button class="btn big dangerBtn" data-spp="run">${lgxI("send")}<span>Run for it</span></button></div><p class="muted">No answer in 1 minute: your captain runs for it.</p>`);
 }
 function spPiratesRun(tr, msgs) {
   tr.ev.done = true; spAsk = null; if (!$("modal").hidden && $("modalBox").querySelector("[data-spp]")) hideModal();
@@ -414,7 +416,7 @@ function spMapHtml() {
   const nodes = Object.entries(SP_RACES).map(([k, R]) => {
     const r = SP.races[k], vis = spVisible(k), L = spLevel(k);
     const img = r.found ? `sys-${k}` : "sys-unknown";
-    const rt = r.found && spRouteOf(k), lbl = r.found ? `${R.name}<small>${SP_LEVELS[L].name}</small>${rt && !rt.stop ? `<small class="spRtLbl">🛣️ Active trade route</small>` : ""}` : vis ? `Unknown signal<small>❓ Explore</small>` : `<small>🔒 Uncharted</small>`;
+    const rt = r.found && spRouteOf(k), lbl = r.found ? `${R.name}<small>${SP_LEVELS[L].name}</small>${rt && !rt.stop ? `<small class="spRtLbl">${lgxI("route")}Active trade route</small>` : ""}` : vis ? `Unknown signal<small>❓ Explore</small>` : `<small>🔒 Uncharted</small>`;
     return `<button class="spNode ${r.found ? "found" : vis ? "fog" : "hidden"} ${spSel === k ? "sel" : ""}" data-sp="${k}" style="left:${R.pos[0]}%;top:${R.pos[1]}%">
       <img src="assets/space/${img}.webp" alt="" draggable="false"><span class="spLbl">${lbl}</span>${SP.sos && SP.sos.k === k ? `<i class="spSosPin">🆘</i>` : ""}${r.found && r.req && spFree() && !spTripTo(k, "gift") && spCanPay(r.req) ? `<i class="spPing">🎁</i>` : ""}</button>`; }).join("");
   // 🚀 explorers fly the old scout ship, everything else a courier ship; 🛡️ an escort frigate follows close behind
@@ -485,9 +487,9 @@ document.addEventListener("pointercancel", (e) => { spPtrs.delete(e.pointerId); 
 window.addEventListener("resize", () => spZoomApply());
 function spTripLine(tr) {
   const R = SP_RACES[tr.to], now = Date.now();
-  const what = tr.k === "explore" ? (SP.races[tr.to].found ? `Exploring: ${R.name}` : "Exploring an unknown system") : tr.k === "route" ? `🛣️ Trade route: ${R.name}` : tr.k === "contract" ? `📜 Contract for the ${R.name}` : `🎁 Gift for the ${R.name}`;
+  const what = tr.k === "explore" ? (SP.races[tr.to].found ? `Exploring: ${R.name}` : "Exploring an unknown system") : tr.k === "route" ? `${lgxI("route")}Trade route: ${R.name}` : tr.k === "contract" ? `📜 Contract for the ${R.name}` : `${lgxI("gift")}Gift for the ${R.name}`;
   const st = now < tr.t1 ? `arrives in <b data-spt="${tr.t1}">${spClock(tr.t1 - now)}</b>` : `coming home, back in <b data-spt="${tr.t2}">${spClock(tr.t2 - now)}</b>`;
-  return `<div class="spTrip">🚀 ${what} · ${st}${tr.lost ? " · 🏴‍☠️ cargo stolen" : ""}</div>`;
+  return `<div class="spTrip">${lgxI("send")}${what} · ${st}${tr.lost ? ` · ${lgxI("pirates")}cargo stolen` : ""}</div>`;
 }
 function spPanelHtml() {
   if (spSel === "drift") return typeof spDriftPanel === "function" ? spDriftPanel() : "";
@@ -498,16 +500,16 @@ function spPanelHtml() {
       + (spAllyBonus("ship") ? `<li>✅ 🤖 Cogitarium (💖 Allies): <b>+1</b> ship</li>` : "");
     return `<h3>🌍 Home: the Solar System</h3>
       <p>Your spaceport. Pick a system on the map to explore it or send gifts. Ships keep flying while the game is closed.</p>
-      <div class="spStats"><span>🚀 Courier ships: <b>${ships - spFree()} / ${ships}</b> busy</span><span>👽 Races met: <b>${Object.values(SP.races).filter(r => r.found).length} / ${Object.keys(SP_RACES).length}</b></span><span>🎁 Gifts delivered: <b>${SP.stats.gifts}</b></span></div>
+      <div class="spStats"><span>${lgxI("send")}Courier ships: <b>${ships - spFree()} / ${ships}</b> busy</span><span>👽 Races met: <b>${Object.values(SP.races).filter(r => r.found).length} / ${Object.keys(SP_RACES).length}</b></span><span>${lgxI("gift")}Gifts delivered: <b>${SP.stats.gifts}</b></span></div>
       ${ships ? "" : `<p class="spWarn">⚠️ You have no ships right now. Build the 🚀 Space Mission Center (💰 Income → 🔬 Science) to get your first one back.</p>`}
       <ul class="spSlots">${slots}</ul>
       ${typeof spFleetHtml === "function" ? spFleetHtml() : ""}
-      ${spBonusList() ? `<h4>🏅 Your alliance bonuses</h4><ul class="spSlots">${spBonusList()}</ul>` : ""}
+      ${spBonusList() ? `<h4>${lgxI("bonus")}Your alliance bonuses</h4><ul class="spSlots">${spBonusList()}</ul>` : ""}
       ${SP.trips.length ? `<h4>Ships in flight</h4>${SP.trips.map(spTripLine).join("")}` : ""}`;
   }
   const R = SP_RACES[spSel], r = SP.races[spSel], L = spLevel(spSel), trip = spTripTo(spSel, r.found ? "gift" : null);
-  if (!spVisible(spSel)) return R.viaTrusted ? `<h3>🔒 Uncharted system</h3><p>Only the most trusted traders may visit this system. Become <b>💛 Trusted</b> with <b>${R.viaTrusted}</b> races (you have ${spTrustedCount()}).</p>`
-    : `<h3>🔒 Uncharted system</h3><p>Your scanners can't find this system yet. Become <b>${R.viaLv === 3 ? "😊 Friendly" : "Acquainted"}</b> with ${SP.races[R.via].found ? `the <b>${SP_RACES[R.via].name}</b>` : "a nearby race"} and they will tell you where it is.</p>`;
+  if (!spVisible(spSel)) return R.viaTrusted ? `<h3>🔒 Uncharted system</h3><p>Only the most trusted traders may visit this system. Become <b>${lgxI("trusted")}Trusted</b> with <b>${R.viaTrusted}</b> races (you have ${spTrustedCount()}).</p>`
+    : `<h3>🔒 Uncharted system</h3><p>Your scanners can't find this system yet. Become <b>${R.viaLv === 3 ? `${lgxI("friendly")}Friendly` : "Acquainted"}</b> with ${SP.races[R.via].found ? `the <b>${SP_RACES[R.via].name}</b>` : "a nearby race"} and they will tell you where it is.</p>`;
   if (!r.found) return `<h3 class="spH">${spI("explore", "spI big")} Unknown signal</h3>
     <p>Something is out there. Send a ship to explore it: <b>${spMin(spSel)} min</b> there and <b>${spMin(spSel)} min</b> back.</p>
     ${trip ? spTripLine(trip) : `<button class="btn big" data-spx="explore" ${spFree() && spSci2() >= SP_EXPLORE_SCI ? "" : "disabled"}>${spI("explore", "spI btnI")}Explore · 🔬 ${SP_EXPLORE_SCI} scientists</button>
@@ -552,13 +554,13 @@ function spBonusList() {
 }
 function spRouteHtml(k) {
   const R = SP_RACES[k], L = spLevel(k), rt = spRouteOf(k);
-  if (L < SP_ROUTE_LV) return `<div class="spRoute locked spRow">${spI("route")}<span><b>Trade route:</b> opens when you are <b>😊 Friendly</b> with the ${R.name}.</span></div>`;
+  if (L < SP_ROUTE_LV) return `<div class="spRoute locked spRow">${spI("route")}<span><b>Trade route:</b> opens when you are <b>${lgxI("friendly")}Friendly</b> with the ${R.name}.</span></div>`;
   const goods = spRouteGoods(L), mins = Math.round(spRouteMs(k) * 2 / 60e3);
   if (rt) return `<div class="spRoute on"><div class="spRow">${spI("route")}<span><b>Trade route open</b> · ${spGI(R.good)} <b>${goods}</b> ${SP_GOODS[R.good].name} every trip (${mins} min round trip)</span></div>
     ${spTripLine(rt)}<div class="muted">Trips so far: ${rt.loops || 0} · goods brought home: ${(rt.got || 0).toLocaleString()}</div>
     <div class="spBtns">${rt.stop ? `<span class="muted">⏹️ Stops when the ship gets home.</span> <button class="btn ghost small" data-spx="rgo">▶ Keep it running</button>` : `<button class="btn ghost" data-spx="rstop">⏹️ Stop the route</button>`}</div></div>`;
   return `<div class="spRoute"><div class="spRow">${spI("route")}<span><b>Trade route:</b> one ship flies to the ${R.name} and back <b>for good</b>, bringing ${spGI(R.good)} <b>${goods}</b> ${SP_GOODS[R.good].name} every trip (${mins} min round trip). It keeps going while the game is closed.</span></div>
-    <div class="muted">More goods and faster trips at 💛 Trusted and 💖 Allies.</div>
+    <div class="muted">More goods and faster trips at <b>${lgxI("trusted")}Trusted</b> and <b>${lgxI("allies")}Allies</b>.</div>
     <div class="spBtns"><button class="btn big" data-spx="route" ${spFree() ? "" : "disabled"}>${spI("route", "spI btnI")}Open trade route</button></div>${spFree() ? "" : `<div class="muted">All your ships are busy.</div>`}</div>`;
 }
 // 🎒 everything you can give (and the alien goods you got), refreshed every second
@@ -690,9 +692,9 @@ function spMarketHtml() {
       <td class="spMkSell"><input type="number" min="1" max="${have}" value="${q}" data-spq="${g}" ${have ? "" : "disabled"}>
         <button class="btn small" data-spx="sell" data-g="${g}" ${have ? "" : "disabled"}>Sell</button>
         <button class="btn ghost small" data-spx="sellall" data-g="${g}" ${have ? "" : "disabled"}>Sell all${have ? ` (${fmt(spSellPay(g, have))})` : ""}</button>
-        ${spCanBuy(g) ? `<div class="spMkBuy"><span class="muted">💖 Buy: <b>${fmt(spBuyPrice(g))}</b> each</span>
+        ${spCanBuy(g) ? `<div class="spMkBuy"><span class="muted">${lgxI("allies")}Buy: <b>${fmt(spBuyPrice(g))}</b> each</span>
           <input type="number" min="1" value="${Math.max(1, Math.floor(spBQty[g] || 1))}" data-spbq="${g}"><button class="btn small" data-spx="buy" data-g="${g}">Buy</button></div>`
-          : `<div class="spMkBuy muted">🔒 Buy here at 💖 Allies</div>`}</td></tr>`;
+          : `<div class="spMkBuy muted">🔒 Buy here at <b>${lgxI("allies")}Allies</b></div>`}</td></tr>`;
   }).join("");
   return `<div class="card spResBar" id="spResBar">${spResHtml()}</div>
     <div class="card"><div class="row"><h2 style="margin:0"><img class="ico h" src="assets/icons/ico-lg-market.webp" alt="">Alien market</h2><span class="muted">⏱️ Prices change in <b data-spt="${next}">${spClock(next - Date.now())}</b></span></div>
@@ -740,9 +742,9 @@ function spOpenGift(k) {
   const q = SP.races[k].req;
   if (!q || !spCanPay(q) || !spFree()) return;
   if (q.kind !== "dna" && q.kind !== "art") {
-    showModal(`<h2>🎁 Gift for the ${SP_RACES[k].name}</h2><p>Send ${spReqText(q)}?</p>
+    showModal(`<h2>${lgxI("gift")}Gift for the ${SP_RACES[k].name}</h2><p>Send ${spReqText(q)}?</p>
       <p class="muted">Your ship flies ${spMin(k)} min there and ${spMin(k)} min back, and brings their goods home.</p>
-      <div class="row" style="justify-content:center;gap:10px"><button class="btn big" data-spg="send">🚀 Send</button><button class="btn ghost" data-modal="close">Cancel</button></div>`);
+      <div class="row" style="justify-content:center;gap:10px"><button class="btn big" data-spg="send">${lgxI("send")}<span>Send</span></button><button class="btn ghost" data-modal="close">Cancel</button></div>`);
     spPick = { k, kind: q.kind }; return;
   }
   spPick = { k, kind: q.kind, need: q.amount, sel: q.kind === "dna" ? {} : [] };
@@ -762,11 +764,11 @@ function spRenderPick() {
     body = `<div class="spArtGrid">${state.art.items.map(it => `<button class="spArt ${P.sel.includes(it.id) ? "on" : ""}" data-spa="${it.id}">
       <img src="${typeof artImgOf === "function" ? artImgOf(it) : ""}" alt=""><small>${fmt(it.value)}</small></button>`).join("")}</div>`;
   }
-  showModal(`<h2>${P.pip ? "🐾 Adopt Pip" : `🎁 Gift for the ${R.name}`}</h2>
+  showModal(`<h2>${P.pip ? "🐾 Adopt Pip" : `${lgxI("gift")}Gift for the ${R.name}`}</h2>
     <p>Choose <b>${P.need}</b> ${P.kind === "dna" ? "DNA samples" : "paintings"} to send: <b>${got} / ${P.need}</b> chosen.</p>
     ${P.kind === "art" ? `<p class="muted">Paintings you give away leave your collection (they count as sold for 🏆 achievements).</p>` : `<p class="muted">Samples refill over time in the Gene Splicer.</p>`}
     ${body}
-    <div class="row" style="justify-content:center;gap:10px;margin-top:10px"><button class="btn big" data-spg="send" ${got === P.need ? "" : "disabled"}>${P.pip ? "🎨 Adopt" : "🚀 Send"}</button><button class="btn ghost" data-modal="close">Cancel</button></div>`);
+    <div class="row" style="justify-content:center;gap:10px;margin-top:10px"><button class="btn big" data-spg="send" ${got === P.need ? "" : "disabled"}>${P.pip ? "🎨 Adopt" : `${lgxI("send")}<span>Send</span>`}</button><button class="btn ghost" data-modal="close">Cancel</button></div>`);
   $("modalBox").classList.add("wide");
 }
 $("modal").addEventListener("click", (e) => {

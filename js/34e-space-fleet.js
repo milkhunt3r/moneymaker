@@ -133,7 +133,7 @@ function spDriftLine() {
 }
 function spDriftNode() {
   const f = SP.drift.found, n = SP.harvest.length;
-  const lbl = f ? `Stardust Drift<small>${n ? `${SP.fleet.auto ? "🔁" : "✨"} ${n} harvesting` : "🏴‍☠️ Pirate space"}</small>` : `Unknown signal<small>❓ Explore</small>`;
+  const lbl = f ? `Stardust Drift<small>${n ? `${SP.fleet.auto ? "🔁" : "✨"} ${n} harvesting` : `${lgxI("pirates")}Pirate space`}</small>` : `Unknown signal<small>❓ Explore</small>`;
   return `<button class="spNode ${f ? "found" : "fog"} spDrift ${spSel === "drift" ? "sel" : ""}" data-sp="drift" style="left:${SP_DRIFT.pos[0]}%;top:${SP_DRIFT.pos[1]}%">
     <img src="assets/space/${f ? "sys-drift" : "sys-unknown"}.webp" alt="" draggable="false" ${f ? `onerror="this.src='assets/space/sys-stardust.webp';this.classList.add('spDriftTmp')"` : ""}><span class="spLbl">${lbl}</span></button>`;
 }
@@ -161,17 +161,17 @@ function spDriftPanel() {
       <div class="spHeadTxt"><h3 class="spH"><img class="spI big" src="assets/space/sys-drift.webp" alt="">Stardust Drift <span class="muted">· Pirate space</span></h3>
         <p class="spBio">A glittering cloud of stardust left behind by dying stars. Harvesters can farm it, but wild pirates hunt here and nobody controls them, not even the Void Corsairs.</p></div></div>
     <div class="spInfo"><div class="spRow">${spI("distance")}<span><b>Distance:</b> ${SP_DRIFT.min} min each way · farming takes 1 hour</span></div>
-      <div class="spRow">🏴‍☠️<span><b>Pirates:</b> ${SP_RAID[0] * 100}% chance of an attack in the first half hour of farming, ${SP_RAID[1] * 100}% in the second. Without an escort they take all the stardust farmed so far. A 🛡️ frigate drives them off, but has a ${SP_FRIG_LOSE * 100}% chance to be destroyed in each attack (and then the stardust is lost too).</span></div></div>
+      <div class="spRow">${lgxI("pirates", "spI")}<span><b>Pirates:</b> ${SP_RAID[0] * 100}% chance of an attack in the first half hour of farming, ${SP_RAID[1] * 100}% in the second. Without an escort they take all the stardust farmed so far. A 🛡️ frigate drives them off, but has a ${SP_FRIG_LOSE * 100}% chance to be destroyed in each attack (and then the stardust is lost too).</span></div></div>
     ${SP.harvest.length ? `<h4>Harvesters at work</h4>${SP.harvest.map(spHarvLine).join("")}` : ""}
     ${L ? `<div class="spRoute ${can ? "" : "locked"}"><div class="spRow">${spSI("harvester")}<span><b>Stardust Harvesters:</b> ${SP.harvest.length} / ${spHarvMax()} out · each farms <b>${SP_HARV_RATE[L]}</b> stardust a minute (✨ ${(SP_HARV_RATE[L] * 60).toLocaleString()} an hour).</span></div>
         <div class="spBtns"><button class="btn big" data-spf="harv1" ${can && fr ? "" : "disabled"}>${spSI("frigate", "spShipI btnI")}Send with escort</button>
           <button class="btn ghost" data-spf="harv0" ${can ? "" : "disabled"}>${spSI("harvester", "spShipI btnI")}Send without escort</button></div>
         <div class="muted">${!can ? "All your harvesters are out." : !fr ? (SP.fleet.frigates ? "All your frigates are busy." : spFrigCap() ? `No frigates: build one for ${fmt(SP_FRIG_PRICE)} at 🌍 Home.` : "Research 🛡️ Escort Frigates (🌌 Space → Research) to protect your harvesters.") : `🛡️ Frigates free: ${spFrigFree()} / ${SP.fleet.frigates}`}</div>
         <div class="spAuto"><label class="spCheck"><input type="checkbox" data-spf="auto" ${SP.fleet.auto ? "checked" : ""}> 🔁 <b>Keep harvesting:</b> harvesters fly out again on their own, also while the game is closed</label>
-          ${SP.fleet.auto ? `<label class="spCheck">🛡️ Escort: <select data-spf="automode">${[["free", "when a frigate is free"], ["only", "always (wait for a free frigate)"], ["none", "never"]].map(([v, t]) => `<option value="${v}" ${spAutoMode() === v ? "selected" : ""}>${t}</option>`).join("")}</select></label>
+          ${SP.fleet.auto ? `<label class="spCheck">${lgxI("escort")}Escort: <select data-spf="automode">${[["free", "when a frigate is free"], ["only", "always (wait for a free frigate)"], ["none", "never"]].map(([v, t]) => `<option value="${v}" ${spAutoMode() === v ? "selected" : ""}>${t}</option>`).join("")}</select></label>
             ${spAutoMode() === "only" && spHarvFree() && !spFrigFree() ? `<div class="muted">⏳ Waiting for a free frigate.</div>` : ""}` : ""}</div></div>`
       : `<div class="spRoute locked spRow">${spSI("harvester")}<span>Research <b>✨ Stardust Harvesters</b> (🌌 Space → Research) to farm stardust here.</span></div>`}
-    <div class="spStats"><span>✨ Farmed: <b>${(SP.stats.dustFarmed || 0).toLocaleString()}</b></span><span>🏴‍☠️ Attacks: <b>${SP.stats.raids || 0}</b></span><span>🛡️ Driven off: <b>${SP.stats.raidsWon || 0}</b></span><span>💥 Frigates lost: <b>${SP.fleet.lost || 0}</b></span></div>`;
+    <div class="spStats"><span>✨ Farmed: <b>${(SP.stats.dustFarmed || 0).toLocaleString()}</b></span><span>${lgxI("pirates")}Attacks: <b>${SP.stats.raids || 0}</b></span><span>${lgxI("escort")}Driven off: <b>${SP.stats.raidsWon || 0}</b></span><span>💥 Frigates lost: <b>${SP.fleet.lost || 0}</b></span></div>`;
 }
 // 🌍 Home panel: the whole fleet
 function spFleetHtml() {
@@ -182,7 +182,7 @@ function spFleetHtml() {
       ${H ? `<li>${spSI("harvester")} Stardust Harvesters: <b>${spHarvFree()} / ${H}</b> free</li>` : ""}
       ${F ? `<li>${spSI("frigate")} Escort Frigates: <b>${spFrigFree()} / ${SP.fleet.frigates}</b> free${SP.fleet.frigates < F ? ` · ${F - SP.fleet.frigates} destroyed` : ""}</li>` : ""}</ul>
     ${F ? `<div class="spBtns">${SP.fleet.frigates < F ? `<button class="btn" data-spf="build" ${state.money >= SP_FRIG_PRICE ? "" : "disabled"}>${spSI("frigate", "spShipI btnI")}Build a frigate · ${fmt(SP_FRIG_PRICE)}</button>` : ""}
-      <label class="spCheck"><input type="checkbox" data-spf="escort" ${SP.fleet.escortOn ? "checked" : ""}> 🛡️ Send a free frigate with every courier ship (pirates leave escorted ships alone)</label></div>` : ""}`;
+      <label class="spCheck"><input type="checkbox" data-spf="escort" ${SP.fleet.escortOn ? "checked" : ""}> ${lgxI("escort")}Send a free frigate with every courier ship (pirates leave escorted ships alone)</label></div>` : ""}`;
 }
 
 document.addEventListener("click", (e) => {

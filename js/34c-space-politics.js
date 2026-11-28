@@ -207,7 +207,7 @@ function spBarterHtml() {
   const gv = spBarterGive(), gt = spBarterGet(), { give, get } = spBarter, max = spBarterMax(), n = Math.min(spBarter.n, Math.max(1, max));
   const opt = (list, sel, skip) => list.filter(g => g !== skip).map(g => `<option value="${g}" ${g === sel ? "selected" : ""}>${SP_GOODS[g].name} (${(SP.goods[g] || 0).toLocaleString()})</option>`).join("");
   let body;
-  if (!gt.length) body = `<p class="muted">🔒 Become <b>😊 Friendly</b> with a race to trade for its goods here.</p>`;
+  if (!gt.length) body = `<p class="muted">🔒 Become <b>${lgxI("friendly")}Friendly</b> with a race to trade for its goods here.</p>`;
   else if (!gv.length) body = `<p class="muted">You need at least ${SP_BARTER_RATE} of an alien good to trade.</p>`;
   else body = `<div class="spBarter">
       <label><span class="muted">You give</span><select data-spb="give">${opt(gv, give)}</select></label>
@@ -216,11 +216,11 @@ function spBarterHtml() {
       <label><span class="muted">How many to get</span><input type="number" min="1" max="${max}" value="${n}" data-spb="n"></label></div>
     ${give && get ? `<div class="spBarterSum"><span class="spNeed">${spGI(give)} <b>${(n * SP_BARTER_RATE).toLocaleString()}</b> ${SP_GOODS[give].name}</span><span class="spArrow">→</span>
       <span class="spNeed ok">${spGI(get)} <b>${n.toLocaleString()}</b> ${SP_GOODS[get].name}</span>
-      <button class="btn" data-spb="go" ${max >= 1 && give !== get ? "" : "disabled"}>🔁 Trade</button>
+      <button class="btn" data-spb="go" ${max >= 1 && give !== get ? "" : "disabled"}>${lgxI("barter")}<span>Trade</span></button>
       <button class="btn ghost small" data-spb="max" ${max >= 1 ? "" : "disabled"}>Max (${max.toLocaleString()})</button></div>` : `<p class="muted">Pick two different goods.</p>`}`;
-  return `<div class="card"><h2 style="margin-top:0">🔁 Trade with friendly races</h2>
+  return `<div class="card"><h2 style="margin-top:0">${lgxI("barter")}Trade with friendly races</h2>
     <p class="muted">Swap your alien goods: you give ${SP_BARTER_RATE}, you get 1. You can get the goods of any race that is 😊 Friendly or better with you. 🏺 Ancient Relics can't be traded here.</p>
-    ${body}${SP.stats.bartered ? `<div class="spStats"><span>🔁 Goods received by trading: <b>${SP.stats.bartered.toLocaleString()}</b></span></div>` : ""}</div>`;
+    ${body}${SP.stats.bartered ? `<div class="spStats"><span>${lgxI("barter")}Goods received by trading: <b>${SP.stats.bartered.toLocaleString()}</b></span></div>` : ""}</div>`;
 }
 document.addEventListener("change", (e) => {
   const el = e.target.closest("[data-spb]"); if (!el || !e.target.closest("#spaceView")) return;

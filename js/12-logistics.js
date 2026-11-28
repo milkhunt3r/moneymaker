@@ -7,6 +7,8 @@
    Tankers: 75 scoin, 10 slots, pay back in about 3 hours.
    Trucks: 150,000, 15 slots, pay back in about 1.5 hours.
    ===================================================================== */
+// 🖼️ painted Logistics / Space icons (assets/icons/ico-lgx-*.webp)
+const lgxI = (k, cls = "ico pti") => `<img class="${cls}" src="assets/icons/ico-lgx-${k}.webp" alt="">`;
 const FLEETS = {
   tanker: {
     label: "Tanker", icon: "🚢", pic: "tanker", box: "tankers", countEl: "logiCount", price: 75000000, slots: 10, road: false,
@@ -286,7 +288,7 @@ function renderFleet(key) {
   const bestOf = (v) => v.offers && v.offers.length ? v.offers.reduce((b, o, k) => o.profit / o.seconds > v.offers[b].profit / v.offers[b].seconds ? k : b, 0) : -1;
   const idle = list.filter(v => !v.contract && !v.broken && v.offers && v.offers.length);
   let html = idle.length > 1 ? `<div class="lgSendAll"><span>${fIco(key)}<b>${idle.length}</b> ${F.road ? "trucks" : F.sky ? "planes" : "tankers"} waiting for a contract</span>
-    <button class="btn" data-sendall="${key}">⭐ Send all on their best contract</button></div>` : "";
+    <button class="btn" data-sendall="${key}">${lgxI("sendall")}<span>Send all on their best contract</span></button></div>` : "";
   html += `<div class="tankerGrid lgCompact">`;
   list.forEach(v => {
     if (v.contract && !lgFull.has(v.id)) {
@@ -300,9 +302,9 @@ function renderFleet(key) {
     if (!v.contract && !v.broken && v.offers && v.offers.length && !lgFull.has(v.id)) {
       const k = bestOf(v), o = v.offers[k], r = F.routes[o.route];
       html += `<div class="tanker lgRow idle"><div class="row"><b>${fIco(key)}${v.name}</b><span class="muted">${F.road ? "at the depot" : F.sky ? "at the airport" : "in port"}</span></div>
-        <div class="lgBest"><span class="lgStar">⭐ Best</span><span><b class="route">${r.from} → ${r.to}</b>
+        <div class="lgBest"><span class="lgStar">${ico("in-best","pti")}Best</span><span><b class="route">${r.from} → ${r.to}</b>
           <small>${lgIco("profit")}${fmt(contractPayout(key, o.profit))} · ${lgIco("time")}${clockLong(o.seconds)} · <b>≈ ${fmt(o.profit / o.seconds)} / sec</b>${o.express ? ` · ${lgIco("express")}EXPRESS` : ""}</small></span></div>
-        <div class="lgBtns"><button class="btn" data-fleet="${key}" data-vehicle="${v.id}" data-offer="${k}">🚀 Send</button>
+        <div class="lgBtns"><button class="btn" data-fleet="${key}" data-vehicle="${v.id}" data-offer="${k}">${lgxI("send")}<span>Send</span></button>
           <button class="btn ghost small" data-lgmore="${v.id}" data-fleetk="${key}">Other offers (${v.offers.length - 1}) ▸</button></div>
         ${agentOn(key) ? `<div class="agentNote" id="agent-${v.id}">${lgIco("agent")}Agent picks a contract in ${Math.max(0, agentDelay() - (v.wait || 0))}s</div>` : ""}</div>`;
       return;
@@ -334,7 +336,7 @@ function renderFleet(key) {
         <div class="offers">${v.offers.map((o, k) => {
           const r = F.routes[o.route];
           return `<button class="offer ${o.express ? "express" : ""} ${k === bk ? "best" : ""}" data-fleet="${key}" data-vehicle="${v.id}" data-offer="${k}">
-            ${k === bk ? `<span class="lgStar">⭐ Best per sec</span>` : ""}
+            ${k === bk ? `<span class="lgStar">${ico("in-best","pti")}Best per sec</span>` : ""}
             ${o.express ? `<span class="exp">${lgIco("express")}<span id="exp-${v.id}-${k}">EXPRESS · ${o.express}s left</span></span>` : ""}
             <b class="route">${r.from} → ${r.to}</b>
             ${lgIco("profit")}Total profit: <b>${fmt(contractPayout(key, o.profit))}</b>${contractBonus(key) ? ` <span class="long">+${+(contractBonus(key) * 100).toFixed(1)}%</span>` : ""}<br>

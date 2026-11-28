@@ -865,8 +865,8 @@ rx(String.raw`● Live from (Binance|Coinbase)`, "● En directo desde $1");
 rx(String.raw`Unlocks at Investor level (\d+) \(you are level (\d+)\)\.?`, "Se desbloquea en el nivel de inversor $1 (eres nivel $2).");
 rx(String.raw`Unlocks at Investor level (\d+)`, "Se desbloquea en el nivel de inversor $1");
 // logistics
-hrx(String.raw`<b>([^<]+)<\/b> \{i\}Total profit: <b>(${NUM})<\/b><br> \{i\}Transit time: <b>([^<]+)<\/b><br> <span>≈ (${NUM}) \/ sec<\/span>( <span>LONG HAUL<\/span>| <span>EXPRESS[^<]*<\/span>)?`,
-  (m, r, p, t, s, x) => `<b>${routeEs(r)}</b> {i}Beneficio total: <b>${p}</b><br> {i}Tiempo de viaje: <b>${t}</b><br> <span>≈ ${s} / s</span>${x ? (/LONG/.test(x) ? " <span>LARGA DISTANCIA</span>" : " <span>" + (esq(x.replace(/<\/?span>/g, "").trim()) ?? x.replace(/<\/?span>/g, "").trim()) + "</span>") : ""}`);
+hrx(String.raw`(<span>\{i\}Best per sec<\/span> )?<b>([^<]+)<\/b> \{i\}Total profit: <b>(${NUM})<\/b><br> \{i\}Transit time: <b>([^<]+)<\/b><br> <span>≈ (${NUM}) \/ sec<\/span>( <span>LONG HAUL<\/span>| <span>EXPRESS[^<]*<\/span>)?`,
+  (m, bst, r, p, t, s, x) => `${bst ? "<span>{i}Mejor por segundo</span> " : ""}<b>${routeEs(r)}</b> {i}Beneficio total: <b>${p}</b><br> {i}Tiempo de viaje: <b>${t}</b><br> <span>≈ ${s} / s</span>${x ? (/LONG/.test(x) ? " <span>LARGA DISTANCIA</span>" : " <span>" + (esq(x.replace(/<\/?span>/g, "").trim()) ?? x.replace(/<\/?span>/g, "").trim()) + "</span>") : ""}`);
 rx(String.raw`≈ (${NUM}) \/ sec`, "≈ $1 / s");
 rx(String.raw`\+(${NUM}) on arrival`, "+$1 al llegar");
 rx(String.raw`Transit (\d[\dhm: ]*)`, "Viaje $1");
@@ -2186,7 +2186,7 @@ hrx(String.raw`🔒 A hidden building: <b>\+(\d+)<\/b> ships?`, (m, n) => `🔒 
 hrx(String.raw`(✅|🔒) (.+): <b>\+(\d+)<\/b> ships?`, (m, ok, b, n) => `${ok} ${ES[b.replace(/^\S+ /, "")] ? b.replace(/ .+$/, "") + " " + ES[b.replace(/^\S+ /, "")] : b}: <b>+${n}</b> ${plural(n, "nave", "naves")}`);
 hrx(String.raw`🚀 Ships: <b>(\d+) \/ (\d+)<\/b> busy`, "🚀 Naves: <b>$1 / $2</b> ocupadas");
 hrx(String.raw`👽 Races met: <b>(\d+) \/ (\d+)<\/b>`, "👽 Razas conocidas: <b>$1 / $2</b>");
-hrx(String.raw`🎁 Gifts delivered: <b>(\d+)<\/b>`, "🎁 Regalos entregados: <b>$1</b>");
+hrx(String.raw`(🎁 |\{i\})Gifts delivered: <b>(\d+)<\/b>`, "$1Regalos entregados: <b>$2</b>");
 hrx(String.raw`(\+\d+) friendship( \(their favourite!\))? · a new request in <span>(.+)<\/span>`, (m, n, f, c) => `${n} de amistad${f ? " (¡su favorito!)" : ""} · nueva petición en <span>${c}</span>`);
 rx(String.raw`([\d.,]+) \/ ([\d.,]+) friendship to (${SP_RX_LV})`, (m, a, b, l) => `${a} / ${b} de amistad para ${spL(l)}`);
 rx(String.raw`([\d.,]+) friendship · best friends!`, "$1 de amistad · ¡mejores amigos!");
@@ -2198,9 +2198,9 @@ function spReqEs(r) {
     .replace(/<b>([\d.,]+)<\/b> (stardust|polvo estelar)/, "<b>$1</b> de polvo estelar")
     .replace(/<b>(\d+)<\/b> ([A-Za-zíáéóú]+)/g, (m, n, o) => `<b>${n}</b> ${ES[o] || o}`);
 }
-hrx(String.raw`🚀 (🎁 Gift for the|Exploring:) ?(${SP_RX_NAME})? ?· (arrives in|coming home, back in) <b>([^<]+)<\/b>( · 🏴‍☠️ cargo stolen)?`, (m, k, n, w, c, st) =>
-  `🚀 ${k.startsWith("🎁") ? `🎁 Regalo para los ${spN(n)}` : `Explorando: ${spN(n)}`} · ${w === "arrives in" ? "llega en" : "vuelve a casa, de vuelta en"} <b>${c}</b>${st ? " · 🏴‍☠️ carga robada" : ""}`);
-hrx(String.raw`🚀 Exploring an unknown system · (arrives in|coming home, back in) <b>(.+)<\/b>`, (m, w, c) => `🚀 Explorando un sistema desconocido · ${w === "arrives in" ? "llega en" : "vuelve a casa, de vuelta en"} <b>${c}</b>`);
+hrx(String.raw`\{i\}(\{i\}Gift for the|Exploring:) ?(${SP_RX_NAME})? ?· (arrives in|coming home, back in) <b>([^<]+)<\/b>( · \{i\}cargo stolen)?`, (m, k, n, w, c, st) =>
+  `{i}${k.startsWith("{i}") ? `{i}Regalo para los ${spN(n)}` : `Explorando: ${spN(n)}`} · ${w === "arrives in" ? "llega en" : "vuelve a casa, de vuelta en"} <b>${c}</b>${st ? " · {i}carga robada" : ""}`);
+hrx(String.raw`\{i\}Exploring an unknown system · (arrives in|coming home, back in) <b>(.+)<\/b>`, (m, w, c) => `{i}Explorando un sistema desconocido · ${w === "arrives in" ? "llega en" : "vuelve a casa, de vuelta en"} <b>${c}</b>`);
 hrx(String.raw`Something is out there\. Send a ship to explore it: <b>(\d+) min<\/b> there and <b>(\d+) min<\/b> back\.`, "Ahí fuera hay algo. Envía una nave a explorarlo: <b>$1 min</b> de ida y <b>$2 min</b> de vuelta.");
 hrx(String.raw`Your scanners can't find this system yet\. Become <b>Acquainted<\/b> with (a nearby race|the <b>(${SP_RX_NAME})<\/b>) and they will tell you where it is\.`, (m, w, n) =>
   `Tus escáneres aún no encuentran este sistema. Logra el nivel <b>Conocida</b> con ${n ? `los <b>${spN(n)}</b>` : "una raza cercana"} y te dirán dónde está.`);
@@ -2283,7 +2283,7 @@ hrx(String.raw`🛣️ <b>Trade route:<\/b> opens when you are <b>😊 Friendly<
 hrx(String.raw`🛣️ <b>Trade route:<\/b> one ship flies to the (${SP_RX_NAME}) and back <b>for good<\/b>, bringing (\S+) <b>(\d+)<\/b> (${SP_RX_GOOD}) every trip \((\d+) min round trip\)\. It keeps going while the game is closed\.`, (m, n, e, x, g, t) =>
   `🛣️ <b>Ruta comercial:</b> una nave va y vuelve de los ${spN(n)} <b>para siempre</b> y trae ${e} <b>${x}</b> ${spG(g)} en cada viaje (${t} min ida y vuelta). Sigue funcionando con el juego cerrado.`);
 hrx(String.raw`🛣️ <b>Trade route open<\/b> · (\S+) <b>(\d+)<\/b> (${SP_RX_GOOD}) every trip \((\d+) min round trip\)`, (m, e, x, g, t) => `🛣️ <b>Ruta comercial abierta</b> · ${e} <b>${x}</b> ${spG(g)} en cada viaje (${t} min ida y vuelta)`);
-hrx(String.raw`🚀 🛣️ Trade route: (${SP_RX_NAME}) · (arrives in|coming home, back in) <b>([^<]+)<\/b>( · 🏴‍☠️ cargo stolen)?`, (m, n, w, c, st) => `🚀 🛣️ Ruta comercial: ${spN(n)} · ${w === "arrives in" ? "llega en" : "vuelve a casa, de vuelta en"} <b>${c}</b>${st ? " · 🏴‍☠️ carga robada" : ""}`);
+hrx(String.raw`\{i\}\{i\}Trade route: (${SP_RX_NAME}) · (arrives in|coming home, back in) <b>([^<]+)<\/b>( · \{i\}cargo stolen)?`, (m, n, w, c, st) => `{i}{i}Ruta comercial: ${spN(n)} · ${w === "arrives in" ? "llega en" : "vuelve a casa, de vuelta en"} <b>${c}</b>${st ? " · {i}carga robada" : ""}`);
 rx(String.raw`Trips so far: (\d+) · goods brought home: ([\d.,]+)`, "Viajes hasta ahora: $1 · bienes traídos: $2");
 rx(String.raw`Trade route to the (${SP_RX_NAME}) is open! One ship now flies there and back for good\.`, (m, n) => `¡Ruta comercial con los ${spN(n)} abierta! Ahora una nave va y vuelve para siempre.`);
 rx(String.raw`The trade route to the (${SP_RX_NAME}) has stopped\. Your ship is home\.`, (m, n) => `La ruta comercial con los ${spN(n)} se ha parado. Tu nave está en casa.`);
@@ -2342,9 +2342,9 @@ rx(String.raw`Your ship found a lost ship of the (${SP_RX_NAME}) and towed it ho
 rx(String.raw`Pirates caught your ship to the (${SP_RX_NAME}) and took the cargo!`, (m, n) => `¡Los piratas han atrapado tu nave hacia los ${spN(n)} y se han llevado la carga!`);
 rx(String.raw`Your ship to the (${SP_RX_NAME}) escaped the pirates!`, (m, n) => `¡Tu nave hacia los ${spN(n)} ha escapado de los piratas!`);
 rx(String.raw`Pirates stole your gift for the (${SP_RX_NAME})\. They will ask for something new\.`, (m, n) => `Los piratas robaron tu regalo para los ${spN(n)}. Te pedirán algo nuevo.`);
-hrx(String.raw`Only the most trusted traders may visit this system\. Become <b>💛 Trusted<\/b> with <b>(\d+)<\/b> races \(you have (\d+)\)\.`, "Solo los comerciantes de más confianza pueden visitar este sistema. Logra el nivel <b>💛 De confianza</b> con <b>$1</b> razas (tienes $2).");
-hrx(String.raw`Your scanners can't find this system yet\. Become <b>😊 Friendly<\/b> with (a nearby race|the <b>(${SP_RX_NAME})<\/b>) and they will tell you where it is\.`, (m, w, n) =>
-  `Tus escáneres aún no encuentran este sistema. Logra el nivel <b>😊 Amistosa</b> con ${n ? `los <b>${spN(n)}</b>` : "una raza cercana"} y te dirán dónde está.`);
+hrx(String.raw`Only the most trusted traders may visit this system\. Become <b>\{i\}Trusted<\/b> with <b>(\d+)<\/b> races \(you have (\d+)\)\.`, "Solo los comerciantes de más confianza pueden visitar este sistema. Logra el nivel <b>{i}De confianza</b> con <b>$1</b> razas (tienes $2).");
+hrx(String.raw`Your scanners can't find this system yet\. Become <b>\{i\}Friendly<\/b> with (a nearby race|the <b>(${SP_RX_NAME})<\/b>) and they will tell you where it is\.`, (m, w, n) =>
+  `Tus escáneres aún no encuentran este sistema. Logra el nivel <b>{i}Amistosa</b> con ${n ? `los <b>${spN(n)}</b>` : "una raza cercana"} y te dirán dónde está.`);
 H("<b>1. Explore:</b> send a ship to an unknown signal. It flies there and back (6–40 min each way) and meets the race that lives there. Three systems are reachable from the start; each of the others is revealed by its neighbour once you are <b>Acquainted</b>.",
   "<b>1. Explorar:</b> envía una nave a una señal desconocida. Va y vuelve (6–40 min por trayecto) y conoce a la raza que vive allí. Tres sistemas se pueden alcanzar desde el principio; cada uno de los demás te lo revela su vecino cuando llegas a <b>Conocida</b>.");
 H("🔮 <b>Network races:</b> the Mystics and the Machines (found through a 😊 Friendly neighbour) and the Ancients (once 3 races trust you, 💛 Trusted) only want other races' goods.",
@@ -2407,7 +2407,7 @@ hrx(String.raw`<b>Wants a mix of:<\/b> (.+) <span>\(\+(\d+) friendship\)<\/span>
 hrx(String.raw`<b>They send back:<\/b> (\S+) (${SP_RX_GOOD}) <span>\((\d+) per gift, more when you level up\)<\/span>`, (m, e, g, n) => `<b>Te devuelven:</b> ${e} ${spG(g)} <span>(${n} por regalo, más al subir de nivel)</span>`);
 hrx(String.raw`<b>Distance:<\/b> (\d+) min each way`, "<b>Distancia:</b> $1 min por trayecto");
 hrx(String.raw`<b>Their request:<\/b> (.+)`, (m, r) => `<b>Su petición:</b> ${spReqEs2(r)}`);
-hrx(String.raw`<b>Trade route:<\/b> opens when you are <b>😊 Friendly<\/b> with the (${SP_RX_NAME})\.`, (m, n) => `<b>Ruta comercial:</b> se abre cuando tu amistad con los ${spN(n)} sea <b>😊 Amistosa</b>.`);
+hrx(String.raw`<b>Trade route:<\/b> opens when you are <b>\{i\}Friendly<\/b> with the (${SP_RX_NAME})\.`, (m, n) => `<b>Ruta comercial:</b> se abre cuando tu amistad con los ${spN(n)} sea <b>{i}Amistosa</b>.`);
 hrx(String.raw`<b>Trade route:<\/b> one ship flies to the (${SP_RX_NAME}) and back <b>for good<\/b>, bringing (\S+) <b>(\d+)<\/b> (${SP_RX_GOOD}) every trip \((\d+) min round trip\)\. It keeps going while the game is closed\.`, (m, n, e, x, g, t) =>
   `<b>Ruta comercial:</b> una nave va y vuelve de los ${spN(n)} <b>para siempre</b> y trae ${e} <b>${x}</b> ${spG(g)} en cada viaje (${t} min ida y vuelta). Sigue funcionando con el juego cerrado.`);
 hrx(String.raw`<b>Trade route open<\/b> · (\S+) <b>(\d+)<\/b> (${SP_RX_GOOD}) every trip \((\d+) min round trip\)`, (m, e, x, g, t) => `<b>Ruta comercial abierta</b> · ${e} <b>${x}</b> ${spG(g)} en cada viaje (${t} min ida y vuelta)`);
@@ -2529,7 +2529,9 @@ Object.assign(ES, { "A painter in the family": "Un pintor en la familia", "Adopt
 ES["Sell the goods your ships bring home. Prices move every 30 minutes: sell when they are high. The further away a race lives, the more its goods are worth. Once you are 💖 Allies with a race, you can buy its goods here too."] =
   "Vende los bienes que traen tus naves. Los precios cambian cada 30 minutos: vende cuando estén altos. Cuanto más lejos vive una raza, más valen sus bienes. Cuando seas 💖 Aliada de una raza, también podrás comprar aquí sus bienes.";
 Object.assign(ES, { "Buy": "Comprar", "Buy here at 💖 Allies": "Compra aquí al llegar a 💖 Aliada", "Bought": "Comprados", "Spent": "Gastado" });
-hrx(String.raw`💖 Buy: <b>(.+)<\/b> each`, "💖 Comprar: <b>$1</b> cada uno");
+hrx(String.raw`(💖 |\{i\})Buy: <b>(.+)<\/b> each`, "$1Comprar: <b>$2</b> cada uno");
+hrx(String.raw`🔒 Buy here at <b>\{i\}Allies<\/b>`, "🔒 Compra aquí al llegar a <b>{i}Aliada</b>");
+hrx(String.raw`More goods and faster trips at <b>\{i\}Trusted<\/b> and <b>\{i\}Allies<\/b>\.`, "Más bienes y viajes más rápidos en <b>{i}De confianza</b> y <b>{i}Aliada</b>.");
 rx(String.raw`Bought (\S+) (\d+) (${SP_RX_GOOD}) for (.+)\.`, (m, e, n, g, x) => `Has comprado ${e} ${n} ${spG(g)} por ${x}.`);
 rx(String.raw`You need (.+) to buy (\d+) (${SP_RX_GOOD})\.`, (m, x, n, g) => `Necesitas ${x} para comprar ${n} ${spG(g)}.`);
 ES["🏪 Alien market: once you are 💖 Allies with a race, you can also buy its goods there (handy for gifts to other races). Buying always costs more than selling."] =
@@ -2795,7 +2797,7 @@ Object.assign(ES, SP_ES_CRAFT, SP_ES_RES, { "Research": "Investigación", "Space
 });
 rx(String.raw`Research level (\d)`, "Investigar nivel $1");
 hrx(String.raw`<span class="ico">🔬<\/span>Research`, `<span class="ico">🔬</span>Investigación`); hrx(String.raw`<span>🔬<\/span>Research`, "<span>🔬</span>Investigación");
-hrx(String.raw`🔒 Research <b>🛠️ Space crafting<\/b> to unlock crafting\.`, "🔒 Investiga <b>🛠️ Artesanía espacial</b> para desbloquear la artesanía.");
+hrx(String.raw`🔒 Research <b>\{i\}Space crafting<\/b> to unlock crafting\.`, "🔒 Investiga <b>{i}Artesanía espacial</b> para desbloquear la artesanía.");
 hrx(String.raw`<b>Level (\d):<\/b> (${SP_RX_RES})`, (m, n, x) => `<b>Nivel ${n}:</b> ${spRs(x)}`);
 rx(String.raw`(✅ )?Now: (${SP_RX_RES})`, (m, e, x) => `${e || ""}Ahora: ${spRs(x)}`);
 rx(String.raw`(🔬 )?Research done: (\S+) <b>(${SP_RX_RES}) (\d)<\/b> · (${SP_RX_RES})\.`, (m, e, i, nm, n, x) => `${e || ""}Investigación terminada: ${i} <b>${spRs(nm)} ${n}</b> · ${spRs(x)}.`);
@@ -2810,7 +2812,7 @@ rx(String.raw`Goods made so far: ([\d.,]+)`, "Bienes producidos hasta ahora: $1"
 rx(String.raw`(${SP_RX_GOOD}) an hour, no ship needed\. One per system\.`, (m, g) => `${spG(g)} por hora, sin necesidad de nave. Uno por sistema.`);
 rx(String.raw`(${SP_RX_GOOD}) an hour, even while the game is closed\.`, (m, g) => `${spG(g)} por hora, incluso con el juego cerrado.`);
 rx(String.raw`(🏗️ )?Outpost built at the (${SP_RX_NAME})! It makes (\d+) (${SP_RX_GOOD}) an hour\.`, (m, e, n, x, g) => `${e || ""}¡Puesto avanzado construido en los ${spN(n)}! Produce ${x} ${spG(g)} por hora.`);
-hrx(String.raw`<b>Outpost:<\/b> you can build one here when you are <b>😊 Friendly<\/b> with the (${SP_RX_NAME})\.`, (m, n) => `<b>Puesto avanzado:</b> podrás construir uno aquí cuando tu amistad con los ${spN(n)} sea <b>😊 Amistosa</b>.`);
+hrx(String.raw`<b>Outpost:<\/b> you can build one here when you are <b>\{i\}Friendly<\/b> with the (${SP_RX_NAME})\.`, (m, n) => `<b>Puesto avanzado:</b> podrás construir uno aquí cuando tu amistad con los ${spN(n)} sea <b>{i}Amistosa</b>.`);
 rx(String.raw`(\S+) (${SP_RX_NAME}): (\S+) (\d+) (${SP_RX_GOOD}) an hour · ([\d.,]+) made`, (m, e, n, i, x, g, k) => `${e} ${spN(n)}: ${i} ${x} ${spG(g)} por hora · ${k} producidos`);
 H("🔬 <b>Research</b> (🌌 Space → Research): 5 research lines with 3 levels each. Every level costs 🔬 scientists (10/20/30), money (250,000/500,000/750,000 scoin) and space resources; the last levels need crafted resources. 🛠️ Space crafting unlocks crafting (60/45/30 s per unit), 🚀 Extra ship slots give +1 ship each, 📦 Cargo holds add +10/+10/+15 goods to every gift and trade route trip, 🔥 Ship engines cut trip times by 5%/5%/10%, and 🏗️ Outposts let you build +1 outpost each.",
   "🔬 <b>Investigación</b> (🌌 Espacio → Investigación): 5 líneas de investigación con 3 niveles cada una. Cada nivel cuesta 🔬 científicos (10/20/30), dinero (250.000/500.000/750.000 scoin) y recursos espaciales; los últimos niveles necesitan recursos fabricados. 🛠️ Artesanía espacial desbloquea la artesanía (60/45/30 s por unidad), 🚀 Hangares extra da +1 nave por nivel, 📦 Bodegas de carga suma +10/+10/+15 bienes a cada viaje de regalo y de ruta comercial, 🔥 Motores de nave reduce los viajes un 5 %/5 %/10 %, y 🏗️ Puestos avanzados te deja construir +1 puesto avanzado por nivel.");
@@ -2867,7 +2869,7 @@ hrx(String.raw`A strange glittering cloud at the edge of your scanners\. Send a 
 rx(String.raw`(🚀 )?A courier ship is on its way to explore the strange signal \((\d+) min there, (\d+) min back\)\.`, (m, e, a, b) => `${e || ""}Una nave mensajera va de camino a explorar la extraña señal (${a} min de ida, ${b} min de vuelta).`);
 rx(String.raw`(🌫️ )?Your courier ship found the <b>Stardust Drift<\/b>: a glittering cloud full of stardust, and full of pirates\. (Send a ✨ Stardust Harvester to farm it!|Research ✨ Stardust Harvesters \(🌌 Space → Research\) to farm it\.)`, (m, e, x) =>
   `${e || ""}Tu nave mensajera ha encontrado la <b>Deriva de Polvo Estelar</b>: una nube brillante llena de polvo estelar… y de piratas. ${x.startsWith("Send") ? "¡Envía una ✨ cosechadora de polvo estelar a recogerlo!" : "Investiga ✨ Cosechadoras de polvo estelar (🌌 Espacio → Investigación) para recogerlo."}`);
-hrx(String.raw`Stardust Drift<small>(🏴‍☠️ Pirate space|(✨|🔁) (\d+) harvesting)<\/small>`, (m, x, e, n) => `Deriva de Polvo Estelar<small>${n ? `${e} ${n} cosechando` : "🏴‍☠️ Espacio pirata"}</small>`);
+hrx(String.raw`Stardust Drift<small>(\{i\}Pirate space|(✨|🔁) (\d+) harvesting)<\/small>`, (m, x, e, n) => `Deriva de Polvo Estelar<small>${n ? `${e} ${n} cosechando` : "{i}Espacio pirata"}</small>`);
 rx(String.raw`(\d+) harvesting`, "$1 cosechando");
 hrx(String.raw`(\{i\}|🌫️ )?Stardust Drift <span>· Pirate space<\/span>`, (m, i) => `${i || ""}Deriva de Polvo Estelar <span>· Espacio pirata</span>`);
 hrx(String.raw`<b>Distance:<\/b> (\d+) min each way · farming takes 1 hour`, "<b>Distancia:</b> $1 min por trayecto · la cosecha dura 1 hora");
@@ -2893,7 +2895,7 @@ rx(String.raw`(💥 )?Pirates destroyed your escort frigate in the Stardust Drif
 rx(String.raw`(🏴‍☠️ )?Pirates raided your unprotected harvester in the Stardust Drift and took ✨ ([\d.,]+) stardust! It keeps farming\.`, (m, e, n) => `${e || ""}¡Los piratas asaltaron tu cosechadora sin protección en la Deriva de Polvo Estelar y se llevaron ✨ ${n} de polvo estelar! Sigue cosechando.`);
 rx(String.raw`(✨ )?Your harvester is back from the Stardust Drift with <b>([\d.,]+)<\/b> stardust( \(pirates took ([\d.,]+)\))?\.`, (m, e, n, x, l) => `${e || ""}Tu cosechadora ha vuelto de la Deriva de Polvo Estelar con <b>${n}</b> de polvo estelar${l ? ` (los piratas se llevaron ${l})` : ""}.`);
 rx(String.raw`(🛡️ )?Pirates spotted your courier ship to the (${SP_RX_NAME}), saw its frigate escort and flew away\.`, (m, e, n) => `${e || ""}Los piratas vieron tu nave mensajera hacia los ${spN(n)}, vieron su fragata de escolta y se marcharon.`);
-hrx(String.raw`🚀 Courier ships: <b>(\d+) \/ (\d+)<\/b> (?:busy|ocupadas)`, "🚀 Naves mensajeras: <b>$1 / $2</b> ocupadas");
+hrx(String.raw`(🚀 |\{i\})Courier ships: <b>(\d+) \/ (\d+)<\/b> (?:busy|ocupadas)`, "$1Naves mensajeras: <b>$2 / $3</b> ocupadas");
 hrx(String.raw`(\S+|\{i\}) Courier ships: <b>(\d+) \/ (\d+)<\/b> free <span>\(gifts, trade routes, contracts, exploring\)<\/span>`, "$1 Naves mensajeras: <b>$2 / $3</b> libres <span>(regalos, rutas comerciales, contratos, exploración)</span>");
 hrx(String.raw`(\S+|\{i\}) Stardust Harvesters: <b>(\d+) \/ (\d+)<\/b> free`, "$1 Cosechadoras de polvo estelar: <b>$2 / $3</b> libres");
 hrx(String.raw`(\S+|\{i\}) Escort Frigates: <b>(\d+) \/ (\d+)<\/b> free( · (\d+) destroyed)?`, (m, i, a, b, x, d) => `${i} Fragatas de escolta: <b>${a} / ${b}</b> libres${d ? ` · ${d} destruidas` : ""}`);
@@ -2912,11 +2914,11 @@ Object.assign(ES, { "Trade with friendly races": "Comerciar con razas amistosas"
   "Pick two different goods.": "Elige dos bienes distintos.", "Goods received by trading": "Bienes recibidos intercambiando",
   "Swap your alien goods: you give 2, you get 1. You can get the goods of any race that is 😊 Friendly or better with you. 🏺 Ancient Relics can't be traded here.":
     "Intercambia tus bienes alienígenas: das 2 y recibes 1. Puedes conseguir los bienes de cualquier raza con la que tengas una amistad 😊 Amistosa o mejor. Las 🏺 Reliquias antiguas no se pueden intercambiar aquí." });
-hrx(String.raw`🔒 Become <b>😊 Friendly<\/b> with a race to trade for its goods here\.`, "🔒 Consigue una amistad <b>😊 Amistosa</b> con una raza para intercambiar aquí sus bienes.");
+hrx(String.raw`🔒 Become <b>\{i\}Friendly<\/b> with a race to trade for its goods here\.`, "🔒 Consigue una amistad <b>{i}Amistosa</b> con una raza para intercambiar aquí sus bienes.");
 rx(String.raw`You need at least (\d+) of an alien good to trade\.`, "Necesitas al menos $1 de un bien alienígena para intercambiar.");
 rx(String.raw`(${SP_RX_GOOD}) \(([\d.,]+)\)`, (m, g, n) => `${spG(g)} (${n})`);
 rx(String.raw`Max \(([\d.,]+)\)`, "Máx. ($1)");
-hrx(String.raw`🔁 Goods received by trading: <b>([\d.,]+)<\/b>`, "🔁 Bienes recibidos intercambiando: <b>$1</b>");
+hrx(String.raw`(🔁 |\{i\})Goods received by trading: <b>([\d.,]+)<\/b>`, "$1Bienes recibidos intercambiando: <b>$2</b>");
 rx(String.raw`(🔁 )?Traded (\S+) ([\d.,]+) (${SP_RX_GOOD}) for (\S+) ([\d.,]+) (${SP_RX_GOOD}) with the (${SP_RX_NAME})\.`, (m, e, i1, a, g1, i2, b, g2, n) => `${e || ""}Has intercambiado ${i1} ${a} ${spG(g1)} por ${i2} ${b} ${spG(g2)} con los ${spN(n)}.`);
 H("🔁 <b>Trading goods</b> (🌌 Space → Market): swap your alien goods with races that are 😊 Friendly or better: you give 2 of any good and get 1 of theirs. 🏺 Ancient Relics can't be traded.",
   "🔁 <b>Intercambio de bienes</b> (🌌 Espacio → Mercado): intercambia tus bienes alienígenas con razas con las que tengas una amistad 😊 Amistosa o mejor: das 2 de cualquier bien y recibes 1 del suyo. Las 🏺 Reliquias antiguas no se pueden intercambiar.");
@@ -3372,6 +3374,14 @@ H("⚙️ Settings: the <b>Display</b> section folds away (tap its header). Fold
 Object.assign(ES, { "This file is far too big to be an Empire of Coins backup.": "Este archivo es demasiado grande para ser una copia de Empire of Coins." });
 H("🚀 Nebula Strike: ✨ stardust is now a little see-through, so it's easier to tell apart from enemy bullets.",
   "🚀 Nebula Strike: el ✨ polvo estelar es ahora un poco transparente, para distinguirlo mejor de las balas enemigas.");
+// 🛡️ prestige windows: the shield is a painted icon, so the text around it is translated in pieces
+rx(String.raw`Always kept: achievements, levels, cosmetics, statistics and your 🖼️ Art Gallery \(unlock, slots and paintings\)( · Prestiges so far: (\d+))?\. After every prestige`,
+  (m, x, n) => `Siempre se conservan: logros, niveles, cosméticos, estadísticas y tu 🖼️ Galería de arte (desbloqueo, huecos y cuadros)${x ? ` · Prestigios hasta ahora: ${n}` : ""}. Después de cada prestigio`);
+Object.assign(ES, { "no tax inspections for the first 10 minutes.": "sin inspecciones de Hacienda durante los primeros 10 minutos.",
+  "Kept: achievements, levels, cosmetics, statistics, Legacy bonuses, free bet chips, Art Gallery unlock, slots and paintings.": "Se conservan: logros, niveles, cosméticos, estadísticas, bonificaciones de Legado, fichas de apuesta gratis, el desbloqueo de la Galería de arte, sus huecos y los cuadros.",
+  "No tax inspections for the first 10 minutes after the reset.": "Sin inspecciones de Hacienda durante los 10 primeros minutos tras el reinicio." });
+H("🎨 More painted icons instead of emoji: the 🐾 Pets page, worker statuses and buttons on 💰 Income, the buttons and payout tables in the 🎰 Casino, and 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting).",
+  "🎨 Más iconos pintados en lugar de emojis: la página de 🐾 Mascotas, los estados de los trabajadores y los botones de 💰 Ingresos, los botones y tablas de pagos del 🎰 Casino, y 🚚 Logística (botones de enviar, niveles de amistad, regalos, piratas, escoltas, rutas comerciales, intercambio, bonificaciones de alianza, puestos avanzados y artesanía).");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -9731,6 +9741,8 @@ __eocLoaded = 18;
    Tankers: 75 scoin, 10 slots, pay back in about 3 hours.
    Trucks: 150,000, 15 slots, pay back in about 1.5 hours.
    ===================================================================== */
+// 🖼️ painted Logistics / Space icons (assets/icons/ico-lgx-*.webp)
+var lgxI = (k, cls = "ico pti") => `<img class="${cls}" src="assets/icons/ico-lgx-${k}.webp" alt="">`;
 var FLEETS = {
   tanker: {
     label: "Tanker", icon: "🚢", pic: "tanker", box: "tankers", countEl: "logiCount", price: 75000000, slots: 10, road: false,
@@ -10010,7 +10022,7 @@ function renderFleet(key) {
   const bestOf = (v) => v.offers && v.offers.length ? v.offers.reduce((b, o, k) => o.profit / o.seconds > v.offers[b].profit / v.offers[b].seconds ? k : b, 0) : -1;
   const idle = list.filter(v => !v.contract && !v.broken && v.offers && v.offers.length);
   let html = idle.length > 1 ? `<div class="lgSendAll"><span>${fIco(key)}<b>${idle.length}</b> ${F.road ? "trucks" : F.sky ? "planes" : "tankers"} waiting for a contract</span>
-    <button class="btn" data-sendall="${key}">⭐ Send all on their best contract</button></div>` : "";
+    <button class="btn" data-sendall="${key}">${lgxI("sendall")}<span>Send all on their best contract</span></button></div>` : "";
   html += `<div class="tankerGrid lgCompact">`;
   list.forEach(v => {
     if (v.contract && !lgFull.has(v.id)) {
@@ -10024,9 +10036,9 @@ function renderFleet(key) {
     if (!v.contract && !v.broken && v.offers && v.offers.length && !lgFull.has(v.id)) {
       const k = bestOf(v), o = v.offers[k], r = F.routes[o.route];
       html += `<div class="tanker lgRow idle"><div class="row"><b>${fIco(key)}${v.name}</b><span class="muted">${F.road ? "at the depot" : F.sky ? "at the airport" : "in port"}</span></div>
-        <div class="lgBest"><span class="lgStar">⭐ Best</span><span><b class="route">${r.from} → ${r.to}</b>
+        <div class="lgBest"><span class="lgStar">${ico("in-best","pti")}Best</span><span><b class="route">${r.from} → ${r.to}</b>
           <small>${lgIco("profit")}${fmt(contractPayout(key, o.profit))} · ${lgIco("time")}${clockLong(o.seconds)} · <b>≈ ${fmt(o.profit / o.seconds)} / sec</b>${o.express ? ` · ${lgIco("express")}EXPRESS` : ""}</small></span></div>
-        <div class="lgBtns"><button class="btn" data-fleet="${key}" data-vehicle="${v.id}" data-offer="${k}">🚀 Send</button>
+        <div class="lgBtns"><button class="btn" data-fleet="${key}" data-vehicle="${v.id}" data-offer="${k}">${lgxI("send")}<span>Send</span></button>
           <button class="btn ghost small" data-lgmore="${v.id}" data-fleetk="${key}">Other offers (${v.offers.length - 1}) ▸</button></div>
         ${agentOn(key) ? `<div class="agentNote" id="agent-${v.id}">${lgIco("agent")}Agent picks a contract in ${Math.max(0, agentDelay() - (v.wait || 0))}s</div>` : ""}</div>`;
       return;
@@ -10058,7 +10070,7 @@ function renderFleet(key) {
         <div class="offers">${v.offers.map((o, k) => {
           const r = F.routes[o.route];
           return `<button class="offer ${o.express ? "express" : ""} ${k === bk ? "best" : ""}" data-fleet="${key}" data-vehicle="${v.id}" data-offer="${k}">
-            ${k === bk ? `<span class="lgStar">⭐ Best per sec</span>` : ""}
+            ${k === bk ? `<span class="lgStar">${ico("in-best","pti")}Best per sec</span>` : ""}
             ${o.express ? `<span class="exp">${lgIco("express")}<span id="exp-${v.id}-${k}">EXPRESS · ${o.express}s left</span></span>` : ""}
             <b class="route">${r.from} → ${r.to}</b>
             ${lgIco("profit")}Total profit: <b>${fmt(contractPayout(key, o.profit))}</b>${contractBonus(key) ? ` <span class="long">+${+(contractBonus(key) * 100).toFixed(1)}%</span>` : ""}<br>
@@ -14391,6 +14403,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "🎨 More painted icons instead of emoji: the 🐾 Pets page, worker statuses and buttons on 💰 Income, the buttons and payout tables in the 🎰 Casino, and 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting).",
     "🚀 Nebula Strike: ✨ stardust is now a little see-through, so it's easier to tell apart from enemy bullets.",
     "⚙️ Settings: the <b>Display</b> section folds away (tap its header). Folded, it shows your language, brightness and number format at a glance.",
     "🎮 Mini-game fixes: 🎨 Art Gallery: Submit copy and New painting sit apart, and New painting asks before throwing your copy away. ⛏️ Gold Mine: a 🏦 Vault box with your ore and what it's worth. 🚀 Nebula Strike: a big Continue button for the next level, and the pirate chest sits right under it. 🧬 Gene Splicer: a start guide for your first splice, and the DNA timer and Hint sit in the splicer box.",
@@ -19639,9 +19652,11 @@ var SP_LEVELS = [
 ];
 var SP_KINDS = { money: "💰 Money", ore: "⛏️ Ore", dna: "🧬 DNA samples", art: "🖼️ Paintings", dust: "✨ Stardust" };
 // 🎨 painted icons for the alien card (assets/space/sp-ico-*.webp, sp-kind-*.webp) and portraits (assets/space/aliens/)
-var spI = (n, cls = "spI") => `<img class="${cls}" src="assets/space/sp-ico-${n}.webp" alt="">`;
+// friendship levels, gifts, routes and bonuses use the painted Logistics set (assets/icons/ico-lgx-*)
+var SP_LGX = { contacted: 1, acquainted: 1, friendly: 1, trusted: 1, allies: 1, gift: 1, route: 1, bonus: 1, unknown: 1 };
+var spI = (n, cls = "spI") => `<img class="${cls}" src="${SP_LGX[n] ? `assets/icons/ico-lgx-${n}` : `assets/space/sp-ico-${n}`}.webp" alt="">`;
 var SP_LV_ICO = [null, "contacted", "acquainted", "friendly", "trusted", "allies"];
-var spLvI = (L, cls) => L ? spI(SP_LV_ICO[L], cls) : "❔";
+var spLvI = (L, cls) => spI(L ? SP_LV_ICO[L] : "unknown", cls);
 var SP_KIND_ICO = { money: "money", ore: "ore", art: "art", dust: "dust" };
 var spKindI = (kind) => SP_KIND_ICO[kind] ? `<img class="spI" src="assets/space/sp-kind-${SP_KIND_ICO[kind]}.webp" alt="">` : SP_KINDS[kind].split(" ")[0];
 var spPortrait = (k) => `assets/space/aliens/alien-${k}${spLevel(k) >= 4 ? "-happy" : ""}.webp`;
@@ -19799,10 +19814,10 @@ function spEventStep(tr, now, msgs = []) {
 var spToll = () => Math.max(1e6, spRound(mineBase() * 60 * SP_EV.toll));
 function spAskPirates(tr) {
   spAsk = { id: tr.id, toll: spToll() };
-  showModal(`<h2>🏴‍☠️ Pirates!</h2><p>Space pirates stopped your ship on its way to the <b>${SP_RACES[tr.to].name}</b>.</p>
+  showModal(`<h2>${lgxI("pirates")}Pirates!</h2><p>Space pirates stopped your ship on its way to the <b>${SP_RACES[tr.to].name}</b>.</p>
     <p>💰 Pay them <b>${fmt(spAsk.toll)}</b> to pass, or 🚀 run for it: a 50% chance they take your cargo${tr.k === "explore" ? " (exploring ships carry nothing worth taking)" : ""}.</p>
     <div class="row" style="justify-content:center;gap:10px"><button class="btn big" data-spp="pay" ${state.money >= spAsk.toll ? "" : "disabled"}>💰 Pay ${fmt(spAsk.toll)}</button>
-    <button class="btn big dangerBtn" data-spp="run">🚀 Run for it</button></div><p class="muted">No answer in 1 minute: your captain runs for it.</p>`);
+    <button class="btn big dangerBtn" data-spp="run">${lgxI("send")}<span>Run for it</span></button></div><p class="muted">No answer in 1 minute: your captain runs for it.</p>`);
 }
 function spPiratesRun(tr, msgs) {
   tr.ev.done = true; spAsk = null; if (!$("modal").hidden && $("modalBox").querySelector("[data-spp]")) hideModal();
@@ -19982,7 +19997,7 @@ function spMapHtml() {
   const nodes = Object.entries(SP_RACES).map(([k, R]) => {
     const r = SP.races[k], vis = spVisible(k), L = spLevel(k);
     const img = r.found ? `sys-${k}` : "sys-unknown";
-    const rt = r.found && spRouteOf(k), lbl = r.found ? `${R.name}<small>${SP_LEVELS[L].name}</small>${rt && !rt.stop ? `<small class="spRtLbl">🛣️ Active trade route</small>` : ""}` : vis ? `Unknown signal<small>❓ Explore</small>` : `<small>🔒 Uncharted</small>`;
+    const rt = r.found && spRouteOf(k), lbl = r.found ? `${R.name}<small>${SP_LEVELS[L].name}</small>${rt && !rt.stop ? `<small class="spRtLbl">${lgxI("route")}Active trade route</small>` : ""}` : vis ? `Unknown signal<small>❓ Explore</small>` : `<small>🔒 Uncharted</small>`;
     return `<button class="spNode ${r.found ? "found" : vis ? "fog" : "hidden"} ${spSel === k ? "sel" : ""}" data-sp="${k}" style="left:${R.pos[0]}%;top:${R.pos[1]}%">
       <img src="assets/space/${img}.webp" alt="" draggable="false"><span class="spLbl">${lbl}</span>${SP.sos && SP.sos.k === k ? `<i class="spSosPin">🆘</i>` : ""}${r.found && r.req && spFree() && !spTripTo(k, "gift") && spCanPay(r.req) ? `<i class="spPing">🎁</i>` : ""}</button>`; }).join("");
   // 🚀 explorers fly the old scout ship, everything else a courier ship; 🛡️ an escort frigate follows close behind
@@ -20053,9 +20068,9 @@ document.addEventListener("pointercancel", (e) => { spPtrs.delete(e.pointerId); 
 window.addEventListener("resize", () => spZoomApply());
 function spTripLine(tr) {
   const R = SP_RACES[tr.to], now = Date.now();
-  const what = tr.k === "explore" ? (SP.races[tr.to].found ? `Exploring: ${R.name}` : "Exploring an unknown system") : tr.k === "route" ? `🛣️ Trade route: ${R.name}` : tr.k === "contract" ? `📜 Contract for the ${R.name}` : `🎁 Gift for the ${R.name}`;
+  const what = tr.k === "explore" ? (SP.races[tr.to].found ? `Exploring: ${R.name}` : "Exploring an unknown system") : tr.k === "route" ? `${lgxI("route")}Trade route: ${R.name}` : tr.k === "contract" ? `📜 Contract for the ${R.name}` : `${lgxI("gift")}Gift for the ${R.name}`;
   const st = now < tr.t1 ? `arrives in <b data-spt="${tr.t1}">${spClock(tr.t1 - now)}</b>` : `coming home, back in <b data-spt="${tr.t2}">${spClock(tr.t2 - now)}</b>`;
-  return `<div class="spTrip">🚀 ${what} · ${st}${tr.lost ? " · 🏴‍☠️ cargo stolen" : ""}</div>`;
+  return `<div class="spTrip">${lgxI("send")}${what} · ${st}${tr.lost ? ` · ${lgxI("pirates")}cargo stolen` : ""}</div>`;
 }
 function spPanelHtml() {
   if (spSel === "drift") return (__eocLoaded >= 47 && typeof spDriftPanel === "function") ? spDriftPanel() : "";
@@ -20066,16 +20081,16 @@ function spPanelHtml() {
       + (spAllyBonus("ship") ? `<li>✅ 🤖 Cogitarium (💖 Allies): <b>+1</b> ship</li>` : "");
     return `<h3>🌍 Home: the Solar System</h3>
       <p>Your spaceport. Pick a system on the map to explore it or send gifts. Ships keep flying while the game is closed.</p>
-      <div class="spStats"><span>🚀 Courier ships: <b>${ships - spFree()} / ${ships}</b> busy</span><span>👽 Races met: <b>${Object.values(SP.races).filter(r => r.found).length} / ${Object.keys(SP_RACES).length}</b></span><span>🎁 Gifts delivered: <b>${SP.stats.gifts}</b></span></div>
+      <div class="spStats"><span>${lgxI("send")}Courier ships: <b>${ships - spFree()} / ${ships}</b> busy</span><span>👽 Races met: <b>${Object.values(SP.races).filter(r => r.found).length} / ${Object.keys(SP_RACES).length}</b></span><span>${lgxI("gift")}Gifts delivered: <b>${SP.stats.gifts}</b></span></div>
       ${ships ? "" : `<p class="spWarn">⚠️ You have no ships right now. Build the 🚀 Space Mission Center (💰 Income → 🔬 Science) to get your first one back.</p>`}
       <ul class="spSlots">${slots}</ul>
       ${(__eocLoaded >= 47 && typeof spFleetHtml === "function") ? spFleetHtml() : ""}
-      ${spBonusList() ? `<h4>🏅 Your alliance bonuses</h4><ul class="spSlots">${spBonusList()}</ul>` : ""}
+      ${spBonusList() ? `<h4>${lgxI("bonus")}Your alliance bonuses</h4><ul class="spSlots">${spBonusList()}</ul>` : ""}
       ${SP.trips.length ? `<h4>Ships in flight</h4>${SP.trips.map(spTripLine).join("")}` : ""}`;
   }
   const R = SP_RACES[spSel], r = SP.races[spSel], L = spLevel(spSel), trip = spTripTo(spSel, r.found ? "gift" : null);
-  if (!spVisible(spSel)) return R.viaTrusted ? `<h3>🔒 Uncharted system</h3><p>Only the most trusted traders may visit this system. Become <b>💛 Trusted</b> with <b>${R.viaTrusted}</b> races (you have ${spTrustedCount()}).</p>`
-    : `<h3>🔒 Uncharted system</h3><p>Your scanners can't find this system yet. Become <b>${R.viaLv === 3 ? "😊 Friendly" : "Acquainted"}</b> with ${SP.races[R.via].found ? `the <b>${SP_RACES[R.via].name}</b>` : "a nearby race"} and they will tell you where it is.</p>`;
+  if (!spVisible(spSel)) return R.viaTrusted ? `<h3>🔒 Uncharted system</h3><p>Only the most trusted traders may visit this system. Become <b>${lgxI("trusted")}Trusted</b> with <b>${R.viaTrusted}</b> races (you have ${spTrustedCount()}).</p>`
+    : `<h3>🔒 Uncharted system</h3><p>Your scanners can't find this system yet. Become <b>${R.viaLv === 3 ? `${lgxI("friendly")}Friendly` : "Acquainted"}</b> with ${SP.races[R.via].found ? `the <b>${SP_RACES[R.via].name}</b>` : "a nearby race"} and they will tell you where it is.</p>`;
   if (!r.found) return `<h3 class="spH">${spI("explore", "spI big")} Unknown signal</h3>
     <p>Something is out there. Send a ship to explore it: <b>${spMin(spSel)} min</b> there and <b>${spMin(spSel)} min</b> back.</p>
     ${trip ? spTripLine(trip) : `<button class="btn big" data-spx="explore" ${spFree() && spSci2() >= SP_EXPLORE_SCI ? "" : "disabled"}>${spI("explore", "spI btnI")}Explore · 🔬 ${SP_EXPLORE_SCI} scientists</button>
@@ -20120,13 +20135,13 @@ function spBonusList() {
 }
 function spRouteHtml(k) {
   const R = SP_RACES[k], L = spLevel(k), rt = spRouteOf(k);
-  if (L < SP_ROUTE_LV) return `<div class="spRoute locked spRow">${spI("route")}<span><b>Trade route:</b> opens when you are <b>😊 Friendly</b> with the ${R.name}.</span></div>`;
+  if (L < SP_ROUTE_LV) return `<div class="spRoute locked spRow">${spI("route")}<span><b>Trade route:</b> opens when you are <b>${lgxI("friendly")}Friendly</b> with the ${R.name}.</span></div>`;
   const goods = spRouteGoods(L), mins = Math.round(spRouteMs(k) * 2 / 60e3);
   if (rt) return `<div class="spRoute on"><div class="spRow">${spI("route")}<span><b>Trade route open</b> · ${spGI(R.good)} <b>${goods}</b> ${SP_GOODS[R.good].name} every trip (${mins} min round trip)</span></div>
     ${spTripLine(rt)}<div class="muted">Trips so far: ${rt.loops || 0} · goods brought home: ${(rt.got || 0).toLocaleString()}</div>
     <div class="spBtns">${rt.stop ? `<span class="muted">⏹️ Stops when the ship gets home.</span> <button class="btn ghost small" data-spx="rgo">▶ Keep it running</button>` : `<button class="btn ghost" data-spx="rstop">⏹️ Stop the route</button>`}</div></div>`;
   return `<div class="spRoute"><div class="spRow">${spI("route")}<span><b>Trade route:</b> one ship flies to the ${R.name} and back <b>for good</b>, bringing ${spGI(R.good)} <b>${goods}</b> ${SP_GOODS[R.good].name} every trip (${mins} min round trip). It keeps going while the game is closed.</span></div>
-    <div class="muted">More goods and faster trips at 💛 Trusted and 💖 Allies.</div>
+    <div class="muted">More goods and faster trips at <b>${lgxI("trusted")}Trusted</b> and <b>${lgxI("allies")}Allies</b>.</div>
     <div class="spBtns"><button class="btn big" data-spx="route" ${spFree() ? "" : "disabled"}>${spI("route", "spI btnI")}Open trade route</button></div>${spFree() ? "" : `<div class="muted">All your ships are busy.</div>`}</div>`;
 }
 // 🎒 everything you can give (and the alien goods you got), refreshed every second
@@ -20258,9 +20273,9 @@ function spMarketHtml() {
       <td class="spMkSell"><input type="number" min="1" max="${have}" value="${q}" data-spq="${g}" ${have ? "" : "disabled"}>
         <button class="btn small" data-spx="sell" data-g="${g}" ${have ? "" : "disabled"}>Sell</button>
         <button class="btn ghost small" data-spx="sellall" data-g="${g}" ${have ? "" : "disabled"}>Sell all${have ? ` (${fmt(spSellPay(g, have))})` : ""}</button>
-        ${spCanBuy(g) ? `<div class="spMkBuy"><span class="muted">💖 Buy: <b>${fmt(spBuyPrice(g))}</b> each</span>
+        ${spCanBuy(g) ? `<div class="spMkBuy"><span class="muted">${lgxI("allies")}Buy: <b>${fmt(spBuyPrice(g))}</b> each</span>
           <input type="number" min="1" value="${Math.max(1, Math.floor(spBQty[g] || 1))}" data-spbq="${g}"><button class="btn small" data-spx="buy" data-g="${g}">Buy</button></div>`
-          : `<div class="spMkBuy muted">🔒 Buy here at 💖 Allies</div>`}</td></tr>`;
+          : `<div class="spMkBuy muted">🔒 Buy here at <b>${lgxI("allies")}Allies</b></div>`}</td></tr>`;
   }).join("");
   return `<div class="card spResBar" id="spResBar">${spResHtml()}</div>
     <div class="card"><div class="row"><h2 style="margin:0"><img class="ico h" src="assets/icons/ico-lg-market.webp" alt="">Alien market</h2><span class="muted">⏱️ Prices change in <b data-spt="${next}">${spClock(next - Date.now())}</b></span></div>
@@ -20308,9 +20323,9 @@ function spOpenGift(k) {
   const q = SP.races[k].req;
   if (!q || !spCanPay(q) || !spFree()) return;
   if (q.kind !== "dna" && q.kind !== "art") {
-    showModal(`<h2>🎁 Gift for the ${SP_RACES[k].name}</h2><p>Send ${spReqText(q)}?</p>
+    showModal(`<h2>${lgxI("gift")}Gift for the ${SP_RACES[k].name}</h2><p>Send ${spReqText(q)}?</p>
       <p class="muted">Your ship flies ${spMin(k)} min there and ${spMin(k)} min back, and brings their goods home.</p>
-      <div class="row" style="justify-content:center;gap:10px"><button class="btn big" data-spg="send">🚀 Send</button><button class="btn ghost" data-modal="close">Cancel</button></div>`);
+      <div class="row" style="justify-content:center;gap:10px"><button class="btn big" data-spg="send">${lgxI("send")}<span>Send</span></button><button class="btn ghost" data-modal="close">Cancel</button></div>`);
     spPick = { k, kind: q.kind }; return;
   }
   spPick = { k, kind: q.kind, need: q.amount, sel: q.kind === "dna" ? {} : [] };
@@ -20330,11 +20345,11 @@ function spRenderPick() {
     body = `<div class="spArtGrid">${state.art.items.map(it => `<button class="spArt ${P.sel.includes(it.id) ? "on" : ""}" data-spa="${it.id}">
       <img src="${typeof artImgOf === "function" ? artImgOf(it) : ""}" alt=""><small>${fmt(it.value)}</small></button>`).join("")}</div>`;
   }
-  showModal(`<h2>${P.pip ? "🐾 Adopt Pip" : `🎁 Gift for the ${R.name}`}</h2>
+  showModal(`<h2>${P.pip ? "🐾 Adopt Pip" : `${lgxI("gift")}Gift for the ${R.name}`}</h2>
     <p>Choose <b>${P.need}</b> ${P.kind === "dna" ? "DNA samples" : "paintings"} to send: <b>${got} / ${P.need}</b> chosen.</p>
     ${P.kind === "art" ? `<p class="muted">Paintings you give away leave your collection (they count as sold for 🏆 achievements).</p>` : `<p class="muted">Samples refill over time in the Gene Splicer.</p>`}
     ${body}
-    <div class="row" style="justify-content:center;gap:10px;margin-top:10px"><button class="btn big" data-spg="send" ${got === P.need ? "" : "disabled"}>${P.pip ? "🎨 Adopt" : "🚀 Send"}</button><button class="btn ghost" data-modal="close">Cancel</button></div>`);
+    <div class="row" style="justify-content:center;gap:10px;margin-top:10px"><button class="btn big" data-spg="send" ${got === P.need ? "" : "disabled"}>${P.pip ? "🎨 Adopt" : `${lgxI("send")}<span>Send</span>`}</button><button class="btn ghost" data-modal="close">Cancel</button></div>`);
   $("modalBox").classList.add("wide");
 }
 $("modal").addEventListener("click", (e) => {
@@ -20631,7 +20646,7 @@ function spBarterHtml() {
   const gv = spBarterGive(), gt = spBarterGet(), { give, get } = spBarter, max = spBarterMax(), n = Math.min(spBarter.n, Math.max(1, max));
   const opt = (list, sel, skip) => list.filter(g => g !== skip).map(g => `<option value="${g}" ${g === sel ? "selected" : ""}>${SP_GOODS[g].name} (${(SP.goods[g] || 0).toLocaleString()})</option>`).join("");
   let body;
-  if (!gt.length) body = `<p class="muted">🔒 Become <b>😊 Friendly</b> with a race to trade for its goods here.</p>`;
+  if (!gt.length) body = `<p class="muted">🔒 Become <b>${lgxI("friendly")}Friendly</b> with a race to trade for its goods here.</p>`;
   else if (!gv.length) body = `<p class="muted">You need at least ${SP_BARTER_RATE} of an alien good to trade.</p>`;
   else body = `<div class="spBarter">
       <label><span class="muted">You give</span><select data-spb="give">${opt(gv, give)}</select></label>
@@ -20640,11 +20655,11 @@ function spBarterHtml() {
       <label><span class="muted">How many to get</span><input type="number" min="1" max="${max}" value="${n}" data-spb="n"></label></div>
     ${give && get ? `<div class="spBarterSum"><span class="spNeed">${spGI(give)} <b>${(n * SP_BARTER_RATE).toLocaleString()}</b> ${SP_GOODS[give].name}</span><span class="spArrow">→</span>
       <span class="spNeed ok">${spGI(get)} <b>${n.toLocaleString()}</b> ${SP_GOODS[get].name}</span>
-      <button class="btn" data-spb="go" ${max >= 1 && give !== get ? "" : "disabled"}>🔁 Trade</button>
+      <button class="btn" data-spb="go" ${max >= 1 && give !== get ? "" : "disabled"}>${lgxI("barter")}<span>Trade</span></button>
       <button class="btn ghost small" data-spb="max" ${max >= 1 ? "" : "disabled"}>Max (${max.toLocaleString()})</button></div>` : `<p class="muted">Pick two different goods.</p>`}`;
-  return `<div class="card"><h2 style="margin-top:0">🔁 Trade with friendly races</h2>
+  return `<div class="card"><h2 style="margin-top:0">${lgxI("barter")}Trade with friendly races</h2>
     <p class="muted">Swap your alien goods: you give ${SP_BARTER_RATE}, you get 1. You can get the goods of any race that is 😊 Friendly or better with you. 🏺 Ancient Relics can't be traded here.</p>
-    ${body}${SP.stats.bartered ? `<div class="spStats"><span>🔁 Goods received by trading: <b>${SP.stats.bartered.toLocaleString()}</b></span></div>` : ""}</div>`;
+    ${body}${SP.stats.bartered ? `<div class="spStats"><span>${lgxI("barter")}Goods received by trading: <b>${SP.stats.bartered.toLocaleString()}</b></span></div>` : ""}</div>`;
 }
 document.addEventListener("change", (e) => {
   const el = e.target.closest("[data-spb]"); if (!el || !e.target.closest("#spaceView")) return;
@@ -20760,7 +20775,7 @@ function spOutpostHtml(k) {
   if (o) return `<div class="spRoute on"><div class="spRow">${spRI("outpost", "spI")}<span><b>Outpost</b> · makes ${spGI(R.good)} <b>${SP_OUTPOST_RATE}</b> ${G.name} an hour, even while the game is closed.</span></div>
     <div class="muted">Goods made so far: ${(o.got || 0).toLocaleString()}</div>
     <div class="spBtns"><button class="btn ghost small" data-spo="close">Close the outpost</button></div></div>`;
-  if (spLevel(k) < SP_OUTPOST_LV) return `<div class="spRoute locked spRow">${spRI("outpost", "spI")}<span><b>Outpost:</b> you can build one here when you are <b>😊 Friendly</b> with the ${R.name}.</span></div>`;
+  if (spLevel(k) < SP_OUTPOST_LV) return `<div class="spRoute locked spRow">${spRI("outpost", "spI")}<span><b>Outpost:</b> you can build one here when you are <b>${lgxI("friendly")}Friendly</b> with the ${R.name}.</span></div>`;
   return `<div class="spRoute"><div class="spRow">${spRI("outpost", "spI")}<span><b>Outpost:</b> a base in this system that makes ${spGI(R.good)} <b>${SP_OUTPOST_RATE}</b> ${G.name} an hour, no ship needed. One per system.</span></div>
     <div class="spBtns"><button class="btn" data-spo="build" ${spOutpostFree() > 0 && state.money >= SP_OUTPOST_MONEY && spSci2() >= SP_OUTPOST_SCI ? "" : "disabled"}>${spRI("outpost", "spI btnI")}Build outpost · ${fmt(SP_OUTPOST_MONEY)} + 🔬 ${SP_OUTPOST_SCI}</button></div>
     <div class="muted">Outposts: ${spOutpostCount()} / ${spRL("outpost")} built${spOutpostFree() > 0 ? "" : " · research more 🏗️ Outposts or close one to build here"}.</div></div>`;
@@ -20800,7 +20815,7 @@ function spResearchHtml() {
       ${c ? `<button class="btn" data-spr="${k}" ${spResCan(c) ? "" : "disabled"}>🔬 Research level ${L + 1}</button>` : ""}</div>`;
   }).join("");
   let craft;
-  if (!spRL("craft")) craft = `<p class="muted">🔒 Research <b>🛠️ Space crafting</b> to unlock crafting.</p>`;
+  if (!spRL("craft")) craft = `<p class="muted">🔒 Research <b>${lgxI("crafting")}Space crafting</b> to unlock crafting.</p>`;
   else if (SP.craft) {
     const J = SP.craft, pct = Math.min(100, (now - J.t0) / (J.t1 - J.t0) * 100);
     craft = `<div class="spCraftJob"><div class="spCraftHead">${spCI(J.c, "spCraftBig")}<span>Crafting <b>${J.n}</b> ${SP_CRAFT[J.c].name} · ready in <b data-spt="${J.t1}">${spClock(J.t1 - now)}</b></span></div>
@@ -20977,7 +20992,7 @@ function spDriftLine() {
 }
 function spDriftNode() {
   const f = SP.drift.found, n = SP.harvest.length;
-  const lbl = f ? `Stardust Drift<small>${n ? `${SP.fleet.auto ? "🔁" : "✨"} ${n} harvesting` : "🏴‍☠️ Pirate space"}</small>` : `Unknown signal<small>❓ Explore</small>`;
+  const lbl = f ? `Stardust Drift<small>${n ? `${SP.fleet.auto ? "🔁" : "✨"} ${n} harvesting` : `${lgxI("pirates")}Pirate space`}</small>` : `Unknown signal<small>❓ Explore</small>`;
   return `<button class="spNode ${f ? "found" : "fog"} spDrift ${spSel === "drift" ? "sel" : ""}" data-sp="drift" style="left:${SP_DRIFT.pos[0]}%;top:${SP_DRIFT.pos[1]}%">
     <img src="assets/space/${f ? "sys-drift" : "sys-unknown"}.webp" alt="" draggable="false" ${f ? `onerror="this.src='assets/space/sys-stardust.webp';this.classList.add('spDriftTmp')"` : ""}><span class="spLbl">${lbl}</span></button>`;
 }
@@ -21005,17 +21020,17 @@ function spDriftPanel() {
       <div class="spHeadTxt"><h3 class="spH"><img class="spI big" src="assets/space/sys-drift.webp" alt="">Stardust Drift <span class="muted">· Pirate space</span></h3>
         <p class="spBio">A glittering cloud of stardust left behind by dying stars. Harvesters can farm it, but wild pirates hunt here and nobody controls them, not even the Void Corsairs.</p></div></div>
     <div class="spInfo"><div class="spRow">${spI("distance")}<span><b>Distance:</b> ${SP_DRIFT.min} min each way · farming takes 1 hour</span></div>
-      <div class="spRow">🏴‍☠️<span><b>Pirates:</b> ${SP_RAID[0] * 100}% chance of an attack in the first half hour of farming, ${SP_RAID[1] * 100}% in the second. Without an escort they take all the stardust farmed so far. A 🛡️ frigate drives them off, but has a ${SP_FRIG_LOSE * 100}% chance to be destroyed in each attack (and then the stardust is lost too).</span></div></div>
+      <div class="spRow">${lgxI("pirates", "spI")}<span><b>Pirates:</b> ${SP_RAID[0] * 100}% chance of an attack in the first half hour of farming, ${SP_RAID[1] * 100}% in the second. Without an escort they take all the stardust farmed so far. A 🛡️ frigate drives them off, but has a ${SP_FRIG_LOSE * 100}% chance to be destroyed in each attack (and then the stardust is lost too).</span></div></div>
     ${SP.harvest.length ? `<h4>Harvesters at work</h4>${SP.harvest.map(spHarvLine).join("")}` : ""}
     ${L ? `<div class="spRoute ${can ? "" : "locked"}"><div class="spRow">${spSI("harvester")}<span><b>Stardust Harvesters:</b> ${SP.harvest.length} / ${spHarvMax()} out · each farms <b>${SP_HARV_RATE[L]}</b> stardust a minute (✨ ${(SP_HARV_RATE[L] * 60).toLocaleString()} an hour).</span></div>
         <div class="spBtns"><button class="btn big" data-spf="harv1" ${can && fr ? "" : "disabled"}>${spSI("frigate", "spShipI btnI")}Send with escort</button>
           <button class="btn ghost" data-spf="harv0" ${can ? "" : "disabled"}>${spSI("harvester", "spShipI btnI")}Send without escort</button></div>
         <div class="muted">${!can ? "All your harvesters are out." : !fr ? (SP.fleet.frigates ? "All your frigates are busy." : spFrigCap() ? `No frigates: build one for ${fmt(SP_FRIG_PRICE)} at 🌍 Home.` : "Research 🛡️ Escort Frigates (🌌 Space → Research) to protect your harvesters.") : `🛡️ Frigates free: ${spFrigFree()} / ${SP.fleet.frigates}`}</div>
         <div class="spAuto"><label class="spCheck"><input type="checkbox" data-spf="auto" ${SP.fleet.auto ? "checked" : ""}> 🔁 <b>Keep harvesting:</b> harvesters fly out again on their own, also while the game is closed</label>
-          ${SP.fleet.auto ? `<label class="spCheck">🛡️ Escort: <select data-spf="automode">${[["free", "when a frigate is free"], ["only", "always (wait for a free frigate)"], ["none", "never"]].map(([v, t]) => `<option value="${v}" ${spAutoMode() === v ? "selected" : ""}>${t}</option>`).join("")}</select></label>
+          ${SP.fleet.auto ? `<label class="spCheck">${lgxI("escort")}Escort: <select data-spf="automode">${[["free", "when a frigate is free"], ["only", "always (wait for a free frigate)"], ["none", "never"]].map(([v, t]) => `<option value="${v}" ${spAutoMode() === v ? "selected" : ""}>${t}</option>`).join("")}</select></label>
             ${spAutoMode() === "only" && spHarvFree() && !spFrigFree() ? `<div class="muted">⏳ Waiting for a free frigate.</div>` : ""}` : ""}</div></div>`
       : `<div class="spRoute locked spRow">${spSI("harvester")}<span>Research <b>✨ Stardust Harvesters</b> (🌌 Space → Research) to farm stardust here.</span></div>`}
-    <div class="spStats"><span>✨ Farmed: <b>${(SP.stats.dustFarmed || 0).toLocaleString()}</b></span><span>🏴‍☠️ Attacks: <b>${SP.stats.raids || 0}</b></span><span>🛡️ Driven off: <b>${SP.stats.raidsWon || 0}</b></span><span>💥 Frigates lost: <b>${SP.fleet.lost || 0}</b></span></div>`;
+    <div class="spStats"><span>✨ Farmed: <b>${(SP.stats.dustFarmed || 0).toLocaleString()}</b></span><span>${lgxI("pirates")}Attacks: <b>${SP.stats.raids || 0}</b></span><span>${lgxI("escort")}Driven off: <b>${SP.stats.raidsWon || 0}</b></span><span>💥 Frigates lost: <b>${SP.fleet.lost || 0}</b></span></div>`;
 }
 // 🌍 Home panel: the whole fleet
 function spFleetHtml() {
@@ -21026,7 +21041,7 @@ function spFleetHtml() {
       ${H ? `<li>${spSI("harvester")} Stardust Harvesters: <b>${spHarvFree()} / ${H}</b> free</li>` : ""}
       ${F ? `<li>${spSI("frigate")} Escort Frigates: <b>${spFrigFree()} / ${SP.fleet.frigates}</b> free${SP.fleet.frigates < F ? ` · ${F - SP.fleet.frigates} destroyed` : ""}</li>` : ""}</ul>
     ${F ? `<div class="spBtns">${SP.fleet.frigates < F ? `<button class="btn" data-spf="build" ${state.money >= SP_FRIG_PRICE ? "" : "disabled"}>${spSI("frigate", "spShipI btnI")}Build a frigate · ${fmt(SP_FRIG_PRICE)}</button>` : ""}
-      <label class="spCheck"><input type="checkbox" data-spf="escort" ${SP.fleet.escortOn ? "checked" : ""}> 🛡️ Send a free frigate with every courier ship (pirates leave escorted ships alone)</label></div>` : ""}`;
+      <label class="spCheck"><input type="checkbox" data-spf="escort" ${SP.fleet.escortOn ? "checked" : ""}> ${lgxI("escort")}Send a free frigate with every courier ship (pirates leave escorted ships alone)</label></div>` : ""}`;
 }
 
 document.addEventListener("click", (e) => {

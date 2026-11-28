@@ -810,7 +810,7 @@ hrx(String.raw`🔒 A hidden building: <b>\+(\d+)<\/b> ships?`, (m, n) => `🔒 
 hrx(String.raw`(✅|🔒) (.+): <b>\+(\d+)<\/b> ships?`, (m, ok, b, n) => `${ok} ${ES[b.replace(/^\S+ /, "")] ? b.replace(/ .+$/, "") + " " + ES[b.replace(/^\S+ /, "")] : b}: <b>+${n}</b> ${plural(n, "nave", "naves")}`);
 hrx(String.raw`🚀 Ships: <b>(\d+) \/ (\d+)<\/b> busy`, "🚀 Naves: <b>$1 / $2</b> ocupadas");
 hrx(String.raw`👽 Races met: <b>(\d+) \/ (\d+)<\/b>`, "👽 Razas conocidas: <b>$1 / $2</b>");
-hrx(String.raw`🎁 Gifts delivered: <b>(\d+)<\/b>`, "🎁 Regalos entregados: <b>$1</b>");
+hrx(String.raw`(🎁 |\{i\})Gifts delivered: <b>(\d+)<\/b>`, "$1Regalos entregados: <b>$2</b>");
 hrx(String.raw`(\+\d+) friendship( \(their favourite!\))? · a new request in <span>(.+)<\/span>`, (m, n, f, c) => `${n} de amistad${f ? " (¡su favorito!)" : ""} · nueva petición en <span>${c}</span>`);
 rx(String.raw`([\d.,]+) \/ ([\d.,]+) friendship to (${SP_RX_LV})`, (m, a, b, l) => `${a} / ${b} de amistad para ${spL(l)}`);
 rx(String.raw`([\d.,]+) friendship · best friends!`, "$1 de amistad · ¡mejores amigos!");
@@ -822,9 +822,9 @@ function spReqEs(r) {
     .replace(/<b>([\d.,]+)<\/b> (stardust|polvo estelar)/, "<b>$1</b> de polvo estelar")
     .replace(/<b>(\d+)<\/b> ([A-Za-zíáéóú]+)/g, (m, n, o) => `<b>${n}</b> ${ES[o] || o}`);
 }
-hrx(String.raw`🚀 (🎁 Gift for the|Exploring:) ?(${SP_RX_NAME})? ?· (arrives in|coming home, back in) <b>([^<]+)<\/b>( · 🏴‍☠️ cargo stolen)?`, (m, k, n, w, c, st) =>
-  `🚀 ${k.startsWith("🎁") ? `🎁 Regalo para los ${spN(n)}` : `Explorando: ${spN(n)}`} · ${w === "arrives in" ? "llega en" : "vuelve a casa, de vuelta en"} <b>${c}</b>${st ? " · 🏴‍☠️ carga robada" : ""}`);
-hrx(String.raw`🚀 Exploring an unknown system · (arrives in|coming home, back in) <b>(.+)<\/b>`, (m, w, c) => `🚀 Explorando un sistema desconocido · ${w === "arrives in" ? "llega en" : "vuelve a casa, de vuelta en"} <b>${c}</b>`);
+hrx(String.raw`\{i\}(\{i\}Gift for the|Exploring:) ?(${SP_RX_NAME})? ?· (arrives in|coming home, back in) <b>([^<]+)<\/b>( · \{i\}cargo stolen)?`, (m, k, n, w, c, st) =>
+  `{i}${k.startsWith("{i}") ? `{i}Regalo para los ${spN(n)}` : `Explorando: ${spN(n)}`} · ${w === "arrives in" ? "llega en" : "vuelve a casa, de vuelta en"} <b>${c}</b>${st ? " · {i}carga robada" : ""}`);
+hrx(String.raw`\{i\}Exploring an unknown system · (arrives in|coming home, back in) <b>(.+)<\/b>`, (m, w, c) => `{i}Explorando un sistema desconocido · ${w === "arrives in" ? "llega en" : "vuelve a casa, de vuelta en"} <b>${c}</b>`);
 hrx(String.raw`Something is out there\. Send a ship to explore it: <b>(\d+) min<\/b> there and <b>(\d+) min<\/b> back\.`, "Ahí fuera hay algo. Envía una nave a explorarlo: <b>$1 min</b> de ida y <b>$2 min</b> de vuelta.");
 hrx(String.raw`Your scanners can't find this system yet\. Become <b>Acquainted<\/b> with (a nearby race|the <b>(${SP_RX_NAME})<\/b>) and they will tell you where it is\.`, (m, w, n) =>
   `Tus escáneres aún no encuentran este sistema. Logra el nivel <b>Conocida</b> con ${n ? `los <b>${spN(n)}</b>` : "una raza cercana"} y te dirán dónde está.`);
@@ -907,7 +907,7 @@ hrx(String.raw`🛣️ <b>Trade route:<\/b> opens when you are <b>😊 Friendly<
 hrx(String.raw`🛣️ <b>Trade route:<\/b> one ship flies to the (${SP_RX_NAME}) and back <b>for good<\/b>, bringing (\S+) <b>(\d+)<\/b> (${SP_RX_GOOD}) every trip \((\d+) min round trip\)\. It keeps going while the game is closed\.`, (m, n, e, x, g, t) =>
   `🛣️ <b>Ruta comercial:</b> una nave va y vuelve de los ${spN(n)} <b>para siempre</b> y trae ${e} <b>${x}</b> ${spG(g)} en cada viaje (${t} min ida y vuelta). Sigue funcionando con el juego cerrado.`);
 hrx(String.raw`🛣️ <b>Trade route open<\/b> · (\S+) <b>(\d+)<\/b> (${SP_RX_GOOD}) every trip \((\d+) min round trip\)`, (m, e, x, g, t) => `🛣️ <b>Ruta comercial abierta</b> · ${e} <b>${x}</b> ${spG(g)} en cada viaje (${t} min ida y vuelta)`);
-hrx(String.raw`🚀 🛣️ Trade route: (${SP_RX_NAME}) · (arrives in|coming home, back in) <b>([^<]+)<\/b>( · 🏴‍☠️ cargo stolen)?`, (m, n, w, c, st) => `🚀 🛣️ Ruta comercial: ${spN(n)} · ${w === "arrives in" ? "llega en" : "vuelve a casa, de vuelta en"} <b>${c}</b>${st ? " · 🏴‍☠️ carga robada" : ""}`);
+hrx(String.raw`\{i\}\{i\}Trade route: (${SP_RX_NAME}) · (arrives in|coming home, back in) <b>([^<]+)<\/b>( · \{i\}cargo stolen)?`, (m, n, w, c, st) => `{i}{i}Ruta comercial: ${spN(n)} · ${w === "arrives in" ? "llega en" : "vuelve a casa, de vuelta en"} <b>${c}</b>${st ? " · {i}carga robada" : ""}`);
 rx(String.raw`Trips so far: (\d+) · goods brought home: ([\d.,]+)`, "Viajes hasta ahora: $1 · bienes traídos: $2");
 rx(String.raw`Trade route to the (${SP_RX_NAME}) is open! One ship now flies there and back for good\.`, (m, n) => `¡Ruta comercial con los ${spN(n)} abierta! Ahora una nave va y vuelve para siempre.`);
 rx(String.raw`The trade route to the (${SP_RX_NAME}) has stopped\. Your ship is home\.`, (m, n) => `La ruta comercial con los ${spN(n)} se ha parado. Tu nave está en casa.`);
@@ -966,9 +966,9 @@ rx(String.raw`Your ship found a lost ship of the (${SP_RX_NAME}) and towed it ho
 rx(String.raw`Pirates caught your ship to the (${SP_RX_NAME}) and took the cargo!`, (m, n) => `¡Los piratas han atrapado tu nave hacia los ${spN(n)} y se han llevado la carga!`);
 rx(String.raw`Your ship to the (${SP_RX_NAME}) escaped the pirates!`, (m, n) => `¡Tu nave hacia los ${spN(n)} ha escapado de los piratas!`);
 rx(String.raw`Pirates stole your gift for the (${SP_RX_NAME})\. They will ask for something new\.`, (m, n) => `Los piratas robaron tu regalo para los ${spN(n)}. Te pedirán algo nuevo.`);
-hrx(String.raw`Only the most trusted traders may visit this system\. Become <b>💛 Trusted<\/b> with <b>(\d+)<\/b> races \(you have (\d+)\)\.`, "Solo los comerciantes de más confianza pueden visitar este sistema. Logra el nivel <b>💛 De confianza</b> con <b>$1</b> razas (tienes $2).");
-hrx(String.raw`Your scanners can't find this system yet\. Become <b>😊 Friendly<\/b> with (a nearby race|the <b>(${SP_RX_NAME})<\/b>) and they will tell you where it is\.`, (m, w, n) =>
-  `Tus escáneres aún no encuentran este sistema. Logra el nivel <b>😊 Amistosa</b> con ${n ? `los <b>${spN(n)}</b>` : "una raza cercana"} y te dirán dónde está.`);
+hrx(String.raw`Only the most trusted traders may visit this system\. Become <b>\{i\}Trusted<\/b> with <b>(\d+)<\/b> races \(you have (\d+)\)\.`, "Solo los comerciantes de más confianza pueden visitar este sistema. Logra el nivel <b>{i}De confianza</b> con <b>$1</b> razas (tienes $2).");
+hrx(String.raw`Your scanners can't find this system yet\. Become <b>\{i\}Friendly<\/b> with (a nearby race|the <b>(${SP_RX_NAME})<\/b>) and they will tell you where it is\.`, (m, w, n) =>
+  `Tus escáneres aún no encuentran este sistema. Logra el nivel <b>{i}Amistosa</b> con ${n ? `los <b>${spN(n)}</b>` : "una raza cercana"} y te dirán dónde está.`);
 H("<b>1. Explore:</b> send a ship to an unknown signal. It flies there and back (6–40 min each way) and meets the race that lives there. Three systems are reachable from the start; each of the others is revealed by its neighbour once you are <b>Acquainted</b>.",
   "<b>1. Explorar:</b> envía una nave a una señal desconocida. Va y vuelve (6–40 min por trayecto) y conoce a la raza que vive allí. Tres sistemas se pueden alcanzar desde el principio; cada uno de los demás te lo revela su vecino cuando llegas a <b>Conocida</b>.");
 H("🔮 <b>Network races:</b> the Mystics and the Machines (found through a 😊 Friendly neighbour) and the Ancients (once 3 races trust you, 💛 Trusted) only want other races' goods.",
@@ -1031,7 +1031,7 @@ hrx(String.raw`<b>Wants a mix of:<\/b> (.+) <span>\(\+(\d+) friendship\)<\/span>
 hrx(String.raw`<b>They send back:<\/b> (\S+) (${SP_RX_GOOD}) <span>\((\d+) per gift, more when you level up\)<\/span>`, (m, e, g, n) => `<b>Te devuelven:</b> ${e} ${spG(g)} <span>(${n} por regalo, más al subir de nivel)</span>`);
 hrx(String.raw`<b>Distance:<\/b> (\d+) min each way`, "<b>Distancia:</b> $1 min por trayecto");
 hrx(String.raw`<b>Their request:<\/b> (.+)`, (m, r) => `<b>Su petición:</b> ${spReqEs2(r)}`);
-hrx(String.raw`<b>Trade route:<\/b> opens when you are <b>😊 Friendly<\/b> with the (${SP_RX_NAME})\.`, (m, n) => `<b>Ruta comercial:</b> se abre cuando tu amistad con los ${spN(n)} sea <b>😊 Amistosa</b>.`);
+hrx(String.raw`<b>Trade route:<\/b> opens when you are <b>\{i\}Friendly<\/b> with the (${SP_RX_NAME})\.`, (m, n) => `<b>Ruta comercial:</b> se abre cuando tu amistad con los ${spN(n)} sea <b>{i}Amistosa</b>.`);
 hrx(String.raw`<b>Trade route:<\/b> one ship flies to the (${SP_RX_NAME}) and back <b>for good<\/b>, bringing (\S+) <b>(\d+)<\/b> (${SP_RX_GOOD}) every trip \((\d+) min round trip\)\. It keeps going while the game is closed\.`, (m, n, e, x, g, t) =>
   `<b>Ruta comercial:</b> una nave va y vuelve de los ${spN(n)} <b>para siempre</b> y trae ${e} <b>${x}</b> ${spG(g)} en cada viaje (${t} min ida y vuelta). Sigue funcionando con el juego cerrado.`);
 hrx(String.raw`<b>Trade route open<\/b> · (\S+) <b>(\d+)<\/b> (${SP_RX_GOOD}) every trip \((\d+) min round trip\)`, (m, e, x, g, t) => `<b>Ruta comercial abierta</b> · ${e} <b>${x}</b> ${spG(g)} en cada viaje (${t} min ida y vuelta)`);
@@ -1153,7 +1153,9 @@ Object.assign(ES, { "A painter in the family": "Un pintor en la familia", "Adopt
 ES["Sell the goods your ships bring home. Prices move every 30 minutes: sell when they are high. The further away a race lives, the more its goods are worth. Once you are 💖 Allies with a race, you can buy its goods here too."] =
   "Vende los bienes que traen tus naves. Los precios cambian cada 30 minutos: vende cuando estén altos. Cuanto más lejos vive una raza, más valen sus bienes. Cuando seas 💖 Aliada de una raza, también podrás comprar aquí sus bienes.";
 Object.assign(ES, { "Buy": "Comprar", "Buy here at 💖 Allies": "Compra aquí al llegar a 💖 Aliada", "Bought": "Comprados", "Spent": "Gastado" });
-hrx(String.raw`💖 Buy: <b>(.+)<\/b> each`, "💖 Comprar: <b>$1</b> cada uno");
+hrx(String.raw`(💖 |\{i\})Buy: <b>(.+)<\/b> each`, "$1Comprar: <b>$2</b> cada uno");
+hrx(String.raw`🔒 Buy here at <b>\{i\}Allies<\/b>`, "🔒 Compra aquí al llegar a <b>{i}Aliada</b>");
+hrx(String.raw`More goods and faster trips at <b>\{i\}Trusted<\/b> and <b>\{i\}Allies<\/b>\.`, "Más bienes y viajes más rápidos en <b>{i}De confianza</b> y <b>{i}Aliada</b>.");
 rx(String.raw`Bought (\S+) (\d+) (${SP_RX_GOOD}) for (.+)\.`, (m, e, n, g, x) => `Has comprado ${e} ${n} ${spG(g)} por ${x}.`);
 rx(String.raw`You need (.+) to buy (\d+) (${SP_RX_GOOD})\.`, (m, x, n, g) => `Necesitas ${x} para comprar ${n} ${spG(g)}.`);
 ES["🏪 Alien market: once you are 💖 Allies with a race, you can also buy its goods there (handy for gifts to other races). Buying always costs more than selling."] =
@@ -1419,7 +1421,7 @@ Object.assign(ES, SP_ES_CRAFT, SP_ES_RES, { "Research": "Investigación", "Space
 });
 rx(String.raw`Research level (\d)`, "Investigar nivel $1");
 hrx(String.raw`<span class="ico">🔬<\/span>Research`, `<span class="ico">🔬</span>Investigación`); hrx(String.raw`<span>🔬<\/span>Research`, "<span>🔬</span>Investigación");
-hrx(String.raw`🔒 Research <b>🛠️ Space crafting<\/b> to unlock crafting\.`, "🔒 Investiga <b>🛠️ Artesanía espacial</b> para desbloquear la artesanía.");
+hrx(String.raw`🔒 Research <b>\{i\}Space crafting<\/b> to unlock crafting\.`, "🔒 Investiga <b>{i}Artesanía espacial</b> para desbloquear la artesanía.");
 hrx(String.raw`<b>Level (\d):<\/b> (${SP_RX_RES})`, (m, n, x) => `<b>Nivel ${n}:</b> ${spRs(x)}`);
 rx(String.raw`(✅ )?Now: (${SP_RX_RES})`, (m, e, x) => `${e || ""}Ahora: ${spRs(x)}`);
 rx(String.raw`(🔬 )?Research done: (\S+) <b>(${SP_RX_RES}) (\d)<\/b> · (${SP_RX_RES})\.`, (m, e, i, nm, n, x) => `${e || ""}Investigación terminada: ${i} <b>${spRs(nm)} ${n}</b> · ${spRs(x)}.`);
@@ -1434,7 +1436,7 @@ rx(String.raw`Goods made so far: ([\d.,]+)`, "Bienes producidos hasta ahora: $1"
 rx(String.raw`(${SP_RX_GOOD}) an hour, no ship needed\. One per system\.`, (m, g) => `${spG(g)} por hora, sin necesidad de nave. Uno por sistema.`);
 rx(String.raw`(${SP_RX_GOOD}) an hour, even while the game is closed\.`, (m, g) => `${spG(g)} por hora, incluso con el juego cerrado.`);
 rx(String.raw`(🏗️ )?Outpost built at the (${SP_RX_NAME})! It makes (\d+) (${SP_RX_GOOD}) an hour\.`, (m, e, n, x, g) => `${e || ""}¡Puesto avanzado construido en los ${spN(n)}! Produce ${x} ${spG(g)} por hora.`);
-hrx(String.raw`<b>Outpost:<\/b> you can build one here when you are <b>😊 Friendly<\/b> with the (${SP_RX_NAME})\.`, (m, n) => `<b>Puesto avanzado:</b> podrás construir uno aquí cuando tu amistad con los ${spN(n)} sea <b>😊 Amistosa</b>.`);
+hrx(String.raw`<b>Outpost:<\/b> you can build one here when you are <b>\{i\}Friendly<\/b> with the (${SP_RX_NAME})\.`, (m, n) => `<b>Puesto avanzado:</b> podrás construir uno aquí cuando tu amistad con los ${spN(n)} sea <b>{i}Amistosa</b>.`);
 rx(String.raw`(\S+) (${SP_RX_NAME}): (\S+) (\d+) (${SP_RX_GOOD}) an hour · ([\d.,]+) made`, (m, e, n, i, x, g, k) => `${e} ${spN(n)}: ${i} ${x} ${spG(g)} por hora · ${k} producidos`);
 H("🔬 <b>Research</b> (🌌 Space → Research): 5 research lines with 3 levels each. Every level costs 🔬 scientists (10/20/30), money (250,000/500,000/750,000 scoin) and space resources; the last levels need crafted resources. 🛠️ Space crafting unlocks crafting (60/45/30 s per unit), 🚀 Extra ship slots give +1 ship each, 📦 Cargo holds add +10/+10/+15 goods to every gift and trade route trip, 🔥 Ship engines cut trip times by 5%/5%/10%, and 🏗️ Outposts let you build +1 outpost each.",
   "🔬 <b>Investigación</b> (🌌 Espacio → Investigación): 5 líneas de investigación con 3 niveles cada una. Cada nivel cuesta 🔬 científicos (10/20/30), dinero (250.000/500.000/750.000 scoin) y recursos espaciales; los últimos niveles necesitan recursos fabricados. 🛠️ Artesanía espacial desbloquea la artesanía (60/45/30 s por unidad), 🚀 Hangares extra da +1 nave por nivel, 📦 Bodegas de carga suma +10/+10/+15 bienes a cada viaje de regalo y de ruta comercial, 🔥 Motores de nave reduce los viajes un 5 %/5 %/10 %, y 🏗️ Puestos avanzados te deja construir +1 puesto avanzado por nivel.");
@@ -1491,7 +1493,7 @@ hrx(String.raw`A strange glittering cloud at the edge of your scanners\. Send a 
 rx(String.raw`(🚀 )?A courier ship is on its way to explore the strange signal \((\d+) min there, (\d+) min back\)\.`, (m, e, a, b) => `${e || ""}Una nave mensajera va de camino a explorar la extraña señal (${a} min de ida, ${b} min de vuelta).`);
 rx(String.raw`(🌫️ )?Your courier ship found the <b>Stardust Drift<\/b>: a glittering cloud full of stardust, and full of pirates\. (Send a ✨ Stardust Harvester to farm it!|Research ✨ Stardust Harvesters \(🌌 Space → Research\) to farm it\.)`, (m, e, x) =>
   `${e || ""}Tu nave mensajera ha encontrado la <b>Deriva de Polvo Estelar</b>: una nube brillante llena de polvo estelar… y de piratas. ${x.startsWith("Send") ? "¡Envía una ✨ cosechadora de polvo estelar a recogerlo!" : "Investiga ✨ Cosechadoras de polvo estelar (🌌 Espacio → Investigación) para recogerlo."}`);
-hrx(String.raw`Stardust Drift<small>(🏴‍☠️ Pirate space|(✨|🔁) (\d+) harvesting)<\/small>`, (m, x, e, n) => `Deriva de Polvo Estelar<small>${n ? `${e} ${n} cosechando` : "🏴‍☠️ Espacio pirata"}</small>`);
+hrx(String.raw`Stardust Drift<small>(\{i\}Pirate space|(✨|🔁) (\d+) harvesting)<\/small>`, (m, x, e, n) => `Deriva de Polvo Estelar<small>${n ? `${e} ${n} cosechando` : "{i}Espacio pirata"}</small>`);
 rx(String.raw`(\d+) harvesting`, "$1 cosechando");
 hrx(String.raw`(\{i\}|🌫️ )?Stardust Drift <span>· Pirate space<\/span>`, (m, i) => `${i || ""}Deriva de Polvo Estelar <span>· Espacio pirata</span>`);
 hrx(String.raw`<b>Distance:<\/b> (\d+) min each way · farming takes 1 hour`, "<b>Distancia:</b> $1 min por trayecto · la cosecha dura 1 hora");
@@ -1517,7 +1519,7 @@ rx(String.raw`(💥 )?Pirates destroyed your escort frigate in the Stardust Drif
 rx(String.raw`(🏴‍☠️ )?Pirates raided your unprotected harvester in the Stardust Drift and took ✨ ([\d.,]+) stardust! It keeps farming\.`, (m, e, n) => `${e || ""}¡Los piratas asaltaron tu cosechadora sin protección en la Deriva de Polvo Estelar y se llevaron ✨ ${n} de polvo estelar! Sigue cosechando.`);
 rx(String.raw`(✨ )?Your harvester is back from the Stardust Drift with <b>([\d.,]+)<\/b> stardust( \(pirates took ([\d.,]+)\))?\.`, (m, e, n, x, l) => `${e || ""}Tu cosechadora ha vuelto de la Deriva de Polvo Estelar con <b>${n}</b> de polvo estelar${l ? ` (los piratas se llevaron ${l})` : ""}.`);
 rx(String.raw`(🛡️ )?Pirates spotted your courier ship to the (${SP_RX_NAME}), saw its frigate escort and flew away\.`, (m, e, n) => `${e || ""}Los piratas vieron tu nave mensajera hacia los ${spN(n)}, vieron su fragata de escolta y se marcharon.`);
-hrx(String.raw`🚀 Courier ships: <b>(\d+) \/ (\d+)<\/b> (?:busy|ocupadas)`, "🚀 Naves mensajeras: <b>$1 / $2</b> ocupadas");
+hrx(String.raw`(🚀 |\{i\})Courier ships: <b>(\d+) \/ (\d+)<\/b> (?:busy|ocupadas)`, "$1Naves mensajeras: <b>$2 / $3</b> ocupadas");
 hrx(String.raw`(\S+|\{i\}) Courier ships: <b>(\d+) \/ (\d+)<\/b> free <span>\(gifts, trade routes, contracts, exploring\)<\/span>`, "$1 Naves mensajeras: <b>$2 / $3</b> libres <span>(regalos, rutas comerciales, contratos, exploración)</span>");
 hrx(String.raw`(\S+|\{i\}) Stardust Harvesters: <b>(\d+) \/ (\d+)<\/b> free`, "$1 Cosechadoras de polvo estelar: <b>$2 / $3</b> libres");
 hrx(String.raw`(\S+|\{i\}) Escort Frigates: <b>(\d+) \/ (\d+)<\/b> free( · (\d+) destroyed)?`, (m, i, a, b, x, d) => `${i} Fragatas de escolta: <b>${a} / ${b}</b> libres${d ? ` · ${d} destruidas` : ""}`);
@@ -1536,11 +1538,11 @@ Object.assign(ES, { "Trade with friendly races": "Comerciar con razas amistosas"
   "Pick two different goods.": "Elige dos bienes distintos.", "Goods received by trading": "Bienes recibidos intercambiando",
   "Swap your alien goods: you give 2, you get 1. You can get the goods of any race that is 😊 Friendly or better with you. 🏺 Ancient Relics can't be traded here.":
     "Intercambia tus bienes alienígenas: das 2 y recibes 1. Puedes conseguir los bienes de cualquier raza con la que tengas una amistad 😊 Amistosa o mejor. Las 🏺 Reliquias antiguas no se pueden intercambiar aquí." });
-hrx(String.raw`🔒 Become <b>😊 Friendly<\/b> with a race to trade for its goods here\.`, "🔒 Consigue una amistad <b>😊 Amistosa</b> con una raza para intercambiar aquí sus bienes.");
+hrx(String.raw`🔒 Become <b>\{i\}Friendly<\/b> with a race to trade for its goods here\.`, "🔒 Consigue una amistad <b>{i}Amistosa</b> con una raza para intercambiar aquí sus bienes.");
 rx(String.raw`You need at least (\d+) of an alien good to trade\.`, "Necesitas al menos $1 de un bien alienígena para intercambiar.");
 rx(String.raw`(${SP_RX_GOOD}) \(([\d.,]+)\)`, (m, g, n) => `${spG(g)} (${n})`);
 rx(String.raw`Max \(([\d.,]+)\)`, "Máx. ($1)");
-hrx(String.raw`🔁 Goods received by trading: <b>([\d.,]+)<\/b>`, "🔁 Bienes recibidos intercambiando: <b>$1</b>");
+hrx(String.raw`(🔁 |\{i\})Goods received by trading: <b>([\d.,]+)<\/b>`, "$1Bienes recibidos intercambiando: <b>$2</b>");
 rx(String.raw`(🔁 )?Traded (\S+) ([\d.,]+) (${SP_RX_GOOD}) for (\S+) ([\d.,]+) (${SP_RX_GOOD}) with the (${SP_RX_NAME})\.`, (m, e, i1, a, g1, i2, b, g2, n) => `${e || ""}Has intercambiado ${i1} ${a} ${spG(g1)} por ${i2} ${b} ${spG(g2)} con los ${spN(n)}.`);
 H("🔁 <b>Trading goods</b> (🌌 Space → Market): swap your alien goods with races that are 😊 Friendly or better: you give 2 of any good and get 1 of theirs. 🏺 Ancient Relics can't be traded.",
   "🔁 <b>Intercambio de bienes</b> (🌌 Espacio → Mercado): intercambia tus bienes alienígenas con razas con las que tengas una amistad 😊 Amistosa o mejor: das 2 de cualquier bien y recibes 1 del suyo. Las 🏺 Reliquias antiguas no se pueden intercambiar.");
@@ -1996,6 +1998,14 @@ H("⚙️ Settings: the <b>Display</b> section folds away (tap its header). Fold
 Object.assign(ES, { "This file is far too big to be an Empire of Coins backup.": "Este archivo es demasiado grande para ser una copia de Empire of Coins." });
 H("🚀 Nebula Strike: ✨ stardust is now a little see-through, so it's easier to tell apart from enemy bullets.",
   "🚀 Nebula Strike: el ✨ polvo estelar es ahora un poco transparente, para distinguirlo mejor de las balas enemigas.");
+// 🛡️ prestige windows: the shield is a painted icon, so the text around it is translated in pieces
+rx(String.raw`Always kept: achievements, levels, cosmetics, statistics and your 🖼️ Art Gallery \(unlock, slots and paintings\)( · Prestiges so far: (\d+))?\. After every prestige`,
+  (m, x, n) => `Siempre se conservan: logros, niveles, cosméticos, estadísticas y tu 🖼️ Galería de arte (desbloqueo, huecos y cuadros)${x ? ` · Prestigios hasta ahora: ${n}` : ""}. Después de cada prestigio`);
+Object.assign(ES, { "no tax inspections for the first 10 minutes.": "sin inspecciones de Hacienda durante los primeros 10 minutos.",
+  "Kept: achievements, levels, cosmetics, statistics, Legacy bonuses, free bet chips, Art Gallery unlock, slots and paintings.": "Se conservan: logros, niveles, cosméticos, estadísticas, bonificaciones de Legado, fichas de apuesta gratis, el desbloqueo de la Galería de arte, sus huecos y los cuadros.",
+  "No tax inspections for the first 10 minutes after the reset.": "Sin inspecciones de Hacienda durante los 10 primeros minutos tras el reinicio." });
+H("🎨 More painted icons instead of emoji: the 🐾 Pets page, worker statuses and buttons on 💰 Income, the buttons and payout tables in the 🎰 Casino, and 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting).",
+  "🎨 Más iconos pintados en lugar de emojis: la página de 🐾 Mascotas, los estados de los trabajadores y los botones de 💰 Ingresos, los botones y tablas de pagos del 🎰 Casino, y 🚚 Logística (botones de enviar, niveles de amistad, regalos, piratas, escoltas, rutas comerciales, intercambio, bonificaciones de alianza, puestos avanzados y artesanía).");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

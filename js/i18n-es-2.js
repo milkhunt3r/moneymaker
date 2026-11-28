@@ -298,8 +298,8 @@ rx(String.raw`● Live from (Binance|Coinbase)`, "● En directo desde $1");
 rx(String.raw`Unlocks at Investor level (\d+) \(you are level (\d+)\)\.?`, "Se desbloquea en el nivel de inversor $1 (eres nivel $2).");
 rx(String.raw`Unlocks at Investor level (\d+)`, "Se desbloquea en el nivel de inversor $1");
 // logistics
-hrx(String.raw`<b>([^<]+)<\/b> \{i\}Total profit: <b>(${NUM})<\/b><br> \{i\}Transit time: <b>([^<]+)<\/b><br> <span>≈ (${NUM}) \/ sec<\/span>( <span>LONG HAUL<\/span>| <span>EXPRESS[^<]*<\/span>)?`,
-  (m, r, p, t, s, x) => `<b>${routeEs(r)}</b> {i}Beneficio total: <b>${p}</b><br> {i}Tiempo de viaje: <b>${t}</b><br> <span>≈ ${s} / s</span>${x ? (/LONG/.test(x) ? " <span>LARGA DISTANCIA</span>" : " <span>" + (esq(x.replace(/<\/?span>/g, "").trim()) ?? x.replace(/<\/?span>/g, "").trim()) + "</span>") : ""}`);
+hrx(String.raw`(<span>\{i\}Best per sec<\/span> )?<b>([^<]+)<\/b> \{i\}Total profit: <b>(${NUM})<\/b><br> \{i\}Transit time: <b>([^<]+)<\/b><br> <span>≈ (${NUM}) \/ sec<\/span>( <span>LONG HAUL<\/span>| <span>EXPRESS[^<]*<\/span>)?`,
+  (m, bst, r, p, t, s, x) => `${bst ? "<span>{i}Mejor por segundo</span> " : ""}<b>${routeEs(r)}</b> {i}Beneficio total: <b>${p}</b><br> {i}Tiempo de viaje: <b>${t}</b><br> <span>≈ ${s} / s</span>${x ? (/LONG/.test(x) ? " <span>LARGA DISTANCIA</span>" : " <span>" + (esq(x.replace(/<\/?span>/g, "").trim()) ?? x.replace(/<\/?span>/g, "").trim()) + "</span>") : ""}`);
 rx(String.raw`≈ (${NUM}) \/ sec`, "≈ $1 / s");
 rx(String.raw`\+(${NUM}) on arrival`, "+$1 al llegar");
 rx(String.raw`Transit (\d[\dhm: ]*)`, "Viaje $1");
