@@ -85,6 +85,15 @@ $("modalBox").addEventListener("click", (e) => {
 });
 
 // 💾 Back up / restore: the same signed, scrambled text as the browser save (so it can't be edited to cheat)
+// 💾 a backup must look like a real save before it may replace this game
+const BACKUP_MAX = 2e6;   // characters (a busy save is ~120 KB)
+function backupShapeOk(d) {
+  if (!d || typeof d !== "object" || Array.isArray(d)) return false;
+  const num = (x) => typeof x === "number" && Number.isFinite(x);
+  return num(d.money) && d.money >= 0 && Array.isArray(d.companies) && (d.legacy == null || typeof d.legacy === "object")
+    && (d.achievements == null || (typeof d.achievements === "object" && !Array.isArray(d.achievements)))
+    && (d.nextId == null || num(d.nextId));
+}
 function backupText() { return saveEncode(splitState(state).progress); }
 function showBackup() {
   showModal(`<h2>💾 Back up or restore your game</h2>
@@ -107,8 +116,9 @@ function showBackup() {
   const check = (raw) => {
     raw = (raw || "").trim(); picked = null; $("bkLoad").disabled = true;
     if (!raw) return msg("");
-    const r = saveDecode(raw);
-    if (!r.ok || !r.data || typeof r.data !== "object" || r.data.money == null) return msg("❌ This isn't a valid Empire of Coins backup (or it was changed).");
+    if (raw.length > BACKUP_MAX) return msg("❌ This file is far too big to be an Empire of Coins backup.");
+    let r; try { r = saveDecode(raw); } catch (e) { r = {}; }
+    if (!r.ok || !backupShapeOk(r.data)) return msg("❌ This isn't a valid Empire of Coins backup (or it was changed).");
     picked = cleanSave(r.data); $("bkLoad").disabled = false;
     msg(`✅ Backup found: ${fmt(picked.money || 0)}${picked.legacy && picked.legacy.count ? `, ⭐ ${picked.legacy.count} prestige${picked.legacy.count === 1 ? "" : "s"}` : ""}.`);
   };
@@ -125,7 +135,9 @@ function showBackup() {
     try { await navigator.clipboard.writeText(backupText()); msg("✅ Backup code copied. Paste it somewhere safe."); }
     catch (e) { $("bkText").value = backupText(); $("bkText").select(); msg("Select the code above and copy it."); }
   };
-  $("bkFile").onchange = (e) => { const f = e.target.files[0]; if (!f) return; f.text().then(t => { $("bkText").value = ""; check(t); }); };
+  $("bkFile").onchange = (e) => { const f = e.target.files[0]; if (!f) return;
+    if (f.size > BACKUP_MAX) return msg("❌ This file is far too big to be an Empire of Coins backup.");   // don't even read it
+    f.text().then(t => { $("bkText").value = ""; check(t); }); };
   $("bkText").oninput = (e) => check(e.target.value);
   $("bkBack").onclick = () => showSettings(settingsFromMenu);
   $("bkLoad").onclick = () => {

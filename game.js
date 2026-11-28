@@ -3369,6 +3369,7 @@ H("🎮 Mini-game fixes: 🎨 Art Gallery: Submit copy and New painting sit apar
   "🎮 Arreglos en los minijuegos: 🎨 Galería de arte: Entregar copia y Cuadro nuevo están separados, y Cuadro nuevo pregunta antes de tirar tu copia. ⛏️ Mina de oro: un recuadro de 🏦 Cámara con tu mineral y lo que vale. 🚀 Nebula Strike: un botón grande Continuar para el siguiente nivel, y el cofre pirata pasa al Hangar. 🧬 Empalmador genético: una guía para tu primer empalme, y el temporizador de ADN y la Pista están en el recuadro del empalmador.");
 H("⚙️ Settings: the <b>Display</b> section folds away (tap its header). Folded, it shows your language, brightness and number format at a glance.",
   "⚙️ Ajustes: la sección <b>Pantalla</b> se puede plegar (toca su cabecera). Plegada, muestra tu idioma, brillo y formato de números de un vistazo.");
+Object.assign(ES, { "This file is far too big to be an Empire of Coins backup.": "Este archivo es demasiado grande para ser una copia de Empire of Coins." });
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -3810,8 +3811,12 @@ var storage = {
 // (the game shows names and texts from the save inside the page) and no key may change how objects work.
 // The game itself never stores <, >, " or ` in its texts, so nothing real is lost.
 var BAD_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+// 🧼 every save is cleaned like this when it's loaded (browser, 💾 backup or ☁️ cloud): no tags or quotes in any text,
+// no text longer than SAVE_STR_MAX (a painting picture is ~10 KB), no Infinity / NaN, no __proto__ tricks, at most 40 levels deep.
+var SAVE_STR_MAX = 100000;
 function cleanSave(v, depth = 0) {
-  if (typeof v === "string") return v.replace(/<[^>]*>/g, "").replace(/[<>"`]/g, "").replace(/javascript:/gi, "");
+  if (typeof v === "string") return v.slice(0, SAVE_STR_MAX).replace(/<[^>]*>/g, "").replace(/[<>"`]/g, "").replace(/javascript:/gi, "");
+  if (typeof v === "number") return Number.isFinite(v) ? v : 0;
   if (!v || typeof v !== "object" || depth > 40) return v;
   if (Array.isArray(v)) return v.map(x => cleanSave(x, depth + 1));
   const out = {};
@@ -6677,6 +6682,15 @@ $("modalBox").addEventListener("click", (e) => {
 });
 
 // 💾 Back up / restore: the same signed, scrambled text as the browser save (so it can't be edited to cheat)
+// 💾 a backup must look like a real save before it may replace this game
+var BACKUP_MAX = 2e6;   // characters (a busy save is ~120 KB)
+function backupShapeOk(d) {
+  if (!d || typeof d !== "object" || Array.isArray(d)) return false;
+  const num = (x) => typeof x === "number" && Number.isFinite(x);
+  return num(d.money) && d.money >= 0 && Array.isArray(d.companies) && (d.legacy == null || typeof d.legacy === "object")
+    && (d.achievements == null || (typeof d.achievements === "object" && !Array.isArray(d.achievements)))
+    && (d.nextId == null || num(d.nextId));
+}
 function backupText() { return saveEncode(splitState(state).progress); }
 function showBackup() {
   showModal(`<h2>💾 Back up or restore your game</h2>
@@ -6699,8 +6713,9 @@ function showBackup() {
   const check = (raw) => {
     raw = (raw || "").trim(); picked = null; $("bkLoad").disabled = true;
     if (!raw) return msg("");
-    const r = saveDecode(raw);
-    if (!r.ok || !r.data || typeof r.data !== "object" || r.data.money == null) return msg("❌ This isn't a valid Empire of Coins backup (or it was changed).");
+    if (raw.length > BACKUP_MAX) return msg("❌ This file is far too big to be an Empire of Coins backup.");
+    let r; try { r = saveDecode(raw); } catch (e) { r = {}; }
+    if (!r.ok || !backupShapeOk(r.data)) return msg("❌ This isn't a valid Empire of Coins backup (or it was changed).");
     picked = cleanSave(r.data); $("bkLoad").disabled = false;
     msg(`✅ Backup found: ${fmt(picked.money || 0)}${picked.legacy && picked.legacy.count ? `, ⭐ ${picked.legacy.count} prestige${picked.legacy.count === 1 ? "" : "s"}` : ""}.`);
   };
@@ -6717,7 +6732,9 @@ function showBackup() {
     try { await navigator.clipboard.writeText(backupText()); msg("✅ Backup code copied. Paste it somewhere safe."); }
     catch (e) { $("bkText").value = backupText(); $("bkText").select(); msg("Select the code above and copy it."); }
   };
-  $("bkFile").onchange = (e) => { const f = e.target.files[0]; if (!f) return; f.text().then(t => { $("bkText").value = ""; check(t); }); };
+  $("bkFile").onchange = (e) => { const f = e.target.files[0]; if (!f) return;
+    if (f.size > BACKUP_MAX) return msg("❌ This file is far too big to be an Empire of Coins backup.");   // don't even read it
+    f.text().then(t => { $("bkText").value = ""; check(t); }); };
   $("bkText").oninput = (e) => check(e.target.value);
   $("bkBack").onclick = () => showSettings(settingsFromMenu);
   $("bkLoad").onclick = () => {
@@ -17020,6 +17037,7 @@ var cloud = { sb: null, user: null, status: "loading", lastAt: 0, busy: false, d
 var cloudMeta = () => { try { return JSON.parse(localStorage.getItem(CLOUD_META) || "null"); } catch (e) { return null; } };
 var setCloudMeta = (m) => { try { m ? localStorage.setItem(CLOUD_META, JSON.stringify(m)) : localStorage.removeItem(CLOUD_META); } catch (e) {} };
 var localAt = () => Number(localStorage.getItem(LOCAL_AT)) || 0;
+var CLOUD_SAVE_MAX = 900000;   // characters; the database allows 1,000,000 bytes (a busy save is ~90 KB)
 var localAtStart = localAt();      // when this device last saved BEFORE this page load (the game saves again right after starting)
 var hadLocalAt = localAtStart > 0;  // false on a brand-new device (or before this feature)
 
@@ -17063,6 +17081,7 @@ async function cloudUploadNow(force) {
     const sentAt = localAt(), progress = splitState(state).progress, now = Date.now(), meta = cloudMeta();
     const known = meta && meta.user === cloud.user.id ? meta.cloudAt : null;
     let ok = false;
+    if (JSON.stringify(progress).length > CLOUD_SAVE_MAX) throw new Error("save too big");   // the database refuses it anyway (docs/supabase-saves-limits.sql)
     if (force || known == null) {
       const { error } = await cloud.sb.from("saves").upsert({ user_id: cloud.user.id, data: { ...progress, _sig: saveSign(progress) }, saved_at: now });
       if (error) throw error;

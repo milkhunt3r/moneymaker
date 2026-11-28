@@ -28,6 +28,7 @@ const cloud = { sb: null, user: null, status: "loading", lastAt: 0, busy: false,
 const cloudMeta = () => { try { return JSON.parse(localStorage.getItem(CLOUD_META) || "null"); } catch (e) { return null; } };
 const setCloudMeta = (m) => { try { m ? localStorage.setItem(CLOUD_META, JSON.stringify(m)) : localStorage.removeItem(CLOUD_META); } catch (e) {} };
 const localAt = () => Number(localStorage.getItem(LOCAL_AT)) || 0;
+const CLOUD_SAVE_MAX = 900000;   // characters; the database allows 1,000,000 bytes (a busy save is ~90 KB)
 const localAtStart = localAt();      // when this device last saved BEFORE this page load (the game saves again right after starting)
 const hadLocalAt = localAtStart > 0;  // false on a brand-new device (or before this feature)
 
@@ -71,6 +72,7 @@ async function cloudUploadNow(force) {
     const sentAt = localAt(), progress = splitState(state).progress, now = Date.now(), meta = cloudMeta();
     const known = meta && meta.user === cloud.user.id ? meta.cloudAt : null;
     let ok = false;
+    if (JSON.stringify(progress).length > CLOUD_SAVE_MAX) throw new Error("save too big");   // the database refuses it anyway (docs/supabase-saves-limits.sql)
     if (force || known == null) {
       const { error } = await cloud.sb.from("saves").upsert({ user_id: cloud.user.id, data: { ...progress, _sig: saveSign(progress) }, saved_at: now });
       if (error) throw error;

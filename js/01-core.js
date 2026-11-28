@@ -364,8 +364,12 @@ const storage = {
 // (the game shows names and texts from the save inside the page) and no key may change how objects work.
 // The game itself never stores <, >, " or ` in its texts, so nothing real is lost.
 const BAD_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+// 🧼 every save is cleaned like this when it's loaded (browser, 💾 backup or ☁️ cloud): no tags or quotes in any text,
+// no text longer than SAVE_STR_MAX (a painting picture is ~10 KB), no Infinity / NaN, no __proto__ tricks, at most 40 levels deep.
+const SAVE_STR_MAX = 100000;
 function cleanSave(v, depth = 0) {
-  if (typeof v === "string") return v.replace(/<[^>]*>/g, "").replace(/[<>"`]/g, "").replace(/javascript:/gi, "");
+  if (typeof v === "string") return v.slice(0, SAVE_STR_MAX).replace(/<[^>]*>/g, "").replace(/[<>"`]/g, "").replace(/javascript:/gi, "");
+  if (typeof v === "number") return Number.isFinite(v) ? v : 0;
   if (!v || typeof v !== "object" || depth > 40) return v;
   if (Array.isArray(v)) return v.map(x => cleanSave(x, depth + 1));
   const out = {};

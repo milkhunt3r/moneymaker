@@ -1993,6 +1993,7 @@ H("🎮 Mini-game fixes: 🎨 Art Gallery: Submit copy and New painting sit apar
   "🎮 Arreglos en los minijuegos: 🎨 Galería de arte: Entregar copia y Cuadro nuevo están separados, y Cuadro nuevo pregunta antes de tirar tu copia. ⛏️ Mina de oro: un recuadro de 🏦 Cámara con tu mineral y lo que vale. 🚀 Nebula Strike: un botón grande Continuar para el siguiente nivel, y el cofre pirata pasa al Hangar. 🧬 Empalmador genético: una guía para tu primer empalme, y el temporizador de ADN y la Pista están en el recuadro del empalmador.");
 H("⚙️ Settings: the <b>Display</b> section folds away (tap its header). Folded, it shows your language, brightness and number format at a glance.",
   "⚙️ Ajustes: la sección <b>Pantalla</b> se puede plegar (toca su cabecera). Plegada, muestra tu idioma, brillo y formato de números de un vistazo.");
+Object.assign(ES, { "This file is far too big to be an Empire of Coins backup.": "Este archivo es demasiado grande para ser una copia de Empire of Coins." });
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
