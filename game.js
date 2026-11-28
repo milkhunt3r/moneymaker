@@ -721,10 +721,10 @@ Object.assign(ES, {
 
 H("The safest, slowest investment. Gold moves together with the stock market, every 10 seconds: 24% chance of +0.4%, 41% chance of +0.2%, 35% chance of −0.15%. That is about <b>+50–60% per hour</b>, and it almost never loses over a few minutes. Min. 1,000. <b>No cash-out fee</b>. After you sell gold, you have to wait <b>5 minutes</b> before selling again.",
   "La inversión más segura y más lenta. El oro se mueve a la vez que la bolsa, cada 10 segundos: 24% de probabilidad de +0,4%, 41% de +0,2% y 35% de −0,15%. Son unos <b>+50–60% por hora</b>, y casi nunca pierde en unos pocos minutos. Mín. 1.000. <b>Sin comisión de retirada</b>. Después de vender oro tienes que esperar <b>5 minutos</b> para volver a vender.");
-H("Only for owners of a Brokerage Firm. Works like the normal ETF, with better wins: every 10 seconds, 1 in 10 chance of −4%, 1 in 10 chance of +5%, otherwise 50/50 between +2% and −1%. <b>No cash-out fee.</b> One slot: you invest once (min. 1,000, max. 10,000,000), and cash out everything before investing again. Your investment can still grow past 10M. It grows up to <b>10 gcoin</b> at most. Turn on 🔁 Auto cash-out to cash out at the cap and invest 10,000,000 again on its own.",
-  "Solo para propietarios de una Agencia de valores. Funciona como el ETF normal, con mejores subidas: cada 10 segundos, 1 entre 10 de −4%, 1 entre 10 de +5%; si no, 50/50 entre +2% y −1%. <b>Sin comisión de retirada.</b> Una sola plaza: inviertes una vez (mín. 1.000, máx. 10.000.000) y lo retiras todo antes de volver a invertir. Tu inversión puede seguir creciendo por encima de 10 M. Crece hasta <b>10 gcoin</b> como máximo. Activa 🔁 Retirada automática para retirarlo al llegar al tope y volver a invertir 10.000.000 solo.");
-H("Trade <b>Bitcoin, Ethereum and Solana at their real, live prices</b> (1 US dollar = 1 bcoin), streamed every second from Binance (or Coinbase if Binance isn't reachable). Prices move with the real market, 24/7, up or down. <br><br><b>Positions:</b> every trade opens its own position. <b>Long</b> earns when the price goes up, <b>Short</b> when it goes down. <b>Leverage ×20 / ×50</b> multiplies your profit and loss: at ×50, a 1% price move changes your position by 50%. If the price moves 1/leverage against you (5% at ×20, 2% at ×50; 100% up for a ×1 Short) the position is <b>liquidated</b> and you lose the money you put in. Liquidations are checked while the game is open. <br><br><b>Fee:</b> 2% of the money you put in when you open and of what you get back when you close, 0.1% less for every 10 Investor levels (level 10, 20, 30…). At Investor level 99 trading is free. <br><b>XP:</b> every trade gives Investor XP based on its size (1,000 → 1 XP, 1 scoin → 4 XP, 1 gcoin → 10 XP), at most once a minute. Coins you hold also count as invested money for the per-minute Investor XP. Min. trade 1,000. Trading pauses if the live prices stop. <br><br><b>⏳ Limit orders:</b> open a position only when the price reaches your limit: a Long when the price drops to it, a Short when it rises to it. The money is set aside until then (Cancel gives it back). At most 10 orders. <b>🎯 Take profit / 🛑 Stop loss:</b> a position closes by itself when its profit or loss (after the closing fee) reaches the % of the money you put in that you chose. Set them when opening, or later with ✏️. Orders, take profit and stop loss are checked while the game is open (also in a background tab).",
-  "Opera con <b>Bitcoin, Ethereum y Solana a sus precios reales en directo</b> (1 dólar estadounidense = 1 bcoin), actualizados cada segundo desde Binance (o Coinbase si Binance no responde). Los precios se mueven con el mercado real, 24/7, al alza o a la baja. <br><br><b>Posiciones:</b> cada operación abre su propia posición. <b>Largo</b> gana cuando el precio sube; <b>Corto</b>, cuando baja. <b>Apalancamiento ×20 / ×50</b> multiplica tus ganancias y pérdidas: a ×50, un movimiento del 1% cambia tu posición un 50%. Si el precio se mueve 1/apalancamiento en tu contra (5% a ×20, 2% a ×50; una subida del 100% en un Corto ×1), la posición queda <b>liquidada</b> y pierdes el dinero que pusiste. Las liquidaciones se comprueban mientras el juego está abierto. <br><br><b>Comisión:</b> 2% del dinero que pones al abrir y de lo que recibes al cerrar, un 0,1% menos por cada 10 niveles de inversor (nivel 10, 20, 30…). En el nivel de inversor 99 operar es gratis. <br><b>XP:</b> cada operación da XP de inversor según su tamaño (1.000 → 1 XP, 1 scoin → 4 XP, 1 gcoin → 10 XP), como mucho una vez por minuto. Las monedas que tienes también cuentan como dinero invertido para la XP de inversor por minuto. Operación mínima: 1.000. El trading se pausa si se detienen los precios en directo. <br><br><b>⏳ Órdenes límite:</b> abren una posición solo cuando el precio llega a tu límite: un largo cuando el precio baja hasta él, un corto cuando sube hasta él. El dinero queda apartado hasta entonces (Cancelar lo devuelve). Máximo 10 órdenes. <b>🎯 Toma de beneficios / 🛑 Stop loss:</b> una posición se cierra sola cuando su beneficio o pérdida (tras la comisión de cierre) llega al % del dinero que pusiste que hayas elegido. Fíjalos al abrir o después con ✏️. Las órdenes, la toma de beneficios y el stop loss se comprueban con el juego abierto (también en una pestaña en segundo plano).");
+H("Only for owners of a Brokerage Firm. Works like the normal ETF, with better wins: every 10 seconds, 1 in 10 chance of −4%, 1 in 10 chance of +5%, otherwise 50/50 between +2% and −1%. <b>No cash-out fee.</b> One slot: you invest once (min. 1,000, max. 10,000,000), and cash out everything before investing again. Your investment can still grow past 10M. It grows up to <b>10 gcoin</b> at most. Turn on {i} Auto cash-out to cash out at the cap and invest 10,000,000 again on its own.",
+  "Solo para propietarios de una Agencia de valores. Funciona como el ETF normal, con mejores subidas: cada 10 segundos, 1 entre 10 de −4%, 1 entre 10 de +5%; si no, 50/50 entre +2% y −1%. <b>Sin comisión de retirada.</b> Una sola plaza: inviertes una vez (mín. 1.000, máx. 10.000.000) y lo retiras todo antes de volver a invertir. Tu inversión puede seguir creciendo por encima de 10 M. Crece hasta <b>10 gcoin</b> como máximo. Activa {i} Retirada automática para retirarlo al llegar al tope y volver a invertir 10.000.000 solo.");
+H("Trade <b>Bitcoin, Ethereum and Solana at their real, live prices</b> (1 US dollar = 1 bcoin), streamed every second from Binance (or Coinbase if Binance isn't reachable). Prices move with the real market, 24/7, up or down. <br><br><b>Positions:</b> every trade opens its own position. <b>Long</b> earns when the price goes up, <b>Short</b> when it goes down. <b>Leverage ×20 / ×50</b> multiplies your profit and loss: at ×50, a 1% price move changes your position by 50%. If the price moves 1/leverage against you (5% at ×20, 2% at ×50; 100% up for a ×1 Short) the position is <b>liquidated</b> and you lose the money you put in. Liquidations are checked while the game is open. <br><br><b>Fee:</b> 2% of the money you put in when you open and of what you get back when you close, 0.1% less for every 10 Investor levels (level 10, 20, 30…). At Investor level 99 trading is free. <br><b>XP:</b> every trade gives Investor XP based on its size (1,000 → 1 XP, 1 scoin → 4 XP, 1 gcoin → 10 XP), at most once a minute. Coins you hold also count as invested money for the per-minute Investor XP. Min. trade 1,000. Trading pauses if the live prices stop. <br><br><b>⏳ Limit orders:</b> open a position only when the price reaches your limit: a Long when the price drops to it, a Short when it rises to it. The money is set aside until then (Cancel gives it back). At most 10 orders. <b>{i} Take profit / {i} Stop loss:</b> a position closes by itself when its profit or loss (after the closing fee) reaches the % of the money you put in that you chose. Set them when opening, or later with {i}. Orders, take profit and stop loss are checked while the game is open (also in a background tab).",
+  "Opera con <b>Bitcoin, Ethereum y Solana a sus precios reales en directo</b> (1 dólar estadounidense = 1 bcoin), actualizados cada segundo desde Binance (o Coinbase si Binance no responde). Los precios se mueven con el mercado real, 24/7, al alza o a la baja. <br><br><b>Posiciones:</b> cada operación abre su propia posición. <b>Largo</b> gana cuando el precio sube; <b>Corto</b>, cuando baja. <b>Apalancamiento ×20 / ×50</b> multiplica tus ganancias y pérdidas: a ×50, un movimiento del 1% cambia tu posición un 50%. Si el precio se mueve 1/apalancamiento en tu contra (5% a ×20, 2% a ×50; una subida del 100% en un Corto ×1), la posición queda <b>liquidada</b> y pierdes el dinero que pusiste. Las liquidaciones se comprueban mientras el juego está abierto. <br><br><b>Comisión:</b> 2% del dinero que pones al abrir y de lo que recibes al cerrar, un 0,1% menos por cada 10 niveles de inversor (nivel 10, 20, 30…). En el nivel de inversor 99 operar es gratis. <br><b>XP:</b> cada operación da XP de inversor según su tamaño (1.000 → 1 XP, 1 scoin → 4 XP, 1 gcoin → 10 XP), como mucho una vez por minuto. Las monedas que tienes también cuentan como dinero invertido para la XP de inversor por minuto. Operación mínima: 1.000. El trading se pausa si se detienen los precios en directo. <br><br><b>⏳ Órdenes límite:</b> abren una posición solo cuando el precio llega a tu límite: un largo cuando el precio baja hasta él, un corto cuando sube hasta él. El dinero queda apartado hasta entonces (Cancelar lo devuelve). Máximo 10 órdenes. <b>{i} Toma de beneficios / {i} Stop loss:</b> una posición se cierra sola cuando su beneficio o pérdida (tras la comisión de cierre) llega al % del dinero que pusiste que hayas elegido. Fíjalos al abrir o después con {i}. Las órdenes, la toma de beneficios y el stop loss se comprueban con el juego abierto (también en una pestaña en segundo plano).");
 H("Buy a semi-truck (150,000) for one of your 15 slots. Each free truck gets <b>4 contract offers</b> on roads around the world: pick one and it drives. When it arrives, the whole contract is paid to your money. Longer routes pay more per second. A truck earns back its price in about 1.5 hours. Trips keep moving while the game is closed. <br><br>{i}<b>Breakdowns:</b> after each delivery there is a 1 in 100 chance the truck breaks down. It can't take new contracts until you pay for repairs (500 – 5,000). <br><br>{i}<b>Logistics agent</b> (unlocks at Logistics level 5): turn it on and it picks a random contract for any waiting truck 5 seconds after the offers appear. It charges 2% of that contract's profit, taken from your money the moment it picks. It waits if you can't afford the fee.",
   "Compra un camión articulado (150.000) para una de tus 15 plazas. Cada camión libre recibe <b>4 ofertas de contrato</b> por carreteras de todo el mundo: elige una y se pone en marcha. Al llegar, el contrato entero se paga a tu dinero. Las rutas más largas pagan más por segundo. Un camión recupera su precio en cerca de 1,5 horas. Los viajes siguen avanzando con el juego cerrado. <br><br>{i}<b>Averías:</b> tras cada entrega hay 1 probabilidad entre 100 de que el camión se averíe. No puede aceptar contratos hasta que pagues la reparación (500 – 5.000). <br><br>{i}<b>Agente logístico</b> (se desbloquea en el nivel de logística 5): actívalo y elegirá un contrato al azar para cualquier camión que espere, 5 segundos después de que aparezcan las ofertas. Cobra el 2% del beneficio de ese contrato, que se descuenta de tu dinero en el momento de elegir. Espera si no puedes pagar la comisión.");
 H("Buy an <b>Aframax</b> tanker (75 scoin) for one of your 10 slots. Each free tanker gets <b>4 contract offers</b>: pick one and the tanker sails. When it arrives, the whole contract is paid to your money. Then it gets 4 new offers. Longer routes pay more per second, and the two ocean crossings pay the most. A tanker earns back its price in about 3 hours. Voyages keep moving while the game is closed. <br><br>{i}<b>Logistics agent</b> (unlocks at Logistics level 25): turn it on and it picks a random contract for any waiting tanker 5 seconds after the offers appear. It charges 2% of that contract's profit, taken from your money the moment it picks. It waits if you can't afford the fee.",
@@ -850,6 +850,8 @@ rx(String.raw`Bought (${NUM}) of gold\.`, "Has comprado $1 de oro.");
 rx(String.raw`Rent paid: \+(${NUM})`, "Alquiler cobrado: +$1");
 rx(String.raw`Cashed out (${NUM}) \(fee (${NUM})\): \+(${NUM}) to your money\.`, "Has retirado $1 (comisión $2): +$3 a tu dinero.");
 rx(String.raw`Sold (?:a|the) property for (${NUM})\.?(.*)`, (m, v, rest) => `Has vendido el inmueble por ${v}.${rest ? " " + (esq(rest.trim()) ?? rest.trim()) : ""}`);
+// the sale bonuses sit in their own <span> with a painted icon
+hrx(String.raw`Sold (?:a|the) property for (${NUM})\.((?: <span>\{i\}[^<]+<\/span>)*)`, (m, v, rest) => `Has vendido el inmueble por ${v}.` + rest.replace(/<span>\{i\}([^<]+)<\/span>/g, (x, t) => `<span>{i}${esq(t) ?? t}</span>`));
 rx(String.raw`Agency bonus \+(${NUM})\.`, "Bonificación de la agencia +$1.");
 rx(String.raw`Investor level \+(${NUM})\.`, "Nivel de inversor +$1.");
 rx(String.raw`Real estate lawyers? \+(${NUM})\.`, "Abogados inmobiliarios +$1.");
@@ -2264,6 +2266,7 @@ hrx(String.raw`<b>💔 Too late for the (${SP_RX_NAME})<\/b>Nobody came to help\
   `<b>💔 Demasiado tarde para los ${spN(n)}</b>Nadie acudió a ayudar. Han perdido ${x} de amistad contigo.<br><small>Haz clic para cerrar</small>`);
 rx(String.raw`Your scientists saved the day! The (${SP_RX_NAME}) are grateful: \+(\d+) friendship\.`, (m, n, x) => `¡Tus científicos han salvado el día! Los ${spN(n)} te lo agradecen: +${x} de amistad.`);
 rx(String.raw`The <b>(${SP_RX_NAME})</b> are now <b>(${SP_RX_LV})</b>!`, (m, n, l) => `¡Los <b>${spN(n)}</b> ya son <b>${spL(l)}</b>!`);
+rx(String.raw`The (${SP_RX_NAME}) are now (${SP_RX_LV})!`, (m, n, l) => `¡Los ${spN(n)} ya son ${spL(l)}!`);   // (the plain-text notice)
 H("🆘 <b>Alien emergencies:</b> while you play, a race you know may suddenly need help. Send 20 🔬 scientists within 15 minutes for +300 friendship; if nobody comes, they lose 200 friendship with you. Exploring takes 10 scientists.",
   "🆘 <b>Emergencias alienígenas:</b> mientras juegas, una raza que conoces puede necesitar ayuda de repente. Envía 20 🔬 científicos en 15 minutos para ganar +300 de amistad; si nadie acude, perderán 200 de amistad contigo. Explorar cuesta 10 científicos.");
 ES["🆘 Space: alien races sometimes have an emergency while you play. Send 20 🔬 scientists within 15 minutes for extra friendship, or they lose friendship with you. Exploring now takes 10 scientists."] =
@@ -2878,6 +2881,7 @@ hrx(String.raw`(?:Research|Investigación) <b>✨ Stardust Harvesters<\/b> \(�
 hrx(String.raw`<b>Level (\d):<\/b> (${SP_RX_RES2})`, (m, n, x) => `<b>Nivel ${n}:</b> ${SP_ES_RES[x] || x}`);
 rx(String.raw`(✅ )?Now: (${SP_RX_RES2})`, (m, e, x) => `${e || ""}Ahora: ${SP_ES_RES[x] || x}`);
 rx(String.raw`(🔬 )?Research done: (\S+) <b>(${SP_RX_RES2}) (\d)<\/b> · (${SP_RX_RES2})\.`, (m, e, i, nm, n, x) => `${e || ""}Investigación terminada: ${i} <b>${SP_ES_RES[nm] || nm} ${n}</b> · ${SP_ES_RES[x] || x}.`);
+rx(String.raw`(🔬 )?Research done: (\S+) (${SP_RX_RES2}) (\d) · (${SP_RX_RES2})\.`, (m, e, i, nm, n, x) => `${e || ""}Investigación terminada: ${i} ${SP_ES_RES[nm] || nm} ${n} · ${SP_ES_RES[x] || x}.`);   // (the plain-text notice)
 hrx(String.raw`<b>Stardust Harvesters:<\/b> (\d+) \/ (\d+) out · each farms <b>(\d+)<\/b> stardust a minute \(✨ ([\d.,]+) an hour\)\.`, "<b>Cosechadoras de polvo estelar:</b> $1 / $2 fuera · cada una cosecha <b>$3</b> de polvo estelar por minuto (✨ $4 por hora).");
 rx(String.raw`(🛡️ )?Frigates free: (\d+) \/ (\d+)`, (m, e, a, b) => `${e || ""}Fragatas libres: ${a} / ${b}`);
 rx(String.raw`All your courier ships are busy\.`, "Todas tus naves mensajeras están ocupadas.");
@@ -3380,8 +3384,10 @@ rx(String.raw`Always kept: achievements, levels, cosmetics, statistics and your 
 Object.assign(ES, { "no tax inspections for the first 10 minutes.": "sin inspecciones de Hacienda durante los primeros 10 minutos.",
   "Kept: achievements, levels, cosmetics, statistics, Legacy bonuses, free bet chips, Art Gallery unlock, slots and paintings.": "Se conservan: logros, niveles, cosméticos, estadísticas, bonificaciones de Legado, fichas de apuesta gratis, el desbloqueo de la Galería de arte, sus huecos y los cuadros.",
   "No tax inspections for the first 10 minutes after the reset.": "Sin inspecciones de Hacienda durante los 10 primeros minutos tras el reinicio." });
-H("🎨 More painted icons instead of emoji: the 🐾 Pets page, worker statuses and buttons on 💰 Income, the buttons and payout tables in the 🎰 Casino, and 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting).",
-  "🎨 Más iconos pintados en lugar de emojis: la página de 🐾 Mascotas, los estados de los trabajadores y los botones de 💰 Ingresos, los botones y tablas de pagos del 🎰 Casino, y 🚚 Logística (botones de enviar, niveles de amistad, regalos, piratas, escoltas, rutas comerciales, intercambio, bonificaciones de alianza, puestos avanzados y artesanía).");
+H("🎨 More painted icons instead of emoji: the 🐾 Pets page, worker statuses and buttons on 💰 Income, the buttons and payout tables in the 🎰 Casino, 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting), and 📈 Investing (selling locks, auto cash-out, sale bonuses, take profit, stop loss, liquidation, open positions and chart buttons).",
+  "🎨 Más iconos pintados en lugar de emojis: la página de 🐾 Mascotas, los estados de los trabajadores y los botones de 💰 Ingresos, los botones y tablas de pagos del 🎰 Casino, 🚚 Logística (botones de enviar, niveles de amistad, regalos, piratas, escoltas, rutas comerciales, intercambio, bonificaciones de alianza, puestos avanzados y artesanía), e 📈 Inversiones (bloqueos de venta, retirada automática, bonificaciones de venta, toma de beneficios, stop loss, liquidación, posiciones abiertas y botones del gráfico).");
+rx(String.raw`Investor level up! Now level (\d+)\. ETF fee is now ([\d.,]+%)\.`, (m, n, f) => `¡Subes de nivel de inversor! Ahora eres nivel ${n}. La comisión del ETF ahora es del ${decFix(f)}.`);
+rx(String.raw`liquidated (${NUM})`, "liquidada $1");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -6006,6 +6012,7 @@ var ETF_BASE_FEE = 0.10;      // 10% cash-out fee at level 1...
 var ETF_FEE_PER_LEVEL = 0.001;// ...0.1% less for every level above 1
 
 var ivIco = (n, cls = "") => ico("iv-" + n, cls);   // 🎨 painted investing icons (assets/icons/ico-iv-*.webp)
+var ivxI = (n) => `<img class="ico pti" src="assets/icons/ico-ivx-${n}.webp" alt="">`;   // 🎨 the second set: trading, bonuses, warnings (ico-ivx-*)
 if (!state.invest) state.invest = { xp: 0, properties: [], etf: 0, etfTimer: ETF_EVERY, etfHistory: [] };
 var inv = state.invest;
 
@@ -6016,7 +6023,7 @@ var etfFee = () => Math.max(0, ETF_BASE_FEE - ETF_FEE_PER_LEVEL * (investLevel()
 // Shows a message in the card it belongs to (re / etf / gold / petf), or in the general line above
 function investMessage(text, good, area) {
   const el = (area && $("msg-" + area)) || $("investMsg");
-  if (text.startsWith("<img")) el.innerHTML = text; else el.textContent = text;   // a painted icon in front of the message
+  if (text.includes("<img")) el.innerHTML = text; else el.textContent = text;   // painted icons in the message (the game's own text only)
   el.className = (area ? "cardMsg " : "") + (good ? "income" : "flash");
 }
 
@@ -6039,7 +6046,7 @@ function addInvestXp(amount) {
     render();   // a new hotel may have unlocked
     const box = $("investLevel");
     box.classList.remove("levelUp"); void box.offsetWidth; box.classList.add("levelUp");
-    investMessage("🎉 Investor level up! Now level " + investLevel() + ". ETF fee is now " + pct(etfFee()) + ".", true);
+    investMessage(ivxI("levelup") + "Investor level up! Now level " + investLevel() + ". ETF fee is now " + pct(etfFee()) + ".", true);
   }
 }
 
@@ -6107,19 +6114,19 @@ $("reList").addEventListener("click", (e) => {
     const bonus = p.value * AGENCY_SALE_BONUS;
     state.money += bonus;
     investRecord("re", 0, bonus);          // counts toward real estate profit (and new agents)
-    bonusText = ` 🏢 Agency bonus +${fmt(bonus)}.`;
+    bonusText = ` <span>${ivxI("agency")}Agency bonus +${fmt(bonus)}.</span>`;
   }
   // 📈 Investor level: +0.1% on every property sale per level
   const lvlBonus = p.value * RE_LEVEL_BONUS * investLevel();
   state.money += lvlBonus;
   investRecord("re", 0, lvlBonus);
-  bonusText += ` 📈 Investor level +${fmt(lvlBonus)}.`;
+  bonusText += ` <span>${ivxI("level")}Investor level +${fmt(lvlBonus)}.</span>`;
   const reLawyers = lawCount("realestate");
   if (reLawyers > 0) {
     const bonus = p.value * 0.02 * reLawyers;
     state.money += bonus;
     investRecord("re", 0, bonus);
-    bonusText += ` ⚖️ Real estate lawyer${reLawyers > 1 ? "s" : ""} +${fmt(bonus)}.`;
+    bonusText += ` <span>${ivxI("lawyer")}Real estate lawyer${reLawyers > 1 ? "s" : ""} +${fmt(bonus)}.</span>`;
   }
   investMessage("Sold a property for " + fmt(p.value) + "." + bonusText, true, "re");
   renderProperties(); updateCounter(); updateInvestLive(); save();
@@ -6151,7 +6158,7 @@ function renderProperties() {
       <span class="grow"><img class="ico reIco" id="re-ico-${p.id}" src="${reIco(p.value)}" alt="">Property ${i + 1} · value <b id="re-value-${p.id}">${fmt(p.value)}</b></span>
       <span class="muted">rent in <span id="re-rent-${p.id}">${clock(p.rentIn)}</span></span>
       <button class="btn small" data-sell="${p.id}" id="re-sell-${p.id}" ${p.lock > 0 ? "disabled" : ""}>
-        ${p.lock > 0 ? "🔒 " + clock(p.lock) : "Sell"}</button>
+        ${p.lock > 0 ? ivxI("lock") + clock(p.lock) : "Sell"}</button>
     </div>`).join("");
 }
 
@@ -6258,7 +6265,7 @@ function petfCapCheck() {
   state.money -= PETF_MAX;
   inv.petf = PETF_MAX; inv.petfInvested = PETF_MAX;
   investRecord("petf", PETF_MAX, 0);
-  investMessage(ivIco("petf") + "🔁 Auto cash-out: +" + fmt(amount) + ", and " + fmt(PETF_MAX) + " invested again.", true, "petf");
+  investMessage(ivxI("autocash") + "Auto cash-out: +" + fmt(amount) + ", and " + fmt(PETF_MAX) + " invested again.", true, "petf");
   showNotice("🔁 Broker ETF hit " + fmt(PETF_CAP) + ": cashed out and bought back in with " + fmt(PETF_MAX) + ".");
 }
 
@@ -6416,7 +6423,7 @@ function investTick() {
   if (inv.properties.length > 0 && Math.random() < RE_CRASH_CHANCE) {
     let lost = 0;
     inv.properties.forEach(p => { lost += p.value * RE_CRASH_LOSS; p.value *= 1 - RE_CRASH_LOSS; });
-    investMessage("🏚️ REAL ESTATE CRASH! Your properties lost " + fmt(lost) + " (70%).", false, "re");
+    investMessage(ivxI("crash") + "REAL ESTATE CRASH! Your properties lost " + fmt(lost) + " (70%).", false, "re");
     state.stats.reCrash = true;
     showNotice("🏚️ Real estate crash! Properties lost 70% of their value.");
     changed = true;
@@ -6584,7 +6591,7 @@ function updateInvestLive() {
   $("petfBuyRow").hidden = inv.petf > 0;
   $("petfSellRow").hidden = inv.petf <= 0;
   $("petfAuto").checked = inv.petfAuto;
-  $("petfCapNote").textContent = inv.petf >= PETF_CAP ? "🔝 At the " + fmt(PETF_CAP) + " cap: it won't grow more. Cash out to start again." : "";
+  $("petfCapNote").innerHTML = inv.petf >= PETF_CAP ? ivxI("cap") + "At the " + fmt(PETF_CAP) + " cap: it won't grow more. Cash out to start again." : "";
   const pl = inv.petfHistory[0];
   $("petfLast").textContent = pl === undefined ? "–" : (pl > 0 ? "+" : "") + Math.round(pl * 100) + "%";
   $("petfLast").className = "bigValue " + (pl > 0 ? "up" : pl < 0 ? "down" : "");
@@ -6613,7 +6620,7 @@ function updateInvestLive() {
     if (v) v.textContent = fmt(p.value);
     const im = $("re-ico-" + p.id); if (im && !im.src.endsWith(reIco(p.value))) im.src = reIco(p.value);   // the building upgrades as the value grows
     if (r) r.textContent = clock(p.rentIn);
-    if (b) { b.disabled = p.lock > 0; b.textContent = p.lock > 0 ? "🔒 " + clock(p.lock) : "Sell"; }
+    if (b) { b.disabled = p.lock > 0; b.innerHTML = p.lock > 0 ? ivxI("lock") + clock(p.lock) : "Sell"; }
   });
 }
 
@@ -10232,7 +10239,7 @@ function checkLiquidations(sym, price) {
   for (const p of hit) {
     inv.positions = inv.positions.filter(x => x !== p);
     logTrade({ sym, side: p.side, lev: p.lev, entry: p.entry, exit: price, result: -p.paid, liq: true, at: Date.now(), opened: p.at });
-    showAlert(`💥 Liquidated: ${sym} ${p.side === "long" ? "Long" : "Short"} ×${p.lev}`, `The price reached ${priceText(price)}. You lost the ${fmt(p.paid)} you put in.`);
+    showAlert(`${ivxI("liquidated")}Liquidated: ${sym} ${p.side === "long" ? "Long" : "Short"} ×${p.lev}`, `The price reached ${priceText(price)}. You lost the ${fmt(p.paid)} you put in.`);
   }
   save();
 }
@@ -10347,7 +10354,7 @@ function cryptoXp(amount) {
 }
 function cryptoMsg(sym, text, good) {
   const el = $("cmsg-" + sym);
-  if (el) { el.textContent = text; el.className = good ? "income" : "flash"; }
+  if (el) { if (text.startsWith("<img")) el.innerHTML = text; else el.textContent = text; el.className = good ? "income" : "flash"; }
 }
 var tradeSel = {};   // sym -> { side, lev }  chosen in the trade panel
 for (const c of CRYPTOS) tradeSel[c.sym] = { side: "long", lev: 1, type: "market" };
@@ -10410,9 +10417,9 @@ function doClose(p, price, why) {
   const result = got - p.paid;
   if (result > 0) state.stats.profitTrades = (state.stats.profitTrades || 0) + 1;   // for achievements
   logTrade({ sym: p.sym, side: p.side, lev: p.lev, entry: p.entry, exit: price, result, at: Date.now(), opened: p.at, why });
-  if (why) showAlert(`${why === "tp" ? "🎯 Take profit" : "🛑 Stop loss"}: ${p.sym} ${p.side === "long" ? "Long" : "Short"} ×${p.lev} closed`,
+  if (why) showAlert(`${why === "tp" ? ivxI("takeprofit") + "Take profit" : ivxI("stoploss") + "Stop loss"}: ${p.sym} ${p.side === "long" ? "Long" : "Short"} ×${p.lev} closed`,
     `Closed at ${priceText(price)} for ${fmt(got)} · ${result >= 0 ? "profit +" : "loss −"}${fmt(Math.abs(result))}.`, result >= 0 ? "good" : undefined);
-  cryptoMsg(p.sym, `${why === "tp" ? "🎯 " : why === "sl" ? "🛑 " : ""}Closed ${p.side === "long" ? "Long" : "Short"} ×${p.lev} for ${fmt(got)} (fee ${fmt(fee)}) · ${result >= 0 ? "profit +" : "loss −"}${fmt(Math.abs(result))}${xp ? ` · +${xp} XP` : ""}.`, result >= 0);
+  cryptoMsg(p.sym, `${why === "tp" ? ivxI("takeprofit") : why === "sl" ? ivxI("stoploss") : ""}Closed ${p.side === "long" ? "Long" : "Short"} ×${p.lev} for ${fmt(got)} (fee ${fmt(fee)}) · ${result >= 0 ? "profit +" : "loss −"}${fmt(Math.abs(result))}${xp ? ` · +${xp} XP` : ""}.`, result >= 0);
   updateCounter(); updateInvestLive(); save(); renderCryptoNumbers();
 }
 function ago(ms) {
@@ -10438,7 +10445,7 @@ function drawCryptoChart(sym) {
   const tf = TIMEFRAMES.find(f => f.id === (mode === "candles" ? state.cryptoTf : "1m")) || TIMEFRAMES[0];
   const box = $("cchart-" + sym), ks = live[sym].tf[tf.id];
   if (!box) return;
-  if (ks.length < 2) { box.innerHTML = `<div class="muted" style="padding:24px; text-align:center">📈 Waiting for ${tf.long} candles…</div>`; return; }
+  if (ks.length < 2) { box.innerHTML = `<div class="muted" style="padding:24px; text-align:center">${ivxI("line")}Waiting for ${tf.long} candles…</div>`; return; }
   let lo = Math.min(...ks.map(k => k.l)), hi = Math.max(...ks.map(k => k.h));
   if (hi - lo < hi * 1e-5) { lo -= hi * 1e-4; hi += hi * 1e-4; }
   const pad = (hi - lo) * 0.06; lo -= pad; hi += pad;
@@ -10543,9 +10550,9 @@ function renderCrypto() {
         <div class="segGroup">
           <button class="seg" data-ttype="${c.sym}" data-type="market" title="Open now at the live price">Market</button><button class="seg" data-ttype="${c.sym}" data-type="limit" title="Open when the price reaches your limit">⏳ Limit</button></div>
         <input id="climit-${c.sym}" type="number" min="0" step="any" placeholder="Limit price" hidden>
-        <label class="tpslBox" title="Close by itself when the profit (after the closing fee) reaches this % of the money you put in">🎯 Take profit
+        <label class="tpslBox" title="Close by itself when the profit (after the closing fee) reaches this % of the money you put in">${ivxI("takeprofit")}Take profit
           <input id="ctp-${c.sym}" type="number" min="1" placeholder="+ %"></label>
-        <label class="tpslBox" title="Close by itself when the loss (after the closing fee) reaches this % of the money you put in">🛑 Stop loss
+        <label class="tpslBox" title="Close by itself when the loss (after the closing fee) reaches this % of the money you put in">${ivxI("stoploss")}Stop loss
           <input id="csl-${c.sym}" type="number" min="1" max="95" placeholder="− %"></label>
       </div>
       <div class="openRow"><button class="btn big" data-copen="${c.sym}" id="copen-${c.sym}">Open</button><div class="muted" id="cprev-${c.sym}"></div></div>
@@ -10612,18 +10619,18 @@ function renderCryptoNumbers() {
     allOrd.push(...orders.map(o => ({ o, c, price })));
     $("cpos-" + c.sym).innerHTML =       (log.length ? `<div class="tradeLog"><span class="muted">Recent trades:</span> ${log.map(x =>
         `<span class="${x.result >= 0 ? "up" : "down"}">${sideTag(x.side, x.lev)} ${priceText(x.entry)} → ${priceText(x.exit)}
-          <b>${x.liq ? ivIco("crash") + "liquidated " : x.why === "tp" ? "🎯 " : x.why === "sl" ? "🛑 " : ""}${x.result >= 0 ? "+" : "−"}${fmt(Math.abs(x.result))}</b> <small class="muted">(${ago(x.at - x.opened)})</small></span>`).join("")}</div>` : "");
+          <b>${x.liq ? ivIco("crash") + "liquidated " : x.why === "tp" ? ivxI("takeprofit") : x.why === "sl" ? ivxI("stoploss") : ""}${x.result >= 0 ? "+" : "−"}${fmt(Math.abs(x.result))}</b> <small class="muted">(${ago(x.at - x.opened)})</small></span>`).join("")}</div>` : "");
   }
   // 📋 every open position and limit order, all coins together
   const box = $("cposAll");
-  if (box) box.innerHTML = allPos.length || allOrd.length ? `<div class="cposAll"><h4>📋 Open positions (${allPos.length})${allOrd.length ? ` · ⏳ limit orders (${allOrd.length})` : ""}</h4><div class="posWrap">` +
+  if (box) box.innerHTML = allPos.length || allOrd.length ? `<div class="cposAll"><h4>${ivxI("positions")}Open positions (${allPos.length})${allOrd.length ? ` · ⏳ limit orders (${allOrd.length})` : ""}</h4><div class="posWrap">` +
     (allPos.length ? `<table class="posTable"><thead><tr><th>Coin</th><th>Position</th><th>Size</th><th>Entry</th><th>Now</th><th>Profit / loss</th><th>Liquidation</th><th>Auto-close</th><th>Open for</th><th></th></tr></thead><tbody>` +
       allPos.map(({ p, c, price }) => {
         const val = posValue(p, price), res = val - p.paid, pct = res / p.paid * 100;
         const liq = p.lev === 1 && p.side === "long" ? "–" : priceText(liqPrice(p));
         return `<tr><td><b>${c.icon} ${c.sym}</b></td><td>${sideTag(p.side, p.lev)}</td><td>${fmt(p.qty * p.entry)}</td><td>${priceText(p.entry)}</td><td>${priceText(price)}</td>
           <td class="${res >= 0 ? "up" : "down"}"><b>${res >= 0 ? "+" : "−"}${fmt(Math.abs(res))}</b> (${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%)</td>
-          <td>${liq}</td><td class="tpslCell">${tpslText(p)}<button class="btn ghost small" data-ctpsl="${p.id}" title="Set take profit / stop loss">✏️</button></td><td>${ago(Date.now() - p.at)}</td>
+          <td>${liq}</td><td class="tpslCell">${tpslText(p)}<button class="btn ghost small" data-ctpsl="${p.id}" title="Set take profit / stop loss">${ivxI("edit")}</button></td><td>${ago(Date.now() - p.at)}</td>
           <td><button class="btn ghost small" data-cclose="${p.id}">Close</button></td></tr>`; }).join("") + `</tbody></table>` : "") +
     (allOrd.length ? `<table class="posTable orderTable"><thead><tr><th>Coin</th><th>⏳ Limit order</th><th>Amount</th><th>Opens at</th><th>Now</th><th>Auto-close</th><th>Waiting for</th><th></th></tr></thead><tbody>` +
       allOrd.map(({ o, c, price }) => `<tr><td><b>${c.icon} ${c.sym}</b></td><td>${sideTag(o.side, o.lev)}</td><td>${fmt(o.amount)}</td><td><b>${priceText(o.at)}</b></td>
@@ -10663,7 +10670,7 @@ $("cryptoList").addEventListener("click", (e) => {
 function tpslText(x) {
   if (!x.tp && !x.sl) return `<span class="muted">–</span> `;
   const tip = (t) => x.entry ? ` <small class="muted">(${priceText(triggerPrice(x, t))})</small>` : "";
-  return (x.tp ? `<span class="up">🎯 +${+(x.tp * 100).toFixed(1)}%</span>${tip(x.tp)} ` : "") + (x.sl ? `<span class="down">🛑 −${+(x.sl * 100).toFixed(1)}%</span>${tip(-x.sl)} ` : "");
+  return (x.tp ? `<span class="up">${ivxI("takeprofit")}+${+(x.tp * 100).toFixed(1)}%</span>${tip(x.tp)} ` : "") + (x.sl ? `<span class="down">${ivxI("stoploss")}−${+(x.sl * 100).toFixed(1)}%</span>${tip(-x.sl)} ` : "");
 }
 function cancelOrder(id) {
   const o = inv.orders.find(x => x.id === id);
@@ -10677,12 +10684,12 @@ function cancelOrder(id) {
 function editTpSl(id) {
   const p = inv.positions.find(x => x.id === id);
   if (!p) return;
-  showModal(`<h2>🎯 Take profit / 🛑 Stop loss</h2>
+  showModal(`<h2>${ivxI("takeprofit")}<span>Take profit</span> / ${ivxI("stoploss")}<span>Stop loss</span></h2>
     <p>${sideTag(p.side, p.lev)} <b>${p.sym}</b> · entry ${priceText(p.entry)} · put in ${fmt(p.paid)}</p>
     <p class="muted">The position closes by itself when its profit or loss (after the closing fee) reaches this % of the money you put in. Leave a box empty to turn it off.</p>
     <div class="tradePanel" style="justify-content:center">
-      <label class="tpslBox">🎯 Take profit <input id="etp" type="number" min="1" placeholder="+ %" value="${p.tp ? +(p.tp * 100).toFixed(1) : ""}"></label>
-      <label class="tpslBox">🛑 Stop loss <input id="esl" type="number" min="1" max="95" placeholder="− %" value="${p.sl ? +(p.sl * 100).toFixed(1) : ""}"></label></div>
+      <label class="tpslBox">${ivxI("takeprofit")}Take profit <input id="etp" type="number" min="1" placeholder="+ %" value="${p.tp ? +(p.tp * 100).toFixed(1) : ""}"></label>
+      <label class="tpslBox">${ivxI("stoploss")}Stop loss <input id="esl" type="number" min="1" max="95" placeholder="− %" value="${p.sl ? +(p.sl * 100).toFixed(1) : ""}"></label></div>
     <p class="flash" id="etpslMsg"></p>
     <div class="row" style="justify-content:center; gap:10px"><button class="btn" id="etpslSave">Save</button><button class="btn ghost" data-modal="close">Cancel</button></div>`);
   $("etpslSave").onclick = () => {
@@ -10726,7 +10733,7 @@ if (!TIMEFRAMES.some(f => f.id === state.cryptoTf)) state.cryptoTf = "1m";
 function chartToolsHtml() {
   const mode = state.cryptoChart === "candles" ? "candles" : "line";
   const seg = (attr, val, label, on) => `<button class="seg ${on ? "on" : ""}" data-${attr}="${val}">${label}</button>`;
-  return `<div class="segGroup">${seg("cmode", "line", "📈 Line", mode === "line")}${seg("cmode", "candles", "🕯️ Candles", mode === "candles")}</div>` +
+  return `<div class="segGroup">${seg("cmode", "line", `${ivxI("line")}Line`, mode === "line")}${seg("cmode", "candles", `${ivxI("candles")}Candles`, mode === "candles")}</div>` +
     (mode === "candles" ? `<div class="segGroup">${TIMEFRAMES.map(f => seg("tf", f.id, f.id, state.cryptoTf === f.id)).join("")}</div>` : "") +
     `<div class="segGroup maGroup">${MAS.map(m => {
       const on = state.cryptoMA.includes(m.n);
@@ -14403,7 +14410,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
-    "🎨 More painted icons instead of emoji: the 🐾 Pets page, worker statuses and buttons on 💰 Income, the buttons and payout tables in the 🎰 Casino, and 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting).",
+    "🎨 More painted icons instead of emoji: the 🐾 Pets page, worker statuses and buttons on 💰 Income, the buttons and payout tables in the 🎰 Casino, 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting), and 📈 Investing (selling locks, auto cash-out, sale bonuses, take profit, stop loss, liquidation, open positions and chart buttons).",
     "🚀 Nebula Strike: ✨ stardust is now a little see-through, so it's easier to tell apart from enemy bullets.",
     "⚙️ Settings: the <b>Display</b> section folds away (tap its header). Folded, it shows your language, brightness and number format at a glance.",
     "🎮 Mini-game fixes: 🎨 Art Gallery: Submit copy and New painting sit apart, and New painting asks before throwing your copy away. ⛏️ Gold Mine: a 🏦 Vault box with your ore and what it's worth. 🚀 Nebula Strike: a big Continue button for the next level, and the pirate chest sits right under it. 🧬 Gene Splicer: a start guide for your first splice, and the DNA timer and Hint sit in the splicer box.",
@@ -20177,7 +20184,7 @@ function spSosHelp() {
   SP.nextSos = Date.now() + spSosGap();
   const after = spLevel(e.k);
   showNotice(`🆘 Your scientists saved the day! The ${SP_RACES[e.k].name} are grateful: +${SP_SOS_WIN} friendship.`);
-  if (after > before) showNotice(`${SP_LEVELS[after].icon} The <b>${SP_RACES[e.k].name}</b> are now <b>${SP_LEVELS[after].name}</b>!`);
+  if (after > before) showNotice(`${SP_LEVELS[after].icon} The ${SP_RACES[e.k].name} are now ${SP_LEVELS[after].name}!`);   // (notices are plain text)
   updateCounter(); save(); spRefreshWarn(); if (spShown()) renderSpace();
 }
 var spSosGap = () => (SP_SOS_GAP[0] + Math.random() * (SP_SOS_GAP[1] - SP_SOS_GAP[0])) * 60e3;
@@ -20735,7 +20742,7 @@ function spResearch(k) {
   Object.entries(c.goods).forEach(([g, n]) => { if (g.startsWith("c_")) SP.crafted[g.slice(2)] -= n; else SP.goods[g] -= n; });
   SP.research[k] = spRL(k) + 1;
   SP.stats.research = (SP.stats.research || 0) + 1;
-  showNotice(`🔬 Research done: ${SP_RESEARCH[k].icon} <b>${SP_RESEARCH[k].name} ${spRL(k)}</b> · ${SP_RESEARCH[k].lv[spRL(k) - 1]}.`);
+  showNotice(`🔬 Research done: ${SP_RESEARCH[k].icon} ${SP_RESEARCH[k].name} ${spRL(k)} · ${SP_RESEARCH[k].lv[spRL(k) - 1]}.`);
   updateCounter(); save(); renderSpace();
 }
 

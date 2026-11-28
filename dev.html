@@ -172,7 +172,7 @@
       <div class="levelNum" id="levelNum">1</div>
       <div style="flex:1">
         <div class="row"><b><img class="ico" src="assets/icons/ico-ui-dice.webp" alt="">Gambler level <span id="levelText">1</span>
-            <button class="btn ghost small" data-levels="gambler" style="margin-left:6px">📋 All levels</button></b>
+            <button class="btn ghost small" data-levels="gambler" style="margin-left:6px"><img class="ico pti" src="assets/icons/ico-ivx-positions.webp" alt="">All levels</button></b>
           <span class="muted" id="cashbackText">Cashback 0.1% on lost bets</span></div>
         <div class="xpBar"><div class="xpFill" id="xpFill"></div></div>
         <div class="muted" id="xpText">0 / 80,000 XP</div>
@@ -203,7 +203,7 @@
       <div class="levelNum" id="logiLevelNum">1</div>
       <div style="flex:1">
         <div class="row"><b><img class="ico" src="assets/icons/ico-lg-level.webp" alt="">Logistics level <span id="logiLevelText">1</span>
-            <button class="btn ghost small" data-levels="logistics" style="margin-left:6px">📋 All levels</button></b>
+            <button class="btn ghost small" data-levels="logistics" style="margin-left:6px"><img class="ico pti" src="assets/icons/ico-ivx-positions.webp" alt="">All levels</button></b>
           <span class="muted" id="logiPerkText"></span></div>
         <div class="xpBar"><div class="xpFill" id="logiXpFill"></div></div>
         <div class="muted" id="logiXpText"></div>
@@ -211,7 +211,7 @@
     </div>
     <div class="card" id="satelliteCard" hidden></div>
     <div class="card wallet">
-      <div class="stat"><div class="label">💰 Your money</div><div class="value" id="logiMoney">0</div></div>
+      <div class="stat"><div class="label"><img class="ico pti" src="assets/icons/ico-ivx-money.webp" alt="">Your money</div><div class="value" id="logiMoney">0</div></div>
       <div class="stat"><div class="label"><img class="ico" src="assets/icons/ico-lg-truck.webp" alt="">Trucks</div><div class="value chips" id="truckCount">0 / 15</div></div>
       <div class="stat"><div class="label"><img class="ico" src="assets/icons/ico-lg-tanker.webp" alt="">Tankers</div><div class="value chips" id="logiCount">0 / 10</div></div>
       <div class="stat"><div class="label"><img class="ico" src="assets/icons/ico-lg-plane.webp" alt="">Planes</div><div class="value chips" id="planeCount">0 / 5</div></div>
@@ -383,7 +383,7 @@
       <div class="levelNum" id="investLevelNum">1</div>
       <div style="flex:1">
         <div class="row"><b><img class="ico" src="assets/icons/ico-iv-invest.webp" alt="">Investor level <span id="investLevelText">1</span>
-            <button class="btn ghost small" data-levels="investor" style="margin-left:6px">📋 All levels</button></b>
+            <button class="btn ghost small" data-levels="investor" style="margin-left:6px"><img class="ico pti" src="assets/icons/ico-ivx-positions.webp" alt="">All levels</button></b>
           <span class="muted" id="investFeeText"></span></div>
         <div class="xpBar"><div class="xpFill" id="investXpFill"></div></div>
         <div class="muted" id="investXpText"></div>
@@ -392,7 +392,7 @@
     </div>
 
     <div class="card wallet">
-      <div class="stat"><div class="label">💰 Your money</div><div class="value" id="investMoney">0</div></div>
+      <div class="stat"><div class="label"><img class="ico pti" src="assets/icons/ico-ivx-money.webp" alt="">Your money</div><div class="value" id="investMoney">0</div></div>
       <div class="stat"><div class="label"><img class="ico" src="assets/icons/ico-re-key.webp" alt="">Real estate</div><div class="value chips" id="reTotal">0</div></div>
       <div class="stat"><div class="label"><img class="ico" src="assets/icons/ico-iv-etf.webp" alt="">ETF</div><div class="value chips" id="etfTotal">0</div></div>
       <div class="stat"><div class="label"><img class="ico" src="assets/icons/ico-iv-gold.webp" alt="">Gold</div><div class="value chips" id="goldTotal">0</div></div>
@@ -503,7 +503,7 @@
               <div class="muted infoBox" id="info-petf" hidden>Only for owners of a Brokerage Firm. Works like the normal ETF, with better wins:
                 every 10 seconds, 1 in 10 chance of −4%, 1 in 10 chance of +5%, otherwise 50/50 between +2% and −1%.
                 <b>No cash-out fee.</b> One slot: you invest once (min. 1,000, max. 10,000,000), and cash out everything before investing again. Your investment can still grow past 10M.
-                It grows up to <b>10 gcoin</b> at most. Turn on 🔁 Auto cash-out to cash out at the cap and invest 10,000,000 again on its own.</div>
+                It grows up to <b>10 gcoin</b> at most. Turn on <img class="ico pti" src="assets/icons/ico-ivx-autocash.webp" alt=""> Auto cash-out to cash out at the cap and invest 10,000,000 again on its own.</div>
               <div id="petfLocked" class="muted" style="margin-top:8px"><img class="ico lockS" src="assets/icons/ico-lock.webp" alt="">Buy a <img class="ico" src="assets/icons/ico-biz-broker.webp" alt="">Brokerage Firm (Income tab, needs Investor level 10) to unlock.</div>
               <div id="petfBody" hidden>
                 <div class="row" style="margin-top:10px; justify-content:flex-start; gap:20px; flex-wrap:wrap">
@@ -529,7 +529,7 @@
                   <button class="btn ghost" id="petfSell">Cash out all (no fee)</button>
                   <span class="muted">One slot: cash out to invest again.</span>
                 </div>
-                <label class="muted" style="display:flex; align-items:center; gap:6px; margin-top:8px; cursor:pointer"><input type="checkbox" id="petfAuto" style="width:auto; margin:0"> 🔁 Auto cash-out at 10 gcoin, then invest 10,000,000 again</label>
+                <label class="muted" style="display:flex; align-items:center; gap:6px; margin-top:8px; cursor:pointer"><input type="checkbox" id="petfAuto" style="width:auto; margin:0"> <img class="ico pti" src="assets/icons/ico-ivx-autocash.webp" alt="">Auto cash-out at 10 gcoin, then invest 10,000,000 again</label>
                 <div class="muted" id="petfCapNote"></div>
 <div class="cardMsg" id="msg-petf"></div>
               </div>
@@ -596,7 +596,7 @@
                 <br><b>XP:</b> every trade gives Investor XP based on its size (1,000 → 1 XP, 1 scoin → 4 XP, 1 gcoin → 10 XP), at most once a minute.
                 Coins you hold also count as invested money for the per-minute Investor XP. Min. trade 1,000. Trading pauses if the live prices stop.
                 <br><br><b>⏳ Limit orders:</b> open a position only when the price reaches your limit: a Long when the price drops to it, a Short when it rises to it. The money is set aside until then (Cancel gives it back). At most 10 orders.
-                <b>🎯 Take profit / 🛑 Stop loss:</b> a position closes by itself when its profit or loss (after the closing fee) reaches the % of the money you put in that you chose. Set them when opening, or later with ✏️. Orders, take profit and stop loss are checked while the game is open (also in a background tab).</div>
+                <b><img class="ico pti" src="assets/icons/ico-ivx-takeprofit.webp" alt=""> Take profit / <img class="ico pti" src="assets/icons/ico-ivx-stoploss.webp" alt=""> Stop loss:</b> a position closes by itself when its profit or loss (after the closing fee) reaches the % of the money you put in that you chose. Set them when opening, or later with <img class="ico pti" src="assets/icons/ico-ivx-edit.webp" alt="">. Orders, take profit and stop loss are checked while the game is open (also in a background tab).</div>
               <div class="muted" id="cryptoFeeText" style="margin-top:6px"></div>
               <div id="cryptoList"></div>
             </div>

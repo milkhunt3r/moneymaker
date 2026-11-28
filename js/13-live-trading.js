@@ -76,7 +76,7 @@ function checkLiquidations(sym, price) {
   for (const p of hit) {
     inv.positions = inv.positions.filter(x => x !== p);
     logTrade({ sym, side: p.side, lev: p.lev, entry: p.entry, exit: price, result: -p.paid, liq: true, at: Date.now(), opened: p.at });
-    showAlert(`💥 Liquidated: ${sym} ${p.side === "long" ? "Long" : "Short"} ×${p.lev}`, `The price reached ${priceText(price)}. You lost the ${fmt(p.paid)} you put in.`);
+    showAlert(`${ivxI("liquidated")}Liquidated: ${sym} ${p.side === "long" ? "Long" : "Short"} ×${p.lev}`, `The price reached ${priceText(price)}. You lost the ${fmt(p.paid)} you put in.`);
   }
   save();
 }
@@ -191,7 +191,7 @@ function cryptoXp(amount) {
 }
 function cryptoMsg(sym, text, good) {
   const el = $("cmsg-" + sym);
-  if (el) { el.textContent = text; el.className = good ? "income" : "flash"; }
+  if (el) { if (text.startsWith("<img")) el.innerHTML = text; else el.textContent = text; el.className = good ? "income" : "flash"; }
 }
 const tradeSel = {};   // sym -> { side, lev }  chosen in the trade panel
 for (const c of CRYPTOS) tradeSel[c.sym] = { side: "long", lev: 1, type: "market" };
@@ -254,9 +254,9 @@ function doClose(p, price, why) {
   const result = got - p.paid;
   if (result > 0) state.stats.profitTrades = (state.stats.profitTrades || 0) + 1;   // for achievements
   logTrade({ sym: p.sym, side: p.side, lev: p.lev, entry: p.entry, exit: price, result, at: Date.now(), opened: p.at, why });
-  if (why) showAlert(`${why === "tp" ? "🎯 Take profit" : "🛑 Stop loss"}: ${p.sym} ${p.side === "long" ? "Long" : "Short"} ×${p.lev} closed`,
+  if (why) showAlert(`${why === "tp" ? ivxI("takeprofit") + "Take profit" : ivxI("stoploss") + "Stop loss"}: ${p.sym} ${p.side === "long" ? "Long" : "Short"} ×${p.lev} closed`,
     `Closed at ${priceText(price)} for ${fmt(got)} · ${result >= 0 ? "profit +" : "loss −"}${fmt(Math.abs(result))}.`, result >= 0 ? "good" : undefined);
-  cryptoMsg(p.sym, `${why === "tp" ? "🎯 " : why === "sl" ? "🛑 " : ""}Closed ${p.side === "long" ? "Long" : "Short"} ×${p.lev} for ${fmt(got)} (fee ${fmt(fee)}) · ${result >= 0 ? "profit +" : "loss −"}${fmt(Math.abs(result))}${xp ? ` · +${xp} XP` : ""}.`, result >= 0);
+  cryptoMsg(p.sym, `${why === "tp" ? ivxI("takeprofit") : why === "sl" ? ivxI("stoploss") : ""}Closed ${p.side === "long" ? "Long" : "Short"} ×${p.lev} for ${fmt(got)} (fee ${fmt(fee)}) · ${result >= 0 ? "profit +" : "loss −"}${fmt(Math.abs(result))}${xp ? ` · +${xp} XP` : ""}.`, result >= 0);
   updateCounter(); updateInvestLive(); save(); renderCryptoNumbers();
 }
 function ago(ms) {
@@ -282,7 +282,7 @@ function drawCryptoChart(sym) {
   const tf = TIMEFRAMES.find(f => f.id === (mode === "candles" ? state.cryptoTf : "1m")) || TIMEFRAMES[0];
   const box = $("cchart-" + sym), ks = live[sym].tf[tf.id];
   if (!box) return;
-  if (ks.length < 2) { box.innerHTML = `<div class="muted" style="padding:24px; text-align:center">📈 Waiting for ${tf.long} candles…</div>`; return; }
+  if (ks.length < 2) { box.innerHTML = `<div class="muted" style="padding:24px; text-align:center">${ivxI("line")}Waiting for ${tf.long} candles…</div>`; return; }
   let lo = Math.min(...ks.map(k => k.l)), hi = Math.max(...ks.map(k => k.h));
   if (hi - lo < hi * 1e-5) { lo -= hi * 1e-4; hi += hi * 1e-4; }
   const pad = (hi - lo) * 0.06; lo -= pad; hi += pad;
@@ -387,9 +387,9 @@ function renderCrypto() {
         <div class="segGroup">
           <button class="seg" data-ttype="${c.sym}" data-type="market" title="Open now at the live price">Market</button><button class="seg" data-ttype="${c.sym}" data-type="limit" title="Open when the price reaches your limit">⏳ Limit</button></div>
         <input id="climit-${c.sym}" type="number" min="0" step="any" placeholder="Limit price" hidden>
-        <label class="tpslBox" title="Close by itself when the profit (after the closing fee) reaches this % of the money you put in">🎯 Take profit
+        <label class="tpslBox" title="Close by itself when the profit (after the closing fee) reaches this % of the money you put in">${ivxI("takeprofit")}Take profit
           <input id="ctp-${c.sym}" type="number" min="1" placeholder="+ %"></label>
-        <label class="tpslBox" title="Close by itself when the loss (after the closing fee) reaches this % of the money you put in">🛑 Stop loss
+        <label class="tpslBox" title="Close by itself when the loss (after the closing fee) reaches this % of the money you put in">${ivxI("stoploss")}Stop loss
           <input id="csl-${c.sym}" type="number" min="1" max="95" placeholder="− %"></label>
       </div>
       <div class="openRow"><button class="btn big" data-copen="${c.sym}" id="copen-${c.sym}">Open</button><div class="muted" id="cprev-${c.sym}"></div></div>
@@ -456,18 +456,18 @@ function renderCryptoNumbers() {
     allOrd.push(...orders.map(o => ({ o, c, price })));
     $("cpos-" + c.sym).innerHTML =       (log.length ? `<div class="tradeLog"><span class="muted">Recent trades:</span> ${log.map(x =>
         `<span class="${x.result >= 0 ? "up" : "down"}">${sideTag(x.side, x.lev)} ${priceText(x.entry)} → ${priceText(x.exit)}
-          <b>${x.liq ? ivIco("crash") + "liquidated " : x.why === "tp" ? "🎯 " : x.why === "sl" ? "🛑 " : ""}${x.result >= 0 ? "+" : "−"}${fmt(Math.abs(x.result))}</b> <small class="muted">(${ago(x.at - x.opened)})</small></span>`).join("")}</div>` : "");
+          <b>${x.liq ? ivIco("crash") + "liquidated " : x.why === "tp" ? ivxI("takeprofit") : x.why === "sl" ? ivxI("stoploss") : ""}${x.result >= 0 ? "+" : "−"}${fmt(Math.abs(x.result))}</b> <small class="muted">(${ago(x.at - x.opened)})</small></span>`).join("")}</div>` : "");
   }
   // 📋 every open position and limit order, all coins together
   const box = $("cposAll");
-  if (box) box.innerHTML = allPos.length || allOrd.length ? `<div class="cposAll"><h4>📋 Open positions (${allPos.length})${allOrd.length ? ` · ⏳ limit orders (${allOrd.length})` : ""}</h4><div class="posWrap">` +
+  if (box) box.innerHTML = allPos.length || allOrd.length ? `<div class="cposAll"><h4>${ivxI("positions")}Open positions (${allPos.length})${allOrd.length ? ` · ⏳ limit orders (${allOrd.length})` : ""}</h4><div class="posWrap">` +
     (allPos.length ? `<table class="posTable"><thead><tr><th>Coin</th><th>Position</th><th>Size</th><th>Entry</th><th>Now</th><th>Profit / loss</th><th>Liquidation</th><th>Auto-close</th><th>Open for</th><th></th></tr></thead><tbody>` +
       allPos.map(({ p, c, price }) => {
         const val = posValue(p, price), res = val - p.paid, pct = res / p.paid * 100;
         const liq = p.lev === 1 && p.side === "long" ? "–" : priceText(liqPrice(p));
         return `<tr><td><b>${c.icon} ${c.sym}</b></td><td>${sideTag(p.side, p.lev)}</td><td>${fmt(p.qty * p.entry)}</td><td>${priceText(p.entry)}</td><td>${priceText(price)}</td>
           <td class="${res >= 0 ? "up" : "down"}"><b>${res >= 0 ? "+" : "−"}${fmt(Math.abs(res))}</b> (${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%)</td>
-          <td>${liq}</td><td class="tpslCell">${tpslText(p)}<button class="btn ghost small" data-ctpsl="${p.id}" title="Set take profit / stop loss">✏️</button></td><td>${ago(Date.now() - p.at)}</td>
+          <td>${liq}</td><td class="tpslCell">${tpslText(p)}<button class="btn ghost small" data-ctpsl="${p.id}" title="Set take profit / stop loss">${ivxI("edit")}</button></td><td>${ago(Date.now() - p.at)}</td>
           <td><button class="btn ghost small" data-cclose="${p.id}">Close</button></td></tr>`; }).join("") + `</tbody></table>` : "") +
     (allOrd.length ? `<table class="posTable orderTable"><thead><tr><th>Coin</th><th>⏳ Limit order</th><th>Amount</th><th>Opens at</th><th>Now</th><th>Auto-close</th><th>Waiting for</th><th></th></tr></thead><tbody>` +
       allOrd.map(({ o, c, price }) => `<tr><td><b>${c.icon} ${c.sym}</b></td><td>${sideTag(o.side, o.lev)}</td><td>${fmt(o.amount)}</td><td><b>${priceText(o.at)}</b></td>
@@ -507,7 +507,7 @@ $("cryptoList").addEventListener("click", (e) => {
 function tpslText(x) {
   if (!x.tp && !x.sl) return `<span class="muted">–</span> `;
   const tip = (t) => x.entry ? ` <small class="muted">(${priceText(triggerPrice(x, t))})</small>` : "";
-  return (x.tp ? `<span class="up">🎯 +${+(x.tp * 100).toFixed(1)}%</span>${tip(x.tp)} ` : "") + (x.sl ? `<span class="down">🛑 −${+(x.sl * 100).toFixed(1)}%</span>${tip(-x.sl)} ` : "");
+  return (x.tp ? `<span class="up">${ivxI("takeprofit")}+${+(x.tp * 100).toFixed(1)}%</span>${tip(x.tp)} ` : "") + (x.sl ? `<span class="down">${ivxI("stoploss")}−${+(x.sl * 100).toFixed(1)}%</span>${tip(-x.sl)} ` : "");
 }
 function cancelOrder(id) {
   const o = inv.orders.find(x => x.id === id);
@@ -521,12 +521,12 @@ function cancelOrder(id) {
 function editTpSl(id) {
   const p = inv.positions.find(x => x.id === id);
   if (!p) return;
-  showModal(`<h2>🎯 Take profit / 🛑 Stop loss</h2>
+  showModal(`<h2>${ivxI("takeprofit")}<span>Take profit</span> / ${ivxI("stoploss")}<span>Stop loss</span></h2>
     <p>${sideTag(p.side, p.lev)} <b>${p.sym}</b> · entry ${priceText(p.entry)} · put in ${fmt(p.paid)}</p>
     <p class="muted">The position closes by itself when its profit or loss (after the closing fee) reaches this % of the money you put in. Leave a box empty to turn it off.</p>
     <div class="tradePanel" style="justify-content:center">
-      <label class="tpslBox">🎯 Take profit <input id="etp" type="number" min="1" placeholder="+ %" value="${p.tp ? +(p.tp * 100).toFixed(1) : ""}"></label>
-      <label class="tpslBox">🛑 Stop loss <input id="esl" type="number" min="1" max="95" placeholder="− %" value="${p.sl ? +(p.sl * 100).toFixed(1) : ""}"></label></div>
+      <label class="tpslBox">${ivxI("takeprofit")}Take profit <input id="etp" type="number" min="1" placeholder="+ %" value="${p.tp ? +(p.tp * 100).toFixed(1) : ""}"></label>
+      <label class="tpslBox">${ivxI("stoploss")}Stop loss <input id="esl" type="number" min="1" max="95" placeholder="− %" value="${p.sl ? +(p.sl * 100).toFixed(1) : ""}"></label></div>
     <p class="flash" id="etpslMsg"></p>
     <div class="row" style="justify-content:center; gap:10px"><button class="btn" id="etpslSave">Save</button><button class="btn ghost" data-modal="close">Cancel</button></div>`);
   $("etpslSave").onclick = () => {
@@ -570,7 +570,7 @@ if (!TIMEFRAMES.some(f => f.id === state.cryptoTf)) state.cryptoTf = "1m";
 function chartToolsHtml() {
   const mode = state.cryptoChart === "candles" ? "candles" : "line";
   const seg = (attr, val, label, on) => `<button class="seg ${on ? "on" : ""}" data-${attr}="${val}">${label}</button>`;
-  return `<div class="segGroup">${seg("cmode", "line", "📈 Line", mode === "line")}${seg("cmode", "candles", "🕯️ Candles", mode === "candles")}</div>` +
+  return `<div class="segGroup">${seg("cmode", "line", `${ivxI("line")}Line`, mode === "line")}${seg("cmode", "candles", `${ivxI("candles")}Candles`, mode === "candles")}</div>` +
     (mode === "candles" ? `<div class="segGroup">${TIMEFRAMES.map(f => seg("tf", f.id, f.id, state.cryptoTf === f.id)).join("")}</div>` : "") +
     `<div class="segGroup maGroup">${MAS.map(m => {
       const on = state.cryptoMA.includes(m.n);

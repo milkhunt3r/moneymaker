@@ -596,7 +596,7 @@ function spSosHelp() {
   SP.nextSos = Date.now() + spSosGap();
   const after = spLevel(e.k);
   showNotice(`🆘 Your scientists saved the day! The ${SP_RACES[e.k].name} are grateful: +${SP_SOS_WIN} friendship.`);
-  if (after > before) showNotice(`${SP_LEVELS[after].icon} The <b>${SP_RACES[e.k].name}</b> are now <b>${SP_LEVELS[after].name}</b>!`);
+  if (after > before) showNotice(`${SP_LEVELS[after].icon} The ${SP_RACES[e.k].name} are now ${SP_LEVELS[after].name}!`);   // (notices are plain text)
   updateCounter(); save(); spRefreshWarn(); if (spShown()) renderSpace();
 }
 const spSosGap = () => (SP_SOS_GAP[0] + Math.random() * (SP_SOS_GAP[1] - SP_SOS_GAP[0])) * 60e3;

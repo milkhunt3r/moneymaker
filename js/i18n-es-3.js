@@ -888,6 +888,7 @@ hrx(String.raw`<b>💔 Too late for the (${SP_RX_NAME})<\/b>Nobody came to help\
   `<b>💔 Demasiado tarde para los ${spN(n)}</b>Nadie acudió a ayudar. Han perdido ${x} de amistad contigo.<br><small>Haz clic para cerrar</small>`);
 rx(String.raw`Your scientists saved the day! The (${SP_RX_NAME}) are grateful: \+(\d+) friendship\.`, (m, n, x) => `¡Tus científicos han salvado el día! Los ${spN(n)} te lo agradecen: +${x} de amistad.`);
 rx(String.raw`The <b>(${SP_RX_NAME})</b> are now <b>(${SP_RX_LV})</b>!`, (m, n, l) => `¡Los <b>${spN(n)}</b> ya son <b>${spL(l)}</b>!`);
+rx(String.raw`The (${SP_RX_NAME}) are now (${SP_RX_LV})!`, (m, n, l) => `¡Los ${spN(n)} ya son ${spL(l)}!`);   // (the plain-text notice)
 H("🆘 <b>Alien emergencies:</b> while you play, a race you know may suddenly need help. Send 20 🔬 scientists within 15 minutes for +300 friendship; if nobody comes, they lose 200 friendship with you. Exploring takes 10 scientists.",
   "🆘 <b>Emergencias alienígenas:</b> mientras juegas, una raza que conoces puede necesitar ayuda de repente. Envía 20 🔬 científicos en 15 minutos para ganar +300 de amistad; si nadie acude, perderán 200 de amistad contigo. Explorar cuesta 10 científicos.");
 ES["🆘 Space: alien races sometimes have an emergency while you play. Send 20 🔬 scientists within 15 minutes for extra friendship, or they lose friendship with you. Exploring now takes 10 scientists."] =
@@ -1502,6 +1503,7 @@ hrx(String.raw`(?:Research|Investigación) <b>✨ Stardust Harvesters<\/b> \(�
 hrx(String.raw`<b>Level (\d):<\/b> (${SP_RX_RES2})`, (m, n, x) => `<b>Nivel ${n}:</b> ${SP_ES_RES[x] || x}`);
 rx(String.raw`(✅ )?Now: (${SP_RX_RES2})`, (m, e, x) => `${e || ""}Ahora: ${SP_ES_RES[x] || x}`);
 rx(String.raw`(🔬 )?Research done: (\S+) <b>(${SP_RX_RES2}) (\d)<\/b> · (${SP_RX_RES2})\.`, (m, e, i, nm, n, x) => `${e || ""}Investigación terminada: ${i} <b>${SP_ES_RES[nm] || nm} ${n}</b> · ${SP_ES_RES[x] || x}.`);
+rx(String.raw`(🔬 )?Research done: (\S+) (${SP_RX_RES2}) (\d) · (${SP_RX_RES2})\.`, (m, e, i, nm, n, x) => `${e || ""}Investigación terminada: ${i} ${SP_ES_RES[nm] || nm} ${n} · ${SP_ES_RES[x] || x}.`);   // (the plain-text notice)
 hrx(String.raw`<b>Stardust Harvesters:<\/b> (\d+) \/ (\d+) out · each farms <b>(\d+)<\/b> stardust a minute \(✨ ([\d.,]+) an hour\)\.`, "<b>Cosechadoras de polvo estelar:</b> $1 / $2 fuera · cada una cosecha <b>$3</b> de polvo estelar por minuto (✨ $4 por hora).");
 rx(String.raw`(🛡️ )?Frigates free: (\d+) \/ (\d+)`, (m, e, a, b) => `${e || ""}Fragatas libres: ${a} / ${b}`);
 rx(String.raw`All your courier ships are busy\.`, "Todas tus naves mensajeras están ocupadas.");
@@ -2004,8 +2006,10 @@ rx(String.raw`Always kept: achievements, levels, cosmetics, statistics and your 
 Object.assign(ES, { "no tax inspections for the first 10 minutes.": "sin inspecciones de Hacienda durante los primeros 10 minutos.",
   "Kept: achievements, levels, cosmetics, statistics, Legacy bonuses, free bet chips, Art Gallery unlock, slots and paintings.": "Se conservan: logros, niveles, cosméticos, estadísticas, bonificaciones de Legado, fichas de apuesta gratis, el desbloqueo de la Galería de arte, sus huecos y los cuadros.",
   "No tax inspections for the first 10 minutes after the reset.": "Sin inspecciones de Hacienda durante los 10 primeros minutos tras el reinicio." });
-H("🎨 More painted icons instead of emoji: the 🐾 Pets page, worker statuses and buttons on 💰 Income, the buttons and payout tables in the 🎰 Casino, and 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting).",
-  "🎨 Más iconos pintados en lugar de emojis: la página de 🐾 Mascotas, los estados de los trabajadores y los botones de 💰 Ingresos, los botones y tablas de pagos del 🎰 Casino, y 🚚 Logística (botones de enviar, niveles de amistad, regalos, piratas, escoltas, rutas comerciales, intercambio, bonificaciones de alianza, puestos avanzados y artesanía).");
+H("🎨 More painted icons instead of emoji: the 🐾 Pets page, worker statuses and buttons on 💰 Income, the buttons and payout tables in the 🎰 Casino, 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting), and 📈 Investing (selling locks, auto cash-out, sale bonuses, take profit, stop loss, liquidation, open positions and chart buttons).",
+  "🎨 Más iconos pintados en lugar de emojis: la página de 🐾 Mascotas, los estados de los trabajadores y los botones de 💰 Ingresos, los botones y tablas de pagos del 🎰 Casino, 🚚 Logística (botones de enviar, niveles de amistad, regalos, piratas, escoltas, rutas comerciales, intercambio, bonificaciones de alianza, puestos avanzados y artesanía), e 📈 Inversiones (bloqueos de venta, retirada automática, bonificaciones de venta, toma de beneficios, stop loss, liquidación, posiciones abiertas y botones del gráfico).");
+rx(String.raw`Investor level up! Now level (\d+)\. ETF fee is now ([\d.,]+%)\.`, (m, n, f) => `¡Subes de nivel de inversor! Ahora eres nivel ${n}. La comisión del ETF ahora es del ${decFix(f)}.`);
+rx(String.raw`liquidated (${NUM})`, "liquidada $1");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

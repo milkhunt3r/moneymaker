@@ -16,6 +16,7 @@ const ETF_BASE_FEE = 0.10;      // 10% cash-out fee at level 1...
 const ETF_FEE_PER_LEVEL = 0.001;// ...0.1% less for every level above 1
 
 const ivIco = (n, cls = "") => ico("iv-" + n, cls);   // 🎨 painted investing icons (assets/icons/ico-iv-*.webp)
+const ivxI = (n) => `<img class="ico pti" src="assets/icons/ico-ivx-${n}.webp" alt="">`;   // 🎨 the second set: trading, bonuses, warnings (ico-ivx-*)
 if (!state.invest) state.invest = { xp: 0, properties: [], etf: 0, etfTimer: ETF_EVERY, etfHistory: [] };
 const inv = state.invest;
 
@@ -26,7 +27,7 @@ const etfFee = () => Math.max(0, ETF_BASE_FEE - ETF_FEE_PER_LEVEL * (investLevel
 // Shows a message in the card it belongs to (re / etf / gold / petf), or in the general line above
 function investMessage(text, good, area) {
   const el = (area && $("msg-" + area)) || $("investMsg");
-  if (text.startsWith("<img")) el.innerHTML = text; else el.textContent = text;   // a painted icon in front of the message
+  if (text.includes("<img")) el.innerHTML = text; else el.textContent = text;   // painted icons in the message (the game's own text only)
   el.className = (area ? "cardMsg " : "") + (good ? "income" : "flash");
 }
 
@@ -49,7 +50,7 @@ function addInvestXp(amount) {
     render();   // a new hotel may have unlocked
     const box = $("investLevel");
     box.classList.remove("levelUp"); void box.offsetWidth; box.classList.add("levelUp");
-    investMessage("🎉 Investor level up! Now level " + investLevel() + ". ETF fee is now " + pct(etfFee()) + ".", true);
+    investMessage(ivxI("levelup") + "Investor level up! Now level " + investLevel() + ". ETF fee is now " + pct(etfFee()) + ".", true);
   }
 }
 
@@ -117,19 +118,19 @@ $("reList").addEventListener("click", (e) => {
     const bonus = p.value * AGENCY_SALE_BONUS;
     state.money += bonus;
     investRecord("re", 0, bonus);          // counts toward real estate profit (and new agents)
-    bonusText = ` 🏢 Agency bonus +${fmt(bonus)}.`;
+    bonusText = ` <span>${ivxI("agency")}Agency bonus +${fmt(bonus)}.</span>`;
   }
   // 📈 Investor level: +0.1% on every property sale per level
   const lvlBonus = p.value * RE_LEVEL_BONUS * investLevel();
   state.money += lvlBonus;
   investRecord("re", 0, lvlBonus);
-  bonusText += ` 📈 Investor level +${fmt(lvlBonus)}.`;
+  bonusText += ` <span>${ivxI("level")}Investor level +${fmt(lvlBonus)}.</span>`;
   const reLawyers = lawCount("realestate");
   if (reLawyers > 0) {
     const bonus = p.value * 0.02 * reLawyers;
     state.money += bonus;
     investRecord("re", 0, bonus);
-    bonusText += ` ⚖️ Real estate lawyer${reLawyers > 1 ? "s" : ""} +${fmt(bonus)}.`;
+    bonusText += ` <span>${ivxI("lawyer")}Real estate lawyer${reLawyers > 1 ? "s" : ""} +${fmt(bonus)}.</span>`;
   }
   investMessage("Sold a property for " + fmt(p.value) + "." + bonusText, true, "re");
   renderProperties(); updateCounter(); updateInvestLive(); save();
@@ -161,7 +162,7 @@ function renderProperties() {
       <span class="grow"><img class="ico reIco" id="re-ico-${p.id}" src="${reIco(p.value)}" alt="">Property ${i + 1} · value <b id="re-value-${p.id}">${fmt(p.value)}</b></span>
       <span class="muted">rent in <span id="re-rent-${p.id}">${clock(p.rentIn)}</span></span>
       <button class="btn small" data-sell="${p.id}" id="re-sell-${p.id}" ${p.lock > 0 ? "disabled" : ""}>
-        ${p.lock > 0 ? "🔒 " + clock(p.lock) : "Sell"}</button>
+        ${p.lock > 0 ? ivxI("lock") + clock(p.lock) : "Sell"}</button>
     </div>`).join("");
 }
 
@@ -268,7 +269,7 @@ function petfCapCheck() {
   state.money -= PETF_MAX;
   inv.petf = PETF_MAX; inv.petfInvested = PETF_MAX;
   investRecord("petf", PETF_MAX, 0);
-  investMessage(ivIco("petf") + "🔁 Auto cash-out: +" + fmt(amount) + ", and " + fmt(PETF_MAX) + " invested again.", true, "petf");
+  investMessage(ivxI("autocash") + "Auto cash-out: +" + fmt(amount) + ", and " + fmt(PETF_MAX) + " invested again.", true, "petf");
   showNotice("🔁 Broker ETF hit " + fmt(PETF_CAP) + ": cashed out and bought back in with " + fmt(PETF_MAX) + ".");
 }
 
@@ -426,7 +427,7 @@ function investTick() {
   if (inv.properties.length > 0 && Math.random() < RE_CRASH_CHANCE) {
     let lost = 0;
     inv.properties.forEach(p => { lost += p.value * RE_CRASH_LOSS; p.value *= 1 - RE_CRASH_LOSS; });
-    investMessage("🏚️ REAL ESTATE CRASH! Your properties lost " + fmt(lost) + " (70%).", false, "re");
+    investMessage(ivxI("crash") + "REAL ESTATE CRASH! Your properties lost " + fmt(lost) + " (70%).", false, "re");
     state.stats.reCrash = true;
     showNotice("🏚️ Real estate crash! Properties lost 70% of their value.");
     changed = true;
@@ -594,7 +595,7 @@ function updateInvestLive() {
   $("petfBuyRow").hidden = inv.petf > 0;
   $("petfSellRow").hidden = inv.petf <= 0;
   $("petfAuto").checked = inv.petfAuto;
-  $("petfCapNote").textContent = inv.petf >= PETF_CAP ? "🔝 At the " + fmt(PETF_CAP) + " cap: it won't grow more. Cash out to start again." : "";
+  $("petfCapNote").innerHTML = inv.petf >= PETF_CAP ? ivxI("cap") + "At the " + fmt(PETF_CAP) + " cap: it won't grow more. Cash out to start again." : "";
   const pl = inv.petfHistory[0];
   $("petfLast").textContent = pl === undefined ? "–" : (pl > 0 ? "+" : "") + Math.round(pl * 100) + "%";
   $("petfLast").className = "bigValue " + (pl > 0 ? "up" : pl < 0 ? "down" : "");
@@ -623,6 +624,6 @@ function updateInvestLive() {
     if (v) v.textContent = fmt(p.value);
     const im = $("re-ico-" + p.id); if (im && !im.src.endsWith(reIco(p.value))) im.src = reIco(p.value);   // the building upgrades as the value grows
     if (r) r.textContent = clock(p.rentIn);
-    if (b) { b.disabled = p.lock > 0; b.textContent = p.lock > 0 ? "🔒 " + clock(p.lock) : "Sell"; }
+    if (b) { b.disabled = p.lock > 0; b.innerHTML = p.lock > 0 ? ivxI("lock") + clock(p.lock) : "Sell"; }
   });
 }

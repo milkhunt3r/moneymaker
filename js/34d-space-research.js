@@ -48,7 +48,7 @@ function spResearch(k) {
   Object.entries(c.goods).forEach(([g, n]) => { if (g.startsWith("c_")) SP.crafted[g.slice(2)] -= n; else SP.goods[g] -= n; });
   SP.research[k] = spRL(k) + 1;
   SP.stats.research = (SP.stats.research || 0) + 1;
-  showNotice(`🔬 Research done: ${SP_RESEARCH[k].icon} <b>${SP_RESEARCH[k].name} ${spRL(k)}</b> · ${SP_RESEARCH[k].lv[spRL(k) - 1]}.`);
+  showNotice(`🔬 Research done: ${SP_RESEARCH[k].icon} ${SP_RESEARCH[k].name} ${spRL(k)} · ${SP_RESEARCH[k].lv[spRL(k) - 1]}.`);
   updateCounter(); save(); renderSpace();
 }
 
