@@ -57,6 +57,8 @@ $("modalBox").addEventListener("input", (e) => {
   applyBgBright(); save();
 });
 // ⚙️ Numbers / Reduce effects / Pop-ups (screen preferences: per device, kept through resets)
+// what the folded Display section shows on its header: language · brightness · numbers
+const orDispSummary = () => `${LANG === "es" ? "Español" : "English"} · ${bgBright()}% · ${LANG === "es" ? { coins: "Monedas", short: "Corto", full: "Completo" }[numFmtNow()] : { coins: "Coins", short: "Short", full: "Full" }[numFmtNow()]}`;
 const numFmtNow = () => ["short", "full"].includes(state.numFmt) ? state.numFmt : "coins";
 const popupHint = () => ({ all: "Every pop-up in the corner: achievements, level-ups and warnings.",
   important: "Only warnings (breakdowns, failed missions, calls for help, trades closed at a loss).",
@@ -153,7 +155,8 @@ function showSettings(fromMenu) {
       <button class="orRow" data-or="backup">${orIcon("download")}<span class="grow">Back up or restore your game</span><span class="orArrow">›</span></button>
       <div class="orSec">Account</div>
       <div id="orCloud">${typeof cloudRowsHtml === "function" ? cloudRowsHtml(true) : ""}</div>
-      <div class="orSec">Display</div>
+      <button class="orSec orFold" data-or="foldDisplay" aria-expanded="${!!state.orDispOpen}"><span>Display</span><span class="orFoldHint" id="orDispHint" data-noi18n>${state.orDispOpen ? (LANG === "es" ? "▴ Ocultar" : "▴ Hide") : `${orDispSummary()} ▾`}</span></button>
+      <div id="orDisplay" ${state.orDispOpen ? "" : "hidden"}>
       <div class="orRow slider">${orIcon("bright")}<span class="grow">Background brightness</span><span class="orVal" id="orBrightVal">${bgBright()}%</span>
         <input type="range" class="orRange" id="orBright" min="20" max="100" step="5" value="${bgBright()}" style="--p:${(bgBright() - 20) / 0.8}%" aria-label="Background brightness"></div>
       <div class="orRow slider">${orIcon("lang")}<span class="grow">Language</span>
@@ -165,6 +168,7 @@ function showSettings(fromMenu) {
       <div class="orRow slider">${orIcon("bell")}<span class="grow">Pop-ups</span>
         <span class="orLang" data-noi18n>${[["all", "All"], ["important", "Important"], ["off", "Off"]].map(([k, t]) => `<button data-popups="${k}" class="${(state.popups || "all") === k ? "on" : ""}">${LANG === "es" ? { All: "Todos", Important: "Importantes", Off: "Ninguno" }[t] : t}</button>`).join("")}</span>
         <small class="orHint">${popupHint()}</small></div>
+      </div>
       <div class="orSec">Help</div>
       ${row("tips", "Show tips", `<span class="orSwitch ${state.tips.on ? "on" : ""}" id="orTips"></span>`)}
       ${row("tipsReset", "Show all tips again")}
@@ -184,6 +188,12 @@ $("modalBox").addEventListener("click", (e) => {
   const what = b.dataset.or;
   if (what === "bug") return showBugReport();
   if (what === "backup") return showBackup();
+  if (what === "foldDisplay") {   // ▾ the Display section folds (folded by default; remembered on this device)
+    state.orDispOpen = !state.orDispOpen; save();
+    const d = $("orDisplay"), h = $("orDispHint"); if (d) d.hidden = !state.orDispOpen;
+    if (h) h.textContent = state.orDispOpen ? (LANG === "es" ? "▴ Ocultar" : "▴ Hide") : `${orDispSummary()} ▾`;
+    b.setAttribute("aria-expanded", !!state.orDispOpen); return;
+  }
   if (what === "lowFx") { state.lowFx = !state.lowFx; applyLowFx(); save(); const t = $("orLowFx"); if (t) t.classList.toggle("on", !!state.lowFx); return; }
   if (what === "donate") return showDonate();   // 🐞 js/05b-bug-report.js
   if (what === "menu" || what === "tutorial") hideModal();

@@ -3367,6 +3367,8 @@ H("👋 <b>Start here:</b> tap a sample in your ❄️ Freezer below to put it i
   "👋 <b>Empieza aquí:</b> toca una muestra de tu ❄️ Congelador de abajo para ponerla en el empalmador, luego una segunda (la misma dos veces también vale), y pulsa <b>🧬 Empalmar</b>. ¡Prueba 🐟 Pez + 🐟 Pez!");
 H("🎮 Mini-game fixes: 🎨 Art Gallery: Submit copy and New painting sit apart, and New painting asks before throwing your copy away. ⛏️ Gold Mine: a 🏦 Vault box with your ore and what it's worth. 🚀 Nebula Strike: a big Continue button for the next level, and the pirate chest moved to the Hangar. 🧬 Gene Splicer: a start guide for your first splice, and the DNA timer and Hint sit in the splicer box.",
   "🎮 Arreglos en los minijuegos: 🎨 Galería de arte: Entregar copia y Cuadro nuevo están separados, y Cuadro nuevo pregunta antes de tirar tu copia. ⛏️ Mina de oro: un recuadro de 🏦 Cámara con tu mineral y lo que vale. 🚀 Nebula Strike: un botón grande Continuar para el siguiente nivel, y el cofre pirata pasa al Hangar. 🧬 Empalmador genético: una guía para tu primer empalme, y el temporizador de ADN y la Pista están en el recuadro del empalmador.");
+H("⚙️ Settings: the <b>Display</b> section folds away (tap its header). Folded, it shows your language, brightness and number format at a glance.",
+  "⚙️ Ajustes: la sección <b>Pantalla</b> se puede plegar (toca su cabecera). Plegada, muestra tu idioma, brillo y formato de números de un vistazo.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -3691,7 +3693,7 @@ var staffIco = (key, o, cls = "staffI") => STAFF_PICS.includes(key) ? ico("st-" 
 var alienBonus = (key) => ((__eocLoaded >= 44 && typeof spAllyBonus === "function") ? spAllyBonus(key) : 0);
 var geneBonus = (cat) => (typeof geneCatCount === "function" ? geneCatCount(cat) * 0.01 : 0);
 var PREF_KEYS = ["view", "coinUnit", "casinoPage", "logiPage", "rewardType", "rewardState", "gamePage", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage", "cryptoSel", "ivCard", "logiFleet", "mapBig", "mapHelp",
-                   "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage", "numFmt", "lowFx", "popups", "mgTabs"];
+                   "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage", "numFmt", "lowFx", "popups", "mgTabs", "orDispOpen"];
 function splitState(st) {   // -> { progress, prefs }
   const progress = {}, prefs = {};
   for (const k in st) (PREF_KEYS.includes(k) ? prefs : progress)[k] = st[k];
@@ -6645,6 +6647,8 @@ $("modalBox").addEventListener("input", (e) => {
   applyBgBright(); save();
 });
 // ⚙️ Numbers / Reduce effects / Pop-ups (screen preferences: per device, kept through resets)
+// what the folded Display section shows on its header: language · brightness · numbers
+var orDispSummary = () => `${LANG === "es" ? "Español" : "English"} · ${bgBright()}% · ${LANG === "es" ? { coins: "Monedas", short: "Corto", full: "Completo" }[numFmtNow()] : { coins: "Coins", short: "Short", full: "Full" }[numFmtNow()]}`;
 var numFmtNow = () => ["short", "full"].includes(state.numFmt) ? state.numFmt : "coins";
 var popupHint = () => ({ all: "Every pop-up in the corner: achievements, level-ups and warnings.",
   important: "Only warnings (breakdowns, failed missions, calls for help, trades closed at a loss).",
@@ -6741,7 +6745,8 @@ function showSettings(fromMenu) {
       <button class="orRow" data-or="backup">${orIcon("download")}<span class="grow">Back up or restore your game</span><span class="orArrow">›</span></button>
       <div class="orSec">Account</div>
       <div id="orCloud">${(__eocLoaded >= 38 && typeof cloudRowsHtml === "function") ? cloudRowsHtml(true) : ""}</div>
-      <div class="orSec">Display</div>
+      <button class="orSec orFold" data-or="foldDisplay" aria-expanded="${!!state.orDispOpen}"><span>Display</span><span class="orFoldHint" id="orDispHint" data-noi18n>${state.orDispOpen ? (LANG === "es" ? "▴ Ocultar" : "▴ Hide") : `${orDispSummary()} ▾`}</span></button>
+      <div id="orDisplay" ${state.orDispOpen ? "" : "hidden"}>
       <div class="orRow slider">${orIcon("bright")}<span class="grow">Background brightness</span><span class="orVal" id="orBrightVal">${bgBright()}%</span>
         <input type="range" class="orRange" id="orBright" min="20" max="100" step="5" value="${bgBright()}" style="--p:${(bgBright() - 20) / 0.8}%" aria-label="Background brightness"></div>
       <div class="orRow slider">${orIcon("lang")}<span class="grow">Language</span>
@@ -6753,6 +6758,7 @@ function showSettings(fromMenu) {
       <div class="orRow slider">${orIcon("bell")}<span class="grow">Pop-ups</span>
         <span class="orLang" data-noi18n>${[["all", "All"], ["important", "Important"], ["off", "Off"]].map(([k, t]) => `<button data-popups="${k}" class="${(state.popups || "all") === k ? "on" : ""}">${LANG === "es" ? { All: "Todos", Important: "Importantes", Off: "Ninguno" }[t] : t}</button>`).join("")}</span>
         <small class="orHint">${popupHint()}</small></div>
+      </div>
       <div class="orSec">Help</div>
       ${row("tips", "Show tips", `<span class="orSwitch ${state.tips.on ? "on" : ""}" id="orTips"></span>`)}
       ${row("tipsReset", "Show all tips again")}
@@ -6772,6 +6778,12 @@ $("modalBox").addEventListener("click", (e) => {
   const what = b.dataset.or;
   if (what === "bug") return showBugReport();
   if (what === "backup") return showBackup();
+  if (what === "foldDisplay") {   // ▾ the Display section folds (folded by default; remembered on this device)
+    state.orDispOpen = !state.orDispOpen; save();
+    const d = $("orDisplay"), h = $("orDispHint"); if (d) d.hidden = !state.orDispOpen;
+    if (h) h.textContent = state.orDispOpen ? (LANG === "es" ? "▴ Ocultar" : "▴ Hide") : `${orDispSummary()} ▾`;
+    b.setAttribute("aria-expanded", !!state.orDispOpen); return;
+  }
   if (what === "lowFx") { state.lowFx = !state.lowFx; applyLowFx(); save(); const t = $("orLowFx"); if (t) t.classList.toggle("on", !!state.lowFx); return; }
   if (what === "donate") return showDonate();   // 🐞 js/05b-bug-report.js
   if (what === "menu" || what === "tutorial") hideModal();
@@ -14347,6 +14359,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "⚙️ Settings: the <b>Display</b> section folds away (tap its header). Folded, it shows your language, brightness and number format at a glance.",
     "🎮 Mini-game fixes: 🎨 Art Gallery: Submit copy and New painting sit apart, and New painting asks before throwing your copy away. ⛏️ Gold Mine: a 🏦 Vault box with your ore and what it's worth. 🚀 Nebula Strike: a big Continue button for the next level, and the pirate chest moved to the Hangar. 🧬 Gene Splicer: a start guide for your first splice, and the DNA timer and Hint sit in the splicer box.",
     "🎮 Mini-games hub: 🎨 Pip now paints at the top of the 🖼️ Art Gallery page, a <b>!</b> on a game (and on the Mini-games tab) shows when it wants you: today's art commission, full mine energy, full DNA or something to buy in Nebula Strike. On phones the games sit two per row.",
     "🎮 Mini-games: side tabs keep each game tidy. ⛏️ Gold Mine Dig: Dig / Upgrades. 🚀 Nebula Strike: Levels / Hangar / Upgrades. 🧬 Gene Splicer: Freezer / Codex / Mutants / Bonuses, with the splicer always on top. A <b>!</b> shows when you can buy an upgrade or a ship.",

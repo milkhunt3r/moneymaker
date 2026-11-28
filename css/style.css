@@ -2818,3 +2818,9 @@ body.phone .shNext .btn { width: 100%; }
 /* 🧬 Gene Splicer: first-time guide; DNA timer and Hint inside the splicer box */
 .geneStart { margin-bottom: 10px; padding: 8px 12px; border-radius: 10px; background: rgba(255, 211, 77, 0.1); border: 1px dashed rgba(255, 211, 77, 0.55); font-size: 14px; }
 .geneLab .geneBar { margin: 12px 0 0; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.08); justify-content: center; }
+/* ⚙️ Settings: the Display section folds (tap its header) */
+.orSec.orFold { width: calc(100% - 8px); background: none; border: 0; padding: 4px 0; cursor: pointer; text-align: left; font: 15px "Lilita One", "Arial Black", system-ui, sans-serif; color: #ffd34d; letter-spacing: 1.5px; text-transform: uppercase; }
+.orSec.orFold::after { order: 1; }
+.orFoldHint { order: 2; font-family: system-ui, sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0; text-transform: none; color: #d9d6ea;
+  padding: 3px 10px; border-radius: 999px; border: 1px solid rgba(255, 211, 77, 0.45); background: rgba(255, 255, 255, 0.05); white-space: nowrap; }
+.orSec.orFold:hover .orFoldHint { border-color: #ffd34d; color: #fff; }
