@@ -1403,7 +1403,7 @@ rx(String.raw`On the table now: (${NUM}) free\.`, "En la mesa ahora: $1 gratis."
 const SP_ES_CRAFT = { "Resonance Prisms": "Prismas de resonancia", "Voidsteel Ingots": "Lingotes de acero del vacío", "Star Sails": "Velas estelares", "Chrono Chips": "Cronochips" };
 const SP_RX_CRAFT = Object.keys(SP_ES_CRAFT).join("|"), spC = (c) => SP_ES_CRAFT[c] || c;
 const SP_ES_RES = { "Space crafting": "Artesanía espacial", "Extra ship slots": "Hangares extra", "Cargo holds": "Bodegas de carga", "Ship engines": "Motores de nave", "Outposts": "Puestos avanzados",
-  "Unlocks crafting: 60 s per unit": "Desbloquea la artesanía: 60 s por unidad", "Crafting: 45 s per unit": "Artesanía: 45 s por unidad", "Crafting: 30 s per unit": "Artesanía: 30 s por unidad",
+  "Unlocks crafting: 60 s per unit": "Desbloquea la artesanía: 60 s por unidad", "Crafting: 45 s per unit": "Artesanía: 45 s por unidad", "Crafting: 30 s per unit": "Artesanía: 30 s por unidad", "Crafting: 30 s per unit, and batches of 150": "Artesanía: 30 s por unidad, y lotes de 150", "Space crafting level 3": "Artesanía espacial nivel 3",
   "+1 ship": "+1 nave", "+1 ship (2 in total)": "+1 nave (2 en total)", "+1 ship (3 in total)": "+1 nave (3 en total)",
   "+10 goods on every trip": "+10 bienes en cada viaje", "+10 goods on every trip (+20 in total)": "+10 bienes en cada viaje (+20 en total)", "+15 goods on every trip (+35 in total)": "+15 bienes en cada viaje (+35 en total)",
   "−5% trip time": "−5 % de tiempo de viaje", "−5% trip time (−10% in total)": "−5 % de tiempo de viaje (−10 % en total)", "−10% trip time (−20% in total)": "−10 % de tiempo de viaje (−20 % en total)",
@@ -1952,6 +1952,8 @@ Object.assign(ES, { "Pet lover": "Amante de las mascotas", "Have 2 pets": "Ten 2
   "Tireless digger": "Excavador incansable", "Let Digy dig 50 times": "Deja que Digy excave 50 veces", "Well oiled": "Bien engrasado", "Pet Digy 100 times": "Acaricia a Digy 100 veces" });
 H("🏆 6 new achievements: <b>🐾 Pet lover</b> (have 2 pets) and <b>🏡 Full house</b> (have 3 pets), plus 4 Mining achievements for 🤖 Digy: adopt him, let him dig 5 and 50 times, and pet him 100 times.",
   "🏆 6 logros nuevos: <b>🐾 Amante de las mascotas</b> (ten 2 mascotas) y <b>🏡 Casa llena</b> (ten 3 mascotas), además de 4 logros de Minería para 🤖 Digy: adóptalo, deja que excave 5 y 50 veces, y acarícialo 100 veces.");
+H("🛠️ Space crafting level 3 now also unlocks crafting in batches of <b>150</b>.",
+  "🛠️ La artesanía espacial de nivel 3 desbloquea ahora también la fabricación en lotes de <b>150</b>.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

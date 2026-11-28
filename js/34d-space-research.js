@@ -4,7 +4,7 @@
    · 5 research lines with 3 levels each. A level costs 🔬 scientists, money and space resources
      (10/20/30 scientists, 250k/500k/750k scoin, ~100/200/300 goods). Later levels need crafted resources.
    · 🛠️ Crafting (after the first Space crafting level): 2 + 2 alien goods → 1 crafted resource,
-     in batches of 25/50/75/100. One batch at a time, 60/45/30 seconds a unit. Keeps going while the game is closed.
+     in batches of 25/50/75/100 (and 150 from Space crafting level 3). One batch at a time, 60/45/30 seconds a unit. Keeps going while the game is closed.
    · 🏗️ Outposts: a base in a system you are 😊 Friendly with. It makes that race's goods on its own (no ship).
    ===================================================================== */
 const SP_CRAFT = {
@@ -13,11 +13,12 @@ const SP_CRAFT = {
   sail:  { name: "Star Sails", emoji: "⛵", from: ["chart", "silk"] },
   chip:  { name: "Chrono Chips", emoji: "💾", from: ["shard", "nano"] },
 };
-const SP_CRAFT_EACH = 2, SP_CRAFT_SIZES = [25, 50, 75, 100], SP_CRAFT_SEC = [0, 60, 45, 30];
+const SP_CRAFT_EACH = 2, SP_CRAFT_SIZES = [25, 50, 75, 100], SP_CRAFT_BIG = 150, SP_CRAFT_SEC = [0, 60, 45, 30];
+const spCraftSizes = () => spRL("craft") >= 3 ? SP_CRAFT_SIZES.concat(SP_CRAFT_BIG) : SP_CRAFT_SIZES;   // 🛠️ level 3 adds batches of 150
 const SP_OUTPOST_RATE = 20, SP_OUTPOST_LV = 3, SP_OUTPOST_SCI = 10, SP_OUTPOST_MONEY = GCOIN;   // goods an hour · needs 😊 Friendly · building one costs 1 gcoin + 10 scientists
 const SP_R_SCI = [10, 20, 30], SP_R_MONEY = [250e3, 500e3, 750e3].map(n => n * SCOIN);
 const SP_RESEARCH = {
-  craft:   { name: "Space crafting", icon: "🛠️", lv: ["Unlocks crafting: 60 s per unit", "Crafting: 45 s per unit", "Crafting: 30 s per unit"],
+  craft:   { name: "Space crafting", icon: "🛠️", lv: ["Unlocks crafting: 60 s per unit", "Crafting: 45 s per unit", "Crafting: 30 s per unit, and batches of 150"],
              cost: [{ crystal: 50, vgold: 50 }, { pearl: 100, core: 100 }, { c_prism: 150, c_alloy: 150 }] },
   ships:   { name: "Extra ship slots", icon: "🚀", lv: ["+1 ship", "+1 ship (2 in total)", "+1 ship (3 in total)"],
              cost: [{ vgold: 50, silk: 50 }, { chart: 100, crystal: 100 }, { c_sail: 150, c_chip: 150 }] },
@@ -55,7 +56,7 @@ function spResearch(k) {
 const spCraftSec = () => SP_CRAFT_SEC[spRL("craft")];
 const spCraftCan = (c, n) => spRL("craft") > 0 && !SP.craft && SP_CRAFT[c].from.every(g => (SP.goods[g] || 0) >= n * SP_CRAFT_EACH);
 function spCraftStart(c, n) {
-  if (isPaused() || !SP_CRAFT_SIZES.includes(n) || !spCraftCan(c, n)) return;
+  if (isPaused() || !spCraftSizes().includes(n) || !spCraftCan(c, n)) return;
   SP_CRAFT[c].from.forEach(g => { SP.goods[g] -= n * SP_CRAFT_EACH; });
   const now = Date.now();
   SP.craft = { c, n, t0: now, t1: now + n * spCraftSec() * 1000 };
@@ -137,7 +138,7 @@ function spResearchHtml() {
   const recipes = spRL("craft") ? Object.entries(SP_CRAFT).map(([c, C]) => `<div class="spRecipe">
       <div class="spRecipeMix">${C.from.map(g => `<span class="spNeed ${(SP.goods[g] || 0) >= SP_CRAFT_SIZES[0] * SP_CRAFT_EACH ? "ok" : ""}">${spGI(g)} <b>${SP_CRAFT_EACH}</b> ${SP_GOODS[g].name} <small>(${(SP.goods[g] || 0).toLocaleString()})</small></span>`).join(" + ")}
         <span class="spArrow">→</span><span class="spCraftOut">${spCI(c)} <b>1</b> ${C.name} <small>(${(SP.crafted[c] || 0).toLocaleString()})</small></span></div>
-      <div class="spCraftBtns">${SP_CRAFT_SIZES.map(n => `<button class="btn small" data-spk="${c}" data-n="${n}" ${spCraftCan(c, n) ? "" : "disabled"} title="${spClock(n * spCraftSec() * 1000)}">×${n}</button>`).join("")}</div></div>`).join("") : "";
+      <div class="spCraftBtns">${spCraftSizes().map(n => `<button class="btn small" data-spk="${c}" data-n="${n}" ${spCraftCan(c, n) ? "" : "disabled"} title="${spClock(n * spCraftSec() * 1000)}">×${n}</button>`).join("")}${spRL("craft") >= 3 ? "" : `<button class="btn small" disabled title="Space crafting level 3">🔒×${SP_CRAFT_BIG}</button>`}</div></div>`).join("") : "";
   return `<div class="card spResBar" id="spResBar">${spResHtml()}</div>
     <div class="card"><h2 style="margin-top:0"><img class="ico h" src="assets/icons/ico-lg-research.webp" alt="">Space research</h2>
       <p class="muted">Each level costs 🔬 scientists, money and space resources. The last levels need resources you craft yourself.</p>

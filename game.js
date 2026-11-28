@@ -2779,7 +2779,7 @@ rx(String.raw`On the table now: (${NUM}) free\.`, "En la mesa ahora: $1 gratis."
 var SP_ES_CRAFT = { "Resonance Prisms": "Prismas de resonancia", "Voidsteel Ingots": "Lingotes de acero del vacío", "Star Sails": "Velas estelares", "Chrono Chips": "Cronochips" };
 var SP_RX_CRAFT = Object.keys(SP_ES_CRAFT).join("|"), spC = (c) => SP_ES_CRAFT[c] || c;
 var SP_ES_RES = { "Space crafting": "Artesanía espacial", "Extra ship slots": "Hangares extra", "Cargo holds": "Bodegas de carga", "Ship engines": "Motores de nave", "Outposts": "Puestos avanzados",
-  "Unlocks crafting: 60 s per unit": "Desbloquea la artesanía: 60 s por unidad", "Crafting: 45 s per unit": "Artesanía: 45 s por unidad", "Crafting: 30 s per unit": "Artesanía: 30 s por unidad",
+  "Unlocks crafting: 60 s per unit": "Desbloquea la artesanía: 60 s por unidad", "Crafting: 45 s per unit": "Artesanía: 45 s por unidad", "Crafting: 30 s per unit": "Artesanía: 30 s por unidad", "Crafting: 30 s per unit, and batches of 150": "Artesanía: 30 s por unidad, y lotes de 150", "Space crafting level 3": "Artesanía espacial nivel 3",
   "+1 ship": "+1 nave", "+1 ship (2 in total)": "+1 nave (2 en total)", "+1 ship (3 in total)": "+1 nave (3 en total)",
   "+10 goods on every trip": "+10 bienes en cada viaje", "+10 goods on every trip (+20 in total)": "+10 bienes en cada viaje (+20 en total)", "+15 goods on every trip (+35 in total)": "+15 bienes en cada viaje (+35 en total)",
   "−5% trip time": "−5 % de tiempo de viaje", "−5% trip time (−10% in total)": "−5 % de tiempo de viaje (−10 % en total)", "−10% trip time (−20% in total)": "−10 % de tiempo de viaje (−20 % en total)",
@@ -3328,6 +3328,8 @@ Object.assign(ES, { "Pet lover": "Amante de las mascotas", "Have 2 pets": "Ten 2
   "Tireless digger": "Excavador incansable", "Let Digy dig 50 times": "Deja que Digy excave 50 veces", "Well oiled": "Bien engrasado", "Pet Digy 100 times": "Acaricia a Digy 100 veces" });
 H("🏆 6 new achievements: <b>🐾 Pet lover</b> (have 2 pets) and <b>🏡 Full house</b> (have 3 pets), plus 4 Mining achievements for 🤖 Digy: adopt him, let him dig 5 and 50 times, and pet him 100 times.",
   "🏆 6 logros nuevos: <b>🐾 Amante de las mascotas</b> (ten 2 mascotas) y <b>🏡 Casa llena</b> (ten 3 mascotas), además de 4 logros de Minería para 🤖 Digy: adóptalo, deja que excave 5 y 50 veces, y acarícialo 100 veces.");
+H("🛠️ Space crafting level 3 now also unlocks crafting in batches of <b>150</b>.",
+  "🛠️ La artesanía espacial de nivel 3 desbloquea ahora también la fabricación en lotes de <b>150</b>.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -14254,6 +14256,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "🛠️ Space crafting level 3 now also unlocks crafting in batches of <b>150</b>.",
     "🏆 6 new achievements: <b>🐾 Pet lover</b> (have 2 pets) and <b>🏡 Full house</b> (have 3 pets), plus 4 Mining achievements for 🤖 Digy: adopt him, let him dig 5 and 50 times, and pet him 100 times.",
     "🤖 Digy reacts now: click him to pet him (5 in a row and he jumps for joy), he wakes up with a stretch and does a ta-da once he's clean. Don't poke him while he digs: he gets grumpy!",
     "🤖 New pet: <b>Digy</b>, a little Kragg mining robot! Get him from the 🗿 Kragg once you're 😊 Friendly (💎 50 diamonds + 🔴 10 rubies). When your ⛏️ mine energy is full, he digs for 30 seconds (⚡ 3 energy) and brings 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25 to your 🏦 vault, also while the game is closed (up to 24 hours).",
@@ -20478,7 +20481,7 @@ __eocLoaded = 46;
    · 5 research lines with 3 levels each. A level costs 🔬 scientists, money and space resources
      (10/20/30 scientists, 250k/500k/750k scoin, ~100/200/300 goods). Later levels need crafted resources.
    · 🛠️ Crafting (after the first Space crafting level): 2 + 2 alien goods → 1 crafted resource,
-     in batches of 25/50/75/100. One batch at a time, 60/45/30 seconds a unit. Keeps going while the game is closed.
+     in batches of 25/50/75/100 (and 150 from Space crafting level 3). One batch at a time, 60/45/30 seconds a unit. Keeps going while the game is closed.
    · 🏗️ Outposts: a base in a system you are 😊 Friendly with. It makes that race's goods on its own (no ship).
    ===================================================================== */
 var SP_CRAFT = {
@@ -20487,11 +20490,12 @@ var SP_CRAFT = {
   sail:  { name: "Star Sails", emoji: "⛵", from: ["chart", "silk"] },
   chip:  { name: "Chrono Chips", emoji: "💾", from: ["shard", "nano"] },
 };
-var SP_CRAFT_EACH = 2, SP_CRAFT_SIZES = [25, 50, 75, 100], SP_CRAFT_SEC = [0, 60, 45, 30];
+var SP_CRAFT_EACH = 2, SP_CRAFT_SIZES = [25, 50, 75, 100], SP_CRAFT_BIG = 150, SP_CRAFT_SEC = [0, 60, 45, 30];
+var spCraftSizes = () => spRL("craft") >= 3 ? SP_CRAFT_SIZES.concat(SP_CRAFT_BIG) : SP_CRAFT_SIZES;   // 🛠️ level 3 adds batches of 150
 var SP_OUTPOST_RATE = 20, SP_OUTPOST_LV = 3, SP_OUTPOST_SCI = 10, SP_OUTPOST_MONEY = GCOIN;   // goods an hour · needs 😊 Friendly · building one costs 1 gcoin + 10 scientists
 var SP_R_SCI = [10, 20, 30], SP_R_MONEY = [250e3, 500e3, 750e3].map(n => n * SCOIN);
 var SP_RESEARCH = {
-  craft:   { name: "Space crafting", icon: "🛠️", lv: ["Unlocks crafting: 60 s per unit", "Crafting: 45 s per unit", "Crafting: 30 s per unit"],
+  craft:   { name: "Space crafting", icon: "🛠️", lv: ["Unlocks crafting: 60 s per unit", "Crafting: 45 s per unit", "Crafting: 30 s per unit, and batches of 150"],
              cost: [{ crystal: 50, vgold: 50 }, { pearl: 100, core: 100 }, { c_prism: 150, c_alloy: 150 }] },
   ships:   { name: "Extra ship slots", icon: "🚀", lv: ["+1 ship", "+1 ship (2 in total)", "+1 ship (3 in total)"],
              cost: [{ vgold: 50, silk: 50 }, { chart: 100, crystal: 100 }, { c_sail: 150, c_chip: 150 }] },
@@ -20529,7 +20533,7 @@ function spResearch(k) {
 var spCraftSec = () => SP_CRAFT_SEC[spRL("craft")];
 var spCraftCan = (c, n) => spRL("craft") > 0 && !SP.craft && SP_CRAFT[c].from.every(g => (SP.goods[g] || 0) >= n * SP_CRAFT_EACH);
 function spCraftStart(c, n) {
-  if (isPaused() || !SP_CRAFT_SIZES.includes(n) || !spCraftCan(c, n)) return;
+  if (isPaused() || !spCraftSizes().includes(n) || !spCraftCan(c, n)) return;
   SP_CRAFT[c].from.forEach(g => { SP.goods[g] -= n * SP_CRAFT_EACH; });
   const now = Date.now();
   SP.craft = { c, n, t0: now, t1: now + n * spCraftSec() * 1000 };
@@ -20611,7 +20615,7 @@ function spResearchHtml() {
   const recipes = spRL("craft") ? Object.entries(SP_CRAFT).map(([c, C]) => `<div class="spRecipe">
       <div class="spRecipeMix">${C.from.map(g => `<span class="spNeed ${(SP.goods[g] || 0) >= SP_CRAFT_SIZES[0] * SP_CRAFT_EACH ? "ok" : ""}">${spGI(g)} <b>${SP_CRAFT_EACH}</b> ${SP_GOODS[g].name} <small>(${(SP.goods[g] || 0).toLocaleString()})</small></span>`).join(" + ")}
         <span class="spArrow">→</span><span class="spCraftOut">${spCI(c)} <b>1</b> ${C.name} <small>(${(SP.crafted[c] || 0).toLocaleString()})</small></span></div>
-      <div class="spCraftBtns">${SP_CRAFT_SIZES.map(n => `<button class="btn small" data-spk="${c}" data-n="${n}" ${spCraftCan(c, n) ? "" : "disabled"} title="${spClock(n * spCraftSec() * 1000)}">×${n}</button>`).join("")}</div></div>`).join("") : "";
+      <div class="spCraftBtns">${spCraftSizes().map(n => `<button class="btn small" data-spk="${c}" data-n="${n}" ${spCraftCan(c, n) ? "" : "disabled"} title="${spClock(n * spCraftSec() * 1000)}">×${n}</button>`).join("")}${spRL("craft") >= 3 ? "" : `<button class="btn small" disabled title="Space crafting level 3">🔒×${SP_CRAFT_BIG}</button>`}</div></div>`).join("") : "";
   return `<div class="card spResBar" id="spResBar">${spResHtml()}</div>
     <div class="card"><h2 style="margin-top:0"><img class="ico h" src="assets/icons/ico-lg-research.webp" alt="">Space research</h2>
       <p class="muted">Each level costs 🔬 scientists, money and space resources. The last levels need resources you craft yourself.</p>
