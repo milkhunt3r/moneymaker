@@ -3307,6 +3307,8 @@ Object.assign(ES, { "Digy joined you!": "¡Digy se ha unido a ti!", "is digging�
   "He never digs while you're in a run, and you can't start a run while he digs.": "Nunca excava mientras estás en una partida, y no puedes empezar una partida mientras él excava.",
   "He keeps working while the game is closed (up to 24 hours).": "Sigue trabajando con el juego cerrado (hasta 24 horas).",
   "A digging robot for your mine": "Un robot excavador para tu mina",
+  "Digy": "Digy",
+  "Click him to pet him (5 in a row and he jumps for joy). Don't poke him while he digs: he gets grumpy!": "Haz clic en él para acariciarlo (5 seguidas y salta de alegría). No lo molestes mientras excava: ¡se enfada!",
   "Rumour has it an art-loving alien race has a painter who'd love a new home.": "Se rumorea que una raza alienígena amante del arte tiene un pintor al que le encantaría un nuevo hogar.", "Get Digy": "Conseguir a Digy", "Go and see him": "Ir a verlo" });
 rx(String.raw`(.+) ha llevado un botín a tu 🏦 cámara: (.*)`, (m) => m);   // already in Spanish (written by the game)
 rx(String.raw`Your Kragg mining robot · together since (.+)`, "Tu robot minero de los Kragg · juntos desde el $1");
@@ -3316,6 +3318,8 @@ H("Become <b>😊 Friendly</b> with the Kragg and they may sell you one of their
   "Hazte <b>😊 amigo</b> de los Kragg y puede que te vendan uno de sus pequeños robots mineros.");
 H("🤖 New pet: <b>Digy</b>, a little Kragg mining robot! Get him from the 🗿 Kragg once you're 😊 Friendly (💎 50 diamonds + 🔴 10 rubies). When your ⛏️ mine energy is full, he digs for 30 seconds (⚡ 3 energy) and brings 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25 to your 🏦 vault, also while the game is closed (up to 24 hours).",
   "🤖 Nueva mascota: <b>Digy</b>, un pequeño robot minero de los Kragg. Consíguelo de los 🗿 Kragg cuando seáis 😊 amigos (💎 50 diamantes + 🔴 10 rubíes). Cuando la energía de tu ⛏️ mina está llena, excava durante 30 segundos (⚡ 3 de energía) y lleva 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25 a tu 🏦 cámara, también con el juego cerrado (hasta 24 horas).");
+H("🤖 Digy reacts now: click him to pet him (5 in a row and he jumps for joy), he wakes up with a stretch and does a ta-da once he's clean. Don't poke him while he digs: he gets grumpy!",
+  "🤖 Digy ya reacciona: haz clic en él para acariciarlo (5 seguidas y salta de alegría), se despierta estirándose y hace un «¡tachán!» cuando está limpio. No lo molestes mientras excava: ¡se enfada!");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -14233,6 +14237,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "🤖 Digy reacts now: click him to pet him (5 in a row and he jumps for joy), he wakes up with a stretch and does a ta-da once he's clean. Don't poke him while he digs: he gets grumpy!",
     "🤖 New pet: <b>Digy</b>, a little Kragg mining robot! Get him from the 🗿 Kragg once you're 😊 Friendly (💎 50 diamonds + 🔴 10 rubies). When your ⛏️ mine energy is full, he digs for 30 seconds (⚡ 3 energy) and brings 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25 to your 🏦 vault, also while the game is closed (up to 24 hours).",
     "👥 Friends: your friend requests and friends now come first, with a big friend code box (📋 Copy, 📤 Share) and an invite when you have no friends yet. Online friends have a <b>⚔️ Challenge</b> button that opens the Online casino with them picked.",
     "👤 Profile: tap your avatar to change it, see your 🦊🦉🦅 levels and your pets by name, pick a <b>🏅 showcase</b> of 3 achievements, and choose whether other players can see your money.",
@@ -19230,7 +19235,7 @@ function petLive() {
   if (digyHas()) {
     const D = state.digy, o = D.ores || {};
     v.dStatus = digyStatus();
-    v.dStats = `<span>⛏️ Hauls: <b>${(D.hauls || 0).toLocaleString()}</b></span><span>🔴 <b>${(o.ruby || 0).toLocaleString()}</b></span><span>💎 <b>${(o.diamond || 0).toLocaleString()}</b></span><span>🟡 <b>${(o.gold || 0).toLocaleString()}</b></span><span>⚪ <b>${(o.silver || 0).toLocaleString()}</b></span><span>🟠 <b>${(o.copper || 0).toLocaleString()}</b></span><span>⚫ <b>${(o.coal || 0).toLocaleString()}</b></span>`;
+    v.dStats = `<span>⛏️ Hauls: <b>${(D.hauls || 0).toLocaleString()}</b></span><span>🔴 <b>${(o.ruby || 0).toLocaleString()}</b></span><span>💎 <b>${(o.diamond || 0).toLocaleString()}</b></span><span>🟡 <b>${(o.gold || 0).toLocaleString()}</b></span><span>⚪ <b>${(o.silver || 0).toLocaleString()}</b></span><span>🟠 <b>${(o.copper || 0).toLocaleString()}</b></span><span>⚫ <b>${(o.coal || 0).toLocaleString()}</b></span><span>❤️ Petted: <b>${(D.pets || 0).toLocaleString()}</b></span><span>😤 Disturbed: <b>${(D.pokes || 0).toLocaleString()}</b></span>`;
   }
   return v;
 }
@@ -19308,6 +19313,7 @@ function renderPetPage() {
         <li>⛏️ Every dig brings a fixed haul to your 🏦 vault: 🔴 1 ruby, 💎 3 diamonds, 🟡 10 gold, ⚪ 20 silver, 🟠 25 copper and ⚫ 25 coal.</li>
         <li>⏸️ He never digs while you're in a run, and you can't start a run while he digs.</li>
         <li>🌙 He keeps working while the game is closed (up to 24 hours).</li>
+        <li>❤️ Click him to pet him (5 in a row and he jumps for joy). Don't poke him while he digs: he gets grumpy!</li>
       </ul></details></div>` : "";
   // keep the folded / unfolded "How it works" as it was
   const open = [...box.querySelectorAll("details.petHow")].map(d => d.open);
@@ -21156,10 +21162,10 @@ __eocLoaded = 50;
      (3 energy), comes out dirty with a haul for your vault, cleans himself and goes back to charge.
    · Active / Resting switch and renaming on the 🐾 Pets page.
    ===================================================================== */
-var DIGY_V = "1";   // bump when a Digy picture changes (browser cache)
+var DIGY_V = "2";   // bump when a Digy picture changes (browser cache)
 var DIGY_PRICE = { diamond: 50, ruby: 10 }, DIGY_LV = 3;   // 😊 Friendly with the Kragg
 var DIGY_FRAMES = ["idle-1", "idle-2", "walk-1", "walk-2", "walk-3", "walk-4", "dig-start", "dig-1", "dig-2", "dig-deep", "emerge", "dirty",
-  "clean-1", "clean-2", "clean-3", "charge-low-1", "charge-low-2", "charge-mid", "charge-full"];
+  "clean-1", "clean-2", "clean-3", "charge-low-1", "charge-low-2", "charge-mid", "charge-full", "wake", "happy", "petted", "annoyed"];
 var digySrc = (f) => `assets/digy/digy-${f}.webp?v=${DIGY_V}`;
 var digyOn = () => digyOwned() && !state.digy.off;
 if (digyOwned()) { const D = state.digy; D.hauls = D.hauls || 0; D.ores = D.ores || {}; }
@@ -21218,16 +21224,23 @@ function digyHubLine() {
 
 /* ----- 🎬 his corner on the Gold Mine Dig page ----- */
 var DIGY_DOCK = 3, DIGY_HOLE = 60, DIGY_OUT = 42;   // left edge of the sprite, in % of the stage
-var DG = { built: false, frame: "", x: -1, flip: null };
+var DG = { built: false, frame: "", x: -1, flip: null, react: null, streak: 0, lastPet: 0 };
 DIGY_FRAMES.forEach(f => { const im = new Image(); im.src = digySrc(f); });
 var lerp = (a, b, k) => a + (b - a) * Math.max(0, Math.min(1, k));
 // what he does right now: { f: frame, x: %, flip, dock: show the empty dock, hole, dirt }
 function digyPose(now) {
+  const base = digyBasePose(now), R = DG.react;
+  if (R && now < R.until) return { ...base, f: R.f, flip: false, dock: 1, hole: base.hole || !!state.digy.dig };   // ❤️ / 😤 a reaction on top of whatever he's doing (off the dock / out of his hole)
+  DG.react = null;
+  return base;
+}
+function digyBasePose(now) {
   const D = state.digy, walk = () => "walk-" + (1 + Math.floor(now / 160) % 4), alt = () => (Math.floor(now / 230) % 2 ? "dig-2" : "dig-1");
   if (D.dig) {
     const e = now - D.dig.start;
-    if (e < 1500) return { f: "charge-full", x: DIGY_DOCK };                                       // ⚡ full: wakes up
-    if (e < 5000) return { f: walk(), x: lerp(DIGY_DOCK, DIGY_HOLE, (e - 1500) / 3500), dock: 1 };   // 🚶 walks to his spot
+    if (e < 1200) return { f: "charge-full", x: DIGY_DOCK };                                       // ⚡ full battery
+    if (e < 2400) return { f: "wake", x: DIGY_DOCK, dock: 1 };                                       // 🙌 hops off and stretches
+    if (e < 5000) return { f: walk(), x: lerp(DIGY_DOCK, DIGY_HOLE, (e - 2400) / 2600), dock: 1 };   // 🚶 walks to his spot
     if (e < 6500) return { f: "dig-start", x: DIGY_HOLE, dock: 1 };
     if (e < 12000) return { f: alt(), x: DIGY_HOLE, dock: 1, dirt: 1 };
     if (e < 24000) return { f: "dig-deep", x: DIGY_HOLE, dock: 1, dirt: 1 };
@@ -21238,8 +21251,9 @@ function digyPose(now) {
   if (!D.off && a >= 0 && a < 9500) {
     if (a < 2000) return { f: "dirty", x: DIGY_OUT, dock: 1, hole: 1, dirt: 1 };
     if (a < 4000) return { f: Math.floor(now / 180) % 2 ? "clean-2" : "clean-1", x: DIGY_OUT, dock: 1, hole: 1, dirt: 1 };
-    if (a < 5500) return { f: "clean-3", x: DIGY_OUT, dock: 1, hole: 1, dirt: 1 };
-    return { f: walk(), x: lerp(DIGY_OUT, DIGY_DOCK, (a - 5500) / 4000), flip: true, dock: 1, hole: 1 };   // 🚶 back to charge
+    if (a < 5300) return { f: "clean-3", x: DIGY_OUT, dock: 1, hole: 1, dirt: 1 };
+    if (a < 6800) return { f: "happy", x: DIGY_OUT, dock: 1, hole: 1, dirt: 1 };                             // 🎉 ta-da, all clean
+    return { f: walk(), x: lerp(DIGY_OUT, DIGY_DOCK, (a - 6800) / 2700), flip: true, dock: 1, hole: 1 };   // 🚶 back to charge
   }
   const p = digyBattery();
   if (p >= 100) return { f: "charge-full", x: DIGY_DOCK };
@@ -21256,7 +21270,7 @@ function renderDigyCorner() {
         <img class="digyProp digyDock" src="assets/digy/digy-dock.webp?v=${DIGY_V}" alt="" style="left:${DIGY_DOCK}%">
         <img class="digyProp digyHole" src="assets/digy/digy-hole.webp?v=${DIGY_V}" alt="" style="left:${DIGY_HOLE}%">
         <img class="digyProp digyDirt" src="assets/digy/digy-dirt.webp?v=${DIGY_V}" alt="">
-        <img class="digySprite" id="digySprite" alt="" draggable="false"></div></div>`;
+        <img class="digySprite" id="digySprite" alt="${digyName()}" draggable="false" title="${digyName()}"></div></div>`;
     DG.built = true; DG.frame = ""; DG.x = -1; DG.flip = null;
   }
   digyTick(true);
@@ -21297,8 +21311,24 @@ function digyAwayNotice() {
     : `🤖 While you were away, ${digyName()} dug ${n} time${n === 1 ? "" : "s"} and brought ${n === 1 ? "his haul" : "the hauls"} to your 🏦 vault.`);
 }
 
+/* ----- ❤️ petting him (😤 poking him while he digs makes him grumpy) ----- */
+function digyPoke() {
+  if (!digyOn() || (typeof isPaused === "function" && isPaused())) return;
+  const D = state.digy, now = Date.now();
+  if (DG.react && now < DG.react.until - 600) return;   // let the reaction play for a moment
+  if (D.dig && now - D.dig.start >= 5000) { DG.react = { f: "annoyed", until: now + 1600 }; D.pokes = (D.pokes || 0) + 1; DG.streak = 0; }
+  else {
+    DG.streak = now - DG.lastPet < 2500 ? DG.streak + 1 : 1; DG.lastPet = now;
+    DG.react = { f: DG.streak >= 5 ? "happy" : "petted", until: now + (DG.streak >= 5 ? 1500 : 1300) };   // 5 pets in a row: he jumps for joy
+    if (DG.streak >= 5) DG.streak = 0;
+    D.pets = (D.pets || 0) + 1;
+  }
+  save(); digyTick(true);
+}
+
 /* ----- 🔘 clicks ----- */
 document.addEventListener("click", (e) => {
+  if (e.target.closest("#digySprite")) return digyPoke();
   const b = e.target.closest("[data-digy]"); if (!b) return;
   const k = b.dataset.digy;
   if (k === "buy") digyBuy();

@@ -1931,6 +1931,8 @@ Object.assign(ES, { "Digy joined you!": "¡Digy se ha unido a ti!", "is digging�
   "He never digs while you're in a run, and you can't start a run while he digs.": "Nunca excava mientras estás en una partida, y no puedes empezar una partida mientras él excava.",
   "He keeps working while the game is closed (up to 24 hours).": "Sigue trabajando con el juego cerrado (hasta 24 horas).",
   "A digging robot for your mine": "Un robot excavador para tu mina",
+  "Digy": "Digy",
+  "Click him to pet him (5 in a row and he jumps for joy). Don't poke him while he digs: he gets grumpy!": "Haz clic en él para acariciarlo (5 seguidas y salta de alegría). No lo molestes mientras excava: ¡se enfada!",
   "Rumour has it an art-loving alien race has a painter who'd love a new home.": "Se rumorea que una raza alienígena amante del arte tiene un pintor al que le encantaría un nuevo hogar.", "Get Digy": "Conseguir a Digy", "Go and see him": "Ir a verlo" });
 rx(String.raw`(.+) ha llevado un botín a tu 🏦 cámara: (.*)`, (m) => m);   // already in Spanish (written by the game)
 rx(String.raw`Your Kragg mining robot · together since (.+)`, "Tu robot minero de los Kragg · juntos desde el $1");
@@ -1940,6 +1942,8 @@ H("Become <b>😊 Friendly</b> with the Kragg and they may sell you one of their
   "Hazte <b>😊 amigo</b> de los Kragg y puede que te vendan uno de sus pequeños robots mineros.");
 H("🤖 New pet: <b>Digy</b>, a little Kragg mining robot! Get him from the 🗿 Kragg once you're 😊 Friendly (💎 50 diamonds + 🔴 10 rubies). When your ⛏️ mine energy is full, he digs for 30 seconds (⚡ 3 energy) and brings 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25 to your 🏦 vault, also while the game is closed (up to 24 hours).",
   "🤖 Nueva mascota: <b>Digy</b>, un pequeño robot minero de los Kragg. Consíguelo de los 🗿 Kragg cuando seáis 😊 amigos (💎 50 diamantes + 🔴 10 rubíes). Cuando la energía de tu ⛏️ mina está llena, excava durante 30 segundos (⚡ 3 de energía) y lleva 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25 a tu 🏦 cámara, también con el juego cerrado (hasta 24 horas).");
+H("🤖 Digy reacts now: click him to pet him (5 in a row and he jumps for joy), he wakes up with a stretch and does a ta-da once he's clean. Don't poke him while he digs: he gets grumpy!",
+  "🤖 Digy ya reacciona: haz clic en él para acariciarlo (5 seguidas y salta de alegría), se despierta estirándose y hace un «¡tachán!» cuando está limpio. No lo molestes mientras excava: ¡se enfada!");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

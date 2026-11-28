@@ -7,10 +7,10 @@
      (3 energy), comes out dirty with a haul for your vault, cleans himself and goes back to charge.
    · Active / Resting switch and renaming on the 🐾 Pets page.
    ===================================================================== */
-const DIGY_V = "1";   // bump when a Digy picture changes (browser cache)
+const DIGY_V = "2";   // bump when a Digy picture changes (browser cache)
 const DIGY_PRICE = { diamond: 50, ruby: 10 }, DIGY_LV = 3;   // 😊 Friendly with the Kragg
 const DIGY_FRAMES = ["idle-1", "idle-2", "walk-1", "walk-2", "walk-3", "walk-4", "dig-start", "dig-1", "dig-2", "dig-deep", "emerge", "dirty",
-  "clean-1", "clean-2", "clean-3", "charge-low-1", "charge-low-2", "charge-mid", "charge-full"];
+  "clean-1", "clean-2", "clean-3", "charge-low-1", "charge-low-2", "charge-mid", "charge-full", "wake", "happy", "petted", "annoyed"];
 const digySrc = (f) => `assets/digy/digy-${f}.webp?v=${DIGY_V}`;
 const digyOn = () => digyOwned() && !state.digy.off;
 if (digyOwned()) { const D = state.digy; D.hauls = D.hauls || 0; D.ores = D.ores || {}; }
@@ -69,16 +69,23 @@ function digyHubLine() {
 
 /* ----- 🎬 his corner on the Gold Mine Dig page ----- */
 const DIGY_DOCK = 3, DIGY_HOLE = 60, DIGY_OUT = 42;   // left edge of the sprite, in % of the stage
-const DG = { built: false, frame: "", x: -1, flip: null };
+const DG = { built: false, frame: "", x: -1, flip: null, react: null, streak: 0, lastPet: 0 };
 DIGY_FRAMES.forEach(f => { const im = new Image(); im.src = digySrc(f); });
 const lerp = (a, b, k) => a + (b - a) * Math.max(0, Math.min(1, k));
 // what he does right now: { f: frame, x: %, flip, dock: show the empty dock, hole, dirt }
 function digyPose(now) {
+  const base = digyBasePose(now), R = DG.react;
+  if (R && now < R.until) return { ...base, f: R.f, flip: false, dock: 1, hole: base.hole || !!state.digy.dig };   // ❤️ / 😤 a reaction on top of whatever he's doing (off the dock / out of his hole)
+  DG.react = null;
+  return base;
+}
+function digyBasePose(now) {
   const D = state.digy, walk = () => "walk-" + (1 + Math.floor(now / 160) % 4), alt = () => (Math.floor(now / 230) % 2 ? "dig-2" : "dig-1");
   if (D.dig) {
     const e = now - D.dig.start;
-    if (e < 1500) return { f: "charge-full", x: DIGY_DOCK };                                       // ⚡ full: wakes up
-    if (e < 5000) return { f: walk(), x: lerp(DIGY_DOCK, DIGY_HOLE, (e - 1500) / 3500), dock: 1 };   // 🚶 walks to his spot
+    if (e < 1200) return { f: "charge-full", x: DIGY_DOCK };                                       // ⚡ full battery
+    if (e < 2400) return { f: "wake", x: DIGY_DOCK, dock: 1 };                                       // 🙌 hops off and stretches
+    if (e < 5000) return { f: walk(), x: lerp(DIGY_DOCK, DIGY_HOLE, (e - 2400) / 2600), dock: 1 };   // 🚶 walks to his spot
     if (e < 6500) return { f: "dig-start", x: DIGY_HOLE, dock: 1 };
     if (e < 12000) return { f: alt(), x: DIGY_HOLE, dock: 1, dirt: 1 };
     if (e < 24000) return { f: "dig-deep", x: DIGY_HOLE, dock: 1, dirt: 1 };
@@ -89,8 +96,9 @@ function digyPose(now) {
   if (!D.off && a >= 0 && a < 9500) {
     if (a < 2000) return { f: "dirty", x: DIGY_OUT, dock: 1, hole: 1, dirt: 1 };
     if (a < 4000) return { f: Math.floor(now / 180) % 2 ? "clean-2" : "clean-1", x: DIGY_OUT, dock: 1, hole: 1, dirt: 1 };
-    if (a < 5500) return { f: "clean-3", x: DIGY_OUT, dock: 1, hole: 1, dirt: 1 };
-    return { f: walk(), x: lerp(DIGY_OUT, DIGY_DOCK, (a - 5500) / 4000), flip: true, dock: 1, hole: 1 };   // 🚶 back to charge
+    if (a < 5300) return { f: "clean-3", x: DIGY_OUT, dock: 1, hole: 1, dirt: 1 };
+    if (a < 6800) return { f: "happy", x: DIGY_OUT, dock: 1, hole: 1, dirt: 1 };                             // 🎉 ta-da, all clean
+    return { f: walk(), x: lerp(DIGY_OUT, DIGY_DOCK, (a - 6800) / 2700), flip: true, dock: 1, hole: 1 };   // 🚶 back to charge
   }
   const p = digyBattery();
   if (p >= 100) return { f: "charge-full", x: DIGY_DOCK };
@@ -107,7 +115,7 @@ function renderDigyCorner() {
         <img class="digyProp digyDock" src="assets/digy/digy-dock.webp?v=${DIGY_V}" alt="" style="left:${DIGY_DOCK}%">
         <img class="digyProp digyHole" src="assets/digy/digy-hole.webp?v=${DIGY_V}" alt="" style="left:${DIGY_HOLE}%">
         <img class="digyProp digyDirt" src="assets/digy/digy-dirt.webp?v=${DIGY_V}" alt="">
-        <img class="digySprite" id="digySprite" alt="" draggable="false"></div></div>`;
+        <img class="digySprite" id="digySprite" alt="${digyName()}" draggable="false" title="${digyName()}"></div></div>`;
     DG.built = true; DG.frame = ""; DG.x = -1; DG.flip = null;
   }
   digyTick(true);
@@ -148,8 +156,24 @@ function digyAwayNotice() {
     : `🤖 While you were away, ${digyName()} dug ${n} time${n === 1 ? "" : "s"} and brought ${n === 1 ? "his haul" : "the hauls"} to your 🏦 vault.`);
 }
 
+/* ----- ❤️ petting him (😤 poking him while he digs makes him grumpy) ----- */
+function digyPoke() {
+  if (!digyOn() || (typeof isPaused === "function" && isPaused())) return;
+  const D = state.digy, now = Date.now();
+  if (DG.react && now < DG.react.until - 600) return;   // let the reaction play for a moment
+  if (D.dig && now - D.dig.start >= 5000) { DG.react = { f: "annoyed", until: now + 1600 }; D.pokes = (D.pokes || 0) + 1; DG.streak = 0; }
+  else {
+    DG.streak = now - DG.lastPet < 2500 ? DG.streak + 1 : 1; DG.lastPet = now;
+    DG.react = { f: DG.streak >= 5 ? "happy" : "petted", until: now + (DG.streak >= 5 ? 1500 : 1300) };   // 5 pets in a row: he jumps for joy
+    if (DG.streak >= 5) DG.streak = 0;
+    D.pets = (D.pets || 0) + 1;
+  }
+  save(); digyTick(true);
+}
+
 /* ----- 🔘 clicks ----- */
 document.addEventListener("click", (e) => {
+  if (e.target.closest("#digySprite")) return digyPoke();
   const b = e.target.closest("[data-digy]"); if (!b) return;
   const k = b.dataset.digy;
   if (k === "buy") digyBuy();
