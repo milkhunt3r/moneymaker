@@ -23,7 +23,7 @@ function lgHudHtml() {
   const info = levelInfo(state.logiXp, LOGI_XP);
   return `<button class="casHudLv" data-levels="logistics" title="Logistics level · ${info.max ? "max level" : `${fmtNum(info.into)} / ${fmtNum(info.need)} XP`}">${ico("lg-level")}<span>Lv <b>${info.level}</b></span>
       <span class="casHudXp"><i style="width:${info.max ? 100 : 100 * info.into / info.need}%"></i></span></button>
-    <span class="casHudMoney" title="Your money"><img class="coinSkinImg" src="assets/coin.webp" alt=""><b>${fmt(state.money)}</b></span>
+    <span class="casHudMoney" title="Your money"><img class="coinSkinImg" src="${coinSkinSrc()}" alt=""><b>${fmt(state.money)}</b></span>
     ${LG_TABS.filter(([k]) => fleetList(k).length).map(([k, n, ic]) => `<span class="ivHold" title="${n} on the road / owned">${ico(ic)}<b>${lgBusy(k)} / ${fleetList(k).length}</b></span>`).join("")}
     <span class="ivHold" title="Contracts fulfilled">${ico("lg-contracts")}<b>${(logi.contracts || 0).toLocaleString()}</b></span>
     <span class="ivHold" title="Delivered (all time)">${ico("lg-crates")}<b>${fmt(logi.earned || 0)}</b></span>`;

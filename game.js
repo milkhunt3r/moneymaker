@@ -5122,13 +5122,17 @@ function addXp(amount) {
 }
 
 /* ----- 🎰 slim bar shown while a game is open (instead of the level, hot tables, free chips and money cards) ----- */
+// the player's current coin skin picture, so the slim bars don't flash the default coin each time they redraw
+function coinSkinSrc() {
+  try { return profCoinImg(profCoin()).match(/src="([^"]+)"/)[1]; } catch (e) { return "assets/coin.webp"; }
+}
 function casHudHtml() {
   const info = levelInfo(state.casinoXp), h = hotNow(), mm = clock(Math.ceil(h.left / 1000));
   const free = Object.values(state.freeChips || {}).reduce((a, b) => a + (b || 0), 0);
   const hotHere = h.active && (currentGame || "").startsWith(h.game.id);
   return `<button class="casHudLv" data-levels="gambler" title="Gambler level · ${info.max ? "max level" : `${fmtNum(info.into)} / ${fmtNum(info.need)} XP`}">${ico("ui-dice")}<span>Lv <b>${info.level}</b></span>
       <span class="casHudXp"><i style="width:${info.max ? 100 : 100 * info.into / info.need}%"></i></span></button>
-    <span class="casHudMoney" title="Your money: you bet straight from it"><img class="coinSkinImg" src="assets/coin.webp" alt=""><b>${fmt(state.money)}</b></span>
+    <span class="casHudMoney" title="Your money: you bet straight from it"><img class="coinSkinImg" src="${coinSkinSrc()}" alt=""><b>${fmt(state.money)}</b></span>
     <span class="casHudHot ${h.active ? "on" : ""} ${hotHere ? "here" : ""}" title="${h.active ? `Hot Tables: ${h.game.name} · +${hotBonus()} XP multiplier` : `Next hot game: ${h.next.name}`}">${ico("ui-hot")}${h.active ? `<b>${h.game.name}</b><span class="hotT">· ${mm}</span>` : `<span>${h.next.name}</span><span class="hotT">in ${mm}</span>`}</span>
     ${currentGame ? `<span class="casHudXpM" title="XP multiplier at this table">✨ ×${xpMult()}</span>` : ""}
     <span class="ivHold" title="Cashback on lost bets">↩️ <b>${pct(cashbackRate())}</b></span>
@@ -16304,7 +16308,7 @@ function ivHudHtml() {
   const total = IV_ITEMS.concat([{ k: "crypto" }]).reduce((a, it) => a + ivProfit(it.k), 0);
   return `<button class="casHudLv" data-levels="investor" title="Investor level · ${info.max ? "max level" : `${fmtNum(info.into)} / ${fmtNum(info.need)} XP`}">${ivIco("invest")}<span>Lv <b>${info.level}</b></span>
       <span class="casHudXp"><i style="width:${info.max ? 100 : 100 * info.into / info.need}%"></i></span></button>
-    <span class="casHudMoney" title="Your money"><img class="coinSkinImg" src="assets/coin.webp" alt=""><b>${fmt(state.money)}</b></span>
+    <span class="casHudMoney" title="Your money"><img class="coinSkinImg" src="${coinSkinSrc()}" alt=""><b>${fmt(state.money)}</b></span>
     ${hold.map(([k, ic, v]) => `<span class="ivHold" title="${{ re: "Real estate", etf: "ETF", gold: "Gold" }[k]}">${ic}<b>${fmt(v)}</b></span>`).join("")}
     <span class="ivHold" title="All-time profits">${ivIco("profits")}${ivSigned(total)}</span>`;
 }
@@ -20337,7 +20341,7 @@ function lgHudHtml() {
   const info = levelInfo(state.logiXp, LOGI_XP);
   return `<button class="casHudLv" data-levels="logistics" title="Logistics level · ${info.max ? "max level" : `${fmtNum(info.into)} / ${fmtNum(info.need)} XP`}">${ico("lg-level")}<span>Lv <b>${info.level}</b></span>
       <span class="casHudXp"><i style="width:${info.max ? 100 : 100 * info.into / info.need}%"></i></span></button>
-    <span class="casHudMoney" title="Your money"><img class="coinSkinImg" src="assets/coin.webp" alt=""><b>${fmt(state.money)}</b></span>
+    <span class="casHudMoney" title="Your money"><img class="coinSkinImg" src="${coinSkinSrc()}" alt=""><b>${fmt(state.money)}</b></span>
     ${LG_TABS.filter(([k]) => fleetList(k).length).map(([k, n, ic]) => `<span class="ivHold" title="${n} on the road / owned">${ico(ic)}<b>${lgBusy(k)} / ${fleetList(k).length}</b></span>`).join("")}
     <span class="ivHold" title="Contracts fulfilled">${ico("lg-contracts")}<b>${(logi.contracts || 0).toLocaleString()}</b></span>
     <span class="ivHold" title="Delivered (all time)">${ico("lg-crates")}<b>${fmt(logi.earned || 0)}</b></span>`;

@@ -38,7 +38,7 @@ function ivHudHtml() {
   const total = IV_ITEMS.concat([{ k: "crypto" }]).reduce((a, it) => a + ivProfit(it.k), 0);
   return `<button class="casHudLv" data-levels="investor" title="Investor level · ${info.max ? "max level" : `${fmtNum(info.into)} / ${fmtNum(info.need)} XP`}">${ivIco("invest")}<span>Lv <b>${info.level}</b></span>
       <span class="casHudXp"><i style="width:${info.max ? 100 : 100 * info.into / info.need}%"></i></span></button>
-    <span class="casHudMoney" title="Your money"><img class="coinSkinImg" src="assets/coin.webp" alt=""><b>${fmt(state.money)}</b></span>
+    <span class="casHudMoney" title="Your money"><img class="coinSkinImg" src="${coinSkinSrc()}" alt=""><b>${fmt(state.money)}</b></span>
     ${hold.map(([k, ic, v]) => `<span class="ivHold" title="${{ re: "Real estate", etf: "ETF", gold: "Gold" }[k]}">${ic}<b>${fmt(v)}</b></span>`).join("")}
     <span class="ivHold" title="All-time profits">${ivIco("profits")}${ivSigned(total)}</span>`;
 }
