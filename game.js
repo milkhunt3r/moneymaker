@@ -347,8 +347,8 @@ Object.assign(ES, {
     "+25% de ingresos de negocios, negocios especiales y clics, para siempre. A partir de este reinicio, todos los reinicios conservan tus edificios de 🔬 Ciencia (no el satélite).",
   "Keep all your trucks, oil tankers and cargo planes, plus warehouses, Trading Port and Logistics Center, on this and every future reset (not the 🛰️ satellite).":
     "Conserva todos tus camiones, petroleros y aviones de carga, además de almacenes, puerto comercial y centro logístico, en este reinicio y en todos los siguientes (no el 🛰️ satélite).",
-  "A free 500 scoin bet chip every 10 minutes for the Super high roller tables, and all your other free bet chips come twice as fast. You can hold up to 200 chips of 500 scoin instead of 100. What they win goes to your casino chips.":
-    "Una ficha de apuesta gratis de 500 scoin cada 10 minutos para las mesas de súper altas apuestas, y todas tus demás fichas gratis llegan el doble de rápido. Puedes tener hasta 200 fichas de 500 scoin en vez de 100. Lo que ganen va a tus fichas de casino.",
+  "A free 500 scoin bet chip every 10 minutes for the Super high roller tables, and all your other free bet chips come twice as fast. You can hold up to 200 chips of 500 scoin instead of 100. What they win goes to your casino chips. Your free bet chips are also kept on this and every future reset (without VIP Coins they go back to 0).":
+    "Una ficha de apuesta gratis de 500 scoin cada 10 minutos para las mesas de súper altas apuestas, y todas tus demás fichas gratis llegan el doble de rápido. Puedes tener hasta 200 fichas de 500 scoin en vez de 100. Lo que ganen va a tus fichas de casino. Además, conservas tus fichas de apuesta gratis en este y en todos los reinicios futuros (sin VIP Coins vuelven a 0).",
   // ----- headers and buttons of the other tabs -----
   "Your money": "Tu dinero", "Casino chips": "Fichas de casino", "VIP coins": "Monedas VIP",
   "Move money into the casino to play. You can add more at any time.": "Pasa dinero al casino para jugar. Puedes añadir más cuando quieras.",
@@ -3083,6 +3083,8 @@ H("🔬 Science opens earlier: it now needs <b>Logistics 30, Investor 30 and Gam
   "🔬 La ciencia se abre antes: ahora pide <b>Logística 30, Inversor 30 y Jugador 20</b> (antes 50 / 50 / 25).");
 H("🌌 Prestige resets no longer touch Space: friendships, goods, stardust, crafted items, research and contracts all stay. Ships in flight finish their trip, and friendships don't cool off while you have no ships.",
   "🌌 El prestigio ya no afecta al espacio: las amistades, los bienes, el polvo estelar, los objetos fabricados, la investigación y los contratos se mantienen. Las naves en vuelo terminan su viaje, y las amistades no se enfrían mientras no tengas naves.");
+H("🎁 Free casino bet chips now go back to 0 on a prestige reset. 🎟️ VIP Coins keeps them: pick it and your free chips stay on that and every later reset.",
+  "🎁 Las fichas de apuesta gratis del casino vuelven ahora a 0 al hacer un reinicio de prestigio. 🎟️ VIP Coins las conserva: elígelo y tus fichas gratis se mantienen en ese reinicio y en todos los siguientes.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -11036,7 +11038,7 @@ var PRESTIGE_CHOICES = [
       : "Keep all your trucks, oil tankers and cargo planes, plus warehouses, Trading Port and Logistics Center, on this and every future reset (not the 🛰️ satellite).",
     now: () => { const n = (x, w) => `${x} ${w}${x === 1 ? "" : "s"}`; return state.legacy.empire ? "Your fleet is already kept on every reset" : `You'd keep ${n(logi.trucks.length, "truck")}, ${n(logi.tankers.length, "tanker")}, ${n(logi.planes.length, "plane")}`; } },
   { id: "vip", icon: "🎟️", name: "VIP Coins", max: 1,
-    text: "A free 500 scoin bet chip every 10 minutes for the Super high roller tables, and all your other free bet chips come twice as fast. You can hold up to 200 chips of 500 scoin instead of 100. What they win goes to your casino chips.",
+    text: "A free 500 scoin bet chip every 10 minutes for the Super high roller tables, and all your other free bet chips come twice as fast. You can hold up to 200 chips of 500 scoin instead of 100. What they win goes to your casino chips. Your free bet chips are also kept on this and every future reset (without VIP Coins they go back to 0).",
     now: () => `Free chips: every ${fmtMin(freeChipBase())} min → every ${fmtMin(freeChipBase() / 2)} min` },
 ];
 
@@ -11087,7 +11089,8 @@ function doPrestige(id) {
   L.history.push({ choice: id, at: Date.now() });
   const keep = {
     achievements: state.achievements, stats: state.stats, casinoXp: state.casinoXp, casinoStats: state.casinoStats,
-    cosmetics: state.cosmetics, legacy: L, vip: state.vip, nextId: state.nextId, xpVersion: state.xpVersion, logiXp: state.logiXp, freeChips: state.freeChips, freeTimers: state.freeTimers,
+    cosmetics: state.cosmetics, legacy: L, vip: state.vip, nextId: state.nextId, xpVersion: state.xpVersion, logiXp: state.logiXp, freeTimers: state.freeTimers,
+    freeChips: L.vip > 0 ? state.freeChips : {},   // 🎁 free bet chips go back to 0 on a reset, unless 🎟️ VIP Coins was picked (this reset or before)
     vpPayHidden: state.vpPayHidden, uthPayHidden: state.uthPayHidden, view: "income",
     tips: state.tips,   // 💡 tips already seen and the guided start stay done
     // ⛏️ Gold Mine Dig: records, upgrades and the 🏦 vault stay (unsold ore from the last run goes into the vault; a run in progress is dropped)
@@ -13868,6 +13871,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "🎁 Free casino bet chips now go back to 0 on a prestige reset. 🎟️ VIP Coins keeps them: pick it and your free chips stay on that and every later reset.",
     "🌌 Prestige resets no longer touch Space: friendships, goods, stardust, crafted items, research and contracts all stay. Ships in flight finish their trip, and friendships don't cool off while you have no ships.",
   ] },
   { date: "27 November 2026", title: "Empire of Coins", items: [

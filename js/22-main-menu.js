@@ -52,6 +52,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "🎁 Free casino bet chips now go back to 0 on a prestige reset. 🎟️ VIP Coins keeps them: pick it and your free chips stay on that and every later reset.",
     "🌌 Prestige resets no longer touch Space: friendships, goods, stardust, crafted items, research and contracts all stay. Ships in flight finish their trip, and friendships don't cool off while you have no ships.",
   ] },
   { date: "27 November 2026", title: "Empire of Coins", items: [

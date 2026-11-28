@@ -27,7 +27,7 @@ const PRESTIGE_CHOICES = [
       : "Keep all your trucks, oil tankers and cargo planes, plus warehouses, Trading Port and Logistics Center, on this and every future reset (not the 🛰️ satellite).",
     now: () => { const n = (x, w) => `${x} ${w}${x === 1 ? "" : "s"}`; return state.legacy.empire ? "Your fleet is already kept on every reset" : `You'd keep ${n(logi.trucks.length, "truck")}, ${n(logi.tankers.length, "tanker")}, ${n(logi.planes.length, "plane")}`; } },
   { id: "vip", icon: "🎟️", name: "VIP Coins", max: 1,
-    text: "A free 500 scoin bet chip every 10 minutes for the Super high roller tables, and all your other free bet chips come twice as fast. You can hold up to 200 chips of 500 scoin instead of 100. What they win goes to your casino chips.",
+    text: "A free 500 scoin bet chip every 10 minutes for the Super high roller tables, and all your other free bet chips come twice as fast. You can hold up to 200 chips of 500 scoin instead of 100. What they win goes to your casino chips. Your free bet chips are also kept on this and every future reset (without VIP Coins they go back to 0).",
     now: () => `Free chips: every ${fmtMin(freeChipBase())} min → every ${fmtMin(freeChipBase() / 2)} min` },
 ];
 
@@ -78,7 +78,8 @@ function doPrestige(id) {
   L.history.push({ choice: id, at: Date.now() });
   const keep = {
     achievements: state.achievements, stats: state.stats, casinoXp: state.casinoXp, casinoStats: state.casinoStats,
-    cosmetics: state.cosmetics, legacy: L, vip: state.vip, nextId: state.nextId, xpVersion: state.xpVersion, logiXp: state.logiXp, freeChips: state.freeChips, freeTimers: state.freeTimers,
+    cosmetics: state.cosmetics, legacy: L, vip: state.vip, nextId: state.nextId, xpVersion: state.xpVersion, logiXp: state.logiXp, freeTimers: state.freeTimers,
+    freeChips: L.vip > 0 ? state.freeChips : {},   // 🎁 free bet chips go back to 0 on a reset, unless 🎟️ VIP Coins was picked (this reset or before)
     vpPayHidden: state.vpPayHidden, uthPayHidden: state.uthPayHidden, view: "income",
     tips: state.tips,   // 💡 tips already seen and the guided start stay done
     // ⛏️ Gold Mine Dig: records, upgrades and the 🏦 vault stay (unsold ore from the last run goes into the vault; a run in progress is dropped)
