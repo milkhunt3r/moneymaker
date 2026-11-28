@@ -276,7 +276,7 @@ function renderLawFirm() {
     html += `<div class="lawSlot" title="${at.desc}"><b>${at.emoji} ${at.name}</b><br>
                <span class="muted">${at.desc}</span><br><span class="live" id="law-live-${a.id}">${lawLive(a)}</span>
                ${full ? `<br><button class="btn ghost small" data-action="lawReplace" data-idx="${idx}" data-cost="${LAW_REPLACE_PRICE}"
-                 title="Fire this attorney and choose a new one from 3 offers">🔄 Replace (${fmt(LAW_REPLACE_PRICE)})</button>` : ""}</div>`;
+                 title="Fire this attorney and choose a new one from 3 offers">${trIco("replace")}<span>Replace (${fmt(LAW_REPLACE_PRICE)})</span></button>` : ""}</div>`;
   });
   if (law.replaceIdx !== undefined && law.replaceIdx !== null && law.offer) html += `<div class="lawSlot empty">Choosing a replacement…</div>`;
   for (let i = law.attorneys.length; i < LAW_MAX; i++) html += `<div class="lawSlot empty">Empty slot</div>`;
@@ -455,9 +455,9 @@ function renderRecruit() {
     return `<div class="card specialCard"><div class="row"><h3>${bizIco("recruit")}Recruitment Agency</h3></div>${desc}
       <div class="muted" style="margin-top:6px">${n ? `<b>${n}</b> empty business${n === 1 ? "" : "es"} ready to staff · cost ${fmt(n * RECRUIT_FILL)}` : "No empty hotels or casinos right now."}</div>
       <div class="row" style="justify-content:flex-start; gap:8px; margin-top:8px">
-        <button class="btn ghost" data-action="recruitPlan">📝 Staffing plan</button>
+        <button class="btn ghost" data-action="recruitPlan">${trIco("staffplan")}<span>Staffing plan</span></button>
         <button class="btn" data-action="recruitHire" ${n ? `data-cost="${RECRUIT_FILL}"` : ""} ${n && state.money >= RECRUIT_FILL ? "" : "disabled"}>👥 Hire staff</button>
-        <button class="btn ghost" data-action="recruitAll">🔄 Apply to all</button>
+        <button class="btn ghost" data-action="recruitAll">${trIco("replace")}<span>Apply to all</span></button>
       </div></div>`;
   }
   if (recruitUnlocked()) {
@@ -483,7 +483,7 @@ function showRecruitPlan(msg = "") {
       ${p.traits.slice(0, n).map((tr, i) => `<label>👷 Worker ${i + 1}<select data-rp="${id}" data-field="trait" data-i="${i}">${traitOpts(tr)}</select></label>`).join("")}
       <div class="muted">${n + 2} places: accountant, HR and ${n} workers · pay ${T.minIncome}–${T.maxIncome} / sec each (random)</div></div>`;
   };
-  showModal(`<h2>📝 Staffing plan</h2>
+  showModal(`<h2>${trIco("staffplan")}Staffing plan</h2>
     <p class="muted">Choose the staff for every new hotel and casino. "🎲 Random" rolls a trait like normal hiring. Max ${CONCIERGE_MAX} 🛎️ Concierges per hotel.</p>
     <div class="recruitErr" id="recruitErr">${msg}</div>
     <div class="recruitCols">${RECRUIT_TYPES.map(col).join("")}</div>
@@ -528,7 +528,7 @@ function recruitAllTargets() {
 }
 function showRecruitAll() {
   const list = recruitAllTargets(), n = list.length;
-  if (!n) return showModal(`<h2>🔄 Apply staffing plan</h2><p>Every hotel and casino already matches your plan. Nothing to change.</p>
+  if (!n) return showModal(`<h2>${trIco("replace")}Apply staffing plan</h2><p>Every hotel and casino already matches your plan. Nothing to change.</p>
     <button class="btn" data-modal="close">OK</button>`);
   const afford = Math.min(n, Math.floor(state.money / RECRUIT_FILL));
   const hire = list.reduce((a, x) => a + x.d.add.length, 0), fire = list.reduce((a, x) => a + x.d.fired.length, 0);
@@ -538,7 +538,7 @@ function showRecruitAll() {
     const bits = [d.staff ? "accountant / HR" : "", d.add.length ? `hire ${d.add.length}` : "", d.fired.length ? `replace ${d.fired.length}` : ""].filter(Boolean).join(" · ");
     return `<li>${T.emoji} ${T.name} #${no}: ${bits}</li>`;
   }).join("");
-  showModal(`<h2>🔄 Apply staffing plan to all</h2>
+  showModal(`<h2>${trIco("replace")}Apply staffing plan to all</h2>
     <p><b>${n}</b> business${n === 1 ? "" : "es"} need${n === 1 ? "s" : ""} changes to match your plan. Total cost: <b>${fmt(n * RECRUIT_FILL)}</b> (${fmt(RECRUIT_FILL)} per business).</p>
     <ul style="text-align:left; max-height:30vh; overflow-y:auto">${rows}</ul>
     <p class="muted">${hire} worker${hire === 1 ? "" : "s"} hired${fire ? `, ${fire} replaced (workers whose trait isn't in the plan)` : ""}. Workers who fit the plan keep their pay; new workers get random pay.</p>

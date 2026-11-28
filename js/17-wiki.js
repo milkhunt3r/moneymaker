@@ -71,7 +71,7 @@ function wikiIncome() {
             t.noStaff ? `${t.maxEmployees} workers (no accountant or HR)` : `${t.maxEmployees - 2} workers + accountant + HR`, `${t.minIncome}–${t.maxIncome} / sec per worker` + (BIZ_BOOST[t.id] ? (BIZ_BOOST[t.id].step ? ` · 🚀 ×2, +0.5 every 2 owned` : ` · 🚀 ×2`) : ""), unlock];
   });
   const traitRows = Object.entries(TRAITS).filter(([k]) => k !== "normal").map(([k, t]) =>
-    [`${t.emoji} ${t.name}`, t.desc, t.onlyFor ? t.onlyFor.map(id => (BUSINESS_TYPES.find(b => b.id === id) || {}).name).join(", ") : "All", k === "legend" ? "1%" : pctx(t.chance)]);
+    [`${trIco(k)}${t.name}`, t.desc, t.onlyFor ? t.onlyFor.map(id => (BUSINESS_TYPES.find(b => b.id === id) || {}).name).join(", ") : "All", k === "legend" ? "1%" : pctx(t.chance)]);
   return `<h2>💰 Income</h2>
     <h3>👆 Clicking</h3>
     <p>Every click on the coin gives 1 bcoin (up to 10 clicks per second). Boosters and Tycoon's Legacy increase it.</p>

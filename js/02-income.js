@@ -20,7 +20,7 @@ function bizBoost(typeId, owned) {
 }
 // 🖼️ painted icons for worker statuses and business-card labels (emoji until a picture exists)
 const IN_ICO = { "⭐": "in-boosted", "🎓": "in-trained", "🧑‍🏫": "in-mentored", "✋": "in-quick", "🛎️": "in-offduty", "🦉": "in-owl", "☀️": "in-early",
-  "🧹": "in-busy", "🥵": "in-burnout", "😡": "in-complaint", "🧳": "in-viptip", "😴": "pt-sleep", "🤑": "st-criminal" };
+  "🧹": "in-busy", "🥵": "in-burnout", "😡": "in-complaint", "🧳": "in-viptip", "😴": "pt-sleep", "🤑": "st-criminal", "🎲": "tr-gambler", "🃏": "tr-mastergambler" };
 const inIco = (f) => `<img class="ico pti" src="assets/icons/ico-${f}.webp" alt="">`;
 function statusHtml(s) {
   if (!s) return "";
@@ -306,7 +306,7 @@ function render() {
     c.workers.forEach((w, wi) => {
       const tr = TRAITS[w.trait];
       html += `<div class="worker" title="${tr.desc}">
-                 <span class="name">${tr.emoji} ${w.name} <span class="muted">${tr.name}<span id="w-copy-${ci}-${wi}"></span> · base ${w.base}</span></span>
+                 <span class="name">${trIco(w.trait)}${w.name} <span class="muted">${tr.name}<span id="w-copy-${ci}-${wi}"></span> · base ${w.base}</span></span>
                  <span class="status" id="w-status-${ci}-${wi}"></span>
                  <span class="earn" id="w-earn-${ci}-${wi}">0</span>
                  <button class="btn ghost small" data-action="fire" data-company="${ci}" data-worker="${wi}">Fire</button>
@@ -323,7 +323,7 @@ function render() {
       c.candidates.forEach((cand, k) => {
         const tr = TRAITS[cand.trait];
         html += `<button class="choice" data-action="hire" data-company="${ci}" data-pick="${k}" data-cost="${cost}">
-                   <b>${tr.emoji} ${cand.name}</b>
+                   <b>${trIco(cand.trait)}${cand.name}</b>
                    <span class="income">${cand.base} / sec</span><br>
                    <small><b>${tr.name}</b>: ${tr.desc}</small></button>`;
       });
@@ -958,7 +958,7 @@ function gameTick() {
       if (statusEl && statusEl.dataset.s !== r.status[wi]) { statusEl.dataset.s = r.status[wi]; statusEl.innerHTML = statusHtml(r.status[wi]); }
       if (copyEl) {
         const w = c.workers[wi];
-        copyEl.textContent = w.copied ? " as " + TRAITS[w.copied].emoji + " " + TRAITS[w.copied].name : "";
+        const cp = w.copied || ""; if (copyEl.dataset.c !== cp) { copyEl.dataset.c = cp; copyEl.innerHTML = cp ? " as " + trIco(cp) + TRAITS[cp].name : ""; }
       }
     });
   });

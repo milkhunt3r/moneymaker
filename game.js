@@ -3384,10 +3384,11 @@ rx(String.raw`Always kept: achievements, levels, cosmetics, statistics and your 
 Object.assign(ES, { "no tax inspections for the first 10 minutes.": "sin inspecciones de Hacienda durante los primeros 10 minutos.",
   "Kept: achievements, levels, cosmetics, statistics, Legacy bonuses, free bet chips, Art Gallery unlock, slots and paintings.": "Se conservan: logros, niveles, cosméticos, estadísticas, bonificaciones de Legado, fichas de apuesta gratis, el desbloqueo de la Galería de arte, sus huecos y los cuadros.",
   "No tax inspections for the first 10 minutes after the reset.": "Sin inspecciones de Hacienda durante los 10 primeros minutos tras el reinicio." });
-H("🎨 More painted icons instead of emoji: the 🐾 Pets page, worker statuses and buttons on 💰 Income, the buttons and payout tables in the 🎰 Casino, 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting), and 📈 Investing (selling locks, auto cash-out, sale bonuses, take profit, stop loss, liquidation, open positions and chart buttons).",
-  "🎨 Más iconos pintados en lugar de emojis: la página de 🐾 Mascotas, los estados de los trabajadores y los botones de 💰 Ingresos, los botones y tablas de pagos del 🎰 Casino, 🚚 Logística (botones de enviar, niveles de amistad, regalos, piratas, escoltas, rutas comerciales, intercambio, bonificaciones de alianza, puestos avanzados y artesanía), e 📈 Inversiones (bloqueos de venta, retirada automática, bonificaciones de venta, toma de beneficios, stop loss, liquidación, posiciones abiertas y botones del gráfico).");
+H("🎨 More painted icons instead of emoji: the 🐾 Pets page, worker traits, statuses and buttons on 💰 Income (and the Wiki trait list), the buttons and payout tables in the 🎰 Casino, 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting), and 📈 Investing (selling locks, auto cash-out, sale bonuses, take profit, stop loss, liquidation, open positions and chart buttons).",
+  "🎨 Más iconos pintados en lugar de emojis: la página de 🐾 Mascotas, los rasgos, los estados de los trabajadores y los botones de 💰 Ingresos (y la lista de rasgos de la Wiki), los botones y tablas de pagos del 🎰 Casino, 🚚 Logística (botones de enviar, niveles de amistad, regalos, piratas, escoltas, rutas comerciales, intercambio, bonificaciones de alianza, puestos avanzados y artesanía), e 📈 Inversiones (bloqueos de venta, retirada automática, bonificaciones de venta, toma de beneficios, stop loss, liquidación, posiciones abiertas y botones del gráfico).");
 rx(String.raw`Investor level up! Now level (\d+)\. ETF fee is now ([\d.,]+%)\.`, (m, n, f) => `¡Subes de nivel de inversor! Ahora eres nivel ${n}. La comisión del ETF ahora es del ${decFix(f)}.`);
 rx(String.raw`liquidated (${NUM})`, "liquidada $1");
+ES["as"] = "como";   // copycat: " as <trait icon> Gambler" (the trait name is its own piece)
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -3703,6 +3704,8 @@ var SAVE_KEY = "coinClickerSave", PREFS_KEY = "coinClickerPrefs", IMG_DB = "coin
 // Screen preferences: kept per device, never part of the progress that is saved (and later sent to the server)
 // 🎨 painted icons (assets/icons/ico-*.webp), used in place of some emoji: ico("lock"), ico("prestige", "big")
 var ico = (n, cls = "") => `<img class="ico ${cls}" src="assets/icons/ico-${n}.webp" alt="">`;
+// 🎨 painted worker trait icons (assets/icons/ico-tr-<trait>.webp)
+var trIco = (k) => ico("tr-" + (TRAITS[k] ? k : "normal"), "pti");
 var bizIco = (id) => ico("biz-" + id, "biz");   // 🏢 business / special building pictures
 // 🧮 accountant / HR manager picture (assets/icons/ico-st-<key>.webp), or the emoji for anything without one
 var STAFF_PICS = ["numbers", "criminal", "embezzler", "gambler", "motivator", "friendship", "talent", "schedule"];
@@ -4117,7 +4120,7 @@ function bizBoost(typeId, owned) {
 }
 // 🖼️ painted icons for worker statuses and business-card labels (emoji until a picture exists)
 var IN_ICO = { "⭐": "in-boosted", "🎓": "in-trained", "🧑‍🏫": "in-mentored", "✋": "in-quick", "🛎️": "in-offduty", "🦉": "in-owl", "☀️": "in-early",
-  "🧹": "in-busy", "🥵": "in-burnout", "😡": "in-complaint", "🧳": "in-viptip", "😴": "pt-sleep", "🤑": "st-criminal" };
+  "🧹": "in-busy", "🥵": "in-burnout", "😡": "in-complaint", "🧳": "in-viptip", "😴": "pt-sleep", "🤑": "st-criminal", "🎲": "tr-gambler", "🃏": "tr-mastergambler" };
 var inIco = (f) => `<img class="ico pti" src="assets/icons/ico-${f}.webp" alt="">`;
 function statusHtml(s) {
   if (!s) return "";
@@ -4403,7 +4406,7 @@ function render() {
     c.workers.forEach((w, wi) => {
       const tr = TRAITS[w.trait];
       html += `<div class="worker" title="${tr.desc}">
-                 <span class="name">${tr.emoji} ${w.name} <span class="muted">${tr.name}<span id="w-copy-${ci}-${wi}"></span> · base ${w.base}</span></span>
+                 <span class="name">${trIco(w.trait)}${w.name} <span class="muted">${tr.name}<span id="w-copy-${ci}-${wi}"></span> · base ${w.base}</span></span>
                  <span class="status" id="w-status-${ci}-${wi}"></span>
                  <span class="earn" id="w-earn-${ci}-${wi}">0</span>
                  <button class="btn ghost small" data-action="fire" data-company="${ci}" data-worker="${wi}">Fire</button>
@@ -4420,7 +4423,7 @@ function render() {
       c.candidates.forEach((cand, k) => {
         const tr = TRAITS[cand.trait];
         html += `<button class="choice" data-action="hire" data-company="${ci}" data-pick="${k}" data-cost="${cost}">
-                   <b>${tr.emoji} ${cand.name}</b>
+                   <b>${trIco(cand.trait)}${cand.name}</b>
                    <span class="income">${cand.base} / sec</span><br>
                    <small><b>${tr.name}</b>: ${tr.desc}</small></button>`;
       });
@@ -5055,7 +5058,7 @@ function gameTick() {
       if (statusEl && statusEl.dataset.s !== r.status[wi]) { statusEl.dataset.s = r.status[wi]; statusEl.innerHTML = statusHtml(r.status[wi]); }
       if (copyEl) {
         const w = c.workers[wi];
-        copyEl.textContent = w.copied ? " as " + TRAITS[w.copied].emoji + " " + TRAITS[w.copied].name : "";
+        const cp = w.copied || ""; if (copyEl.dataset.c !== cp) { copyEl.dataset.c = cp; copyEl.innerHTML = cp ? " as " + trIco(cp) + TRAITS[cp].name : ""; }
       }
     });
   });
@@ -8813,7 +8816,7 @@ function renderLawFirm() {
     html += `<div class="lawSlot" title="${at.desc}"><b>${at.emoji} ${at.name}</b><br>
                <span class="muted">${at.desc}</span><br><span class="live" id="law-live-${a.id}">${lawLive(a)}</span>
                ${full ? `<br><button class="btn ghost small" data-action="lawReplace" data-idx="${idx}" data-cost="${LAW_REPLACE_PRICE}"
-                 title="Fire this attorney and choose a new one from 3 offers">🔄 Replace (${fmt(LAW_REPLACE_PRICE)})</button>` : ""}</div>`;
+                 title="Fire this attorney and choose a new one from 3 offers">${trIco("replace")}<span>Replace (${fmt(LAW_REPLACE_PRICE)})</span></button>` : ""}</div>`;
   });
   if (law.replaceIdx !== undefined && law.replaceIdx !== null && law.offer) html += `<div class="lawSlot empty">Choosing a replacement…</div>`;
   for (let i = law.attorneys.length; i < LAW_MAX; i++) html += `<div class="lawSlot empty">Empty slot</div>`;
@@ -8992,9 +8995,9 @@ function renderRecruit() {
     return `<div class="card specialCard"><div class="row"><h3>${bizIco("recruit")}Recruitment Agency</h3></div>${desc}
       <div class="muted" style="margin-top:6px">${n ? `<b>${n}</b> empty business${n === 1 ? "" : "es"} ready to staff · cost ${fmt(n * RECRUIT_FILL)}` : "No empty hotels or casinos right now."}</div>
       <div class="row" style="justify-content:flex-start; gap:8px; margin-top:8px">
-        <button class="btn ghost" data-action="recruitPlan">📝 Staffing plan</button>
+        <button class="btn ghost" data-action="recruitPlan">${trIco("staffplan")}<span>Staffing plan</span></button>
         <button class="btn" data-action="recruitHire" ${n ? `data-cost="${RECRUIT_FILL}"` : ""} ${n && state.money >= RECRUIT_FILL ? "" : "disabled"}>👥 Hire staff</button>
-        <button class="btn ghost" data-action="recruitAll">🔄 Apply to all</button>
+        <button class="btn ghost" data-action="recruitAll">${trIco("replace")}<span>Apply to all</span></button>
       </div></div>`;
   }
   if (recruitUnlocked()) {
@@ -9020,7 +9023,7 @@ function showRecruitPlan(msg = "") {
       ${p.traits.slice(0, n).map((tr, i) => `<label>👷 Worker ${i + 1}<select data-rp="${id}" data-field="trait" data-i="${i}">${traitOpts(tr)}</select></label>`).join("")}
       <div class="muted">${n + 2} places: accountant, HR and ${n} workers · pay ${T.minIncome}–${T.maxIncome} / sec each (random)</div></div>`;
   };
-  showModal(`<h2>📝 Staffing plan</h2>
+  showModal(`<h2>${trIco("staffplan")}Staffing plan</h2>
     <p class="muted">Choose the staff for every new hotel and casino. "🎲 Random" rolls a trait like normal hiring. Max ${CONCIERGE_MAX} 🛎️ Concierges per hotel.</p>
     <div class="recruitErr" id="recruitErr">${msg}</div>
     <div class="recruitCols">${RECRUIT_TYPES.map(col).join("")}</div>
@@ -9065,7 +9068,7 @@ function recruitAllTargets() {
 }
 function showRecruitAll() {
   const list = recruitAllTargets(), n = list.length;
-  if (!n) return showModal(`<h2>🔄 Apply staffing plan</h2><p>Every hotel and casino already matches your plan. Nothing to change.</p>
+  if (!n) return showModal(`<h2>${trIco("replace")}Apply staffing plan</h2><p>Every hotel and casino already matches your plan. Nothing to change.</p>
     <button class="btn" data-modal="close">OK</button>`);
   const afford = Math.min(n, Math.floor(state.money / RECRUIT_FILL));
   const hire = list.reduce((a, x) => a + x.d.add.length, 0), fire = list.reduce((a, x) => a + x.d.fired.length, 0);
@@ -9075,7 +9078,7 @@ function showRecruitAll() {
     const bits = [d.staff ? "accountant / HR" : "", d.add.length ? `hire ${d.add.length}` : "", d.fired.length ? `replace ${d.fired.length}` : ""].filter(Boolean).join(" · ");
     return `<li>${T.emoji} ${T.name} #${no}: ${bits}</li>`;
   }).join("");
-  showModal(`<h2>🔄 Apply staffing plan to all</h2>
+  showModal(`<h2>${trIco("replace")}Apply staffing plan to all</h2>
     <p><b>${n}</b> business${n === 1 ? "" : "es"} need${n === 1 ? "s" : ""} changes to match your plan. Total cost: <b>${fmt(n * RECRUIT_FILL)}</b> (${fmt(RECRUIT_FILL)} per business).</p>
     <ul style="text-align:left; max-height:30vh; overflow-y:auto">${rows}</ul>
     <p class="muted">${hire} worker${hire === 1 ? "" : "s"} hired${fire ? `, ${fire} replaced (workers whose trait isn't in the plan)` : ""}. Workers who fit the plan keep their pay; new workers get random pay.</p>
@@ -11927,7 +11930,7 @@ function wikiIncome() {
             t.noStaff ? `${t.maxEmployees} workers (no accountant or HR)` : `${t.maxEmployees - 2} workers + accountant + HR`, `${t.minIncome}–${t.maxIncome} / sec per worker` + (BIZ_BOOST[t.id] ? (BIZ_BOOST[t.id].step ? ` · 🚀 ×2, +0.5 every 2 owned` : ` · 🚀 ×2`) : ""), unlock];
   });
   const traitRows = Object.entries(TRAITS).filter(([k]) => k !== "normal").map(([k, t]) =>
-    [`${t.emoji} ${t.name}`, t.desc, t.onlyFor ? t.onlyFor.map(id => (BUSINESS_TYPES.find(b => b.id === id) || {}).name).join(", ") : "All", k === "legend" ? "1%" : pctx(t.chance)]);
+    [`${trIco(k)}${t.name}`, t.desc, t.onlyFor ? t.onlyFor.map(id => (BUSINESS_TYPES.find(b => b.id === id) || {}).name).join(", ") : "All", k === "legend" ? "1%" : pctx(t.chance)]);
   return `<h2>💰 Income</h2>
     <h3>👆 Clicking</h3>
     <p>Every click on the coin gives 1 bcoin (up to 10 clicks per second). Boosters and Tycoon's Legacy increase it.</p>
@@ -14410,7 +14413,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
-    "🎨 More painted icons instead of emoji: the 🐾 Pets page, worker statuses and buttons on 💰 Income, the buttons and payout tables in the 🎰 Casino, 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting), and 📈 Investing (selling locks, auto cash-out, sale bonuses, take profit, stop loss, liquidation, open positions and chart buttons).",
+    "🎨 More painted icons instead of emoji: the 🐾 Pets page, worker traits, statuses and buttons on 💰 Income (and the Wiki trait list), the buttons and payout tables in the 🎰 Casino, 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting), and 📈 Investing (selling locks, auto cash-out, sale bonuses, take profit, stop loss, liquidation, open positions and chart buttons).",
     "🚀 Nebula Strike: ✨ stardust is now a little see-through, so it's easier to tell apart from enemy bullets.",
     "⚙️ Settings: the <b>Display</b> section folds away (tap its header). Folded, it shows your language, brightness and number format at a glance.",
     "🎮 Mini-game fixes: 🎨 Art Gallery: Submit copy and New painting sit apart, and New painting asks before throwing your copy away. ⛏️ Gold Mine: a 🏦 Vault box with your ore and what it's worth. 🚀 Nebula Strike: a big Continue button for the next level, and the pirate chest sits right under it. 🧬 Gene Splicer: a start guide for your first splice, and the DNA timer and Hint sit in the splicer box.",

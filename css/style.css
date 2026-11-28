@@ -1139,6 +1139,7 @@ button.btn.small { padding: 4px 8px; font-size: 12px; }
 .choice:disabled { opacity: 0.45; cursor: not-allowed; }
 .choice b { display: block; margin-bottom: 4px; }
 .choice small { color: #b5b5c8; }
+.choice small b { display: inline; margin: 0; }   /* the trait name runs into its description */
 
 .staff { font-size: 14px; margin: 4px 0; }
 .specialHead { margin: 22px 0 12px; }
