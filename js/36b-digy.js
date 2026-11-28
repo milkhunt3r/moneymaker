@@ -7,7 +7,7 @@
      (3 energy), comes out dirty with a haul for your vault, cleans himself and goes back to charge.
    · Active / Resting switch and renaming on the 🐾 Pets page.
    ===================================================================== */
-const DIGY_V = "2";   // bump when a Digy picture changes (browser cache)
+const DIGY_V = "3";   // bump when a Digy picture changes (browser cache)
 const DIGY_PRICE = { diamond: 50, ruby: 10 }, DIGY_LV = 3;   // 😊 Friendly with the Kragg
 const DIGY_FRAMES = ["idle-1", "idle-2", "walk-1", "walk-2", "walk-3", "walk-4", "dig-start", "dig-1", "dig-2", "dig-deep", "emerge", "dirty",
   "clean-1", "clean-2", "clean-3", "charge-low-1", "charge-low-2", "charge-mid", "charge-full", "wake", "happy", "petted", "annoyed"];
