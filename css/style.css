@@ -2764,21 +2764,23 @@ body.phone .profMoney { flex-wrap: wrap; }
 .digyHead { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; }
 .digyHead h3 { margin: 0; }
 .digyStatus { font-size: 14px; color: #d9d6ea; }
-.digyStage { position: relative; height: 190px; margin-top: 6px; border-radius: 12px; overflow: hidden;
+.digyStage { --digyU: calc(170px / 512); position: relative; height: 190px; margin-top: 6px; border-radius: 12px; overflow: hidden;
   background: linear-gradient(180deg, rgba(120, 90, 200, 0.12), rgba(0, 0, 0, 0) 55%), linear-gradient(0deg, rgba(110, 70, 40, 0.55), rgba(110, 70, 40, 0.15) 22%, transparent 23%); }
 .digyProp { position: absolute; bottom: 4px; pointer-events: none; opacity: 0; transition: opacity 0.4s; }
-.digyDock { width: 119px; margin-left: 25px; bottom: 0; }   /* same size and spot as the dock in his charging pictures */
+.digyDock { width: 170px; height: 170px; object-fit: contain; bottom: 0; }   /* a 512 × 512 picture: the station sits exactly where it is in his charging pictures */
 .digyHole { width: 150px; bottom: 6px; }
 .digyDirt { width: 110px; right: 1%; bottom: 6px; }
 .digyStage.showDock .digyDock, .digyStage.showHole .digyHole, .digyStage.showDirt .digyDirt { opacity: 1; }
 .digySprite { position: absolute; bottom: 0; width: 170px; height: 170px; object-fit: contain; cursor: pointer; transition: left 0.12s linear; -webkit-tap-highlight-color: transparent; }
 .digySprite.flip { transform: scaleX(-1); }
+.digySprite.wide { width: calc(170px * 752 / 512); }   /* pet-off / pet-side / pet-on include the station */
 .digySprite.charging { animation: digyBreath 2.4s ease-in-out infinite; transform-origin: 50% 100%; }
 @keyframes digyBreath { 50% { transform: scale(1.015, 0.99); } }
 .digyHub { color: #ffd34d; }
-body.phone .digyStage { height: 140px; }
+body.phone .digyStage { height: 140px; --digyU: calc(125px / 512); }
 body.phone .digySprite { width: 125px; height: 125px; }
-body.phone .digyDock { width: 88px; margin-left: 18px; }
+body.phone .digyDock { width: 125px; height: 125px; }
+body.phone .digySprite.wide { width: calc(125px * 752 / 512); }
 body.phone .digyHole { width: 110px; }
 body.phone .digyDirt { width: 70px; }
 /* 🐾 Digy: the in-game pet icon and the mine's painted ore icons in his texts */

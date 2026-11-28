@@ -3446,6 +3446,8 @@ hrx(String.raw`You need <b>(\d+)<\/b> more · each roll has a 1 in 6 chance to l
   hrx(String.raw`\{i\}<span>(.+?)<\/span> starts with (\d+) ` + DIE, "{i}<span>$1</span> empieza con $2 <span>$3</span>"); }
 H("🏁 Online casino: <b>Race to 21</b> is now <b>Race to 42</b>, a longer race with more back-and-forth (the Race achievements count races to 42). To keep it fair, the second to roll starts with 4 points. While someone is rolling, a ghost runner shows where banking now would put them. The last turns are listed under the track with their dice, the die tumbles when it's rolled, a 1 shakes the screen, and on your turn a tip shows how much you still need. Bank shows your total after banking.",
   "🏁 Casino online: la <b>Carrera a 21</b> ahora es la <b>Carrera a 42</b>, una carrera más larga y con más idas y venidas (los logros de carreras cuentan las carreras a 42). Para que sea justo, quien tira en segundo lugar empieza con 4 puntos. Mientras alguien tira, un corredor fantasma muestra dónde quedaría si guardase ahora. Los últimos turnos aparecen bajo la pista con sus dados, el dado da vueltas al tirarlo, un 1 sacude la pantalla y, en tu turno, una pista te dice cuánto te falta. Guardar muestra tu total después de guardar.");
+H("🤖 Digy: pet him on his charging station and he hops off happily, enjoys it beside the station and steps back on to charge. He also hops off and back on when he goes digging, and his station now looks the same whether he's on it or not.",
+  "🤖 Digy: si lo acaricias en su base de carga, se baja de un salto muy contento, lo disfruta al lado de la base y vuelve a subirse para cargar. También se baja y se vuelve a subir cuando va a excavar, y su base ahora se ve igual esté él encima o no.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -14479,6 +14481,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "🤖 Digy: pet him on his charging station and he hops off happily, enjoys it beside the station and steps back on to charge. He also hops off and back on when he goes digging, and his station now looks the same whether he's on it or not.",
     "🏁 Online casino: <b>Race to 21</b> is now <b>Race to 42</b>, a longer race with more back-and-forth (the Race achievements count races to 42). To keep it fair, the second to roll starts with 4 points. While someone is rolling, a ghost runner shows where banking now would put them. The last turns are listed under the track with their dice, the die tumbles when it's rolled, a 1 shakes the screen, and on your turn a tip shows how much you still need. Bank shows your total after banking.",
     "🎨 More painted icons instead of emoji: the 🐾 Pets page, worker traits, statuses and buttons on 💰 Income (and the Wiki trait list), the buttons and payout tables in the 🎰 Casino, 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting), 📈 Investing (selling locks, auto cash-out, sale bonuses, take profit, stop loss, liquidation, open positions and chart buttons), ⚙️ Settings, 👤 Profile and 👥 Friends, the 🎨 Art Gallery studio, the 🏅 Nobel Prize window and 🚀 Nebula Strike results. The Nobel Prize window is now in Spanish too.",
     "🚀 Nebula Strike: ✨ stardust is now a little see-through, so it's easier to tell apart from enemy bullets.",
@@ -21476,10 +21479,14 @@ __eocLoaded = 50;
      (3 energy), comes out dirty with a haul for your vault, cleans himself and goes back to charge.
    · Active / Resting switch and renaming on the 🐾 Pets page.
    ===================================================================== */
-var DIGY_V = "3";   // bump when a Digy picture changes (browser cache)
+var DIGY_V = "4";   // bump when a Digy picture changes (browser cache)
 var DIGY_PRICE = { diamond: 50, ruby: 10 }, DIGY_LV = 3;   // 😊 Friendly with the Kragg
 var DIGY_FRAMES = ["idle-1", "idle-2", "walk-1", "walk-2", "walk-3", "walk-4", "dig-start", "dig-1", "dig-2", "dig-deep", "emerge", "dirty",
-  "clean-1", "clean-2", "clean-3", "charge-low-1", "charge-low-2", "charge-mid", "charge-full", "wake", "happy", "petted", "annoyed"];
+  "clean-1", "clean-2", "clean-3", "charge-low-1", "charge-low-2", "charge-mid", "charge-full", "wake", "happy", "petted", "annoyed",
+  "pet-off", "pet-side", "pet-on"];
+// 🖼️ pet-off / pet-side / pet-on are wider pictures (752 × 512) that include his charging station, in the same spot as in the charging pictures
+var DIGY_WIDE = { "pet-off": 1, "pet-side": 1, "pet-on": 1 };
+var DIGY_SIDE = 298;   // where he stands beside his station (in picture pixels, 512 = one sprite): matches pet-side
 var digySrc = (f) => `assets/digy/digy-${f}.webp?v=${DIGY_V}`;
 var digyOn = () => digyOwned() && !state.digy.off;
 // 🖼️ the painted icons: the in-game pet icon, and the mine's own ore / energy / vault pictures
@@ -21551,6 +21558,13 @@ var lerp = (a, b, k) => a + (b - a) * Math.max(0, Math.min(1, k));
 // what he does right now: { f: frame, x: %, flip, dock: show the empty dock, hole, dirt }
 function digyPose(now) {
   const base = digyBasePose(now), R = DG.react;
+  if (R && R.seq) {   // ❤️ petted on his station: he steps off happily, stands beside it, then steps back on to charge
+    if (!/^charge/.test(base.f)) { DG.react = null; return base; }   // (he has to go and dig)
+    if (now - R.start < 450) return { f: "pet-off", x: DIGY_DOCK };
+    if (now < R.until) return now < (R.happyUntil || 0) ? { f: "happy", x: DIGY_DOCK, dx: DIGY_SIDE, dock: 1 } : { f: "pet-side", x: DIGY_DOCK };
+    if (now < R.until + 550) return { f: "pet-on", x: DIGY_DOCK };
+    DG.react = null; return base;
+  }
   if (R && now < R.until) return { ...base, f: R.f, flip: false, dock: 1, hole: base.hole || !!state.digy.dig };   // ❤️ / 😤 a reaction on top of whatever he's doing (off the dock / out of his hole)
   DG.react = null;
   return base;
@@ -21560,8 +21574,9 @@ function digyBasePose(now) {
   if (D.dig) {
     const e = now - D.dig.start;
     if (e < 1200) return { f: "charge-full", x: DIGY_DOCK };                                       // ⚡ full battery
-    if (e < 2400) return { f: "wake", x: DIGY_DOCK, dock: 1 };                                       // 🙌 hops off and stretches
-    if (e < 5000) return { f: walk(), x: lerp(DIGY_DOCK, DIGY_HOLE, (e - 2400) / 2600), dock: 1 };   // 🚶 walks to his spot
+    if (e < 1700) return { f: "pet-off", x: DIGY_DOCK };                                             // 🙌 hops off his station
+    if (e < 2400) return { f: "pet-side", x: DIGY_DOCK };
+    if (e < 5000) { const k = (e - 2400) / 2600; return { f: walk(), x: lerp(DIGY_DOCK, DIGY_HOLE, k), dx: DIGY_SIDE * (1 - k), dock: 1 }; }   // 🚶 walks to his spot
     if (e < 6500) return { f: "dig-start", x: DIGY_HOLE, dock: 1 };
     if (e < 12000) return { f: alt(), x: DIGY_HOLE, dock: 1, dirt: 1 };
     if (e < 24000) return { f: "dig-deep", x: DIGY_HOLE, dock: 1, dirt: 1 };
@@ -21569,12 +21584,13 @@ function digyBasePose(now) {
     return { f: "emerge", x: DIGY_HOLE, dock: 1, dirt: 1 };                                          // 🎉 out with the haul
   }
   const a = now - (D.lastHaul || 0);
-  if (!D.off && a >= 0 && a < 9500) {
+  if (!D.off && a >= 0 && a < 9500) {   // (8900–9500: stepping back on)
     if (a < 2000) return { f: "dirty", x: DIGY_OUT, dock: 1, hole: 1, dirt: 1 };
     if (a < 4000) return { f: Math.floor(now / 180) % 2 ? "clean-2" : "clean-1", x: DIGY_OUT, dock: 1, hole: 1, dirt: 1 };
     if (a < 5300) return { f: "clean-3", x: DIGY_OUT, dock: 1, hole: 1, dirt: 1 };
     if (a < 6800) return { f: "happy", x: DIGY_OUT, dock: 1, hole: 1, dirt: 1 };                             // 🎉 ta-da, all clean
-    return { f: walk(), x: lerp(DIGY_OUT, DIGY_DOCK, (a - 6800) / 2700), flip: true, dock: 1, hole: 1 };   // 🚶 back to charge
+    if (a < 8900) { const k = (a - 6800) / 2100; return { f: walk(), x: lerp(DIGY_OUT, DIGY_DOCK, k), dx: DIGY_SIDE * k, flip: true, dock: 1, hole: 1 }; }   // 🚶 back to his station
+    return { f: "pet-on", x: DIGY_DOCK, hole: 1 };                                                                      // ⚡ steps back on to charge
   }
   const p = digyBattery();
   if (p >= 100) return { f: "charge-full", x: DIGY_DOCK };
@@ -21603,8 +21619,10 @@ function digyTick(force) {
   const now = Date.now(), p = digyPose(now), sp = $("digySprite"), st = $("digyStage");
   if (!sp || !st) return;
   if (p.f !== DG.frame) { sp.src = digySrc(p.f); DG.frame = p.f; }
-  if (p.x !== DG.x) { sp.style.left = p.x + "%"; DG.x = p.x; }
+  const left = `calc(${p.x}% + ${Math.round(p.dx || 0)} * var(--digyU))`;
+  if (left !== DG.x) { sp.style.left = left; DG.x = left; }
   if (!!p.flip !== DG.flip) { sp.classList.toggle("flip", !!p.flip); DG.flip = !!p.flip; }
+  sp.classList.toggle("wide", !!DIGY_WIDE[p.f]);
   sp.classList.toggle("charging", /^charge/.test(p.f));
   st.classList.toggle("showDock", !!p.dock); st.classList.toggle("showHole", !!p.hole); st.classList.toggle("showDirt", !!p.dirt);
   const s = $("digyStatus"), h = digyStatus(); if (s && s.dataset.h !== h) { s.dataset.h = h; s.innerHTML = h; }
@@ -21636,7 +21654,16 @@ function digyAwayNotice() {
 function digyPoke() {
   if (!digyOn() || (typeof isPaused === "function" && isPaused())) return;
   const D = state.digy, now = Date.now();
-  if (DG.react && now < DG.react.until - 600) return;   // let the reaction play for a moment
+  const R = DG.react, onDock = /^charge/.test(digyBasePose(now).f);
+  if (onDock) {   // ❤️ on his station: step off, enjoy it beside the station, step back on (more pets keep him off a bit longer)
+    DG.streak = now - DG.lastPet < 2500 ? DG.streak + 1 : 1; DG.lastPet = now;
+    if (R && R.seq && now < R.until + 550) { if (now >= R.until) R.start = now - 450; R.until = Math.max(R.until, now + 1400); }
+    else DG.react = { seq: true, start: now, until: now + 450 + 1400 };
+    if (DG.streak >= 5) { DG.react.happyUntil = now + 1500; DG.react.until = Math.max(DG.react.until, now + 1500); DG.streak = 0; }   // 5 pets in a row: he jumps for joy
+    state.digy.pets = (state.digy.pets || 0) + 1;
+    save(); digyTick(true); return;
+  }
+  if (R && now < R.until - 600) return;   // let the reaction play for a moment
   if (D.dig && now - D.dig.start >= 5000) { DG.react = { f: "annoyed", until: now + 1600 }; D.pokes = (D.pokes || 0) + 1; DG.streak = 0; }
   else {
     DG.streak = now - DG.lastPet < 2500 ? DG.streak + 1 : 1; DG.lastPet = now;
