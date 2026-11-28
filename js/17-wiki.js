@@ -144,7 +144,7 @@ function wikiCasino() {
       <li>You have 15 seconds per move: no pick in time means a random one. Leaving the duel for 30 seconds loses it.</li>
       <li>The winner takes both bets minus a 2% fee, so a win pays +96% of the bet and a loss costs the bet (paid from your money). The server keeps picks secret and rolls the dice, so nobody can cheat.</li>
       <li>A challenge expires after 60 seconds.</li></ul>
-    <p>💰 <b>Bluff Chest</b>: each round one player hides the coin in one of 3 chests and the other guesses (roles swap every round). Found: the guesser scores; missed: the hider scores. First to 3 wins.</p>
+    <p>💰 <b>Bluff Chest</b>: each round one player hides the coin in one of 3 chests and may put a sparkle on any chest (a tip or a trick); then the other guesses (roles swap every round). Found: the guesser scores; missed: the hider scores. First to 3 wins, but both always hide equally often: if the score is tied after a pair of rounds, keep going.</p>
     <p>🏁 <b>Race to 42</b>: take turns. On your turn, roll the die as often as you like and press <b>Bank</b> to add the turn's points to your total. Rolling a 1 loses this turn's points and ends your turn. The first to 42 wins. To keep it fair, the second to roll starts with 4 points. If your 15 seconds run out, you bank automatically.</p>
     ${wt(["Game", "Classic", "High rollers", "Super high rollers"], [
       ["🎡 Roulette", "×" + XP_TABLE_MULT.rouletteLow, "×" + XP_TABLE_MULT.rouletteHigh, "×" + XP_TABLE_MULT.rouletteSuper],

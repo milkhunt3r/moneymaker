@@ -2696,8 +2696,8 @@ hrx(String.raw`💰 <span>(.+?)<\/span> banked (\d+) points\.`, "💰 <span>$1</
 rx(String.raw`Bank \+(\d+)`, "Guardar +$1");
 H("⚔️ <b>2 new online casino games!</b> 💰 <b>Bluff Chest</b>: hide the coin in one of 3 chests or find your friend's (first to 3). 🏁 <b>Race to 21</b>: roll as often as you dare, but a 1 loses the turn's points. 6 new achievements.",
   "⚔️ <b>¡2 juegos nuevos en el casino online!</b> 💰 <b>Cofre farol</b>: esconde la moneda en uno de 3 cofres o encuentra la de tu amigo (gana quien llegue a 3). 🏁 <b>Carrera a 21</b>: tira tantas veces como te atrevas, pero un 1 te hace perder los puntos del turno. 6 logros nuevos.");
-H("💰 <b>Bluff Chest</b>: each round one player hides the coin in one of 3 chests and the other guesses (roles swap every round). Found: the guesser scores; missed: the hider scores. First to 3 wins.",
-  "💰 <b>Cofre farol</b>: en cada ronda un jugador esconde la moneda en uno de los 3 cofres y el otro adivina (los papeles se cambian cada ronda). Si la encuentra, puntúa quien adivina; si falla, puntúa quien la esconde. Gana quien llegue a 3.");
+H("💰 <b>Bluff Chest</b>: each round one player hides the coin in one of 3 chests and may put a sparkle on any chest (a tip or a trick); then the other guesses (roles swap every round). Found: the guesser scores; missed: the hider scores. First to 3 wins, but both always hide equally often: if the score is tied after a pair of rounds, keep going.",
+  "💰 <b>Cofre farol</b>: en cada ronda un jugador esconde la moneda en uno de 3 cofres y puede poner un destello en cualquier cofre (una pista o una trampa); después el otro adivina (los papeles se cambian cada ronda). Si la encuentra, puntúa quien adivina; si falla, puntúa quien esconde. Gana quien llegue a 3, pero ambos esconden siempre las mismas veces: si hay empate tras un par de rondas, se sigue jugando.");
 H("🏁 <b>Race to 42</b>: take turns. On your turn, roll the die as often as you like and press <b>Bank</b> to add the turn's points to your total. Rolling a 1 loses this turn's points and ends your turn. The first to 42 wins. To keep it fair, the second to roll starts with 4 points. If your 15 seconds run out, you bank automatically.",
   "🏁 <b>Carrera a 42</b>: por turnos. En tu turno, tira el dado tantas veces como quieras y pulsa <b>Guardar</b> para sumar los puntos del turno a tu total. Si sacas un 1, pierdes los puntos de ese turno y se acaba tu turno. Gana quien llegue a 42. Para que sea justo, quien tira en segundo lugar empieza con 4 puntos. Si se acaban tus 15 segundos, se guardan automáticamente.");
 Object.assign(ES, { "Pick a starter avatar or the emblem of one of your 🎁 reward collections. Unlock more collections (🏆 Achievements → 🎁 Rewards) to get more avatars.": "Elige un avatar inicial o el emblema de una de tus colecciones de 🎁 recompensas. Desbloquea más colecciones (🏆 Logros → 🎁 Recompensas) para tener más avatares.",
@@ -3466,6 +3466,17 @@ H("You bet straight from your money: wins go straight back to it. Most games hav
 Object.assign(ES, {
   "The winner takes both bets minus a 2% fee, so a win pays +96% of the bet and a loss costs the bet (paid from your money). The server keeps picks secret and rolls the dice, so nobody can cheat.": "El ganador se lleva las dos apuestas menos una comisión del 2 %, así que ganar paga +96 % de la apuesta y perder cuesta la apuesta (se paga de tu dinero). El servidor mantiene las elecciones en secreto y tira los dados, así que nadie puede hacer trampas.",
   "From Gambler level 5 you get free chips on timers (see the frame under the Gambler level). Use them at Roulette, Blackjack, Baccarat, Video Poker and Hold'em (not Plinko, Sky Climb or Gene Cascade). A free chip is a bet: whatever it wins goes to your money. At Hold'em, a free Ante needs 2 chips (Ante + Blind).": "Desde el nivel 5 de jugador recibes fichas gratis con temporizador (mira el recuadro bajo el nivel de jugador). Úsalas en la ruleta, el blackjack, el baccarat, el video póker y el Hold'em (no en Plinko, Sky Climb ni Gene Cascade). Una ficha gratis es una apuesta: lo que gane va a tu dinero. En el Hold'em, un Ante gratis necesita 2 fichas (Ante + Ciega)." });
+// 💰 Bluff Chest: sparkle hint, equal hides, role banner
+Object.assign(ES, { "You hide": "Tú escondes", "You guess": "Tú adivinas", "Hide the coin": "Esconder la moneda", "Start over": "Empezar de nuevo",
+  "Add a sparkle? (optional)": "¿Añades un destello? (opcional)",
+  "Tap any chest to put a sparkle on it: the right one or a trick. Then press Hide the coin.": "Toca cualquier cofre para ponerle un destello: el bueno o una trampa. Después pulsa Esconder la moneda.", "Find the coin!": "¡Encuentra la moneda!",
+  "Take turns: one hides the coin in one of 3 chests and may put a sparkle on any chest (a tip or a trick), then the other guesses. Found: the guesser scores. Missed: the hider scores. First to 3, but both always hide equally often: a tie keeps going.":
+    "Por turnos: uno esconde la moneda en uno de 3 cofres y puede poner un destello en cualquier cofre (una pista o una trampa); después el otro adivina. Si la encuentra, puntúa quien adivina. Si falla, puntúa quien esconde. Gana quien llegue a 3, pero ambos esconden siempre las mismas veces: con empate se sigue jugando." });
+hrx(String.raw`⏳ <span>(.+?)<\/span> is guessing…`, "⏳ <span>$1</span> está adivinando…");
+hrx(String.raw`⏳ <span>(.+?)<\/span> is hiding the coin…`, "⏳ <span>$1</span> está escondiendo la moneda…");
+hrx(String.raw`<span>(.+?)<\/span> put a sparkle on a chest\. A tip or a trick\?`, "<span>$1</span> ha puesto un destello en un cofre. ¿Pista o trampa?");
+H("💰 Online casino, Bluff Chest: the hider now hides first and may put a <b>sparkle</b> on any chest (a tip or a trick), then the other guesses. Both players always hide equally often, so it's fair: first to 3, and a tie keeps going. A banner shows whether you hide or guess, and the chests now wobble and open one by one.",
+  "💰 Casino online, cofre farol: ahora quien esconde lo hace primero y puede poner un <b>destello</b> en cualquier cofre (una pista o una trampa); después el otro adivina. Ambos esconden siempre las mismas veces, así que es justo: gana quien llegue a 3 y, con empate, se sigue jugando. Un cartel te dice si escondes o adivinas, y ahora los cofres se tambalean y se abren uno a uno.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -12089,7 +12100,7 @@ function wikiCasino() {
       <li>You have 15 seconds per move: no pick in time means a random one. Leaving the duel for 30 seconds loses it.</li>
       <li>The winner takes both bets minus a 2% fee, so a win pays +96% of the bet and a loss costs the bet (paid from your money). The server keeps picks secret and rolls the dice, so nobody can cheat.</li>
       <li>A challenge expires after 60 seconds.</li></ul>
-    <p>💰 <b>Bluff Chest</b>: each round one player hides the coin in one of 3 chests and the other guesses (roles swap every round). Found: the guesser scores; missed: the hider scores. First to 3 wins.</p>
+    <p>💰 <b>Bluff Chest</b>: each round one player hides the coin in one of 3 chests and may put a sparkle on any chest (a tip or a trick); then the other guesses (roles swap every round). Found: the guesser scores; missed: the hider scores. First to 3 wins, but both always hide equally often: if the score is tied after a pair of rounds, keep going.</p>
     <p>🏁 <b>Race to 42</b>: take turns. On your turn, roll the die as often as you like and press <b>Bank</b> to add the turn's points to your total. Rolling a 1 loses this turn's points and ends your turn. The first to 42 wins. To keep it fair, the second to roll starts with 4 points. If your 15 seconds run out, you bank automatically.</p>
     ${wt(["Game", "Classic", "High rollers", "Super high rollers"], [
       ["🎡 Roulette", "×" + XP_TABLE_MULT.rouletteLow, "×" + XP_TABLE_MULT.rouletteHigh, "×" + XP_TABLE_MULT.rouletteSuper],
@@ -14499,6 +14510,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "💰 Online casino, Bluff Chest: the hider now hides first and may put a <b>sparkle</b> on any chest (a tip or a trick), then the other guesses. Both players always hide equally often, so it's fair: first to 3, and a tie keeps going. A banner shows whether you hide or guess, and the chests now wobble and open one by one.",
     "🎲 Online casino, Dice Battle: each round both pick <b>2 to 5 dice</b> in secret, but any 1 scores 0, so more dice is a gamble. Choose <b>best of 3 or 5</b> when you challenge. Hold Roll to shake the dice, the dice now tumble in one by one with a short pause before your friend's are revealed, the winner glows, and dots show the rounds won.",
     "🤖 Digy: pet him on his charging station and he hops off happily, enjoys it beside the station and steps back on to charge. He also hops off and back on when he goes digging, and his station now looks the same whether he's on it or not.",
     "🏁 Online casino: <b>Race to 21</b> is now <b>Race to 42</b>, a longer race with more back-and-forth (the Race achievements count races to 42). To keep it fair, the second to roll starts with 4 points. While someone is rolling, a ghost runner shows where banking now would put them. The last turns are listed under the track with their dice, the die tumbles when it's rolled, a 1 shakes the screen, and on your turn a tip shows how much you still need. Bank shows your total after banking.",
@@ -22220,7 +22232,7 @@ __eocLoaded = 53;
 /* =====================================================================
    ⚔️ ONLINE CASINO: duels against friends (🎰 Casino → ⚔️ Online casino on the left).
    · ✊✋✌️ Rock Paper Scissors (best of 3) and 🎲 Dice Battle (each round both secretly pick 2–5 dice; any 1 scores 0; best of 3 or 5); a tie is played again.
-   · 💰 Bluff Chest (hide the coin in 1 of 3 chests / guess, roles swap, first to 3) and 🏁 Race to 42 (push-your-luck dice, a 1 busts the turn).
+   · 💰 Bluff Chest (hide the coin in 1 of 3 chests + an optional sparkle, then the other guesses; roles swap; first to 3 with equal hides) and 🏁 Race to 42 (push-your-luck dice, a 1 busts the turn).
    · Challenge a friend who is 🟢 online, with a bet of your choice (both must have it). The winner gets both bets minus a 2% fee
      (so a win pays +96% of the bet, a loss costs the bet: friends can't pass money around for free).
    · The database is the referee (docs/supabase-duels.sql): picks stay secret until both chose, it rolls the dice,
@@ -22237,7 +22249,7 @@ var DU_GAMES = {
   dice: { name: "Dice Battle", ico: "assets/duel/ico-dice.webp", bg: "assets/duel/bg-table.webp",
     rules: "Each round, both pick 2 to 5 dice in secret and roll. Any 1 scores 0, otherwise the total counts. The higher score wins the round; a tie is rolled again. Best of 3." },
   chest: { name: "Bluff Chest", ico: "assets/duel/ico-chest.webp", bg: "assets/duel/bg-cave.webp",
-    rules: "First to 3. Take turns hiding the coin in one of 3 chests while the other guesses. Found: the guesser scores. Missed: the hider scores." },
+    rules: "Take turns: one hides the coin in one of 3 chests and may put a sparkle on any chest (a tip or a trick), then the other guesses. Found: the guesser scores. Missed: the hider scores. First to 3, but both always hide equally often: a tie keeps going." },
   race: { name: "Race to 42", ico: "assets/duel/ico-race.webp", bg: "assets/duel/bg-race.webp",
     rules: "Take turns rolling a die as often as you dare, then Bank your points. Rolling a 1 loses this turn's points. First to 42 wins. The second to roll starts with 4 points." },
 };
@@ -22312,7 +22324,7 @@ async function duLoop() {   // once a second during a duel: "still here" + timer
 function duUpdate(v) {
   if (!v || !DU.cur || v.id !== DU.cur.id) return;
   const n = (v.log || []).length;
-  if (n > DU.lastLog) { DU.res = { e: v.log[n - 1], at: Date.now(), until: Date.now() + (v.game === "race" ? 1200 : v.game === "dice" ? 3400 : 3000) }; DU.lastLog = n; }
+  if (n > DU.lastLog) { DU.res = { e: v.log[n - 1], at: Date.now(), until: Date.now() + (v.game === "race" ? 1200 : v.game === "dice" ? 3400 : v.game === "chest" ? 3300 : 3000) }; DU.lastLog = n; }
   if (v.game === "dice" && v.my_pick && !(DU.cur && DU.cur.my_pick && DU.cur.round === v.round)) { DU.myRollAt = Date.now(); DU.myRollRound = v.round; }   // 🎲 your dice just landed
   DU.cur = v;
   if (v.status === "done") { DU.final = v; duSettle(v); }
@@ -22418,23 +22430,62 @@ function duLobbyHtml() {
       <span>💰 Bluff Chest: <b>${st.chest.w}</b> won · <b>${st.chest.l}</b> lost</span><span>🏁 Race to 42: <b>${st.race.w}</b> won · <b>${st.race.l}</b> lost</span>
       <span>💰 Won <b>${fmt(st.won)}</b> · lost <b>${fmt(st.lost)}</b></span></div>`;
 }
-// 💰 Bluff Chest: odd rounds a hides and b guesses, even rounds the other way round
+// 💰 Bluff Chest: odd rounds a hides and b guesses, even rounds the other way round (both always hide equally often).
+// The hider hides the coin and may put a ✨ sparkle on any chest (a tip or a trick); then the guesser guesses.
 var duChestRole = (v) => ((v.round % 2 === 1) === (v.me === "a") ? "hide" : "guess");
+var duChestPick = (p) => { const [c, h] = String(p || "").split(","); return { coin: c || "", hint: h && h !== "0" ? h : "" }; };
+var duSpark = () => `<i class="duSpark"></i>`;
+function duChestSel(v) {   // your choice while hiding (reset every round)
+  const key = v.id + ":" + v.round;
+  if (!DU.chest || DU.chest.key !== key) DU.chest = { key, coin: "", hint: "" };
+  return DU.chest;
+}
 function duChestStage(v, last, fin, showing) {
-  const role = duChestRole(v);
-  if (last) {   // the result of the last round: the coin's chest opens with the coin, a wrong guess opens empty
-    const hider = last.r % 2 === 1 ? "a" : "b", guesser = hider === "a" ? "b" : "a", coin = last[hider], guess = last[guesser];
-    return `<div class="duChests">${["1", "2", "3"].map(k => `<div class="duChest ${k === guess ? "guess" : ""}"><img src="assets/duel/chest-${k === coin ? "coin" : k === guess ? "empty" : "closed"}.webp" alt="">
-      ${k === guess ? `<img class="duGlass" src="assets/duel/chest-glass.webp" alt="">` : ""}</div>`).join("")}</div>`;
+  const role = duChestRole(v), now = Date.now(), K = ["1", "2", "3"];
+  const banner = fin || showing ? "" : `<div class="duRole ${role}"><img src="assets/duel/chest-${role === "hide" ? "gold" : "glass"}.webp" alt=""><span>${role === "hide" ? "You hide" : "You guess"}</span></div>`;
+  if (last && (showing || fin)) {   // 🎉 the result: the guessed chest wobbles and opens, then the others show where the coin was
+    const hider = last.r % 2 === 1 ? "a" : "b", guesser = hider === "a" ? "b" : "a", { coin, hint } = duChestPick(last[hider]), guess = last[guesser];
+    const age = showing && DU.res ? now - DU.res.at : 1e9, fresh = age < 2600;
+    const d = (ms) => `--d:${ms - age}ms`;
+    return `<div class="duChests reveal">${K.map(k => {
+      const open = `assets/duel/chest-${k === coin ? "coin" : "empty"}.webp`, at = k === guess ? 750 : 1500;
+      const fx = k === guess ? (k === coin ? `<i class="duBurst" style="${d(at)}"></i>` : `<i class="duDust" style="${d(at)}"></i>`) : "";
+      return `<div class="duChest ${k === guess ? "guess" : ""} ${k === coin ? "coin" : ""}">
+        ${fresh ? `<img class="duShut${k === guess ? " wob" : ""}" style="${d(at)}" src="assets/duel/chest-closed.webp" alt=""><img class="duOpen" style="${d(at)}" src="${open}" alt="">` : `<img src="${open}" alt="">`}
+        ${fresh ? fx : ""}${k === hint ? duSpark() : ""}${k === guess ? `<img class="duGlass" src="assets/duel/chest-glass.webp" alt="">` : ""}</div>`; }).join("")}</div>`;
   }
-  return `<div class="duChests">${["1", "2", "3"].map(k => `<button class="duChest ${v.my_pick === k ? "on" : ""}" data-du="pick" data-k="${k}" ${v.my_pick || DU.busy || fin ? "disabled" : ""}>
-      <img src="assets/duel/chest-closed.webp" alt="">${v.my_pick === k ? `<img class="duMark" src="assets/duel/chest-${role === "hide" ? "gold" : "glass"}.webp" alt="">` : ""}</button>`).join("")}</div>`;
+  if (role === "hide") {
+    const mine = duChestPick(v.my_pick), sel = duChestSel(v), done = !!v.my_pick, c = done ? mine.coin : sel.coin, h = done ? mine.hint : sel.hint;
+    return `${banner}<div class="duChests">${K.map(k => `<button class="duChest ${k === c ? "on" : ""}" data-du="ccoin" data-k="${k}" ${done || DU.busy || fin ? "disabled" : ""}>
+      <img src="assets/duel/chest-closed.webp" alt="">${k === c ? `<img class="duMark" src="assets/duel/chest-gold.webp" alt="">` : ""}${k === h ? duSpark() : ""}</button>`).join("")}</div>`;
+  }
+  const ready = !!v.opp_moved, hint = ready && v.hint && v.hint !== "0" ? String(v.hint) : "";
+  return `${banner}<div class="duChests ${ready ? "" : "waiting"}">${K.map(k => `<button class="duChest ${v.my_pick === k ? "on" : ""}" data-du="pick" data-k="${k}" ${!ready || v.my_pick || DU.busy || fin ? "disabled" : ""}>
+    <img src="assets/duel/chest-closed.webp" alt="">${k === hint ? duSpark() : ""}${v.my_pick === k ? `<img class="duMark" src="assets/duel/chest-glass.webp" alt="">` : ""}</button>`).join("")}</div>`;
+}
+function duChestControls(v, showing) {
+  if (showing || duChestRole(v) !== "hide" || v.my_pick) return "";
+  const sel = duChestSel(v);
+  if (!sel.coin) return "";
+  return `<div class="duPicks"><button class="btn big duRoll" data-du="chide" ${DU.busy ? "disabled" : ""}><img class="ico" src="assets/duel/chest-gold.webp" alt=""><span>Hide the coin</span></button>
+    <button class="btn ghost" data-du="creset">Start over</button></div>`;
 }
 function duChestSay(v, showing) {
-  if (showing) { const hider = showing.r % 2 === 1 ? "a" : "b", found = showing[hider] === showing[hider === "a" ? "b" : "a"];
+  const p = duPerson(v), who = `<span data-noi18n>${escapeHtml(p.nick)}</span>`;
+  if (showing) { const hider = showing.r % 2 === 1 ? "a" : "b", found = duChestPick(showing[hider]).coin === showing[hider === "a" ? "b" : "a"];
     return found ? (hider === v.me ? "🔍 They found your coin!" : "🎉 You found the coin!") : (hider === v.me ? "😏 They missed: your coin stays hidden!" : "💨 Empty! The coin was elsewhere."); }
+  if (duChestRole(v) === "hide") {
+    if (v.my_pick) return `⏳ ${who} is guessing…`;
+    return duChestSel(v).coin ? `<div>✨ Add a sparkle? (optional)</div><div class="duTip">Tap any chest to put a sparkle on it: the right one or a trick. Then press Hide the coin.</div>` : "🙈 Hide your coin: pick a chest!";
+  }
+  if (!v.opp_moved) return `⏳ ${who} is hiding the coin…`;
   if (v.my_pick) return null;
-  return duChestRole(v) === "hide" ? "🙈 Hide your coin: pick a chest!" : "🔍 Find the coin: pick a chest!";
+  return v.hint && v.hint !== "0" ? `<div>🔍 Find the coin!</div><div class="duTip">${who} put a sparkle on a chest. A tip or a trick?</div>` : "🔍 Find the coin: pick a chest!";
+}
+function duChestHide() {
+  const v = DU.cur; if (!v || v.game !== "chest" || v.my_pick) return;
+  const sel = duChestSel(v); if (!sel.coin) return;
+  duDo("duel_move", { p_id: v.id, p_pick: `${sel.coin},${sel.hint || 0}` }, duUpdate);
 }
 // 🏁 Race to 42: totals are the scores, st = {turn, tp}
 // the finished turns, from the log: [{who, dice: [..], kind: "bank" / "bust" / "win", pts}]
@@ -22541,7 +22592,7 @@ document.addEventListener("pointerup", () => { if (DU.shake) duRoll(); });
 document.addEventListener("pointercancel", () => { if (DU.shake) { DU.shake = 0; renderDuels(); } });
 // round dots (● won ○ to go) for the best-of games; Race to 42 keeps its points
 var duScoreHtml = (v, n) => v.game === "race" ? `<span class="duScore">${n}</span>`
-  : `<span class="duPips" title="${n} / ${duNeed(v)}">${Array.from({ length: duNeed(v) }, (_, i) => `<i class="${i < n ? "on" : ""}"></i>`).join("")}</span>`;
+  : `<span class="duPips" title="${n} / ${duNeed(v)}">${Array.from({ length: v.game === "chest" ? Math.max(3, v.my_score, v.opp_score) : duNeed(v) }, (_, i) => `<i class="${i < n ? "on" : ""}"></i>`).join("")}</span>`;
 function duMatchHtml(v) {
   const g = DU_GAMES[v.game], p = duPerson(v), me = prof.row || {}, now = Date.now();
   const showing = DU.res && now < DU.res.until ? DU.res.e : null, fin = v.status === "done";
@@ -22552,10 +22603,10 @@ function duMatchHtml(v) {
   else if (v.game === "race") say = null;
   else if (showing && v.game === "chest") say = duChestSay(v, showing);
   else if (showing) say = !showing.w ? (v.game === "rps" ? "🤝 Draw! Play again." : "🤝 Same total! Roll again.") : showing.w === v.me ? "✅ You win this round!" : "❌ They win this round.";
-  else if (v.game === "chest" && !v.my_pick) say = duChestSay(v, null);
+  else if (v.game === "chest") say = duChestSay(v, null);
   else if (v.my_pick) say = `⏳ Waiting for <span data-noi18n>${escapeHtml(p.nick)}</span>…`;
   else say = v.game === "rps" ? "Pick your hand!" : "Pick your dice and roll!";
-  const tk = v.id + ":" + v.round + ":" + v.status;   // the end of this round's timer, fixed once (so the page only changes when something happens)
+  const tk = v.id + ":" + v.round + ":" + v.status + (v.game === "chest" ? ":" + !!(duChestRole(v) === "hide" ? v.my_pick : v.opp_moved) : "");   // (Bluff Chest: the guesser's 15 s start once the coin is hidden)   // the end of this round's timer, fixed once (so the page only changes when something happens)
   if (DU.tKey !== tk) { DU.tKey = tk; DU.tEnd = now + (v.secs_left || 0) * 1000; }
   const left = fin || (showing && v.game !== "race") ? "" : `<span class="duTimer">⏱️ <b data-du-t="${DU.tEnd}"></b></span>`;
   const race = v.game === "race" ? duRaceHtml(v, fin) : null;
@@ -22566,7 +22617,7 @@ function duMatchHtml(v) {
   const controls = fin
     ? `<div class="duEnd">${v.reason === "left" ? `<p>${v.won ? "Your friend left the duel." : "You were away for too long."}</p>` : v.reason === "resign" ? `<p>${v.won ? "Your friend gave up." : "You gave up."}</p>` : ""}
         <button class="btn big" data-du="back">⚔️ Back to the online casino</button></div>`
-    : race ? race.controls : v.game === "chest" ? ""
+    : race ? race.controls : v.game === "chest" ? duChestControls(v, showing)
     : v.game === "rps"
       ? `<div class="duPicks">${DU_PICKS.map(k => `<button class="duPick ${v.my_pick === k ? "on" : ""}" data-du="pick" data-k="${k}" ${v.my_pick || showing || DU.busy ? "disabled" : ""}><img src="assets/duel/hand-${k}.webp" alt=""><span>${k[0].toUpperCase() + k.slice(1)}</span></button>`).join("")}</div>`
       : duDiceControls(v, showing);
@@ -22600,6 +22651,7 @@ function renderDuels() {
 }
 // ⏱️ the countdowns on the page tick by themselves
 setInterval(() => { if (DU.shake && DU.cur && DU.cur.status === "active" && DU.tEnd - Date.now() < 700) duRoll();   // ⏱️ still shaking when time runs out: roll
+  if (DU.cur && DU.cur.game === "chest" && DU.cur.status === "active" && !DU.cur.my_pick && DU.chest && DU.chest.coin && !DU.busy && DU.tEnd - Date.now() < 700) duChestHide();   // ⏱️ coin chosen but Hide not pressed: hide it
   document.querySelectorAll("[data-du-t]").forEach(el => { const s = Math.max(0, Math.ceil((Number(el.dataset.duT) - Date.now()) / 1000)); if (el.textContent !== String(s)) el.textContent = s; });
   if (DU.res && Date.now() >= DU.res.until && duVisible()) { DU.res = null; renderDuels(); } }, 250);
 
@@ -22622,6 +22674,10 @@ document.addEventListener("click", (e) => {
   }
   if (k === "pick" && DU.cur) duDo("duel_move", { p_id: DU.cur.id, p_pick: b.dataset.k }, duUpdate);
   if (k === "roll" && DU.cur) duRoll();
+  if (k === "ccoin" && DU.cur && DU.cur.game === "chest") { const sel = duChestSel(DU.cur), c = b.dataset.k;   // 💰 1st tap: the coin; then taps place / move / remove the sparkle
+    if (!sel.coin) sel.coin = c; else sel.hint = sel.hint === c ? "" : c; renderDuels(); }
+  if (k === "chide") duChestHide();
+  if (k === "creset" && DU.cur) { DU.chest = null; renderDuels(); }
   if (k === "best") { DU.best = Number(b.dataset.n) === 5 ? 5 : 3; state.duBest = DU.best; save(); renderDuels(); }
   if (k === "dicen") { DU.diceN = Math.max(2, Math.min(5, Number(b.dataset.n) || 3)); state.duDiceN = DU.diceN; save(); renderDuels(); }
   if (k === "bank" && DU.cur) duDo("duel_move", { p_id: DU.cur.id, p_pick: "bank" }, duUpdate);

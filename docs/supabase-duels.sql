@@ -1,4 +1,4 @@
--- ⚔️ Empire of Coins: online casino duels between friends (✊ Rock Paper Scissors, 🎲 Dice Battle (2–5 dice, a 1 scores 0, best of 3 or 5), 💰 Bluff Chest, 🏁 Race to 42).
+-- ⚔️ Empire of Coins: online casino duels between friends (✊ Rock Paper Scissors, 🎲 Dice Battle (2–5 dice, a 1 scores 0, best of 3 or 5), 💰 Bluff Chest (hide with an optional sparkle, then guess; both hide equally often), 🏁 Race to 42).
 -- Run AFTER supabase-friends.sql and supabase-profiles-money.sql.
 -- Paste all of this into Supabase → SQL Editor → New query, and click "Run". It is safe to run again.
 --
@@ -74,6 +74,11 @@ create or replace function public.duel_dice_score(p text) returns int language s
   select case when '1' = any(string_to_array(p, ',')) then 0 else (select coalesce(sum(x::int), 0)::int from unnest(string_to_array(p, ',')) x) end;
 $$;
 
+-- 💰 Bluff Chest: decided once someone has 3+ points and is ahead (checked when both have hidden the same number of times)
+create or replace function public.duel_chest_win(x int, y int) returns text language sql immutable set search_path = '' as $$
+  select case when greatest(x, y) >= 3 and x <> y then (case when x > y then 'a' else 'b' end) end;
+$$;
+
 -- the state of a duel as one player sees it (the opponent's pick of the current round stays hidden)
 create or replace function public.duel_view(d public.duels, me uuid) returns jsonb language plpgsql stable set search_path = '' as $$
 declare opp uuid := case when me = d.a then d.b else d.a end; p public.profiles; mine text; opp_moved boolean;
@@ -83,6 +88,8 @@ begin
   opp_moved := exists (select 1 from public.duel_moves where duel_id = d.id and round = d.round and player = opp);
   return jsonb_build_object(
     'id', d.id, 'game', d.game, 'status', d.status, 'bet', d.bet, 'round', d.round, 'log', d.log, 'st', d.st, 'goal', d.goal, 'best', d.best,
+    'hint', case when d.game = 'chest' and d.status = 'active' and ((d.round % 2 = 1) = (opp = d.a))   -- 💰 the hider's sparkle (never the coin)
+      then (select split_part(m.pick, ',', 2) from public.duel_moves m where m.duel_id = d.id and m.round = d.round and m.player = opp) end,
     'me', case when me = d.a then 'a' else 'b' end,
     'my_score', case when me = d.a then d.score_a else d.score_b end,
     'opp_score', case when me = d.a then d.score_b else d.score_a end,
@@ -127,7 +134,7 @@ revoke all on function public.duel_race(bigint, text, text) from public, anon, a
 
 -- play the current round if both have picked (or the time is up: missing picks are made at random)
 create or replace function public.duel_step(p_id bigint) returns void language plpgsql security definer set search_path = '' as $$
-declare d public.duels; pa text; pb text; w text; sa int; sb int; need int;
+declare d public.duels; pa text; pb text; w text; sa int; sb int; need int; hider uuid; guesser uuid; ph text; pg text; o1 text; o2 text;
 begin
   select * into d from public.duels where id = p_id;
   if d.status <> 'active' then return; end if;
@@ -135,11 +142,30 @@ begin
     if now() >= d.deadline then perform public.duel_race(p_id, d.st->>'turn', 'bank'); end if;
     return;
   end if;
+  if d.game = 'chest' then   -- 💰 first the hider hides the coin (+ an optional sparkle "coin,hint"), then the guesser guesses
+    hider := case when d.round % 2 = 1 then d.a else d.b end; guesser := case when hider = d.a then d.b else d.a end;
+    select pick into ph from public.duel_moves where duel_id = d.id and round = d.round and player = hider;
+    select pick into pg from public.duel_moves where duel_id = d.id and round = d.round and player = guesser;
+    if ph is null then
+      if now() < d.deadline then return; end if;
+      ph := (1 + floor(random() * 3)::int)::text || ',0';   -- time's up: hidden at random, no sparkle; the guesser gets a full 15 s
+      insert into public.duel_moves values (d.id, d.round, hider, ph);
+      update public.duels set deadline = now() + interval '15 seconds' where id = d.id;
+      return;
+    end if;
+    if pg is null then
+      if now() < d.deadline then return; end if;
+      pg := (1 + floor(random() * 3)::int)::text; insert into public.duel_moves values (d.id, d.round, guesser, pg);
+    end if;
+    pa := case when hider = d.a then ph else pg end; pb := case when hider = d.b then ph else pg end;
+    w := case when split_part(ph, ',', 1) = pg then (case when guesser = d.a then 'a' else 'b' end) else (case when hider = d.a then 'a' else 'b' end) end;
+  else
   select pick into pa from public.duel_moves where duel_id = d.id and round = d.round and player = d.a;
   select pick into pb from public.duel_moves where duel_id = d.id and round = d.round and player = d.b;
   if (pa is null or pb is null) and now() < d.deadline then return; end if;
   if pa is null then pa := public.duel_rand_pick(d.game); insert into public.duel_moves values (d.id, d.round, d.a, pa); end if;
   if pb is null then pb := public.duel_rand_pick(d.game); insert into public.duel_moves values (d.id, d.round, d.b, pb); end if;
+  end if;
   if d.game = 'rps' then
     w := case when pa = pb then null
               when (pa, pb) in (('rock', 'scissors'), ('paper', 'rock'), ('scissors', 'paper')) then 'a' else 'b' end;
@@ -148,15 +174,23 @@ begin
     sb := public.duel_dice_score(pb);
     w := case when sa = sb then null when sa > sb then 'a' else 'b' end;
   end if;
-  if d.game = 'chest' then   -- 💰 odd rounds: a hides, b guesses; even rounds the other way round. Found = the guesser scores, missed = the hider scores
-    w := case when d.round % 2 = 1 then (case when pa = pb then 'b' else 'a' end) else (case when pa = pb then 'a' else 'b' end) end;
-  end if;
   update public.duels set
     log = log || jsonb_build_array(jsonb_build_object('r', round, 'a', pa, 'b', pb, 'w', w)),
     score_a = score_a + coalesce((w = 'a')::int, 0), score_b = score_b + coalesce((w = 'b')::int, 0)
   where id = d.id returning * into d;
-  need := case when d.game = 'chest' then 3 when d.game = 'dice' and d.best = 5 then 3 else 2 end;   -- best of 3: 2 wins, best of 5: 3 wins
-  if d.score_a >= need or d.score_b >= need then
+  need := case when d.game = 'dice' and d.best = 5 then 3 else 2 end;   -- best of 3: 2 wins, best of 5: 3 wins
+  if d.game = 'chest' then
+    -- 💰 penalty-shootout rule: odd rounds a hides, even rounds b hides; both always hide the same number of times.
+    -- The duel ends when someone has 3+ points and is ahead after a pair of rounds, or earlier when the last round of the pair can't change it.
+    if d.round % 2 = 0 then o1 := public.duel_chest_win(d.score_a, d.score_b); o2 := o1;
+    else o1 := public.duel_chest_win(d.score_a + 1, d.score_b); o2 := public.duel_chest_win(d.score_a, d.score_b + 1); end if;
+    if o1 is not null and o1 = o2 then
+      update public.duels set status = 'done', reason = 'score', ended_at = now(), deadline = null,
+        winner = case when o1 = 'a' then d.a else d.b end where id = d.id;
+    else
+      update public.duels set round = round + 1, deadline = now() + interval '18 seconds' where id = d.id;
+    end if;
+  elsif d.score_a >= need or d.score_b >= need then
     update public.duels set status = 'done', reason = 'score', ended_at = now(), deadline = null,
       winner = case when d.score_a > d.score_b then d.a else d.b end where id = d.id;
   else
@@ -225,17 +259,29 @@ end; $$;
 -- make your pick ('rock' / 'paper' / 'scissors'), roll your dice ('2'–'5': how many dice; anything else: 2), or 'roll' / 'bank' in a race; a pick can't be changed
 create or replace function public.duel_move(p_id bigint, p_pick text) returns jsonb
 language plpgsql security definer set search_path = '' as $$
-declare me uuid := auth.uid(); d public.duels;
+declare me uuid := auth.uid(); d public.duels; hider uuid;
 begin
   select * into d from public.duels where id = p_id for update;
   if d.id is null or me not in (d.a, d.b) then raise exception 'not_yours' using errcode = 'P0001'; end if;
   if d.status = 'active' then
-    if d.game = 'race' then
+    if d.game = 'chest' then   -- 💰 the hider sends "coin,hint" (hint 0 = no sparkle), the guesser a chest once the coin is hidden
+      hider := case when d.round % 2 = 1 then d.a else d.b end;
+      if me = hider then
+        if p_pick ~ '^[123]$' then p_pick := p_pick || ',0'; end if;   -- (older game versions: no sparkle)
+        if p_pick !~ '^[123],[0123]$' then raise exception 'bad_pick' using errcode = 'P0001'; end if;
+        insert into public.duel_moves values (d.id, d.round, me, p_pick) on conflict do nothing;
+        if found then update public.duels set deadline = now() + interval '15 seconds' where id = d.id; end if;   -- the guesser gets a full 15 s
+      else
+        if p_pick not in ('1', '2', '3') then raise exception 'bad_pick' using errcode = 'P0001'; end if;
+        if not exists (select 1 from public.duel_moves where duel_id = d.id and round = d.round and player = hider) then raise exception 'not_yet' using errcode = 'P0001'; end if;
+        insert into public.duel_moves values (d.id, d.round, me, p_pick) on conflict do nothing;
+      end if;
+      perform public.duel_step(d.id);
+    elsif d.game = 'race' then
       if p_pick not in ('roll', 'bank') then raise exception 'bad_pick' using errcode = 'P0001'; end if;
       perform public.duel_race(d.id, case when me = d.a then 'a' else 'b' end, p_pick);   -- ignored when it isn't your turn
     else
       if d.game = 'rps' and p_pick not in ('rock', 'paper', 'scissors') then raise exception 'bad_pick' using errcode = 'P0001'; end if;
-      if d.game = 'chest' and p_pick not in ('1', '2', '3') then raise exception 'bad_pick' using errcode = 'P0001'; end if;
       if d.game = 'dice' then p_pick := public.duel_dice_roll(case when p_pick in ('2', '3', '4', '5') then p_pick::int else 2 end); end if;
       insert into public.duel_moves values (d.id, d.round, me, p_pick) on conflict do nothing;
       perform public.duel_step(d.id);
@@ -311,4 +357,4 @@ revoke all on function public.duel_invite(uuid, text, double precision, int, int
   public.duel_tick(bigint), public.duel_cancel(bigint), public.duel_settle(bigint), public.duel_pending() from public, anon;
 grant execute on function public.duel_invite(uuid, text, double precision, int, int), public.duel_respond(bigint, boolean), public.duel_move(bigint, text),
   public.duel_tick(bigint), public.duel_cancel(bigint), public.duel_settle(bigint), public.duel_pending() to authenticated;
-revoke all on function public.duel_view(public.duels, uuid), public.duel_rand_pick(text), public.duel_dice_roll(int), public.duel_dice_score(text) from public, anon, authenticated;
+revoke all on function public.duel_view(public.duels, uuid), public.duel_rand_pick(text), public.duel_dice_roll(int), public.duel_dice_score(text), public.duel_chest_win(int, int) from public, anon, authenticated;
