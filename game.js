@@ -2661,8 +2661,8 @@ Object.assign(ES, {
   "You have 15 seconds per move: no pick in time means a random one. Leaving the duel for 30 seconds loses it.": "Tienes 15 segundos por jugada: si no eliges a tiempo, se elige al azar. Si abandonas el duelo 30 segundos, lo pierdes.",
   "The winner gets the other player's bet (paid from your money, not casino chips). The server keeps picks secret and rolls the dice, so nobody can cheat.": "El ganador se lleva la apuesta del otro (se paga con tu dinero, no con fichas del casino). El servidor mantiene en secreto las elecciones y tira los dados, así que nadie puede hacer trampas.",
   "A challenge expires after 60 seconds.": "Un reto caduca a los 60 segundos." });
-H("On the left of the Casino, <b>Online casino</b> lets you play against your friends (👤 Profile → 👥 Friends). Pick a game (✊ Rock Paper Scissors, 🎲 Dice Battle, 💰 Bluff Chest or 🏁 Race to 21), choose a bet and challenge a friend who is 🟢 online; both of you need at least the bet in money.",
-  "A la izquierda del Casino, el <b>Casino online</b> te permite jugar contra tus amigos (👤 Perfil → 👥 Amigos). Elige un juego (✊ piedra, papel o tijera, 🎲 batalla de dados, 💰 cofre farol o 🏁 carrera a 21), decide la apuesta y reta a un amigo que esté 🟢 en línea; los dos necesitáis tener al menos esa cantidad de dinero.");
+H("On the left of the Casino, <b>Online casino</b> lets you play against your friends (👤 Profile → 👥 Friends). Pick a game (✊ Rock Paper Scissors, 🎲 Dice Battle, 💰 Bluff Chest or 🏁 Race to 42), choose a bet and challenge a friend who is 🟢 online; both of you need at least the bet in money.",
+  "A la izquierda del Casino, el <b>Casino online</b> te permite jugar contra tus amigos (👤 Perfil → 👥 Amigos). Elige un juego (✊ piedra, papel o tijera, 🎲 batalla de dados, 💰 cofre farol o 🏁 carrera a 42), decide la apuesta y reta a un amigo que esté 🟢 en línea; los dos necesitáis tener al menos esa cantidad de dinero.");
 ES["🪙 Every box where you type an amount of money now has a coin switch (bcoin, scoin or gcoin), so you don't have to count zeros. Your choice is remembered."] =
   "🪙 Todas las casillas donde escribes una cantidad de dinero tienen ahora un selector de moneda (bcoin, scoin o gcoin), para que no tengas que contar ceros. Se recuerda tu elección.";
 Object.assign(ES, { "ship free": "nave libre", "ships free": "naves libres", "Free ships": "Naves libres" });
@@ -2681,10 +2681,10 @@ Object.assign(ES, { "Bluff Chest": "Cofre farol", "Race to 21": "Carrera a 21",
   "They found your coin!": "¡Han encontrado tu moneda!", "You found the coin!": "¡Has encontrado la moneda!", "They missed: your coin stays hidden!": "Han fallado: ¡tu moneda sigue escondida!", "Empty! The coin was elsewhere.": "¡Vacío! La moneda estaba en otro cofre.",
   "Your turn: roll the die!": "Tu turno: ¡tira el dado!", "Bank": "Guardar",
   "Treasure hunter": "Cazatesoros", "Win a Bluff Chest duel against a friend": "Gana un duelo de cofre farol contra un amigo", "Master of bluff": "Maestro del farol", "Win 5 Bluff Chest duels": "Gana 5 duelos de cofre farol",
-  "Pirate king": "Rey pirata", "Win 20 Bluff Chest duels": "Gana 20 duelos de cofre farol", "Off the line": "Buena salida", "Win a Race to 21 against a friend": "Gana una carrera a 21 contra un amigo",
-  "Risk taker": "Amante del riesgo", "Win 5 Races to 21": "Gana 5 carreras a 21", "Race champion": "Campeón de carreras", "Win 20 Races to 21": "Gana 20 carreras a 21" });
+  "Pirate king": "Rey pirata", "Win 20 Bluff Chest duels": "Gana 20 duelos de cofre farol", "Off the line": "Buena salida", "Win a Race to 42 against a friend": "Gana una carrera a 42 contra un amigo",
+  "Risk taker": "Amante del riesgo", "Win 5 Races to 42": "Gana 5 carreras a 42", "Race champion": "Campeón de carreras", "Win 20 Races to 42": "Gana 20 carreras a 42" });
 hrx(String.raw`💰 Bluff Chest: <b>(\d+)<\/b> won · <b>(\d+)<\/b> lost`, "💰 Cofre farol: <b>$1</b> ganados · <b>$2</b> perdidos");
-hrx(String.raw`🏁 Race to 21: <b>(\d+)<\/b> won · <b>(\d+)<\/b> lost`, "🏁 Carrera a 21: <b>$1</b> ganadas · <b>$2</b> perdidas");
+hrx(String.raw`🏁 Race to 42: <b>(\d+)<\/b> won · <b>(\d+)<\/b> lost`, "🏁 Carrera a 42: <b>$1</b> ganadas · <b>$2</b> perdidas");
 rx(String.raw`First to (21|42) · Bet (.+)`, "Gana quien llegue a $1 · Apuesta $2");
 hrx(String.raw`🎲 This turn: <b>(\d+)<\/b> points\. Roll again or Bank\?`, "🎲 Este turno: <b>$1</b> puntos. ¿Tiras otra vez o guardas?");
 hrx(String.raw`⏳ <span>(.+?)<\/span>'s turn: <b>(\d+)<\/b> points this turn…`, "⏳ Turno de <span>$1</span>: <b>$2</b> puntos este turno…");
@@ -2698,8 +2698,8 @@ H("⚔️ <b>2 new online casino games!</b> 💰 <b>Bluff Chest</b>: hide the co
   "⚔️ <b>¡2 juegos nuevos en el casino online!</b> 💰 <b>Cofre farol</b>: esconde la moneda en uno de 3 cofres o encuentra la de tu amigo (gana quien llegue a 3). 🏁 <b>Carrera a 21</b>: tira tantas veces como te atrevas, pero un 1 te hace perder los puntos del turno. 6 logros nuevos.");
 H("💰 <b>Bluff Chest</b>: each round one player hides the coin in one of 3 chests and the other guesses (roles swap every round). Found: the guesser scores; missed: the hider scores. First to 3 wins.",
   "💰 <b>Cofre farol</b>: en cada ronda un jugador esconde la moneda en uno de los 3 cofres y el otro adivina (los papeles se cambian cada ronda). Si la encuentra, puntúa quien adivina; si falla, puntúa quien la esconde. Gana quien llegue a 3.");
-H("🏁 <b>Race to 21</b>: take turns. On your turn, roll the die as often as you like and press <b>Bank</b> to add the turn's points to your total. Rolling a 1 loses this turn's points and ends your turn. The first to 21 wins. If your 15 seconds run out, you bank automatically.",
-  "🏁 <b>Carrera a 21</b>: por turnos. En tu turno, tira el dado tantas veces como quieras y pulsa <b>Guardar</b> para sumar los puntos del turno a tu total. Si sacas un 1, pierdes los puntos de ese turno y se acaba tu turno. Gana quien llegue a 21. Si se acaban tus 15 segundos, se guardan automáticamente.");
+H("🏁 <b>Race to 42</b>: take turns. On your turn, roll the die as often as you like and press <b>Bank</b> to add the turn's points to your total. Rolling a 1 loses this turn's points and ends your turn. The first to 42 wins. If your 15 seconds run out, you bank automatically.",
+  "🏁 <b>Carrera a 42</b>: por turnos. En tu turno, tira el dado tantas veces como quieras y pulsa <b>Guardar</b> para sumar los puntos del turno a tu total. Si sacas un 1, pierdes los puntos de ese turno y se acaba tu turno. Gana quien llegue a 42. Si se acaban tus 15 segundos, se guardan automáticamente.");
 Object.assign(ES, { "Pick a starter avatar or the emblem of one of your 🎁 reward collections. Unlock more collections (🏆 Achievements → 🎁 Rewards) to get more avatars.": "Elige un avatar inicial o el emblema de una de tus colecciones de 🎁 recompensas. Desbloquea más colecciones (🏆 Logros → 🎁 Recompensas) para tener más avatares.",
   "Painter mouse": "Ratón pintor", "Lucky cat": "Gato de la suerte", "Penguin banker": "Pingüino banquero", "Coin turtle": "Tortuga de monedas", "Bunny gambler": "Conejo apostador",
   "👤 6 new starter avatars for your profile: everyone can pick them, even without unlocked rewards.": "👤 6 avatares iniciales nuevos para tu perfil: todos pueden elegirlos, aunque no tengan recompensas desbloqueadas." });
@@ -3430,7 +3430,7 @@ Object.assign(ES, { "Scientific breakthrough!": "¡Avance científico!", "Accept
 hrx(String.raw`Congratulations! Your researchers have discovered <b>(.+)<\/b>\.`, (m, x) => `¡Enhorabuena! Tus investigadores han descubierto <b>${NOBEL_FIND_ES[x] || x}</b>.`);
 hrx(String.raw`This discovery will change the world, and you have won the <b>Nobel Prize in \{i\}(.+)<\/b>!`, (m, f) => `Este descubrimiento cambiará el mundo y has ganado el <b>Premio Nobel de {i}${NOBEL_FIELD_ES[f] || f}</b>.`);
 // 🏁 Race: 21 or 42, ghost runner, turn history, tips
-Object.assign(ES, { "Race length": "Duración de la carrera", "Race to 42": "Carrera a 42", "quick": "rápida", "long": "larga",
+Object.assign(ES, { "Race to 42": "Carrera a 42",
   "Take turns rolling a die as often as you dare, then Bank your points. Rolling a 1 loses this turn's points. First to 42 wins.": "Por turnos, tira el dado tantas veces como te atrevas y después guarda tus puntos. Si sacas un 1, pierdes los puntos de ese turno. Gana quien llegue a 42." });
 rx(String.raw`Bank → (\d+) \/ (21|42)`, "Guardar → $1 / $2");
 hrx(String.raw`You need <b>(\d+)<\/b> more · each roll has a 1 in 6 chance to lose these <b>(\d+)<\/b> points\.`, "Te faltan <b>$1</b> · cada tirada tiene 1 posibilidad entre 6 de perder estos <b>$2</b> puntos.");
@@ -3442,8 +3442,8 @@ hrx(String.raw`You need <b>(\d+)<\/b> more · each roll has a 1 in 6 chance to l
   hrx(String.raw`\{i\}<span>(.+?)<\/span> banked (\d+) ` + DIE, "{i}<span>$1</span> ha guardado $2 <span>$3</span>");
   hrx(String.raw`\{i\}<span>(.+?)<\/span> lost (\d+) ` + DIE, "{i}<span>$1</span> ha perdido $2 <span>$3</span>");
   hrx(String.raw`\{i\}<span>(.+?)<\/span> won! ` + DIE, "{i}<span>$1</span> ¡ha ganado! <span>$2</span>"); }
-H("🏁 Online casino, Race to 21: choose <b>21</b> (quick) or <b>42</b> (long) when you challenge. While someone is rolling, a faded runner shows where banking now would put them. The last turns are listed under the track with their dice, the die tumbles when it's rolled, a 1 shakes the screen, and on your turn a tip shows how much you still need. Bank shows your total after banking.",
-  "🏁 Casino online, Carrera a 21: al retar, elige <b>21</b> (rápida) o <b>42</b> (larga). Mientras alguien tira, un corredor transparente muestra dónde quedaría si guardase ahora. Los últimos turnos aparecen bajo la pista con sus dados, el dado da vueltas al tirarlo, un 1 sacude la pantalla y, en tu turno, una pista te dice cuánto te falta. Guardar muestra tu total después de guardar.");
+H("🏁 Online casino: <b>Race to 21</b> is now <b>Race to 42</b>, a longer race with more back-and-forth (the Race achievements count races to 42). While someone is rolling, a ghost runner shows where banking now would put them. The last turns are listed under the track with their dice, the die tumbles when it's rolled, a 1 shakes the screen, and on your turn a tip shows how much you still need. Bank shows your total after banking.",
+  "🏁 Casino online: la <b>Carrera a 21</b> ahora es la <b>Carrera a 42</b>, una carrera más larga y con más idas y venidas (los logros de carreras cuentan las carreras a 42). Mientras alguien tira, un corredor fantasma muestra dónde quedaría si guardase ahora. Los últimos turnos aparecen bajo la pista con sus dados, el dado da vueltas al tirarlo, un 1 sacude la pantalla y, en tu turno, una pista te dice cuánto te falta. Guardar muestra tu total después de guardar.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -3772,7 +3772,7 @@ var staffIco = (key, o, cls = "staffI") => STAFF_PICS.includes(key) ? ico("st-" 
 var alienBonus = (key) => ((__eocLoaded >= 44 && typeof spAllyBonus === "function") ? spAllyBonus(key) : 0);
 var geneBonus = (cat) => (typeof geneCatCount === "function" ? geneCatCount(cat) * 0.01 : 0);
 var PREF_KEYS = ["view", "coinUnit", "casinoPage", "logiPage", "rewardType", "rewardState", "gamePage", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage", "cryptoSel", "ivCard", "logiFleet", "mapBig", "mapHelp",
-                   "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage", "numFmt", "lowFx", "popups", "mgTabs", "orDispOpen", "mgSnooze", "duGoal"];
+                   "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage", "numFmt", "lowFx", "popups", "mgTabs", "orDispOpen", "mgSnooze"];
 function splitState(st) {   // -> { progress, prefs }
   const progress = {}, prefs = {};
   for (const k in st) (PREF_KEYS.includes(k) ? prefs : progress)[k] = st[k];
@@ -11378,9 +11378,9 @@ ACHIEVEMENTS.push(...[
   { id: "duelChest1",  icon: "💰", name: "Treasure hunter",   desc: "Win a Bluff Chest duel against a friend",          goal: 1,  get: () => ((state.duels || {}).chest || {}).w || 0 },
   { id: "duelChest5",  icon: "💰", name: "Master of bluff",   desc: "Win 5 Bluff Chest duels",                          goal: 5,  get: () => ((state.duels || {}).chest || {}).w || 0 },
   { id: "duelChest20", icon: "👑", name: "Pirate king",       desc: "Win 20 Bluff Chest duels",                         goal: 20, get: () => ((state.duels || {}).chest || {}).w || 0 },
-  { id: "duelRace1",   icon: "🏁", name: "Off the line",      desc: "Win a Race to 21 against a friend",                goal: 1,  get: () => ((state.duels || {}).race || {}).w || 0 },
-  { id: "duelRace5",   icon: "🏁", name: "Risk taker",        desc: "Win 5 Races to 21",                                goal: 5,  get: () => ((state.duels || {}).race || {}).w || 0 },
-  { id: "duelRace20",  icon: "🏆", name: "Race champion",     desc: "Win 20 Races to 21",                               goal: 20, get: () => ((state.duels || {}).race || {}).w || 0 },
+  { id: "duelRace1",   icon: "🏁", name: "Off the line",      desc: "Win a Race to 42 against a friend",                goal: 1,  get: () => ((state.duels || {}).race || {}).w || 0 },
+  { id: "duelRace5",   icon: "🏁", name: "Risk taker",        desc: "Win 5 Races to 42",                                goal: 5,  get: () => ((state.duels || {}).race || {}).w || 0 },
+  { id: "duelRace20",  icon: "🏆", name: "Race champion",     desc: "Win 20 Races to 42",                               goal: 20, get: () => ((state.duels || {}).race || {}).w || 0 },
 ].map(a => ({ ...a, cat: "online" })));
 
 if (!state.stats) state.stats = {};
@@ -12062,13 +12062,13 @@ function wikiCasino() {
       Bets give <b>Gambler XP</b> (bet × the table's XP multiplier) and you get <b>cashback</b> on lost bets (0.1% per Gambler level, +5% per Criminal defense lawyer).
       Random results use your browser's secure random generator.</p>
     <h3>⚔️ Online casino</h3>
-    <p>On the left of the Casino, <b>Online casino</b> lets you play against your friends (👤 Profile → 👥 Friends). Pick a game (✊ Rock Paper Scissors, 🎲 Dice Battle, 💰 Bluff Chest or 🏁 Race to 21), choose a bet and challenge a friend who is 🟢 online; both of you need at least the bet in money.</p>
+    <p>On the left of the Casino, <b>Online casino</b> lets you play against your friends (👤 Profile → 👥 Friends). Pick a game (✊ Rock Paper Scissors, 🎲 Dice Battle, 💰 Bluff Chest or 🏁 Race to 42), choose a bet and challenge a friend who is 🟢 online; both of you need at least the bet in money.</p>
     <ul><li>Rock Paper Scissors and Dice Battle: best of 3 rounds; a tie is played again. In Dice Battle both roll 2 dice and the higher total wins the round.</li>
       <li>You have 15 seconds per move: no pick in time means a random one. Leaving the duel for 30 seconds loses it.</li>
       <li>The winner takes both bets minus a 2% fee, so a win pays +96% of the bet and a loss costs the bet (paid from your money). The server keeps picks secret and rolls the dice, so nobody can cheat.</li>
       <li>A challenge expires after 60 seconds.</li></ul>
     <p>💰 <b>Bluff Chest</b>: each round one player hides the coin in one of 3 chests and the other guesses (roles swap every round). Found: the guesser scores; missed: the hider scores. First to 3 wins.</p>
-    <p>🏁 <b>Race to 21</b>: take turns. On your turn, roll the die as often as you like and press <b>Bank</b> to add the turn's points to your total. Rolling a 1 loses this turn's points and ends your turn. The first to 21 wins. If your 15 seconds run out, you bank automatically.</p>
+    <p>🏁 <b>Race to 42</b>: take turns. On your turn, roll the die as often as you like and press <b>Bank</b> to add the turn's points to your total. Rolling a 1 loses this turn's points and ends your turn. The first to 42 wins. If your 15 seconds run out, you bank automatically.</p>
     ${wt(["Game", "Classic", "High rollers", "Super high rollers"], [
       ["🎡 Roulette", "×" + XP_TABLE_MULT.rouletteLow, "×" + XP_TABLE_MULT.rouletteHigh, "×" + XP_TABLE_MULT.rouletteSuper],
       ["🃏 Blackjack", "×" + XP_TABLE_MULT.bjLow, "×" + XP_TABLE_MULT.bjHigh, "×" + XP_TABLE_MULT.bjSuper],
@@ -14477,7 +14477,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
-    "🏁 Online casino, Race to 21: choose <b>21</b> (quick) or <b>42</b> (long) when you challenge. While someone is rolling, a faded runner shows where banking now would put them. The last turns are listed under the track with their dice, the die tumbles when it's rolled, a 1 shakes the screen, and on your turn a tip shows how much you still need. Bank shows your total after banking.",
+    "🏁 Online casino: <b>Race to 21</b> is now <b>Race to 42</b>, a longer race with more back-and-forth (the Race achievements count races to 42). While someone is rolling, a ghost runner shows where banking now would put them. The last turns are listed under the track with their dice, the die tumbles when it's rolled, a 1 shakes the screen, and on your turn a tip shows how much you still need. Bank shows your total after banking.",
     "🎨 More painted icons instead of emoji: the 🐾 Pets page, worker traits, statuses and buttons on 💰 Income (and the Wiki trait list), the buttons and payout tables in the 🎰 Casino, 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting), 📈 Investing (selling locks, auto cash-out, sale bonuses, take profit, stop loss, liquidation, open positions and chart buttons), ⚙️ Settings, 👤 Profile and 👥 Friends, the 🎨 Art Gallery studio, the 🏅 Nobel Prize window and 🚀 Nebula Strike results. The Nobel Prize window is now in Spanish too.",
     "🚀 Nebula Strike: ✨ stardust is now a little see-through, so it's easier to tell apart from enemy bullets.",
     "⚙️ Settings: the <b>Display</b> section folds away (tap its header). Folded, it shows your language, brightness and number format at a glance.",
@@ -22172,7 +22172,7 @@ __eocLoaded = 53;
 /* =====================================================================
    ⚔️ ONLINE CASINO: duels against friends (🎰 Casino → ⚔️ Online casino on the left).
    · ✊✋✌️ Rock Paper Scissors and 🎲 Dice Battle (2 dice each, higher total wins the round): best of 3; a tie is played again.
-   · 💰 Bluff Chest (hide the coin in 1 of 3 chests / guess, roles swap, first to 3) and 🏁 Race to 21 (push-your-luck dice, a 1 busts the turn).
+   · 💰 Bluff Chest (hide the coin in 1 of 3 chests / guess, roles swap, first to 3) and 🏁 Race to 42 (push-your-luck dice, a 1 busts the turn).
    · Challenge a friend who is 🟢 online, with a bet of your choice (both must have it). The winner gets both bets minus a 2% fee
      (so a win pays +96% of the bet, a loss costs the bet: friends can't pass money around for free).
    · The database is the referee (docs/supabase-duels.sql): picks stay secret until both chose, it rolls the dice,
@@ -22190,19 +22190,19 @@ var DU_GAMES = {
     rules: "Best of 3. Both roll 2 dice: the higher total wins the round. A tie is rolled again." },
   chest: { name: "Bluff Chest", ico: "assets/duel/ico-chest.webp", bg: "assets/duel/bg-cave.webp",
     rules: "First to 3. Take turns hiding the coin in one of 3 chests while the other guesses. Found: the guesser scores. Missed: the hider scores." },
-  race: { name: "Race to 21", ico: "assets/duel/ico-race.webp", bg: "assets/duel/bg-race.webp",
-    rules: "Take turns rolling a die as often as you dare, then Bank your points. Rolling a 1 loses this turn's points. First to 21 wins." },
+  race: { name: "Race to 42", ico: "assets/duel/ico-race.webp", bg: "assets/duel/bg-race.webp",
+    rules: "Take turns rolling a die as often as you dare, then Bank your points. Rolling a 1 loses this turn's points. First to 42 wins." },
 };
 var DU_NEED = { rps: 2, dice: 2, chest: 3, race: 21 };
-// 🏁 Race length: 21 (quick) or 42 (long), chosen when you challenge (kept per device)
+// 🏁 every race goes to 42 (a race started before the server update, or on an old server without "goal", goes to 21)
 var duGoalOf = (v) => (v && Number(v.goal) === 42 ? 42 : 21);
-var duName = (k, goal) => k === "race" && goal === 42 ? "Race to 42" : DU_GAMES[k].name;
-var duRules = (k, goal) => k === "race" && goal === 42 ? DU_GAMES.race.rules.replace("First to 21 wins.", "First to 42 wins.") : DU_GAMES[k].rules;
+var duName = (k, goal) => k === "race" && goal === 21 ? "Race to 21" : DU_GAMES[k].name;
+var duRules = (k, goal) => k === "race" && goal === 21 ? DU_GAMES.race.rules.replace("First to 42 wins.", "First to 21 wins.") : DU_GAMES[k].rules;
 if (!state.duels || typeof state.duels !== "object") state.duels = {};
 Object.keys(DU_GAMES).forEach(g => { state.duels[g] = state.duels[g] || { w: 0, l: 0 }; });
 state.duels.won = state.duels.won || 0; state.duels.lost = state.duels.lost || 0;
 var DU = { game: "rps", bet: "", cur: null, out: null, invites: {}, shownInvite: null, busy: false, err: "",
-  goal: state.duGoal === 42 ? 42 : 21, res: null, lastLog: 0, ticking: false, pendAt: 0, final: null };
+  res: null, lastLog: 0, ticking: false, pendAt: 0, final: null };
 var duOn = () => typeof profSignedIn === "function" && profSignedIn() && prof.row && prof.friendsOn !== false;
 var duRpc = async (fn, args) => { const { data, error } = await cloud.sb.rpc(fn, args || {}); if (error) throw error; return data; };
 function duErr(e) {
@@ -22298,7 +22298,7 @@ function duChallenge(oppId) {
   if (bet > state.money) { DU.err = "You don't have enough money for this bet."; return renderDuels(); }
   if ((__eocLoaded >= 51 && typeof profPushStats === "function")) profPushStats();   // the referee checks the money on your profile
   const args = { p_opp: oppId, p_game: DU.game, p_bet: bet };
-  if (DU.game === "race" && DU.goal === 42) args.p_goal = 42;   // (left out for 21: also works before the 42 update is on the server)
+  if (DU.game === "race") args.p_goal = 42;
   duDo("duel_invite", args, () => { setTimeout(duPending, 300); });
 }
 
@@ -22346,11 +22346,9 @@ function duOddsHtml() {   // what this bet wins or loses
 }
 function duLobbyHtml() {
   const st = state.duels, typed = DU.bet;   // the box keeps DU.bet up to date (input event)
-  const games = Object.entries(DU_GAMES).map(([k, g]) => `<button class="duGame ${DU.game === k ? "on" : ""}" data-du="game" data-g="${k}"><img src="${g.ico}" alt=""><b>${duName(k, DU.goal)}</b><span>${duRules(k, DU.goal)}</span>
+  const games = Object.entries(DU_GAMES).map(([k, g]) => `<button class="duGame ${DU.game === k ? "on" : ""}" data-du="game" data-g="${k}"><img src="${g.ico}" alt=""><b>${g.name}</b><span>${g.rules}</span>
     <span class="duRec">🏆 ${st[k].w} · ❌ ${st[k].l}</span></button>`).join("");
-  const goal = DU.game === "race" ? `<div class="duGoalPick"><span>Race length:</span>${[[21, "quick"], [42, "long"]].map(([n, t]) =>
-    `<button class="seg ${DU.goal === n ? "on" : ""}" data-du="goal" data-n="${n}"><img class="duGoalIco" src="assets/duel/race-${n === 42 ? "long" : "quick"}.webp" alt=""><b>${n}</b> <span>${t}</span></button>`).join("")}</div>` : "";
-  return `<div class="card"><h3 style="margin-top:0">1. Choose a game</h3><div class="duGames">${games}</div>${goal}</div>
+  return `<div class="card"><h3 style="margin-top:0">1. Choose a game</h3><div class="duGames">${games}</div></div>
     <div class="card"><h3 style="margin-top:0">2. Your bet</h3>
       <div class="moneyRow"><input id="duBet" type="number" min="1" placeholder="Amount" value="${escapeHtml(typed || "")}" aria-label="Bet">
         <button class="btn ghost small" data-du="pct" data-p="0.01">1%</button><button class="btn ghost small" data-du="pct" data-p="0.1">10%</button>
@@ -22362,7 +22360,7 @@ function duLobbyHtml() {
         <button class="btn ghost small" data-du="cancel" data-id="${DU.out.id}">Cancel</button></div>` : ""}
     <div class="card"><h3 style="margin-top:0">3. Challenge a friend</h3>${duFriendsHtml()}</div>
     <div class="card duStats"><span>✊ Rock Paper Scissors: <b>${st.rps.w}</b> won · <b>${st.rps.l}</b> lost</span><span>🎲 Dice Battle: <b>${st.dice.w}</b> won · <b>${st.dice.l}</b> lost</span>
-      <span>💰 Bluff Chest: <b>${st.chest.w}</b> won · <b>${st.chest.l}</b> lost</span><span>🏁 Race to 21: <b>${st.race.w}</b> won · <b>${st.race.l}</b> lost</span>
+      <span>💰 Bluff Chest: <b>${st.chest.w}</b> won · <b>${st.chest.l}</b> lost</span><span>🏁 Race to 42: <b>${st.race.w}</b> won · <b>${st.race.l}</b> lost</span>
       <span>💰 Won <b>${fmt(st.won)}</b> · lost <b>${fmt(st.lost)}</b></span></div>`;
 }
 // 💰 Bluff Chest: odd rounds a hides and b guesses, even rounds the other way round
@@ -22383,7 +22381,7 @@ function duChestSay(v, showing) {
   if (v.my_pick) return null;
   return duChestRole(v) === "hide" ? "🙈 Hide your coin: pick a chest!" : "🔍 Find the coin: pick a chest!";
 }
-// 🏁 Race to 21 / 42: totals are the scores, st = {turn, tp}
+// 🏁 Race to 42: totals are the scores, st = {turn, tp}
 // the finished turns, from the log: [{who, dice: [..], kind: "bank" / "bust" / "win", pts}]
 function duRaceTurns(log) {
   const out = []; let cur = null;
@@ -22508,7 +22506,6 @@ document.addEventListener("click", (e) => {
   if (k === "signin" && (__eocLoaded >= 38 && typeof cloudSignIn === "function")) cloudSignIn();
   if (k === "profile") showView("profile");
   if (k === "game") { DU.game = b.dataset.g; renderDuels(); }
-  if (k === "goal") { DU.goal = Number(b.dataset.n) === 42 ? 42 : 21; state.duGoal = DU.goal; save(); renderDuels(); }
   if (k === "pct") { DU.bet = String(Math.max(1, Math.floor(state.money * Number(b.dataset.p)))); DU.err = ""; renderDuels(); }
   if (k === "challenge") duChallenge(b.dataset.id);
   if (k === "cancel") duDo("duel_cancel", { p_id: id }, () => { DU.out = null; });

@@ -1,4 +1,4 @@
--- ⚔️ Empire of Coins: online casino duels between friends (✊ Rock Paper Scissors, 🎲 Dice Battle, 💰 Bluff Chest, 🏁 Race to 21 or 42).
+-- ⚔️ Empire of Coins: online casino duels between friends (✊ Rock Paper Scissors, 🎲 Dice Battle, 💰 Bluff Chest, 🏁 Race to 42).
 -- Run AFTER supabase-friends.sql and supabase-profiles-money.sql.
 -- Paste all of this into Supabase → SQL Editor → New query, and click "Run". It is safe to run again.
 --
@@ -32,7 +32,8 @@ create table if not exists public.duels (
 alter table public.duels add column if not exists st jsonb not null default '{}';   -- 🏁 Race to 21: {"turn": "a"/"b", "tp": points this turn}
 alter table public.duels drop constraint if exists duels_game_check;
 alter table public.duels add constraint duels_game_check check (game in ('rps', 'dice', 'chest', 'race'));
-alter table public.duels add column if not exists goal int not null default 21;   -- 🏁 Race: first to 21 (quick) or 42 (long)
+alter table public.duels add column if not exists goal int not null default 42;   -- 🏁 Race: first to 42 (races from before had 21)
+alter table public.duels alter column goal set default 42;
 alter table public.duels drop constraint if exists duels_goal_check;
 alter table public.duels add constraint duels_goal_check check (goal in (21, 42));
 create index if not exists duels_a_idx on public.duels (a, status);
@@ -82,7 +83,7 @@ begin
                       when d.deadline is null then null else greatest(0, extract(epoch from d.deadline - now())) end);
 end; $$;
 
--- 🏁 Race to 21 / 42: one action of the player whose turn it is ('roll' or 'bank'). Totals live in score_a / score_b.
+-- 🏁 Race to 42: one action of the player whose turn it is ('roll' or 'bank'). Totals live in score_a / score_b.
 create or replace function public.duel_race(p_id bigint, who text, act text) returns void language plpgsql security definer set search_path = '' as $$
 declare d public.duels; tp int; r int; total int; other text;
 begin
@@ -154,16 +155,16 @@ revoke all on function public.duel_step(bigint) from public, anon, authenticated
 
 -- ---------- what the game calls ----------
 -- challenge a friend who is online (both players must have at least the bet, as their profiles show)
--- p_goal: 🏁 Race only, 21 or 42 (older game versions leave it out: 21)
+-- p_goal: kept for game versions that send it; every new race goes to 42
 drop function if exists public.duel_invite(uuid, text, double precision);
-create or replace function public.duel_invite(p_opp uuid, p_game text, p_bet double precision, p_goal int default 21) returns bigint
+create or replace function public.duel_invite(p_opp uuid, p_game text, p_bet double precision, p_goal int default 42) returns bigint
 language plpgsql security definer set search_path = '' as $$
 declare me uuid := auth.uid(); new_id bigint;
 begin
   if me is null or p_opp is null or me = p_opp then raise exception 'bad_player' using errcode = 'P0001'; end if;
   if p_game not in ('rps', 'dice', 'chest', 'race') then raise exception 'bad_game' using errcode = 'P0001'; end if;
   if p_bet is null or p_bet < 1 or p_bet >= 1e300 then raise exception 'bad_bet' using errcode = 'P0001'; end if;
-  if p_goal is null or p_goal not in (21, 42) or p_game <> 'race' then p_goal := 21; end if;
+  p_goal := 42;   -- 🏁 every race goes to 42 (other games don't use it)
   if not exists (select 1 from public.friendships f where f.status = 'accepted'
                  and ((f.requester = me and f.addressee = p_opp) or (f.requester = p_opp and f.addressee = me))) then
     raise exception 'not_friends' using errcode = 'P0001';

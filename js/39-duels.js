@@ -2,7 +2,7 @@
 /* =====================================================================
    ⚔️ ONLINE CASINO: duels against friends (🎰 Casino → ⚔️ Online casino on the left).
    · ✊✋✌️ Rock Paper Scissors and 🎲 Dice Battle (2 dice each, higher total wins the round): best of 3; a tie is played again.
-   · 💰 Bluff Chest (hide the coin in 1 of 3 chests / guess, roles swap, first to 3) and 🏁 Race to 21 (push-your-luck dice, a 1 busts the turn).
+   · 💰 Bluff Chest (hide the coin in 1 of 3 chests / guess, roles swap, first to 3) and 🏁 Race to 42 (push-your-luck dice, a 1 busts the turn).
    · Challenge a friend who is 🟢 online, with a bet of your choice (both must have it). The winner gets both bets minus a 2% fee
      (so a win pays +96% of the bet, a loss costs the bet: friends can't pass money around for free).
    · The database is the referee (docs/supabase-duels.sql): picks stay secret until both chose, it rolls the dice,
@@ -20,19 +20,19 @@ const DU_GAMES = {
     rules: "Best of 3. Both roll 2 dice: the higher total wins the round. A tie is rolled again." },
   chest: { name: "Bluff Chest", ico: "assets/duel/ico-chest.webp", bg: "assets/duel/bg-cave.webp",
     rules: "First to 3. Take turns hiding the coin in one of 3 chests while the other guesses. Found: the guesser scores. Missed: the hider scores." },
-  race: { name: "Race to 21", ico: "assets/duel/ico-race.webp", bg: "assets/duel/bg-race.webp",
-    rules: "Take turns rolling a die as often as you dare, then Bank your points. Rolling a 1 loses this turn's points. First to 21 wins." },
+  race: { name: "Race to 42", ico: "assets/duel/ico-race.webp", bg: "assets/duel/bg-race.webp",
+    rules: "Take turns rolling a die as often as you dare, then Bank your points. Rolling a 1 loses this turn's points. First to 42 wins." },
 };
 const DU_NEED = { rps: 2, dice: 2, chest: 3, race: 21 };
-// 🏁 Race length: 21 (quick) or 42 (long), chosen when you challenge (kept per device)
+// 🏁 every race goes to 42 (a race started before the server update, or on an old server without "goal", goes to 21)
 const duGoalOf = (v) => (v && Number(v.goal) === 42 ? 42 : 21);
-const duName = (k, goal) => k === "race" && goal === 42 ? "Race to 42" : DU_GAMES[k].name;
-const duRules = (k, goal) => k === "race" && goal === 42 ? DU_GAMES.race.rules.replace("First to 21 wins.", "First to 42 wins.") : DU_GAMES[k].rules;
+const duName = (k, goal) => k === "race" && goal === 21 ? "Race to 21" : DU_GAMES[k].name;
+const duRules = (k, goal) => k === "race" && goal === 21 ? DU_GAMES.race.rules.replace("First to 42 wins.", "First to 21 wins.") : DU_GAMES[k].rules;
 if (!state.duels || typeof state.duels !== "object") state.duels = {};
 Object.keys(DU_GAMES).forEach(g => { state.duels[g] = state.duels[g] || { w: 0, l: 0 }; });
 state.duels.won = state.duels.won || 0; state.duels.lost = state.duels.lost || 0;
 const DU = { game: "rps", bet: "", cur: null, out: null, invites: {}, shownInvite: null, busy: false, err: "",
-  goal: state.duGoal === 42 ? 42 : 21, res: null, lastLog: 0, ticking: false, pendAt: 0, final: null };
+  res: null, lastLog: 0, ticking: false, pendAt: 0, final: null };
 const duOn = () => typeof profSignedIn === "function" && profSignedIn() && prof.row && prof.friendsOn !== false;
 const duRpc = async (fn, args) => { const { data, error } = await cloud.sb.rpc(fn, args || {}); if (error) throw error; return data; };
 function duErr(e) {
@@ -128,7 +128,7 @@ function duChallenge(oppId) {
   if (bet > state.money) { DU.err = "You don't have enough money for this bet."; return renderDuels(); }
   if (typeof profPushStats === "function") profPushStats();   // the referee checks the money on your profile
   const args = { p_opp: oppId, p_game: DU.game, p_bet: bet };
-  if (DU.game === "race" && DU.goal === 42) args.p_goal = 42;   // (left out for 21: also works before the 42 update is on the server)
+  if (DU.game === "race") args.p_goal = 42;
   duDo("duel_invite", args, () => { setTimeout(duPending, 300); });
 }
 
@@ -176,11 +176,9 @@ function duOddsHtml() {   // what this bet wins or loses
 }
 function duLobbyHtml() {
   const st = state.duels, typed = DU.bet;   // the box keeps DU.bet up to date (input event)
-  const games = Object.entries(DU_GAMES).map(([k, g]) => `<button class="duGame ${DU.game === k ? "on" : ""}" data-du="game" data-g="${k}"><img src="${g.ico}" alt=""><b>${duName(k, DU.goal)}</b><span>${duRules(k, DU.goal)}</span>
+  const games = Object.entries(DU_GAMES).map(([k, g]) => `<button class="duGame ${DU.game === k ? "on" : ""}" data-du="game" data-g="${k}"><img src="${g.ico}" alt=""><b>${g.name}</b><span>${g.rules}</span>
     <span class="duRec">🏆 ${st[k].w} · ❌ ${st[k].l}</span></button>`).join("");
-  const goal = DU.game === "race" ? `<div class="duGoalPick"><span>Race length:</span>${[[21, "quick"], [42, "long"]].map(([n, t]) =>
-    `<button class="seg ${DU.goal === n ? "on" : ""}" data-du="goal" data-n="${n}"><img class="duGoalIco" src="assets/duel/race-${n === 42 ? "long" : "quick"}.webp" alt=""><b>${n}</b> <span>${t}</span></button>`).join("")}</div>` : "";
-  return `<div class="card"><h3 style="margin-top:0">1. Choose a game</h3><div class="duGames">${games}</div>${goal}</div>
+  return `<div class="card"><h3 style="margin-top:0">1. Choose a game</h3><div class="duGames">${games}</div></div>
     <div class="card"><h3 style="margin-top:0">2. Your bet</h3>
       <div class="moneyRow"><input id="duBet" type="number" min="1" placeholder="Amount" value="${escapeHtml(typed || "")}" aria-label="Bet">
         <button class="btn ghost small" data-du="pct" data-p="0.01">1%</button><button class="btn ghost small" data-du="pct" data-p="0.1">10%</button>
@@ -192,7 +190,7 @@ function duLobbyHtml() {
         <button class="btn ghost small" data-du="cancel" data-id="${DU.out.id}">Cancel</button></div>` : ""}
     <div class="card"><h3 style="margin-top:0">3. Challenge a friend</h3>${duFriendsHtml()}</div>
     <div class="card duStats"><span>✊ Rock Paper Scissors: <b>${st.rps.w}</b> won · <b>${st.rps.l}</b> lost</span><span>🎲 Dice Battle: <b>${st.dice.w}</b> won · <b>${st.dice.l}</b> lost</span>
-      <span>💰 Bluff Chest: <b>${st.chest.w}</b> won · <b>${st.chest.l}</b> lost</span><span>🏁 Race to 21: <b>${st.race.w}</b> won · <b>${st.race.l}</b> lost</span>
+      <span>💰 Bluff Chest: <b>${st.chest.w}</b> won · <b>${st.chest.l}</b> lost</span><span>🏁 Race to 42: <b>${st.race.w}</b> won · <b>${st.race.l}</b> lost</span>
       <span>💰 Won <b>${fmt(st.won)}</b> · lost <b>${fmt(st.lost)}</b></span></div>`;
 }
 // 💰 Bluff Chest: odd rounds a hides and b guesses, even rounds the other way round
@@ -213,7 +211,7 @@ function duChestSay(v, showing) {
   if (v.my_pick) return null;
   return duChestRole(v) === "hide" ? "🙈 Hide your coin: pick a chest!" : "🔍 Find the coin: pick a chest!";
 }
-// 🏁 Race to 21 / 42: totals are the scores, st = {turn, tp}
+// 🏁 Race to 42: totals are the scores, st = {turn, tp}
 // the finished turns, from the log: [{who, dice: [..], kind: "bank" / "bust" / "win", pts}]
 function duRaceTurns(log) {
   const out = []; let cur = null;
@@ -338,7 +336,6 @@ document.addEventListener("click", (e) => {
   if (k === "signin" && typeof cloudSignIn === "function") cloudSignIn();
   if (k === "profile") showView("profile");
   if (k === "game") { DU.game = b.dataset.g; renderDuels(); }
-  if (k === "goal") { DU.goal = Number(b.dataset.n) === 42 ? 42 : 21; state.duGoal = DU.goal; save(); renderDuels(); }
   if (k === "pct") { DU.bet = String(Math.max(1, Math.floor(state.money * Number(b.dataset.p)))); DU.err = ""; renderDuels(); }
   if (k === "challenge") duChallenge(b.dataset.id);
   if (k === "cancel") duDo("duel_cancel", { p_id: id }, () => { DU.out = null; });

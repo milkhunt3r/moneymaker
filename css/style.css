@@ -2302,11 +2302,7 @@ button.duChest:hover:not(:disabled) { transform: translateY(-6px) scale(1.04); }
 .duBankBtn { font-size: 20px; padding: 12px 28px; background: linear-gradient(#3ddc6a, #239b47); color: #fff; } .duBankBtn .ico { width: 28px; height: 28px; vertical-align: -7px; }
 .duSay div + div { font-size: 17px; margin-top: 4px; }
 body.phone .duDie.big { width: 70px; height: 70px; } body.phone .duBust { width: 90px; }
-/* 🏁 Race: length picker, ghost runner (where banking now would put you), turn history, roll / bust animations */
-.duGoalPick { display: flex; align-items: center; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-.duGoalPick .seg { border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 6px 14px; }
-.duGoalPick .seg { display: inline-flex; align-items: center; gap: 6px; }
-.duGoalPick .seg b { font-size: 16px; } .duGoalIco { width: 30px; height: 30px; object-fit: contain; }
+/* 🏁 Race: ghost runner (where banking now would put you), turn history, roll / bust animations */
 .duGhostBar { position: absolute; top: 7px; bottom: 7px; border-radius: 20px; background: rgba(255,211,77,0.22); border: 1px dashed rgba(255,211,77,0.75); z-index: 1; transition: left 0.5s, width 0.5s; }
 .duRunner.ghost { z-index: 1; animation: duGhost 1s ease-in-out infinite alternate; } .duGhostIco { width: 44px; height: 44px; object-fit: contain; }
 @keyframes duGhost { from { opacity: 0.55; } to { opacity: 0.95; } }

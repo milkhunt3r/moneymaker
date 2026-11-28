@@ -292,9 +292,9 @@ ACHIEVEMENTS.push(...[
   { id: "duelChest1",  icon: "💰", name: "Treasure hunter",   desc: "Win a Bluff Chest duel against a friend",          goal: 1,  get: () => ((state.duels || {}).chest || {}).w || 0 },
   { id: "duelChest5",  icon: "💰", name: "Master of bluff",   desc: "Win 5 Bluff Chest duels",                          goal: 5,  get: () => ((state.duels || {}).chest || {}).w || 0 },
   { id: "duelChest20", icon: "👑", name: "Pirate king",       desc: "Win 20 Bluff Chest duels",                         goal: 20, get: () => ((state.duels || {}).chest || {}).w || 0 },
-  { id: "duelRace1",   icon: "🏁", name: "Off the line",      desc: "Win a Race to 21 against a friend",                goal: 1,  get: () => ((state.duels || {}).race || {}).w || 0 },
-  { id: "duelRace5",   icon: "🏁", name: "Risk taker",        desc: "Win 5 Races to 21",                                goal: 5,  get: () => ((state.duels || {}).race || {}).w || 0 },
-  { id: "duelRace20",  icon: "🏆", name: "Race champion",     desc: "Win 20 Races to 21",                               goal: 20, get: () => ((state.duels || {}).race || {}).w || 0 },
+  { id: "duelRace1",   icon: "🏁", name: "Off the line",      desc: "Win a Race to 42 against a friend",                goal: 1,  get: () => ((state.duels || {}).race || {}).w || 0 },
+  { id: "duelRace5",   icon: "🏁", name: "Risk taker",        desc: "Win 5 Races to 42",                                goal: 5,  get: () => ((state.duels || {}).race || {}).w || 0 },
+  { id: "duelRace20",  icon: "🏆", name: "Race champion",     desc: "Win 20 Races to 42",                               goal: 20, get: () => ((state.duels || {}).race || {}).w || 0 },
 ].map(a => ({ ...a, cat: "online" })));
 
 if (!state.stats) state.stats = {};

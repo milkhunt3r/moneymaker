@@ -251,7 +251,7 @@ const staffIco = (key, o, cls = "staffI") => STAFF_PICS.includes(key) ? ico("st-
 const alienBonus = (key) => (typeof spAllyBonus === "function" ? spAllyBonus(key) : 0);
 const geneBonus = (cat) => (typeof geneCatCount === "function" ? geneCatCount(cat) * 0.01 : 0);
 const PREF_KEYS = ["view", "coinUnit", "casinoPage", "logiPage", "rewardType", "rewardState", "gamePage", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage", "cryptoSel", "ivCard", "logiFleet", "mapBig", "mapHelp",
-                   "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage", "numFmt", "lowFx", "popups", "mgTabs", "orDispOpen", "mgSnooze", "duGoal"];
+                   "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage", "numFmt", "lowFx", "popups", "mgTabs", "orDispOpen", "mgSnooze"];
 function splitState(st) {   // -> { progress, prefs }
   const progress = {}, prefs = {};
   for (const k in st) (PREF_KEYS.includes(k) ? prefs : progress)[k] = st[k];
