@@ -1101,12 +1101,12 @@ Object.assign(ES, { "Masterpieces": "Obras maestras", "Vincent van Gogh": "Vince
 rx(String.raw`Normal unlocks after you submit \(sell or keep\) (\d+) Easy paintings; 🏛️ Masterpiece unlocks after (\d+) Normal paintings\.`, "Normal se desbloquea al entregar (vender o guardar) $1 cuadros fáciles; 🏛️ Obra maestra, tras $2 cuadros normales.");
 // 🐾🎨 Pip the painter pet
 Object.assign(ES, { "A painter wants to join you": "Un pintor quiere vivir contigo", "Adopt Pip": "Adoptar a Pip", "Adopt": "Adoptar", "Pip joined you!": "¡Pip se ha unido a ti!",
-  "He set up his easel at the top of the 🎮 Mini-games page. Every 15 minutes he paints a 🟡 Normal painting for your collection (he naps in between).":
-    "Ha montado su caballete arriba del todo en la página de 🎮 Minijuegos. Cada 15 minutos pinta un cuadro 🟡 Normal para tu colección (entre medias, se echa la siesta).",
+  "He set up his easel at the top of the 🖼️ Art Gallery page. Every 15 minutes he paints a 🟡 Normal painting for your collection (he naps in between).":
+    "Ha montado su caballete arriba del todo en la página de la 🖼️ Galería de arte. Cada 15 minutos pinta un cuadro 🟡 Normal para tu colección (entre medias, se echa la siesta).",
   "Go and see him": "Ir a verlo", "Later": "Más tarde", "Painted": "Pintados", "Auto-sold": "Vendidos solos", "Last": "Último", "Disturbed": "Molestado",
   "Click him to pet him (he doesn't like it while he's painting!).": "Haz clic en él para acariciarlo (¡no le gusta nada mientras pinta!).",
   "What he does": "Qué hace", "Another pet is out there": "Hay otra mascota por ahí",
-  "Lives at the top of the Mini-games page, next to his easel.": "Vive arriba del todo en la página de Minijuegos, junto a su caballete.",
+  "Lives at the top of the Art Gallery page, next to his easel.": "Vive arriba del todo en la página de la Galería de arte, junto a su caballete.",
   "Every 15 minutes he paints a 🟡 Normal painting: 14 minutes asleep, then 1 minute of painting. His copies are 85–95% matches.":
     "Cada 15 minutos pinta un cuadro 🟡 Normal: 14 minutos dormido y después 1 minuto pintando. Sus copias tienen un parecido del 85–95 %.",
   "The painting goes to your collection. If it's full, he sells it right away. Both count for 🏆 achievements.":
@@ -1116,7 +1116,7 @@ Object.assign(ES, { "A painter wants to join you": "Un pintor quiere vivir conti
   "Pip the painter": "Pip, el pintor",
   "A young alien painter from the Lumerians (🌌 Space Logistics). Once you are 😊 Friendly with them, you can adopt him for 10 paintings from your collection (they count as sold for 🏆 achievements).":
     "Un joven pintor alienígena de los lumerianos (🌌 Logística espacial). Cuando llegues al nivel 😊 Amistosa con ellos, podrás adoptarlo a cambio de 10 cuadros de tu colección (cuentan como vendidos para los 🏆 logros).",
-  "He lives at the top of the Mini-games page, next to his easel.": "Vive arriba del todo en la página de Minijuegos, junto a su caballete.",
+  "He lives at the top of the Mini-games page, next to his easel.": "Vive arriba del todo en la página de la Galería de arte, junto a su caballete.",
   "Every 15 minutes he paints a 🟡 Normal painting: 14 minutes asleep, then 1 minute of painting. His copies are 85–95% matches, worth that part of 100M.":
     "Cada 15 minutos pinta un cuadro 🟡 Normal: 14 minutos dormido y después 1 minuto pintando. Sus copias tienen un parecido del 85–95 % y valen esa parte de 100 M.",
   "The painting goes to your collection; if it's full, he sells it right away. Both count for 🏆 achievements.":
@@ -1891,7 +1891,7 @@ Object.assign(ES, { "Your pets": "Tus mascotas", "Pets stay with you through pre
   "Coming in a future update": "Llegará en una futura actualización", "Rename": "Cambiar nombre", "Go see him →": "Ir a verlo →", "Active": "Activo", "Resting": "Descansando",
   "Lives on the 💰 Income page and runs your ⚡ energy drink.": "Vive en la página de 💰 Ingresos y se encarga de tu ⚡ bebida energética.",
   "Hidden. He doesn't buy energy drinks or tap the coin.": "Oculto. No compra bebidas energéticas ni toca la moneda.",
-  "Lives on the 🎮 Mini-games page and paints every 15 minutes.": "Vive en la página de 🎮 Minijuegos y pinta cada 15 minutos.",
+  "Lives on the 🖼️ Art Gallery page and paints every 15 minutes.": "Vive en la página de la 🖼️ Galería de arte y pinta cada 15 minutos.",
   "Hidden, and his painting clock is paused until you turn him back on.": "Oculto, y su reloj de pintura queda en pausa hasta que lo vuelvas a activar.",
   "Always sell his paintings": "Vender siempre sus cuadros", "Every painting is sold right away for money.": "Cada cuadro se vende al momento por dinero.",
   "Paintings go to your 🖼️ collection; he only sells when it's full.": "Los cuadros van a tu 🖼️ colección; solo vende cuando está llena.",
@@ -1977,6 +1977,10 @@ H("🎮 Mini-games: every game now has the same header (← back, title and its 
 Object.assign(ES, { "Dig": "Excavar", "Freezer": "Congelador", "Bonuses": "Bonificaciones" });
 H("🎮 Mini-games: side tabs keep each game tidy. ⛏️ Gold Mine Dig: Dig / Upgrades. 🚀 Nebula Strike: Levels / Hangar / Upgrades. 🧬 Gene Splicer: Freezer / Codex / Mutants / Bonuses, with the splicer always on top. A <b>!</b> shows when you can buy an upgrade or a ship.",
   "🎮 Minijuegos: pestañas laterales para ordenar cada juego. ⛏️ Excavación en la mina de oro: Excavar / Mejoras. 🚀 Nebula Strike: Niveles / Hangar / Mejoras. 🧬 Empalmador genético: Congelador / Códice / Mutantes / Bonificaciones, con el empalmador siempre arriba. Un <b>!</b> avisa cuando puedes comprar una mejora o una nave.");
+Object.assign(ES, { "Today's commission is waiting (×3 value)": "El encargo de hoy te espera (×3 de valor)", "Energy full: time to dig!": "Energía llena: ¡a excavar!",
+  "DNA is full: splice before new DNA goes to waste": "ADN lleno: empalma antes de que se desperdicie el nuevo ADN", "You can buy a ship or an upgrade": "Puedes comprar una nave o una mejora" });
+H("🎮 Mini-games hub: 🎨 Pip now paints at the top of the 🖼️ Art Gallery page, a <b>!</b> on a game (and on the Mini-games tab) shows when it wants you: today's art commission, full mine energy, full DNA or something to buy in Nebula Strike. On phones the games sit two per row.",
+  "🎮 Centro de minijuegos: 🎨 Pip pinta ahora arriba en la página de la 🖼️ Galería de arte, y un <b>!</b> en un juego (y en la pestaña Minijuegos) avisa cuando te necesita: el encargo de arte del día, la energía de la mina llena, el ADN lleno o algo que comprar en Nebula Strike. En el móvil los juegos van de dos en dos.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

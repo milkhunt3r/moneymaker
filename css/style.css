@@ -2779,3 +2779,12 @@ body.phone .mgStat { margin-left: 0; width: 100%; justify-content: flex-start; }
 .mgNav .subTab .ico { width: 1.2em; height: 1.2em; vertical-align: -0.2em; margin-right: 4px; }
 .geneListTitle { font-size: 16px; margin-right: auto; }
 #mineView .subMain .mineIntro, #mineView .subMain .mineUps { max-width: none; width: auto; margin-left: 0; margin-right: 0; }
+/* 🎮 hub: "ready" line on a card, compact cards on phones */
+.gameReady { font-size: 13px; font-weight: 700; color: #ffd34d; margin: 4px 0; }
+body.phone .gamesGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+body.phone .gameCard { padding: 10px 8px; }
+body.phone .gameCard > p.muted, body.phone #gamesHub > p.muted { display: none; }
+body.phone .gameCard .gameIconImg { width: 54px; height: 54px; }
+body.phone .gameCard h3 { font-size: 15px; margin: 4px 0; }
+body.phone .gameCard .gameStatus, body.phone .gameReady { font-size: 12px; }
+body.phone .gameCard .btn { width: 100%; padding: 8px 4px; }

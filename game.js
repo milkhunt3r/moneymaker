@@ -2477,12 +2477,12 @@ Object.assign(ES, { "Masterpieces": "Obras maestras", "Vincent van Gogh": "Vince
 rx(String.raw`Normal unlocks after you submit \(sell or keep\) (\d+) Easy paintings; 🏛️ Masterpiece unlocks after (\d+) Normal paintings\.`, "Normal se desbloquea al entregar (vender o guardar) $1 cuadros fáciles; 🏛️ Obra maestra, tras $2 cuadros normales.");
 // 🐾🎨 Pip the painter pet
 Object.assign(ES, { "A painter wants to join you": "Un pintor quiere vivir contigo", "Adopt Pip": "Adoptar a Pip", "Adopt": "Adoptar", "Pip joined you!": "¡Pip se ha unido a ti!",
-  "He set up his easel at the top of the 🎮 Mini-games page. Every 15 minutes he paints a 🟡 Normal painting for your collection (he naps in between).":
-    "Ha montado su caballete arriba del todo en la página de 🎮 Minijuegos. Cada 15 minutos pinta un cuadro 🟡 Normal para tu colección (entre medias, se echa la siesta).",
+  "He set up his easel at the top of the 🖼️ Art Gallery page. Every 15 minutes he paints a 🟡 Normal painting for your collection (he naps in between).":
+    "Ha montado su caballete arriba del todo en la página de la 🖼️ Galería de arte. Cada 15 minutos pinta un cuadro 🟡 Normal para tu colección (entre medias, se echa la siesta).",
   "Go and see him": "Ir a verlo", "Later": "Más tarde", "Painted": "Pintados", "Auto-sold": "Vendidos solos", "Last": "Último", "Disturbed": "Molestado",
   "Click him to pet him (he doesn't like it while he's painting!).": "Haz clic en él para acariciarlo (¡no le gusta nada mientras pinta!).",
   "What he does": "Qué hace", "Another pet is out there": "Hay otra mascota por ahí",
-  "Lives at the top of the Mini-games page, next to his easel.": "Vive arriba del todo en la página de Minijuegos, junto a su caballete.",
+  "Lives at the top of the Art Gallery page, next to his easel.": "Vive arriba del todo en la página de la Galería de arte, junto a su caballete.",
   "Every 15 minutes he paints a 🟡 Normal painting: 14 minutes asleep, then 1 minute of painting. His copies are 85–95% matches.":
     "Cada 15 minutos pinta un cuadro 🟡 Normal: 14 minutos dormido y después 1 minuto pintando. Sus copias tienen un parecido del 85–95 %.",
   "The painting goes to your collection. If it's full, he sells it right away. Both count for 🏆 achievements.":
@@ -2492,7 +2492,7 @@ Object.assign(ES, { "A painter wants to join you": "Un pintor quiere vivir conti
   "Pip the painter": "Pip, el pintor",
   "A young alien painter from the Lumerians (🌌 Space Logistics). Once you are 😊 Friendly with them, you can adopt him for 10 paintings from your collection (they count as sold for 🏆 achievements).":
     "Un joven pintor alienígena de los lumerianos (🌌 Logística espacial). Cuando llegues al nivel 😊 Amistosa con ellos, podrás adoptarlo a cambio de 10 cuadros de tu colección (cuentan como vendidos para los 🏆 logros).",
-  "He lives at the top of the Mini-games page, next to his easel.": "Vive arriba del todo en la página de Minijuegos, junto a su caballete.",
+  "He lives at the top of the Mini-games page, next to his easel.": "Vive arriba del todo en la página de la Galería de arte, junto a su caballete.",
   "Every 15 minutes he paints a 🟡 Normal painting: 14 minutes asleep, then 1 minute of painting. His copies are 85–95% matches, worth that part of 100M.":
     "Cada 15 minutos pinta un cuadro 🟡 Normal: 14 minutos dormido y después 1 minuto pintando. Sus copias tienen un parecido del 85–95 % y valen esa parte de 100 M.",
   "The painting goes to your collection; if it's full, he sells it right away. Both count for 🏆 achievements.":
@@ -3267,7 +3267,7 @@ Object.assign(ES, { "Your pets": "Tus mascotas", "Pets stay with you through pre
   "Coming in a future update": "Llegará en una futura actualización", "Rename": "Cambiar nombre", "Go see him →": "Ir a verlo →", "Active": "Activo", "Resting": "Descansando",
   "Lives on the 💰 Income page and runs your ⚡ energy drink.": "Vive en la página de 💰 Ingresos y se encarga de tu ⚡ bebida energética.",
   "Hidden. He doesn't buy energy drinks or tap the coin.": "Oculto. No compra bebidas energéticas ni toca la moneda.",
-  "Lives on the 🎮 Mini-games page and paints every 15 minutes.": "Vive en la página de 🎮 Minijuegos y pinta cada 15 minutos.",
+  "Lives on the 🖼️ Art Gallery page and paints every 15 minutes.": "Vive en la página de la 🖼️ Galería de arte y pinta cada 15 minutos.",
   "Hidden, and his painting clock is paused until you turn him back on.": "Oculto, y su reloj de pintura queda en pausa hasta que lo vuelvas a activar.",
   "Always sell his paintings": "Vender siempre sus cuadros", "Every painting is sold right away for money.": "Cada cuadro se vende al momento por dinero.",
   "Paintings go to your 🖼️ collection; he only sells when it's full.": "Los cuadros van a tu 🖼️ colección; solo vende cuando está llena.",
@@ -3353,6 +3353,10 @@ H("🎮 Mini-games: every game now has the same header (← back, title and its 
 Object.assign(ES, { "Dig": "Excavar", "Freezer": "Congelador", "Bonuses": "Bonificaciones" });
 H("🎮 Mini-games: side tabs keep each game tidy. ⛏️ Gold Mine Dig: Dig / Upgrades. 🚀 Nebula Strike: Levels / Hangar / Upgrades. 🧬 Gene Splicer: Freezer / Codex / Mutants / Bonuses, with the splicer always on top. A <b>!</b> shows when you can buy an upgrade or a ship.",
   "🎮 Minijuegos: pestañas laterales para ordenar cada juego. ⛏️ Excavación en la mina de oro: Excavar / Mejoras. 🚀 Nebula Strike: Niveles / Hangar / Mejoras. 🧬 Empalmador genético: Congelador / Códice / Mutantes / Bonificaciones, con el empalmador siempre arriba. Un <b>!</b> avisa cuando puedes comprar una mejora o una nave.");
+Object.assign(ES, { "Today's commission is waiting (×3 value)": "El encargo de hoy te espera (×3 de valor)", "Energy full: time to dig!": "Energía llena: ¡a excavar!",
+  "DNA is full: splice before new DNA goes to waste": "ADN lleno: empalma antes de que se desperdicie el nuevo ADN", "You can buy a ship or an upgrade": "Puedes comprar una nave o una mejora" });
+H("🎮 Mini-games hub: 🎨 Pip now paints at the top of the 🖼️ Art Gallery page, a <b>!</b> on a game (and on the Mini-games tab) shows when it wants you: today's art commission, full mine energy, full DNA or something to buy in Nebula Strike. On phones the games sit two per row.",
+  "🎮 Centro de minijuegos: 🎨 Pip pinta ahora arriba en la página de la 🖼️ Galería de arte, y un <b>!</b> en un juego (y en la pestaña Minijuegos) avisa cuando te necesita: el encargo de arte del día, la energía de la mina llena, el ADN lleno o algo que comprar en Nebula Strike. En el móvil los juegos van de dos en dos.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -13287,7 +13291,8 @@ function showArtPage(p) {
 function updateArtTab() {   // the 🎮 Mini-games tab shows 🔒 until at least one mini-game is open
   const tab = document.querySelector('.tab[data-view="games"]');
   const any = state.art.unlocked || (typeof mineUnlocked === "function" && mineUnlocked());
-  const html = (any ? "" : ico("lock", "lockS")) + '<img class="tabIco" src="assets/icons/tab-games.webp" alt="">Mini-games';
+  const ready = any && (__eocLoaded >= 31 && typeof mgReady === "function") && Object.keys(mgReady()).length;   // ❗ a game wants your attention
+  const html = (any ? "" : ico("lock", "lockS")) + '<img class="tabIco" src="assets/icons/tab-games.webp" alt="">Mini-games' + (ready ? ' <span class="tabWarn gold">!</span>' : "");
   if (tab && tab.innerHTML !== html) tab.innerHTML = html;
 }
 function renderArt() {
@@ -14326,6 +14331,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "🎮 Mini-games hub: 🎨 Pip now paints at the top of the 🖼️ Art Gallery page, a <b>!</b> on a game (and on the Mini-games tab) shows when it wants you: today's art commission, full mine energy, full DNA or something to buy in Nebula Strike. On phones the games sit two per row.",
     "🎮 Mini-games: side tabs keep each game tidy. ⛏️ Gold Mine Dig: Dig / Upgrades. 🚀 Nebula Strike: Levels / Hangar / Upgrades. 🧬 Gene Splicer: Freezer / Codex / Mutants / Bonuses, with the splicer always on top. A <b>!</b> shows when you can buy an upgrade or a ship.",
     "🎮 Mini-games: every game now has the same header (← back, title and its key number: 🖼️ collection, ⚡ energy, 🏁 levels and ✨ stardust, or species found), and the rules are folded into <b>ℹ️ How to play</b> (open the first time, folded once you've played).",
     "🛠️ Space crafting level 3 now also unlocks crafting in batches of <b>150</b>.",
@@ -15612,40 +15618,54 @@ function renderGames() {
   if (page === "mine") return renderMine();
   if (page === "shooter" && (__eocLoaded >= 39 && typeof renderShooter === "function")) return renderShooter();
   if (page === "gene" && (__eocLoaded >= 32 && typeof renderGene === "function")) return renderGene();
-  const art = state.art.unlocked, mine = mineUnlocked(), e = mineEnergy();
+  const art = state.art.unlocked, mine = mineUnlocked(), e = mineEnergy(), rd = mgReady();
   $("gamesHub").innerHTML = `<h2 class="gamesTitle">🎮 Mini-games</h2>
     <p class="muted">Unlock mini-games with your buildings and achievements, then play them to earn extra money.</p>
     <div class="gamesGrid">
       <div class="card gameCard">
-        <img class="gameIcon gameIconImg" src="assets/icons/ico-artgallery.webp" alt=""><h3>Art Gallery</h3>
+        <img class="gameIcon gameIconImg" src="assets/icons/ico-artgallery.webp" alt=""><h3>Art Gallery${mgBang(rd.art)}</h3>
         <p class="muted">Copy paintings as closely as you can. Sell them or keep them in your collection.</p>
+        ${mgWhy(rd.art)}
         <div class="gameStatus">${art ? `🖼️ ${(state.art.items || []).length} paintings in your collection` : `🔒 ${artGalleryReady() ? `Open it for ${fmt(ART_UNLOCK)}` : "Unlocks with the 💵 Millionaire achievement"}`}</div>
         <button class="btn" data-game="art">${art ? "▶ Play" : "View"}</button>
       </div>
       <div class="card gameCard ${mine ? "" : "locked"}">
-        <img class="gameIcon gameIconImg" src="assets/mine/entrance.webp" alt=""><h3>Gold Mine Dig</h3>
+        <img class="gameIcon gameIconImg" src="assets/mine/entrance.webp" alt=""><h3>Gold Mine Dig${mgBang(rd.mine)}</h3>
         <p class="muted">Dig 250 m deep for coal, copper, silver, gold, diamonds, rubies and treasure chests before your lamp runs out.</p>
+        ${mgWhy(rd.mine)}
         <div class="gameStatus">${mine ? `${energyIcons(e)}${M.run ? " · ⛏️ run in progress" : ""}` : "🔒 Buy your first ⛏️ gold mine (💰 Income → ⭐ Special)"}</div>
         ${mine && (__eocLoaded >= 50 && typeof digyHubLine === "function") ? digyHubLine() : ""}
         ${mine ? vaultLine("small") : ""}
         <button class="btn" data-game="mine" ${mine ? "" : "disabled"}>${M.run ? "▶ Continue" : "▶ Play"}</button>
       </div>
       ${typeof G !== "undefined" && (G.unlocked || secrets2Open()) ? `<div class="card gameCard secretCard ${G.unlocked ? "" : "locked"}">
-        <img class="gameIcon gameIconImg" src="assets/gene/gx-splicer.webp" alt=""><h3>Gene Splicer <span class="secretTag">🌌🌌</span></h3>
+        <img class="gameIcon gameIconImg" src="assets/gene/gx-splicer.webp" alt=""><h3>Gene Splicer <span class="secretTag">🌌🌌</span>${mgBang(rd.gene)}</h3>
         <p class="muted">Splice DNA samples into new species: from frogs and dolphins to dinosaurs, dragons and the kraken.</p>
+        ${mgWhy(rd.gene)}
         <div class="gameStatus">${G.unlocked ? `🧬 ${geneFound()} / ${GENE_TOTAL} species` : "🔒 Buy the 🧬 Genetics Laboratory (💰 Income → 🔬 Science)"}</div>
         <button class="btn" data-game="gene" ${G.unlocked ? "" : "disabled"}>▶ Play</button>
       </div>` : ""}
       ${typeof SH !== "undefined" ? (() => { const on = shUnlocked(); return `<div class="card gameCard ${on ? "" : "locked"}">
-        <img class="gameIcon gameIconImg shGameIcon" src="assets/icons/ico-sh-game.webp" alt=""><h3>Nebula Strike</h3>
+        <img class="gameIcon gameIconImg shGameIcon" src="assets/icons/ico-sh-game.webp" alt=""><h3>Nebula Strike${mgBang(rd.shooter)}</h3>
         <p class="muted">Fly a spaceship through 5 levels of enemy waves, defeat the bosses and survive the pirates' graveyard.</p>
+        ${mgWhy(rd.shooter)}
         <div class="gameStatus">${on ? `🏁 ${SH.done} / ${SH_LEVELS.length} levels cleared · ✨ ${SH.dust.toLocaleString()}${typeof shR !== "undefined" && shR && !shR.end ? " · 🚀 level in progress" : ""}` : "🔒 Build the 🚀 Space Mission Center (💰 Income → 🔬 Science)"}</div>
         <button class="btn" data-game="shooter" ${on ? "" : "disabled"}>${typeof shR !== "undefined" && shR && !shR.end ? "▶ Continue" : "▶ Play"}</button>
       </div>`; })() : ""}
-      <div class="card gameCard soon"><div class="gameIcon">❔</div><h3>More coming soon</h3>
-        <p class="muted">New mini-games will unlock with other buildings.</p></div>
     </div>`;
 }
+// ❗ which mini-games want your attention: a ! on their hub card and on the 🎮 Mini-games tab
+function mgReady() {
+  const r = {};
+  if (state.art.unlocked && (__eocLoaded >= 25 && typeof artCommCheck === "function")) { const c = artCommCheck(); if (c && !c.done && Date.now() < c.until) r.art = "📜 Today's commission is waiting (×3 value)"; }
+  if (mineUnlocked() && !M.run && mineEnergy() >= energyMax() && !(typeof digyOn === "function" && digyOn())) r.mine = "⚡ Energy full: time to dig!";
+  if (typeof G !== "undefined" && G.unlocked && G.known.length && G.known.every(k => (G.dna[k] || 0) >= GENE_DNA_MAX)) r.gene = "🧬 DNA is full: splice before new DNA goes to waste";
+  if (typeof SH !== "undefined" && shUnlocked() && (shShipBuyable() || shUpBuyable())) r.shooter = "⬆️ You can buy a ship or an upgrade";
+  return r;
+}
+var mgBang = (why) => why ? ` <span class="tabWarn gold" title="${why}">!</span>` : "";
+var mgWhy = (why) => why ? `<div class="gameReady">${why}</div>` : "";
+setInterval(() => { if ((__eocLoaded >= 25 && typeof updateArtTab === "function")) updateArtTab(); }, 3000);
 function openGame(page) {
   state.gamePage = page || null;
   showView("games");
@@ -19337,7 +19357,7 @@ function petLive() {
   if (pipHas()) {
     const Q = state.pip, now = Date.now(), ph = pipPhase(now);
     const es = LANG === "es";
-    v.pStatus = !pipOn() ? (es ? "💤 <b>Descansando.</b> Apagado: no está en la página de 🎮 Minijuegos y su reloj de pintura está en pausa." : "💤 <b>Resting.</b> Turned off: he isn't on the 🎮 Mini-games page and his painting clock is paused.")
+    v.pStatus = !pipOn() ? (es ? "💤 <b>Descansando.</b> Apagado: no está en la página de la 🖼️ Galería de arte y su reloj de pintura está en pausa." : "💤 <b>Resting.</b> Turned off: he isn't on the 🖼️ Art Gallery page and his painting clock is paused.")
       : ph.painting ? (es ? `🎨 <b>Pintando el cuadro n.º ${(Q.painted + 1).toLocaleString()}</b> · listo en <b>${clockMs(ph.next - now)}</b>` : `🎨 <b>Painting #${(Q.painted + 1).toLocaleString()}</b> · done in <b>${clockMs(ph.next - now)}</b>`)
       : (es ? `😴 <b>Dormido.</b> El próximo cuadro empieza en <b>${clockMs(ph.next - PIP_PAINT - now)}</b>` : `😴 <b>Asleep.</b> Next painting starts in <b>${clockMs(ph.next - PIP_PAINT - now)}</b>`);
     v.pStats = `<span>💰 Earned: <b>${fmt(Q.earned || 0)}</b></span><span>🖼️ Paintings: <b>${(Q.painted || 0).toLocaleString()}</b></span><span>📥 Kept: <b>${(Q.kept || 0).toLocaleString()}</b></span><span>💵 Sold: <b>${(Q.sold || 0).toLocaleString()}</b></span><span>❤️ Petted: <b>${(Q.pets || 0).toLocaleString()}</b></span><span>😤 Disturbed: <b>${(Q.pokes || 0).toLocaleString()}</b></span>`;
@@ -19399,12 +19419,12 @@ function renderPetPage() {
           <div class="muted">Your Lumerian painter${Q.at ? ` · together since ${new Date(Q.at).toLocaleDateString()}` : ""}</div>
           <div class="petStatus"><span data-pv="pStatus" data-noi18n>${v.pStatus}</span><button class="btn small" data-petvisit="pip">Go see him →</button></div>
           <div class="petStats" data-pv="pStats">${v.pStats}</div></div></div>
-      ${petSwitchRow('data-pip="toggle"', pipOn(), "Lives on the 🎮 Mini-games page and paints every 15 minutes.", "Hidden, and his painting clock is paused until you turn him back on.")}
+      ${petSwitchRow('data-pip="toggle"', pipOn(), "Lives on the 🖼️ Art Gallery page and paints every 15 minutes.", "Hidden, and his painting clock is paused until you turn him back on.")}
       <div class="orRow petOnRow"><span class="grow"><b>Always sell his paintings</b><small>${Q.sellAll ? "Every painting is sold right away for money." : "Paintings go to your 🖼️ collection; he only sells when it's full."}</small></span>
         <span class="orSwitch ${Q.sellAll ? "on" : ""}" data-pip="sell" role="switch" tabindex="0" aria-checked="${!!Q.sellAll}"></span></div>
       <details class="petHow"><summary>ℹ️ How it works</summary>
       <ul class="petDoes">
-        <li>🎮 Lives at the top of the Mini-games page, next to his easel.</li>
+        <li>🎮 Lives at the top of the Art Gallery page, next to his easel.</li>
         <li>🎨 Every 15 minutes he paints a 🟡 Normal painting: 14 minutes asleep, then 1 minute of painting. His copies are 85–95% matches.</li>
         <li>🖼️ The painting goes to your collection. If it's full (or "Always sell" is on), he sells it right away. Both count for 🏆 achievements.</li>
         <li>🌙 He keeps painting while the game is closed (up to 24 hours).</li>
@@ -19450,7 +19470,7 @@ $("petPage").addEventListener("click", (e) => {
   const go = e.target.closest("[data-petgo]");
   if (go) { const c = $("petCard-" + go.dataset.petgo); if (c) c.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
   const vis = e.target.closest("[data-petvisit]");
-  if (vis) { if (vis.dataset.petvisit === "pet") showView("income"); else if (vis.dataset.petvisit === "digy") openGame("mine"); else openGame(null); }
+  if (vis) { if (vis.dataset.petvisit === "pet") showView("income"); else if (vis.dataset.petvisit === "digy") openGame("mine"); else openGame("art"); }
 });
 // ✏️ rename: Enter or leaving the field saves (the change handlers in js/33-pet.js and js/36-pip.js store the name)
 $("petPage").addEventListener("keydown", (e) => { if (e.target.classList.contains("petNameInput") && (e.key === "Enter" || e.key === "Escape")) e.target.blur(); });
@@ -21039,7 +21059,7 @@ __eocLoaded = 49;
 /* =====================================================================
    🐾🎨 PIP, the painter pet (an alien mouse from the Lumerians).
    - Adopt him in 🌌 Space Logistics → Lumerians, once you are 😊 Friendly, for 10 paintings from your collection.
-   - He lives at the top of the 🎮 Mini-games page, next to his easel.
+   - He lives at the top of the 🖼️ Art Gallery page, next to his easel.
    - Every 15 minutes: 14 min asleep, then 1 min painting a 🟡 Normal painting (85–95% match, worth match% of 100M).
    - The painting goes to your 🖼️ collection; if it's full, it is sold right away. Both count for 🏆 achievements.
    - He keeps painting while the game is closed (up to 24 hours of paintings are caught up).
@@ -21141,23 +21161,24 @@ function pipAdopt(ids) {
   save();
   showModal(`<div style="text-align:center"><img src="${pipSrc("tada")}" alt="" style="width:180px;height:180px;object-fit:contain">
     <h2>🐾 Pip joined you!</h2>
-    <p>He set up his easel at the top of the 🎮 Mini-games page. Every 15 minutes he paints a 🟡 Normal painting for your collection (he naps in between).</p>
+    <p>He set up his easel at the top of the 🖼️ Art Gallery page. Every 15 minutes he paints a 🟡 Normal painting for your collection (he naps in between).</p>
     <div class="row" style="justify-content:center;gap:10px"><button class="btn big" data-pip="visit">🎮 Go and see him</button><button class="btn ghost" data-modal="close">Later</button></div></div>`);
   if ((__eocLoaded >= 44 && typeof renderSpace === "function") && state.view === "logistics") renderSpace();
   return true;
 }
 
-/* ----- 🎮 his corner on the Mini-games page ----- */
+/* ----- 🎨 his corner on the Art Gallery page ----- */
 var pipUI = { anim: null, animAt: 0, tadaUntil: 0, lastFrame: "", lastSeed: 0, lastDrawn: -1, built: false };
 PIP_FRAMES.forEach(f => { const im = new Image(); im.src = pipSrc(f); });
 var PIP_PATCH = (() => {   // the order the canvas gets painted in: 12 × 9 patches, roughly top to bottom
   const L = []; for (let y = 0; y < 9; y++) for (let x = 0; x < 12; x++) L.push([x, y, y + Math.random() * 3]);
   return L.sort((a, b) => a[2] - b[2]);
 })();
-function pipCornerVisible() { const el = $("pipCorner"); return !!el && !el.hidden && state.view === "games" && !document.hidden; }
+// 🎨 his corner sits at the top of the 🖼️ Art Gallery page (under its header)
+function pipCornerVisible() { const el = $("pipCorner"); return !!el && !el.hidden && state.view === "games" && state.gamePage === "art" && !document.hidden; }
 function renderPipCorner() {
   const el = $("pipCorner"); if (!el) return;
-  el.hidden = !pipOwned() || !!state.gamePage || !!state.pip.off;   // 💤 resting: not in his corner
+  el.hidden = !pipOwned() || state.gamePage !== "art" || !state.art.unlocked || !!state.pip.off;   // only on the Art Gallery page; 💤 resting: not in his corner
   if (el.hidden) return;
   if (!pipUI.built) {
     el.innerHTML = `<div class="card pipCard"><div class="pipStage">
@@ -21242,7 +21263,7 @@ document.addEventListener("click", (e) => {
     if (pipOwned() || spLevel("art") < PIP_LV || state.art.items.length < PIP_COST || (__eocLoaded < 44 || typeof spRenderPick !== "function")) return;
     spPick = { k: "art", kind: "art", need: PIP_COST, sel: [], pip: true }; spRenderPick();
   }
-  if (b.dataset.pip === "visit") { hideModal(); openGame(null); }
+  if (b.dataset.pip === "visit") { hideModal(); openGame("art"); }
   // 🐾 Pets page: Active / Resting (resting pauses the painting clock: the time off is added to his start) and Always sell
   if (b.dataset.pip === "toggle" && pipOwned()) {
     const p = state.pip;
@@ -21256,12 +21277,14 @@ document.addEventListener("change", (e) => {
   const n = petCleanName(e.target.value);
   state.pip.name = n || "Pip"; e.target.value = state.pip.name; save();
 });
-// the corner sits above the hub: show it whenever the hub is drawn
+// draw the corner whenever the mini-games are drawn (it shows only on the Art Gallery page)
 var pipRenderGamesOrig = renderGames;
 renderGames = function () { pipRenderGamesOrig(); renderPipCorner(); };
+var pipRenderArtOrig = renderArt;
+renderArt = function () { pipRenderArtOrig(); renderPipCorner(); };   // 🖼️ the Art Gallery page is drawn on its own
 document.addEventListener("visibilitychange", () => { if (!document.hidden && pipOwned()) pipProcess(false); });
 if (pipOwned()) pipProcess(true);
-if (state.view === "games" && !state.gamePage) renderPipCorner();   // the page opened straight on 🎮 Mini-games
+if (state.view === "games" && state.gamePage === "art") renderPipCorner();   // the page opened straight on the Art Gallery
 
 // ===== js/36b-digy.js =====
 __eocLoaded = 50;

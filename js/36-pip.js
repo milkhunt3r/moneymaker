@@ -2,7 +2,7 @@
 /* =====================================================================
    🐾🎨 PIP, the painter pet (an alien mouse from the Lumerians).
    - Adopt him in 🌌 Space Logistics → Lumerians, once you are 😊 Friendly, for 10 paintings from your collection.
-   - He lives at the top of the 🎮 Mini-games page, next to his easel.
+   - He lives at the top of the 🖼️ Art Gallery page, next to his easel.
    - Every 15 minutes: 14 min asleep, then 1 min painting a 🟡 Normal painting (85–95% match, worth match% of 100M).
    - The painting goes to your 🖼️ collection; if it's full, it is sold right away. Both count for 🏆 achievements.
    - He keeps painting while the game is closed (up to 24 hours of paintings are caught up).
@@ -104,23 +104,24 @@ function pipAdopt(ids) {
   save();
   showModal(`<div style="text-align:center"><img src="${pipSrc("tada")}" alt="" style="width:180px;height:180px;object-fit:contain">
     <h2>🐾 Pip joined you!</h2>
-    <p>He set up his easel at the top of the 🎮 Mini-games page. Every 15 minutes he paints a 🟡 Normal painting for your collection (he naps in between).</p>
+    <p>He set up his easel at the top of the 🖼️ Art Gallery page. Every 15 minutes he paints a 🟡 Normal painting for your collection (he naps in between).</p>
     <div class="row" style="justify-content:center;gap:10px"><button class="btn big" data-pip="visit">🎮 Go and see him</button><button class="btn ghost" data-modal="close">Later</button></div></div>`);
   if (typeof renderSpace === "function" && state.view === "logistics") renderSpace();
   return true;
 }
 
-/* ----- 🎮 his corner on the Mini-games page ----- */
+/* ----- 🎨 his corner on the Art Gallery page ----- */
 const pipUI = { anim: null, animAt: 0, tadaUntil: 0, lastFrame: "", lastSeed: 0, lastDrawn: -1, built: false };
 PIP_FRAMES.forEach(f => { const im = new Image(); im.src = pipSrc(f); });
 const PIP_PATCH = (() => {   // the order the canvas gets painted in: 12 × 9 patches, roughly top to bottom
   const L = []; for (let y = 0; y < 9; y++) for (let x = 0; x < 12; x++) L.push([x, y, y + Math.random() * 3]);
   return L.sort((a, b) => a[2] - b[2]);
 })();
-function pipCornerVisible() { const el = $("pipCorner"); return !!el && !el.hidden && state.view === "games" && !document.hidden; }
+// 🎨 his corner sits at the top of the 🖼️ Art Gallery page (under its header)
+function pipCornerVisible() { const el = $("pipCorner"); return !!el && !el.hidden && state.view === "games" && state.gamePage === "art" && !document.hidden; }
 function renderPipCorner() {
   const el = $("pipCorner"); if (!el) return;
-  el.hidden = !pipOwned() || !!state.gamePage || !!state.pip.off;   // 💤 resting: not in his corner
+  el.hidden = !pipOwned() || state.gamePage !== "art" || !state.art.unlocked || !!state.pip.off;   // only on the Art Gallery page; 💤 resting: not in his corner
   if (el.hidden) return;
   if (!pipUI.built) {
     el.innerHTML = `<div class="card pipCard"><div class="pipStage">
@@ -205,7 +206,7 @@ document.addEventListener("click", (e) => {
     if (pipOwned() || spLevel("art") < PIP_LV || state.art.items.length < PIP_COST || typeof spRenderPick !== "function") return;
     spPick = { k: "art", kind: "art", need: PIP_COST, sel: [], pip: true }; spRenderPick();
   }
-  if (b.dataset.pip === "visit") { hideModal(); openGame(null); }
+  if (b.dataset.pip === "visit") { hideModal(); openGame("art"); }
   // 🐾 Pets page: Active / Resting (resting pauses the painting clock: the time off is added to his start) and Always sell
   if (b.dataset.pip === "toggle" && pipOwned()) {
     const p = state.pip;
@@ -219,9 +220,11 @@ document.addEventListener("change", (e) => {
   const n = petCleanName(e.target.value);
   state.pip.name = n || "Pip"; e.target.value = state.pip.name; save();
 });
-// the corner sits above the hub: show it whenever the hub is drawn
+// draw the corner whenever the mini-games are drawn (it shows only on the Art Gallery page)
 const pipRenderGamesOrig = renderGames;
 renderGames = function () { pipRenderGamesOrig(); renderPipCorner(); };
+const pipRenderArtOrig = renderArt;
+renderArt = function () { pipRenderArtOrig(); renderPipCorner(); };   // 🖼️ the Art Gallery page is drawn on its own
 document.addEventListener("visibilitychange", () => { if (!document.hidden && pipOwned()) pipProcess(false); });
 if (pipOwned()) pipProcess(true);
-if (state.view === "games" && !state.gamePage) renderPipCorner();   // the page opened straight on 🎮 Mini-games
+if (state.view === "games" && state.gamePage === "art") renderPipCorner();   // the page opened straight on the Art Gallery

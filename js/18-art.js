@@ -817,7 +817,8 @@ function showArtPage(p) {
 function updateArtTab() {   // the 🎮 Mini-games tab shows 🔒 until at least one mini-game is open
   const tab = document.querySelector('.tab[data-view="games"]');
   const any = state.art.unlocked || (typeof mineUnlocked === "function" && mineUnlocked());
-  const html = (any ? "" : ico("lock", "lockS")) + '<img class="tabIco" src="assets/icons/tab-games.webp" alt="">Mini-games';
+  const ready = any && typeof mgReady === "function" && Object.keys(mgReady()).length;   // ❗ a game wants your attention
+  const html = (any ? "" : ico("lock", "lockS")) + '<img class="tabIco" src="assets/icons/tab-games.webp" alt="">Mini-games' + (ready ? ' <span class="tabWarn gold">!</span>' : "");
   if (tab && tab.innerHTML !== html) tab.innerHTML = html;
 }
 function renderArt() {

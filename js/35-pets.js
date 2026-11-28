@@ -32,7 +32,7 @@ function petLive() {
   if (pipHas()) {
     const Q = state.pip, now = Date.now(), ph = pipPhase(now);
     const es = LANG === "es";
-    v.pStatus = !pipOn() ? (es ? "💤 <b>Descansando.</b> Apagado: no está en la página de 🎮 Minijuegos y su reloj de pintura está en pausa." : "💤 <b>Resting.</b> Turned off: he isn't on the 🎮 Mini-games page and his painting clock is paused.")
+    v.pStatus = !pipOn() ? (es ? "💤 <b>Descansando.</b> Apagado: no está en la página de la 🖼️ Galería de arte y su reloj de pintura está en pausa." : "💤 <b>Resting.</b> Turned off: he isn't on the 🖼️ Art Gallery page and his painting clock is paused.")
       : ph.painting ? (es ? `🎨 <b>Pintando el cuadro n.º ${(Q.painted + 1).toLocaleString()}</b> · listo en <b>${clockMs(ph.next - now)}</b>` : `🎨 <b>Painting #${(Q.painted + 1).toLocaleString()}</b> · done in <b>${clockMs(ph.next - now)}</b>`)
       : (es ? `😴 <b>Dormido.</b> El próximo cuadro empieza en <b>${clockMs(ph.next - PIP_PAINT - now)}</b>` : `😴 <b>Asleep.</b> Next painting starts in <b>${clockMs(ph.next - PIP_PAINT - now)}</b>`);
     v.pStats = `<span>💰 Earned: <b>${fmt(Q.earned || 0)}</b></span><span>🖼️ Paintings: <b>${(Q.painted || 0).toLocaleString()}</b></span><span>📥 Kept: <b>${(Q.kept || 0).toLocaleString()}</b></span><span>💵 Sold: <b>${(Q.sold || 0).toLocaleString()}</b></span><span>❤️ Petted: <b>${(Q.pets || 0).toLocaleString()}</b></span><span>😤 Disturbed: <b>${(Q.pokes || 0).toLocaleString()}</b></span>`;
@@ -94,12 +94,12 @@ function renderPetPage() {
           <div class="muted">Your Lumerian painter${Q.at ? ` · together since ${new Date(Q.at).toLocaleDateString()}` : ""}</div>
           <div class="petStatus"><span data-pv="pStatus" data-noi18n>${v.pStatus}</span><button class="btn small" data-petvisit="pip">Go see him →</button></div>
           <div class="petStats" data-pv="pStats">${v.pStats}</div></div></div>
-      ${petSwitchRow('data-pip="toggle"', pipOn(), "Lives on the 🎮 Mini-games page and paints every 15 minutes.", "Hidden, and his painting clock is paused until you turn him back on.")}
+      ${petSwitchRow('data-pip="toggle"', pipOn(), "Lives on the 🖼️ Art Gallery page and paints every 15 minutes.", "Hidden, and his painting clock is paused until you turn him back on.")}
       <div class="orRow petOnRow"><span class="grow"><b>Always sell his paintings</b><small>${Q.sellAll ? "Every painting is sold right away for money." : "Paintings go to your 🖼️ collection; he only sells when it's full."}</small></span>
         <span class="orSwitch ${Q.sellAll ? "on" : ""}" data-pip="sell" role="switch" tabindex="0" aria-checked="${!!Q.sellAll}"></span></div>
       <details class="petHow"><summary>ℹ️ How it works</summary>
       <ul class="petDoes">
-        <li>🎮 Lives at the top of the Mini-games page, next to his easel.</li>
+        <li>🎮 Lives at the top of the Art Gallery page, next to his easel.</li>
         <li>🎨 Every 15 minutes he paints a 🟡 Normal painting: 14 minutes asleep, then 1 minute of painting. His copies are 85–95% matches.</li>
         <li>🖼️ The painting goes to your collection. If it's full (or "Always sell" is on), he sells it right away. Both count for 🏆 achievements.</li>
         <li>🌙 He keeps painting while the game is closed (up to 24 hours).</li>
@@ -145,7 +145,7 @@ $("petPage").addEventListener("click", (e) => {
   const go = e.target.closest("[data-petgo]");
   if (go) { const c = $("petCard-" + go.dataset.petgo); if (c) c.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
   const vis = e.target.closest("[data-petvisit]");
-  if (vis) { if (vis.dataset.petvisit === "pet") showView("income"); else if (vis.dataset.petvisit === "digy") openGame("mine"); else openGame(null); }
+  if (vis) { if (vis.dataset.petvisit === "pet") showView("income"); else if (vis.dataset.petvisit === "digy") openGame("mine"); else openGame("art"); }
 });
 // ✏️ rename: Enter or leaving the field saves (the change handlers in js/33-pet.js and js/36-pip.js store the name)
 $("petPage").addEventListener("keydown", (e) => { if (e.target.classList.contains("petNameInput") && (e.key === "Enter" || e.key === "Escape")) e.target.blur(); });

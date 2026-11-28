@@ -924,40 +924,54 @@ function renderGames() {
   if (page === "mine") return renderMine();
   if (page === "shooter" && typeof renderShooter === "function") return renderShooter();
   if (page === "gene" && typeof renderGene === "function") return renderGene();
-  const art = state.art.unlocked, mine = mineUnlocked(), e = mineEnergy();
+  const art = state.art.unlocked, mine = mineUnlocked(), e = mineEnergy(), rd = mgReady();
   $("gamesHub").innerHTML = `<h2 class="gamesTitle">🎮 Mini-games</h2>
     <p class="muted">Unlock mini-games with your buildings and achievements, then play them to earn extra money.</p>
     <div class="gamesGrid">
       <div class="card gameCard">
-        <img class="gameIcon gameIconImg" src="assets/icons/ico-artgallery.webp" alt=""><h3>Art Gallery</h3>
+        <img class="gameIcon gameIconImg" src="assets/icons/ico-artgallery.webp" alt=""><h3>Art Gallery${mgBang(rd.art)}</h3>
         <p class="muted">Copy paintings as closely as you can. Sell them or keep them in your collection.</p>
+        ${mgWhy(rd.art)}
         <div class="gameStatus">${art ? `🖼️ ${(state.art.items || []).length} paintings in your collection` : `🔒 ${artGalleryReady() ? `Open it for ${fmt(ART_UNLOCK)}` : "Unlocks with the 💵 Millionaire achievement"}`}</div>
         <button class="btn" data-game="art">${art ? "▶ Play" : "View"}</button>
       </div>
       <div class="card gameCard ${mine ? "" : "locked"}">
-        <img class="gameIcon gameIconImg" src="assets/mine/entrance.webp" alt=""><h3>Gold Mine Dig</h3>
+        <img class="gameIcon gameIconImg" src="assets/mine/entrance.webp" alt=""><h3>Gold Mine Dig${mgBang(rd.mine)}</h3>
         <p class="muted">Dig 250 m deep for coal, copper, silver, gold, diamonds, rubies and treasure chests before your lamp runs out.</p>
+        ${mgWhy(rd.mine)}
         <div class="gameStatus">${mine ? `${energyIcons(e)}${M.run ? " · ⛏️ run in progress" : ""}` : "🔒 Buy your first ⛏️ gold mine (💰 Income → ⭐ Special)"}</div>
         ${mine && typeof digyHubLine === "function" ? digyHubLine() : ""}
         ${mine ? vaultLine("small") : ""}
         <button class="btn" data-game="mine" ${mine ? "" : "disabled"}>${M.run ? "▶ Continue" : "▶ Play"}</button>
       </div>
       ${typeof G !== "undefined" && (G.unlocked || secrets2Open()) ? `<div class="card gameCard secretCard ${G.unlocked ? "" : "locked"}">
-        <img class="gameIcon gameIconImg" src="assets/gene/gx-splicer.webp" alt=""><h3>Gene Splicer <span class="secretTag">🌌🌌</span></h3>
+        <img class="gameIcon gameIconImg" src="assets/gene/gx-splicer.webp" alt=""><h3>Gene Splicer <span class="secretTag">🌌🌌</span>${mgBang(rd.gene)}</h3>
         <p class="muted">Splice DNA samples into new species: from frogs and dolphins to dinosaurs, dragons and the kraken.</p>
+        ${mgWhy(rd.gene)}
         <div class="gameStatus">${G.unlocked ? `🧬 ${geneFound()} / ${GENE_TOTAL} species` : "🔒 Buy the 🧬 Genetics Laboratory (💰 Income → 🔬 Science)"}</div>
         <button class="btn" data-game="gene" ${G.unlocked ? "" : "disabled"}>▶ Play</button>
       </div>` : ""}
       ${typeof SH !== "undefined" ? (() => { const on = shUnlocked(); return `<div class="card gameCard ${on ? "" : "locked"}">
-        <img class="gameIcon gameIconImg shGameIcon" src="assets/icons/ico-sh-game.webp" alt=""><h3>Nebula Strike</h3>
+        <img class="gameIcon gameIconImg shGameIcon" src="assets/icons/ico-sh-game.webp" alt=""><h3>Nebula Strike${mgBang(rd.shooter)}</h3>
         <p class="muted">Fly a spaceship through 5 levels of enemy waves, defeat the bosses and survive the pirates' graveyard.</p>
+        ${mgWhy(rd.shooter)}
         <div class="gameStatus">${on ? `🏁 ${SH.done} / ${SH_LEVELS.length} levels cleared · ✨ ${SH.dust.toLocaleString()}${typeof shR !== "undefined" && shR && !shR.end ? " · 🚀 level in progress" : ""}` : "🔒 Build the 🚀 Space Mission Center (💰 Income → 🔬 Science)"}</div>
         <button class="btn" data-game="shooter" ${on ? "" : "disabled"}>${typeof shR !== "undefined" && shR && !shR.end ? "▶ Continue" : "▶ Play"}</button>
       </div>`; })() : ""}
-      <div class="card gameCard soon"><div class="gameIcon">❔</div><h3>More coming soon</h3>
-        <p class="muted">New mini-games will unlock with other buildings.</p></div>
     </div>`;
 }
+// ❗ which mini-games want your attention: a ! on their hub card and on the 🎮 Mini-games tab
+function mgReady() {
+  const r = {};
+  if (state.art.unlocked && typeof artCommCheck === "function") { const c = artCommCheck(); if (c && !c.done && Date.now() < c.until) r.art = "📜 Today's commission is waiting (×3 value)"; }
+  if (mineUnlocked() && !M.run && mineEnergy() >= energyMax() && !(typeof digyOn === "function" && digyOn())) r.mine = "⚡ Energy full: time to dig!";
+  if (typeof G !== "undefined" && G.unlocked && G.known.length && G.known.every(k => (G.dna[k] || 0) >= GENE_DNA_MAX)) r.gene = "🧬 DNA is full: splice before new DNA goes to waste";
+  if (typeof SH !== "undefined" && shUnlocked() && (shShipBuyable() || shUpBuyable())) r.shooter = "⬆️ You can buy a ship or an upgrade";
+  return r;
+}
+const mgBang = (why) => why ? ` <span class="tabWarn gold" title="${why}">!</span>` : "";
+const mgWhy = (why) => why ? `<div class="gameReady">${why}</div>` : "";
+setInterval(() => { if (typeof updateArtTab === "function") updateArtTab(); }, 3000);
 function openGame(page) {
   state.gamePage = page || null;
   showView("games");
