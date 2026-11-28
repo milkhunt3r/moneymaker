@@ -184,7 +184,7 @@ end; $$;
 -- accept or decline a challenge you received
 create or replace function public.duel_respond(p_id bigint, p_accept boolean) returns jsonb
 language plpgsql security definer set search_path = '' as $$
-declare me uuid := auth.uid(); d public.duels;
+declare me uuid := auth.uid(); d public.duels; first text := case when random() < 0.5 then 'a' else 'b' end;
 begin
   select * into d from public.duels where id = p_id for update;
   if d.id is null or d.b <> me then raise exception 'not_yours' using errcode = 'P0001'; end if;
@@ -198,7 +198,11 @@ begin
   else
     if exists (select 1 from public.duels where status = 'active' and me in (a, b)) then raise exception 'busy' using errcode = 'P0001'; end if;
     update public.duels set status = 'active', round = 1, deadline = now() + interval '15 seconds', seen_a = now(), seen_b = now(),
-      st = case when d.game = 'race' then jsonb_build_object('turn', case when random() < 0.5 then 'a' else 'b' end, 'tp', 0) else '{}'::jsonb end
+      st = case when d.game = 'race' then jsonb_build_object('turn', first, 'tp', 0) else '{}'::jsonb end,
+      -- 🏁 Race: the second to roll starts with 4 points (going first wins about 55% of races to 42 otherwise; with 4 it's about 50/50)
+      score_a = case when d.game = 'race' and first = 'b' then 4 else 0 end,
+      score_b = case when d.game = 'race' and first = 'a' then 4 else 0 end,
+      log = case when d.game = 'race' then jsonb_build_array(jsonb_build_object('who', case when first = 'a' then 'b' else 'a' end, 'start', 4)) else '[]'::jsonb end
       where id = d.id returning * into d;
   end if;
   return public.duel_view(d, me);

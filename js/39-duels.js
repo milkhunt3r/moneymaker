@@ -21,13 +21,13 @@ const DU_GAMES = {
   chest: { name: "Bluff Chest", ico: "assets/duel/ico-chest.webp", bg: "assets/duel/bg-cave.webp",
     rules: "First to 3. Take turns hiding the coin in one of 3 chests while the other guesses. Found: the guesser scores. Missed: the hider scores." },
   race: { name: "Race to 42", ico: "assets/duel/ico-race.webp", bg: "assets/duel/bg-race.webp",
-    rules: "Take turns rolling a die as often as you dare, then Bank your points. Rolling a 1 loses this turn's points. First to 42 wins." },
+    rules: "Take turns rolling a die as often as you dare, then Bank your points. Rolling a 1 loses this turn's points. First to 42 wins. The second to roll starts with 4 points." },
 };
 const DU_NEED = { rps: 2, dice: 2, chest: 3, race: 21 };
 // 🏁 every race goes to 42 (a race started before the server update, or on an old server without "goal", goes to 21)
 const duGoalOf = (v) => (v && Number(v.goal) === 42 ? 42 : 21);
 const duName = (k, goal) => k === "race" && goal === 21 ? "Race to 21" : DU_GAMES[k].name;
-const duRules = (k, goal) => k === "race" && goal === 21 ? DU_GAMES.race.rules.replace("First to 42 wins.", "First to 21 wins.") : DU_GAMES[k].rules;
+const duRules = (k, goal) => k === "race" && goal === 21 ? DU_GAMES.race.rules.replace("First to 42 wins. The second to roll starts with 4 points.", "First to 21 wins.") : DU_GAMES[k].rules;
 if (!state.duels || typeof state.duels !== "object") state.duels = {};
 Object.keys(DU_GAMES).forEach(g => { state.duels[g] = state.duels[g] || { w: 0, l: 0 }; });
 state.duels.won = state.duels.won || 0; state.duels.lost = state.duels.lost || 0;
@@ -216,6 +216,7 @@ function duChestSay(v, showing) {
 function duRaceTurns(log) {
   const out = []; let cur = null;
   for (const e of log || []) {
+    if (e.start) { out.push({ who: e.who, dice: [], kind: "start", pts: e.start }); continue; }   // ⚖️ the second to roll starts with 4 points
     if (!cur || cur.who !== e.who) cur = { who: e.who, dice: [] };
     if (e.roll) cur.dice.push(e.roll);
     if (e.bust) { out.push({ ...cur, kind: "bust", pts: e.lost || 0 }); cur = null; }
@@ -258,8 +259,8 @@ function duRaceHtml(v, fin) {
   // 📜 the last turns, newest first
   const turns = duRaceTurns(v.log).slice(-4).reverse();
   const hist = turns.length ? `<ul class="duHist">${turns.map(t => {
-    const you = t.who === v.me, img = t.kind === "bust" ? "race-bust" : t.kind === "win" ? "race-flag" : "race-bank";
-    const txt = t.kind === "bust" ? (you ? `You lost ${t.pts}` : `lost ${t.pts}`) : t.kind === "win" ? (you ? "You won!" : "won!") : (you ? `You banked ${t.pts}` : `banked ${t.pts}`);
+    const you = t.who === v.me, img = t.kind === "bust" ? "race-bust" : t.kind === "win" || t.kind === "start" ? "race-flag" : "race-bank";
+    const txt = t.kind === "start" ? (you ? `You start with ${t.pts}` : `starts with ${t.pts}`) : t.kind === "bust" ? (you ? `You lost ${t.pts}` : `lost ${t.pts}`) : t.kind === "win" ? (you ? "You won!" : "won!") : (you ? `You banked ${t.pts}` : `banked ${t.pts}`);
     return `<li class="${t.kind}"><img class="duHIco" src="assets/duel/${img}.webp" alt="">${you ? "" : `<span class="duHWho" data-noi18n>${escapeHtml(p.nick)}</span>`} ${txt} <span class="duHDice">${t.dice.map(n => `<img src="assets/duel/die-${n}.webp" alt="${n}">`).join("")}</span></li>`; }).join("")}</ul>` : "";
   const bankTo = st.tp && mine ? ` → ${myTotal + tp} / ${goal}` : "";
   const controls = fin ? "" : `<div class="duPicks"><button class="btn big duRoll" data-du="roll" ${mine && !DU.busy ? "" : "disabled"}>🎲 Roll</button>

@@ -2698,8 +2698,8 @@ H("⚔️ <b>2 new online casino games!</b> 💰 <b>Bluff Chest</b>: hide the co
   "⚔️ <b>¡2 juegos nuevos en el casino online!</b> 💰 <b>Cofre farol</b>: esconde la moneda en uno de 3 cofres o encuentra la de tu amigo (gana quien llegue a 3). 🏁 <b>Carrera a 21</b>: tira tantas veces como te atrevas, pero un 1 te hace perder los puntos del turno. 6 logros nuevos.");
 H("💰 <b>Bluff Chest</b>: each round one player hides the coin in one of 3 chests and the other guesses (roles swap every round). Found: the guesser scores; missed: the hider scores. First to 3 wins.",
   "💰 <b>Cofre farol</b>: en cada ronda un jugador esconde la moneda en uno de los 3 cofres y el otro adivina (los papeles se cambian cada ronda). Si la encuentra, puntúa quien adivina; si falla, puntúa quien la esconde. Gana quien llegue a 3.");
-H("🏁 <b>Race to 42</b>: take turns. On your turn, roll the die as often as you like and press <b>Bank</b> to add the turn's points to your total. Rolling a 1 loses this turn's points and ends your turn. The first to 42 wins. If your 15 seconds run out, you bank automatically.",
-  "🏁 <b>Carrera a 42</b>: por turnos. En tu turno, tira el dado tantas veces como quieras y pulsa <b>Guardar</b> para sumar los puntos del turno a tu total. Si sacas un 1, pierdes los puntos de ese turno y se acaba tu turno. Gana quien llegue a 42. Si se acaban tus 15 segundos, se guardan automáticamente.");
+H("🏁 <b>Race to 42</b>: take turns. On your turn, roll the die as often as you like and press <b>Bank</b> to add the turn's points to your total. Rolling a 1 loses this turn's points and ends your turn. The first to 42 wins. To keep it fair, the second to roll starts with 4 points. If your 15 seconds run out, you bank automatically.",
+  "🏁 <b>Carrera a 42</b>: por turnos. En tu turno, tira el dado tantas veces como quieras y pulsa <b>Guardar</b> para sumar los puntos del turno a tu total. Si sacas un 1, pierdes los puntos de ese turno y se acaba tu turno. Gana quien llegue a 42. Para que sea justo, quien tira en segundo lugar empieza con 4 puntos. Si se acaban tus 15 segundos, se guardan automáticamente.");
 Object.assign(ES, { "Pick a starter avatar or the emblem of one of your 🎁 reward collections. Unlock more collections (🏆 Achievements → 🎁 Rewards) to get more avatars.": "Elige un avatar inicial o el emblema de una de tus colecciones de 🎁 recompensas. Desbloquea más colecciones (🏆 Logros → 🎁 Recompensas) para tener más avatares.",
   "Painter mouse": "Ratón pintor", "Lucky cat": "Gato de la suerte", "Penguin banker": "Pingüino banquero", "Coin turtle": "Tortuga de monedas", "Bunny gambler": "Conejo apostador",
   "👤 6 new starter avatars for your profile: everyone can pick them, even without unlocked rewards.": "👤 6 avatares iniciales nuevos para tu perfil: todos pueden elegirlos, aunque no tengan recompensas desbloqueadas." });
@@ -3431,7 +3431,7 @@ hrx(String.raw`Congratulations! Your researchers have discovered <b>(.+)<\/b>\.`
 hrx(String.raw`This discovery will change the world, and you have won the <b>Nobel Prize in \{i\}(.+)<\/b>!`, (m, f) => `Este descubrimiento cambiará el mundo y has ganado el <b>Premio Nobel de {i}${NOBEL_FIELD_ES[f] || f}</b>.`);
 // 🏁 Race: 21 or 42, ghost runner, turn history, tips
 Object.assign(ES, { "Race to 42": "Carrera a 42",
-  "Take turns rolling a die as often as you dare, then Bank your points. Rolling a 1 loses this turn's points. First to 42 wins.": "Por turnos, tira el dado tantas veces como te atrevas y después guarda tus puntos. Si sacas un 1, pierdes los puntos de ese turno. Gana quien llegue a 42." });
+  "Take turns rolling a die as often as you dare, then Bank your points. Rolling a 1 loses this turn's points. First to 42 wins. The second to roll starts with 4 points.": "Por turnos, tira el dado tantas veces como te atrevas y después guarda tus puntos. Si sacas un 1, pierdes los puntos de ese turno. Gana quien llegue a 42. Quien tira en segundo lugar empieza con 4 puntos." });
 rx(String.raw`Bank → (\d+) \/ (21|42)`, "Guardar → $1 / $2");
 hrx(String.raw`You need <b>(\d+)<\/b> more · each roll has a 1 in 6 chance to lose these <b>(\d+)<\/b> points\.`, "Te faltan <b>$1</b> · cada tirada tiene 1 posibilidad entre 6 de perder estos <b>$2</b> puntos.");
 hrx(String.raw`You need <b>(\d+)<\/b> more · each roll has a 1 in 6 chance to lose this turn's points\.`, "Te faltan <b>$1</b> · cada tirada tiene 1 posibilidad entre 6 de perder los puntos de este turno.");
@@ -3441,9 +3441,11 @@ hrx(String.raw`You need <b>(\d+)<\/b> more · each roll has a 1 in 6 chance to l
   hrx(String.raw`\{i\} ?You won! ` + DIE, "{i} ¡Has ganado! <span>$1</span>");
   hrx(String.raw`\{i\}<span>(.+?)<\/span> banked (\d+) ` + DIE, "{i}<span>$1</span> ha guardado $2 <span>$3</span>");
   hrx(String.raw`\{i\}<span>(.+?)<\/span> lost (\d+) ` + DIE, "{i}<span>$1</span> ha perdido $2 <span>$3</span>");
-  hrx(String.raw`\{i\}<span>(.+?)<\/span> won! ` + DIE, "{i}<span>$1</span> ¡ha ganado! <span>$2</span>"); }
-H("🏁 Online casino: <b>Race to 21</b> is now <b>Race to 42</b>, a longer race with more back-and-forth (the Race achievements count races to 42). While someone is rolling, a ghost runner shows where banking now would put them. The last turns are listed under the track with their dice, the die tumbles when it's rolled, a 1 shakes the screen, and on your turn a tip shows how much you still need. Bank shows your total after banking.",
-  "🏁 Casino online: la <b>Carrera a 21</b> ahora es la <b>Carrera a 42</b>, una carrera más larga y con más idas y venidas (los logros de carreras cuentan las carreras a 42). Mientras alguien tira, un corredor fantasma muestra dónde quedaría si guardase ahora. Los últimos turnos aparecen bajo la pista con sus dados, el dado da vueltas al tirarlo, un 1 sacude la pantalla y, en tu turno, una pista te dice cuánto te falta. Guardar muestra tu total después de guardar.");
+  hrx(String.raw`\{i\}<span>(.+?)<\/span> won! ` + DIE, "{i}<span>$1</span> ¡ha ganado! <span>$2</span>");
+  hrx(String.raw`\{i\} ?You start with (\d+) ` + DIE, "{i} Empiezas con $1 <span>$2</span>");
+  hrx(String.raw`\{i\}<span>(.+?)<\/span> starts with (\d+) ` + DIE, "{i}<span>$1</span> empieza con $2 <span>$3</span>"); }
+H("🏁 Online casino: <b>Race to 21</b> is now <b>Race to 42</b>, a longer race with more back-and-forth (the Race achievements count races to 42). To keep it fair, the second to roll starts with 4 points. While someone is rolling, a ghost runner shows where banking now would put them. The last turns are listed under the track with their dice, the die tumbles when it's rolled, a 1 shakes the screen, and on your turn a tip shows how much you still need. Bank shows your total after banking.",
+  "🏁 Casino online: la <b>Carrera a 21</b> ahora es la <b>Carrera a 42</b>, una carrera más larga y con más idas y venidas (los logros de carreras cuentan las carreras a 42). Para que sea justo, quien tira en segundo lugar empieza con 4 puntos. Mientras alguien tira, un corredor fantasma muestra dónde quedaría si guardase ahora. Los últimos turnos aparecen bajo la pista con sus dados, el dado da vueltas al tirarlo, un 1 sacude la pantalla y, en tu turno, una pista te dice cuánto te falta. Guardar muestra tu total después de guardar.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -12068,7 +12070,7 @@ function wikiCasino() {
       <li>The winner takes both bets minus a 2% fee, so a win pays +96% of the bet and a loss costs the bet (paid from your money). The server keeps picks secret and rolls the dice, so nobody can cheat.</li>
       <li>A challenge expires after 60 seconds.</li></ul>
     <p>💰 <b>Bluff Chest</b>: each round one player hides the coin in one of 3 chests and the other guesses (roles swap every round). Found: the guesser scores; missed: the hider scores. First to 3 wins.</p>
-    <p>🏁 <b>Race to 42</b>: take turns. On your turn, roll the die as often as you like and press <b>Bank</b> to add the turn's points to your total. Rolling a 1 loses this turn's points and ends your turn. The first to 42 wins. If your 15 seconds run out, you bank automatically.</p>
+    <p>🏁 <b>Race to 42</b>: take turns. On your turn, roll the die as often as you like and press <b>Bank</b> to add the turn's points to your total. Rolling a 1 loses this turn's points and ends your turn. The first to 42 wins. To keep it fair, the second to roll starts with 4 points. If your 15 seconds run out, you bank automatically.</p>
     ${wt(["Game", "Classic", "High rollers", "Super high rollers"], [
       ["🎡 Roulette", "×" + XP_TABLE_MULT.rouletteLow, "×" + XP_TABLE_MULT.rouletteHigh, "×" + XP_TABLE_MULT.rouletteSuper],
       ["🃏 Blackjack", "×" + XP_TABLE_MULT.bjLow, "×" + XP_TABLE_MULT.bjHigh, "×" + XP_TABLE_MULT.bjSuper],
@@ -14477,7 +14479,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
-    "🏁 Online casino: <b>Race to 21</b> is now <b>Race to 42</b>, a longer race with more back-and-forth (the Race achievements count races to 42). While someone is rolling, a ghost runner shows where banking now would put them. The last turns are listed under the track with their dice, the die tumbles when it's rolled, a 1 shakes the screen, and on your turn a tip shows how much you still need. Bank shows your total after banking.",
+    "🏁 Online casino: <b>Race to 21</b> is now <b>Race to 42</b>, a longer race with more back-and-forth (the Race achievements count races to 42). To keep it fair, the second to roll starts with 4 points. While someone is rolling, a ghost runner shows where banking now would put them. The last turns are listed under the track with their dice, the die tumbles when it's rolled, a 1 shakes the screen, and on your turn a tip shows how much you still need. Bank shows your total after banking.",
     "🎨 More painted icons instead of emoji: the 🐾 Pets page, worker traits, statuses and buttons on 💰 Income (and the Wiki trait list), the buttons and payout tables in the 🎰 Casino, 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting), 📈 Investing (selling locks, auto cash-out, sale bonuses, take profit, stop loss, liquidation, open positions and chart buttons), ⚙️ Settings, 👤 Profile and 👥 Friends, the 🎨 Art Gallery studio, the 🏅 Nobel Prize window and 🚀 Nebula Strike results. The Nobel Prize window is now in Spanish too.",
     "🚀 Nebula Strike: ✨ stardust is now a little see-through, so it's easier to tell apart from enemy bullets.",
     "⚙️ Settings: the <b>Display</b> section folds away (tap its header). Folded, it shows your language, brightness and number format at a glance.",
@@ -22191,13 +22193,13 @@ var DU_GAMES = {
   chest: { name: "Bluff Chest", ico: "assets/duel/ico-chest.webp", bg: "assets/duel/bg-cave.webp",
     rules: "First to 3. Take turns hiding the coin in one of 3 chests while the other guesses. Found: the guesser scores. Missed: the hider scores." },
   race: { name: "Race to 42", ico: "assets/duel/ico-race.webp", bg: "assets/duel/bg-race.webp",
-    rules: "Take turns rolling a die as often as you dare, then Bank your points. Rolling a 1 loses this turn's points. First to 42 wins." },
+    rules: "Take turns rolling a die as often as you dare, then Bank your points. Rolling a 1 loses this turn's points. First to 42 wins. The second to roll starts with 4 points." },
 };
 var DU_NEED = { rps: 2, dice: 2, chest: 3, race: 21 };
 // 🏁 every race goes to 42 (a race started before the server update, or on an old server without "goal", goes to 21)
 var duGoalOf = (v) => (v && Number(v.goal) === 42 ? 42 : 21);
 var duName = (k, goal) => k === "race" && goal === 21 ? "Race to 21" : DU_GAMES[k].name;
-var duRules = (k, goal) => k === "race" && goal === 21 ? DU_GAMES.race.rules.replace("First to 42 wins.", "First to 21 wins.") : DU_GAMES[k].rules;
+var duRules = (k, goal) => k === "race" && goal === 21 ? DU_GAMES.race.rules.replace("First to 42 wins. The second to roll starts with 4 points.", "First to 21 wins.") : DU_GAMES[k].rules;
 if (!state.duels || typeof state.duels !== "object") state.duels = {};
 Object.keys(DU_GAMES).forEach(g => { state.duels[g] = state.duels[g] || { w: 0, l: 0 }; });
 state.duels.won = state.duels.won || 0; state.duels.lost = state.duels.lost || 0;
@@ -22386,6 +22388,7 @@ function duChestSay(v, showing) {
 function duRaceTurns(log) {
   const out = []; let cur = null;
   for (const e of log || []) {
+    if (e.start) { out.push({ who: e.who, dice: [], kind: "start", pts: e.start }); continue; }   // ⚖️ the second to roll starts with 4 points
     if (!cur || cur.who !== e.who) cur = { who: e.who, dice: [] };
     if (e.roll) cur.dice.push(e.roll);
     if (e.bust) { out.push({ ...cur, kind: "bust", pts: e.lost || 0 }); cur = null; }
@@ -22428,8 +22431,8 @@ function duRaceHtml(v, fin) {
   // 📜 the last turns, newest first
   const turns = duRaceTurns(v.log).slice(-4).reverse();
   const hist = turns.length ? `<ul class="duHist">${turns.map(t => {
-    const you = t.who === v.me, img = t.kind === "bust" ? "race-bust" : t.kind === "win" ? "race-flag" : "race-bank";
-    const txt = t.kind === "bust" ? (you ? `You lost ${t.pts}` : `lost ${t.pts}`) : t.kind === "win" ? (you ? "You won!" : "won!") : (you ? `You banked ${t.pts}` : `banked ${t.pts}`);
+    const you = t.who === v.me, img = t.kind === "bust" ? "race-bust" : t.kind === "win" || t.kind === "start" ? "race-flag" : "race-bank";
+    const txt = t.kind === "start" ? (you ? `You start with ${t.pts}` : `starts with ${t.pts}`) : t.kind === "bust" ? (you ? `You lost ${t.pts}` : `lost ${t.pts}`) : t.kind === "win" ? (you ? "You won!" : "won!") : (you ? `You banked ${t.pts}` : `banked ${t.pts}`);
     return `<li class="${t.kind}"><img class="duHIco" src="assets/duel/${img}.webp" alt="">${you ? "" : `<span class="duHWho" data-noi18n>${escapeHtml(p.nick)}</span>`} ${txt} <span class="duHDice">${t.dice.map(n => `<img src="assets/duel/die-${n}.webp" alt="${n}">`).join("")}</span></li>`; }).join("")}</ul>` : "";
   const bankTo = st.tp && mine ? ` → ${myTotal + tp} / ${goal}` : "";
   const controls = fin ? "" : `<div class="duPicks"><button class="btn big duRoll" data-du="roll" ${mine && !DU.busy ? "" : "disabled"}>🎲 Roll</button>
