@@ -157,7 +157,7 @@ function profCardHtml(row) {
     <div class="profCardInfo"><div class="profNick"><span data-noi18n>${nick ? escapeHtml(nick) : "<i>…</i>"}</span>${row && !prof.editing ? `<button class="profEdit" data-prof="edit" title="Change nickname" aria-label="Change nickname">✏️</button>` : ""}</div>
       <div class="profStats"><span>🏆 <b>${st.ach_done}/${st.ach_total}</b> achievements</span><span>⭐ Prestige <b>${st.prestige}</b></span></div>
       ${profLevelsHtml(profLevels())}
-      <div class="profMoney">${profCoinImg(profCoin())}<b id="profMoney">${fmt(state.money)}</b>${state.profHideMoney ? `<span class="muted profHid">🙈 hidden from others</span>` : ""}</div>
+      <div class="profMoney">${profCoinImg(profCoin())}<b id="profMoney">${fmt(state.money)}</b>${state.profHideMoney ? `<span class="muted profHid">${acI("hidden")}hidden from others</span>` : ""}</div>
       ${pets.length ? `<div class="profPetsN">${pets.map(p => `<span><img src="${p.pic}" alt=""><b data-noi18n>${escapeHtml(p.name)}</b></span>`).join("")}</div>` : ""}
       ${row && prof.extraOn ? profShowcaseHtml(profShowcase(), true) : ""}</div></div>`;
 }
@@ -169,7 +169,7 @@ function renderProfile() {
       <button class="btn big" data-prof="signin"><span class="gIcon">G</span>Sign in with Google</button>
       ${typeof cloud === "object" && !cloud.sb ? `<p class="muted">${cloud.status === "loading" ? "Connecting…" : "Sign-in isn't available right now."}</p>` : ""}
       <p class="muted">Signing in also keeps a ☁️ cloud copy of your progress, so you can play on other devices.</p>
-      <div class="guestWarn">⚠️ Playing as a guest: ${GUEST_WARN}</div></div>`;
+      <div class="guestWarn">${acI("warning")}Playing as a guest: ${GUEST_WARN}</div></div>`;
     return;
   }
   if (prof.user !== cloud.user.id && !prof.loading) { prof.row = null; profLoad(); }
@@ -178,7 +178,7 @@ function renderProfile() {
   const inc = typeof frIncoming === "function" ? frIncoming() : 0;
   // 👈 Profile / Friends on the left, like the other pages (.subLayout)
   const tabs = `<div class="subLayout"><nav class="subNav"><button class="subTab ${prof.tab !== "friends" ? "active" : ""}" data-prof="tab-me">👤 Profile</button>
-    <button class="subTab ${prof.tab === "friends" ? "active" : ""}" data-prof="tab-friends">👥 Friends${inc ? ` <span class="profBadge">${inc}</span>` : ""}</button></nav><div class="subMain">`;
+    <button class="subTab ${prof.tab === "friends" ? "active" : ""}" data-prof="tab-friends">${acI("friends")}Friends${inc ? ` <span class="profBadge">${inc}</span>` : ""}</button></nav><div class="subMain">`;
   if (prof.tab === "friends" && typeof renderFriends === "function") { box.innerHTML = tabs + `<div id="friendsBox"></div></div></div>`; renderFriends(row); return; }
   const ids = profAvatarIds(), cur = row ? row.avatar : prof.pendingAvatar;
   const shown = prof.showAll ? ids : ids.slice(0, 60);
@@ -190,7 +190,7 @@ function renderProfile() {
       ${prof.loading && !row ? `<p class="muted">Loading…</p>` : ""}
       ${!row && !prof.loading ? `<p class="profNew">✨ Choose a nickname and an avatar to create your profile.</p>` : ""}
       ${prof.msg && !showNick ? `<div class="profOk">${prof.msg}</div>` : ""}
-      ${prof.err && !showNick ? `<div class="profErr">❌ ${errText}</div>` : ""}
+      ${prof.err && !showNick ? `<div class="profErr">${acI("error")}${errText}</div>` : ""}
       ${row && prof.extraOn ? `<div class="orRow petOnRow profPriv"><span class="grow"><b>Show my money to other players</b><small>${state.profHideMoney ? "Hidden: friends see 🙈 instead of your money." : "Friends see your money on your profile and in the ⚔️ Online casino."}</small></span>
         <span class="orSwitch ${state.profHideMoney ? "" : "on"}" data-prof="hidemoney" role="switch" tabindex="0"></span></div>` : ""}</div>
     ${showNick ? `<div class="card profWrap"><h3 style="margin-top:0">✏️ ${row ? "Change nickname" : "Nickname"}</h3>
@@ -199,7 +199,7 @@ function renderProfile() {
           : `<button class="btn" data-prof="nick" ${prof.busy ? "disabled" : ""}>Create profile</button>`}</div>
       <div class="muted">3–16 characters: letters, numbers, spaces and _ . - · Every nickname is unique. Rude names aren't allowed.</div>
       <div class="muted">${row ? `Changing your nickname costs <b>${fmt(PROF_RENAME_COST)}</b>.${afford ? "" : ` You have ${fmt(state.money)}.`}` : "Your first nickname is free. Changing it later costs 100 gcoin."}</div>
-      ${prof.err ? `<div class="profErr">❌ ${errText}</div>` : ""}
+      ${prof.err ? `<div class="profErr">${acI("error")}${errText}</div>` : ""}
       ${prof.msg ? `<div class="profOk">${prof.msg}</div>` : ""}</div>` : ""}
     ${prof.pickAv || !row || !cur ? `<div class="card profWrap"><div class="row"><h3 style="margin:0">🖼️ Avatar</h3>${row && cur ? `<button class="btn ghost small" data-prof="avdone">Done</button>` : ""}</div>
       <p class="muted">Pick a starter avatar or the emblem of one of your 🎁 reward collections. Unlock more collections (🏆 Achievements → 🎁 Rewards) to get more avatars.</p>
@@ -207,7 +207,7 @@ function renderProfile() {
         return `<button class="profAvPick ${id === cur ? "on" : ""}" data-prof-av="${id}" title="${escapeHtml(profAvName(id))}">${profAvatarImg(id)}</button>`; }).join("")}</div>
         ${ids.length > shown.length ? `<button class="btn ghost small" data-prof="all">Show all ${ids.length}</button>` : ""}`
         : `<p>🔒 Unlock your first 🎁 reward collection (🏆 Achievements → 🎁 Rewards) to choose an avatar.</p>`}</div>` : ""}
-    <div class="profAcct muted">☁️ Signed in as <b data-noi18n>${escapeHtml(cloud.user.email || "Google account")}</b> · <button class="linkBtn" data-prof="settings">Manage in ⚙️ Settings</button></div></div></div>`;
+    <div class="profAcct muted">${acI("cloud")}Signed in as <b data-noi18n>${escapeHtml(cloud.user.email || "Google account")}</b> · <button class="linkBtn" data-prof="settings">Manage in ⚙️ Settings</button></div></div></div>`;
 }
 function profUi() {
   const b = $("profileBtn");

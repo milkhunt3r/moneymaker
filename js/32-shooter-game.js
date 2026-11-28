@@ -1137,7 +1137,7 @@ function shPause(on) {
       <p class="muted">Level ${R.lv}: ${R.L.name} · ${shClock(R.t)}</p>
       <div class="shScore">⭐ Score: <b>${R.score.toLocaleString()}</b></div>
       <div class="moneyRow" style="justify-content:center"><button class="btn big" data-shp="resume">▶ Resume</button>
-      <button class="btn ghost" data-shp="quit">🏳️ Quit level</button></div>
+      <button class="btn ghost" data-shp="quit">${sxI("quit")}<span>Quit level</span></button></div>
       <div class="shPauseKeys">${shTouchUI
         ? `<span>👆 Drag anywhere to fly</span><span>🛡️ Shield button</span><span>🚀 Special weapon button</span><span>⏸️ Pause button</span>`
         : `<span><b>⬆️⬇️⬅️➡️ / WASD</b> Move</span><span><b>${shBindLabel("shield")}</b> 🛡️ Shield</span><span><b>${shBindLabel("special")}</b> 🚀 Special weapon</span>
@@ -1152,19 +1152,19 @@ function shShowEnd() {
   o.innerHTML = E.win
     ? `<div class="shPanel win"><h2>🏆 Level ${R.lv} cleared!</h2>
         ${R.cfg.survive ? `<p>You survived <b>${shClock(R.cfg.survive)}</b> in the pirates' graveyard!</p>` : `<p><b>${R.L.boss}</b> was defeated in ${shClock(R.t)}.</p>`}
-        <div class="shScore">⭐ Score: <b>${R.score.toLocaleString()}</b>${R.newBest ? ` <span class="shNewBest">🏅 New best score!</span>` : ""}</div>
-        <div class="shEndStats"><span>👾 Enemies destroyed: <b>${R.kills}</b></span><span>💔 Lives lost: <b>${R.hits}</b></span><span>🛡️ Hits blocked: <b>${R.blocks}</b></span></div>
+        <div class="shScore">⭐ Score: <b>${R.score.toLocaleString()}</b>${R.newBest ? ` <span class="shNewBest">${sxI("newbest")}New best score!</span>` : ""}</div>
+        <div class="shEndStats"><span>${sxI("enemies")}Enemies destroyed: <b>${R.kills}</b></span><span>${sxI("lives")}Lives lost: <b>${R.hits}</b></span><span>🛡️ Hits blocked: <b>${R.blocks}</b></span></div>
         ${E.loot ? shLootHtml(E) : `<div class="shEndReward"><span>💰 <b>+${fmt(E.money)}</b></span><span>✨ <b>+${R.dust.toLocaleString()}</b> stardust</span></div>`}
         ${E.first ? `<p class="shFirst">⭐ First clear!${R.lv < SH_LEVELS.length ? ` Level ${R.lv + 1} is now open.` : " You beat every level!"}</p>` : ""}
         <div class="moneyRow" style="justify-content:center" ${E.loot && !E.opened ? "hidden" : ""}>
           ${R.lv < SH_LEVELS.length ? `<button class="btn big" data-shp="next">▶ Level ${R.lv + 1}</button>` : ""}
-          <button class="btn" data-shp="again">🔁 Play again</button><button class="btn ghost" data-shp="hangar">🛸 Hangar</button></div></div>`
-    : `<div class="shPanel lose"><h2>💥 Your ship was destroyed</h2>
+          <button class="btn" data-shp="again">${sxI("again")}<span>Play again</span></button><button class="btn ghost" data-shp="hangar">🛸 Hangar</button></div></div>`
+    : `<div class="shPanel lose"><h2>${sxI("destroyed")}Your ship was destroyed</h2>
         <p>You made it ${E.pct}% of the way through level ${R.lv}. The level starts over from the beginning.</p>
-        <div class="shScore">⭐ Score: <b>${R.score.toLocaleString()}</b>${R.newBest ? ` <span class="shNewBest">🏅 New best score!</span>` : ""}</div>
-        <div class="shEndStats"><span>👾 Enemies destroyed: <b>${R.kills}</b></span><span>🛡️ Hits blocked: <b>${R.blocks}</b></span></div>
+        <div class="shScore">⭐ Score: <b>${R.score.toLocaleString()}</b>${R.newBest ? ` <span class="shNewBest">${sxI("newbest")}New best score!</span>` : ""}</div>
+        <div class="shEndStats"><span>${sxI("enemies")}Enemies destroyed: <b>${R.kills}</b></span><span>🛡️ Hits blocked: <b>${R.blocks}</b></span></div>
         <p>✨ You keep the <b>${R.dust.toLocaleString()}</b> stardust you collected. Spend it on upgrades in the hangar.</p>
-        <div class="moneyRow" style="justify-content:center"><button class="btn big" data-shp="again">🔁 Try again</button>
+        <div class="moneyRow" style="justify-content:center"><button class="btn big" data-shp="again">${sxI("again")}<span>Try again</span></button>
           <button class="btn ghost" data-shp="hangar">🛸 Hangar</button></div></div>`;
 }
 // 🏴‍☠️ loot box on the win screen: closed chest → it shakes → a reel of rarity cards spins and slows down onto the prize

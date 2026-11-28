@@ -509,14 +509,14 @@ function artScore(refCanvas, copyCanvas, tier = "medium") {
 }
 
 /* ----- Drawing on the "Your copy" canvas: brush, fill bucket, eraser, undo, clear. Mouse and touch. ----- */
-const ART_TOOLS = [{ id: "brush", label: "🖌️ Brush" }, { id: "fill", label: "🪣 Fill" }, { id: "eraser", label: "🧽 Eraser" },
-  { id: "pick", label: "💧 Eyedropper", title: "Click either picture to take its colour" },
-  { id: "move", label: "✋ Grab", title: "Drag to move the last shape you drew; pick a color to recolor it (until you draw or paint something else)" }];
+const ART_TOOLS = [{ id: "brush", label: "Brush" }, { id: "fill", label: "Fill" }, { id: "eraser", label: "Eraser" },
+  { id: "pick", label: "Eyedropper", title: "Click either picture to take its colour" },
+  { id: "move", label: "Grab", title: "Drag to move the last shape you drew; pick a color to recolor it (until you draw or paint something else)" }];
 // shape tools: drag a box, the shape is filled with the selected color
-const ART_SHAPES = [{ id: "rect", label: "⬛ Square", title: "Drag to draw a filled rectangle (hold Shift for a perfect square)" },
-  { id: "ellipse", label: "⚫ Circle", title: "Drag to draw a filled oval (hold Shift for a perfect circle)" },
-  { id: "tri", label: "🔺 Triangle", title: "Drag to draw a filled triangle; turn it with the ↻ slider or mouse wheel (180° = upside down)" },
-  { id: "line", label: "➖ Line", title: "Drag to draw a straight line in the brush size (hold Shift for straight 45° angles)" }];
+const ART_SHAPES = [{ id: "rect", label: "Square", title: "Drag to draw a filled rectangle (hold Shift for a perfect square)" },
+  { id: "ellipse", label: "Circle", title: "Drag to draw a filled oval (hold Shift for a perfect circle)" },
+  { id: "tri", label: "Triangle", title: "Drag to draw a filled triangle; turn it with the ↻ slider or mouse wheel (180° = upside down)" },
+  { id: "line", label: "Line", title: "Drag to draw a straight line in the brush size (hold Shift for straight 45° angles)" }];
 const isShapeTool = (t) => ART_SHAPES.some(s => s.id === t);
 const ART_SIZES = [1, 2, 4, 10, 22, 44];
 const artUI = { mirror: false, prevTool: "brush", tool: "brush", tip: "round", color: "black", size: 10, shapeStart: null, shapeBase: null, angles: { ellipse: 0, tri: 0 }, lastShape: null, undo: [], drawing: false, last: null, result: null };
@@ -604,11 +604,11 @@ function artShape1(a, b, square) {
 function renderArtTools() {
   $("artPalette").innerHTML = Object.entries(ART_PAL).map(([k, hex]) =>
     `<button class="artColor ${artUI.color === k ? "on" : ""}" data-acolor="${k}" title="${k}" style="background:${hex}"></button>`).join("");
-  $("artToolBtns").innerHTML = ART_TOOLS.map(t => `<button class="seg ${artUI.tool === t.id ? "on" : ""}" data-atool="${t.id}" ${t.title ? `title="${t.title}"` : ""}>${t.label}</button>`).join("")
-    + `<button class="seg ${artUI.mirror ? "on" : ""}" data-amirror="1" title="Mirror mode: everything you paint is copied to the other side (left ↔ right)">🪞 Mirror</button>`;
+  $("artToolBtns").innerHTML = ART_TOOLS.map(t => `<button class="seg ${artUI.tool === t.id ? "on" : ""}" data-atool="${t.id}" ${t.title ? `title="${t.title}"` : ""}>${arI(t.id)}<span>${t.label}</span></button>`).join("")
+    + `<button class="seg ${artUI.mirror ? "on" : ""}" data-amirror="1" title="Mirror mode: everything you paint is copied to the other side (left ↔ right)">${arI("mirror")}<span>Mirror</span></button>`;
   $("artDraw").style.cursor = artUI.tool === "move" ? (artUI.lastShape ? "grab" : "not-allowed") : artUI.tool === "pick" ? "copy" : "crosshair";
   $("artRef").style.cursor = artUI.tool === "pick" ? "copy" : "";
-  $("artShapeBtns").innerHTML = ART_SHAPES.map(t => `<button class="seg ${artUI.tool === t.id ? "on" : ""}" data-atool="${t.id}" title="${t.title}">${t.label}</button>`).join("");
+  $("artShapeBtns").innerHTML = ART_SHAPES.map(t => `<button class="seg ${artUI.tool === t.id ? "on" : ""}" data-atool="${t.id}" title="${t.title}">${arI(t.id)}<span>${t.label}</span></button>`).join("");
   $("artTips").innerHTML = [["round", "Round brush", "50%"], ["square", "Square brush", "1px"]].map(([id, title, r]) =>
     `<button class="seg ${artUI.tip === id ? "on" : ""}" data-atip="${id}" title="${title}"><span class="sizeDot" style="width:11px;height:11px;border-radius:${r}"></span></button>`).join("");
   $("artAngleBox").hidden = !turnable(artUI.tool);
@@ -652,24 +652,24 @@ function artSubmit() {
   if (score.total < ART_MIN_MATCH) {   // ❌ too far from the original: no sale, no collection
     $("artResult").innerHTML = `<div class="artResult">
       <div class="artScore" style="color:#ff8a8a">${score.total.toFixed(1)}%<small>match</small></div>
-      <div><div>🎨 Colors <b>${(score.colors * 100).toFixed(0)}%</b> · 📐 Layout <b>${(score.shapes * 100).toFixed(0)}%</b> · 🔷 Shapes found <b>${score.found}/${score.count}</b></div>
+      <div><div>${arI("colors")}Colors <b>${(score.colors * 100).toFixed(0)}%</b> · ${arI("layout")}Layout <b>${(score.shapes * 100).toFixed(0)}%</b> · ${arI("shapes")}Shapes found <b>${score.found}/${score.count}</b></div>
         <div style="color:#ff8a8a"><b>Not close enough.</b> A copy needs at least ${ART_MIN_MATCH}% to be sold or kept, so this one isn't worth anything.</div>
         ${heat}
         <div class="moneyRow" style="margin-top:8px">
-          <button class="btn" id="artRetry">🖌️ Keep working on it</button>
-          <button class="btn ghost" id="artSkip">🔄 New painting</button></div></div></div>`;
+          <button class="btn" id="artRetry">${arI("brush")}<span>Keep working on it</span></button>
+          <button class="btn ghost" id="artSkip">${arI("new")}<span>New painting</span></button></div></div></div>`;
     return;
   }
   const full = state.art.items.length >= state.art.slots;
   $("artResult").innerHTML = `<div class="artResult">
     <div class="artScore">${score.total.toFixed(1)}%<small>match</small></div>
-    <div><div>🎨 Colors <b>${(score.colors * 100).toFixed(0)}%</b> · 📐 Layout <b>${(score.shapes * 100).toFixed(0)}%</b> · 🔷 Shapes found <b>${score.found}/${score.count}</b></div>
+    <div><div>${arI("colors")}Colors <b>${(score.colors * 100).toFixed(0)}%</b> · ${arI("layout")}Layout <b>${(score.shapes * 100).toFixed(0)}%</b> · ${arI("shapes")}Shapes found <b>${score.found}/${score.count}</b></div>
       <div class="muted">${score.total >= 90 ? "Masterpiece! 🏆" : score.total >= 75 ? "Great copy! 👏" : score.total >= 50 ? "Not bad. 🙂" : "Keep practicing. 🖌️"}
         Worth <b>${fmt(value)}</b> (${score.total.toFixed(1)}% of ${fmt(t.value)}${comm ? `, 📜 commission ×${ART_COMM_MULT}` : ""}).</div>
       ${heat}
       <div class="moneyRow" style="margin-top:8px">
-        <button class="btn" id="artSell">💰 Sell for ${fmt(value)}</button>
-        <button class="btn ghost" id="artKeep" ${full ? "disabled" : ""}>🖼️ Keep in collection (${state.art.items.length}/${state.art.slots})</button>
+        <button class="btn" id="artSell">${ico("in-coins","pti")}<span>Sell for ${fmt(value)}</span></button>
+        <button class="btn ghost" id="artKeep" ${full ? "disabled" : ""}>${arI("keep")}<span>Keep in collection (${state.art.items.length}/${state.art.slots})</span></button>
         ${full ? `<span class="muted">Collection full: buy more slots</span>` : ""}</div></div></div>`;
 }
 /* ----- 🔥 Heatmap: after submitting, red marks show where the copy doesn't match the original
@@ -780,7 +780,7 @@ function renderArtCollection() {
   const a = state.art;
   $("artSlots").textContent = `(${a.items.length} / ${a.slots})`;
   const maxed = a.slots >= ART_SLOTS_MAX;
-  $("artBuySlots").textContent = maxed ? `✅ Maximum ${ART_SLOTS_MAX} slots` : `➕ ${ART_SLOTS_STEP} slots (${fmt(artSlotPrice())})`;
+  $("artBuySlots").innerHTML = maxed ? `${acI("ok")}<span>Maximum ${ART_SLOTS_MAX} slots</span>` : `${arI("slots")}<span>${ART_SLOTS_STEP} slots (${fmt(artSlotPrice())})</span>`;
   $("artBuySlots").disabled = maxed || state.money < artSlotPrice();
   const total = a.items.reduce((s, x) => s + x.value, 0);
   $("artGrid").innerHTML = a.items.length ? `<div class="muted" style="grid-column:1/-1">Collection value: <b>${fmt(total)}</b> · Average match: <b>${(a.items.reduce((s, x) => s + x.score, 0) / a.items.length).toFixed(1)}%</b></div>` + a.items.map(it => {

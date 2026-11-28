@@ -2451,7 +2451,7 @@ hrx(String.raw`(.+) Worth <b>(${NUM})<\/b> \(([\d.,]+)% of (${NUM})(, 📜 commi
 hrx(String.raw`🔥 <b>Where it differs:<\/b> red marks the parts that don't match the original \((\d+)% of the picture\)\.`, "🔥 <b>Dónde difiere:</b> el rojo marca las partes que no coinciden con el original ($1 % del cuadro).");
 rx(String.raw`Commission delivered! The collector paid ×(\d+): (${NUM})\.`, "¡Encargo entregado! El coleccionista ha pagado ×$1: $2.");
 rx(String.raw`Keep in collection \((\d+)\/(\d+)\)`, "Guardar en la colección ($1/$2)");
-rx(String.raw`(Easy|Normal|Masterpiece) painting`, (m, t) => `Cuadro ${ART_ES_TIER[t].toLowerCase()}`);
+rx(String.raw`(Starter|Easy|Normal|Masterpiece) painting`, (m, t) => `Cuadro ${ART_ES_TIER[t].toLowerCase()}`);
 rx(String.raw`Easy (${NUM}) · 🟡 Normal (${NUM}) · 🏛️ Masterpiece (${NUM}) \(you earn your match %; at least (\d+)% to sell or keep\)`,
   (m, a, b, c, u) => `Fácil ${a} · 🟡 Normal ${b} · 🏛️ Obra maestra ${c} (ganas tu % de parecido; al menos el ${u} % para vender o guardar)`);
 hrx(String.raw`🟡 Normal unlocks after you submit \(sell or keep\) (\d+) Easy paintings; 🏛️ Masterpiece unlocks after (\d+) Normal paintings\.`, "🟡 Normal se desbloquea al entregar (vender o guardar) $1 cuadros fáciles; 🏛️ Obra maestra, tras $2 cuadros normales.");
@@ -2592,8 +2592,8 @@ Object.assign(ES, { "Friends": "Amigos", "Friend requests": "Solicitudes de amis
   "Friends aren't switched on yet. Please try again later.": "Los amigos todavía no están activados. Inténtalo más tarde.",
   "You have too many requests waiting. Cancel some first.": "Tienes demasiadas solicitudes pendientes. Cancela algunas primero.",
   "Your friend list is full (200 friends).": "Tu lista de amigos está llena (200 amigos).", "There is already a request between you two.": "Ya hay una solicitud entre vosotros dos." });
-hrx(String.raw`👥 Friends <span>(\d+)<\/span>`, "👥 Amigos <span>$1</span>");
-hrx(String.raw`📨 Friend requests <span>(\d+)<\/span>`, "📨 Solicitudes de amistad <span>$1</span>");
+hrx(String.raw`(👥 |\{i\})Friends <span>(\d+)<\/span>`, "$1Amigos <span>$2</span>");
+hrx(String.raw`(📨 |\{i\})Friend requests <span>(\d+)<\/span>`, "$1Solicitudes de amistad <span>$2</span>");
 hrx(String.raw`<span><\/span> Online`, "<span></span> En línea");
 hrx(String.raw`<span><\/span> Offline`, "<span></span> Desconectado");
 hrx(String.raw`<span><\/span> Last seen (\d+) (min|h|days) ago`, (m, n, u) => `<span></span> Visto por última vez hace ${n} ${u === "days" ? (n === "1" ? "día" : "días") : u}`);
@@ -3384,11 +3384,51 @@ rx(String.raw`Always kept: achievements, levels, cosmetics, statistics and your 
 Object.assign(ES, { "no tax inspections for the first 10 minutes.": "sin inspecciones de Hacienda durante los primeros 10 minutos.",
   "Kept: achievements, levels, cosmetics, statistics, Legacy bonuses, free bet chips, Art Gallery unlock, slots and paintings.": "Se conservan: logros, niveles, cosméticos, estadísticas, bonificaciones de Legado, fichas de apuesta gratis, el desbloqueo de la Galería de arte, sus huecos y los cuadros.",
   "No tax inspections for the first 10 minutes after the reset.": "Sin inspecciones de Hacienda durante los 10 primeros minutos tras el reinicio." });
-H("🎨 More painted icons instead of emoji: the 🐾 Pets page, worker traits, statuses and buttons on 💰 Income (and the Wiki trait list), the buttons and payout tables in the 🎰 Casino, 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting), and 📈 Investing (selling locks, auto cash-out, sale bonuses, take profit, stop loss, liquidation, open positions and chart buttons).",
-  "🎨 Más iconos pintados en lugar de emojis: la página de 🐾 Mascotas, los rasgos, los estados de los trabajadores y los botones de 💰 Ingresos (y la lista de rasgos de la Wiki), los botones y tablas de pagos del 🎰 Casino, 🚚 Logística (botones de enviar, niveles de amistad, regalos, piratas, escoltas, rutas comerciales, intercambio, bonificaciones de alianza, puestos avanzados y artesanía), e 📈 Inversiones (bloqueos de venta, retirada automática, bonificaciones de venta, toma de beneficios, stop loss, liquidación, posiciones abiertas y botones del gráfico).");
+H("🎨 More painted icons instead of emoji: the 🐾 Pets page, worker traits, statuses and buttons on 💰 Income (and the Wiki trait list), the buttons and payout tables in the 🎰 Casino, 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting), 📈 Investing (selling locks, auto cash-out, sale bonuses, take profit, stop loss, liquidation, open positions and chart buttons), ⚙️ Settings, 👤 Profile and 👥 Friends, the 🎨 Art Gallery studio, the 🏅 Nobel Prize window and 🚀 Nebula Strike results. The Nobel Prize window is now in Spanish too.",
+  "🎨 Más iconos pintados en lugar de emojis: la página de 🐾 Mascotas, los rasgos, los estados de los trabajadores y los botones de 💰 Ingresos (y la lista de rasgos de la Wiki), los botones y tablas de pagos del 🎰 Casino, 🚚 Logística (botones de enviar, niveles de amistad, regalos, piratas, escoltas, rutas comerciales, intercambio, bonificaciones de alianza, puestos avanzados y artesanía), 📈 Inversiones (bloqueos de venta, retirada automática, bonificaciones de venta, toma de beneficios, stop loss, liquidación, posiciones abiertas y botones del gráfico), ⚙️ Ajustes, 👤 Perfil y 👥 Amigos, el estudio de la 🎨 Galería de arte, la ventana del 🏅 Premio Nobel y los resultados de 🚀 Nebula Strike. La ventana del Premio Nobel ya está también en español.");
 rx(String.raw`Investor level up! Now level (\d+)\. ETF fee is now ([\d.,]+%)\.`, (m, n, f) => `¡Subes de nivel de inversor! Ahora eres nivel ${n}. La comisión del ETF ahora es del ${decFix(f)}.`);
 rx(String.raw`liquidated (${NUM})`, "liquidada $1");
 ES["as"] = "como";   // copycat: " as <trait icon> Gambler" (the trait name is its own piece)
+// 🖼️ Art Gallery: buy more collection slots
+rx(String.raw`(\d+) slots \((${NUM})\)`, "$1 huecos ($2)");
+rx(String.raw`Maximum (\d+) slots`, "Máximo de $1 huecos");
+// 🏅 the Nobel Prize window (was English only)
+var NOBEL_FIELD_ES = { "Physics": "Física", "Chemistry": "Química", "Medicine and Physiology": "Medicina y Fisiología", "Biology": "Biología", "Genetics": "Genética",
+  "Molecular Biology": "Biología molecular", "Neuroscience": "Neurociencia", "Astronomy and Astrophysics": "Astronomía y Astrofísica", "Materials Science": "Ciencia de materiales", "Environmental Science": "Ciencias ambientales" };
+var NOBEL_FIND_ES = {
+  "a way to keep quantum states stable at room temperature, opening the door to practical quantum computers": "una forma de mantener estables los estados cuánticos a temperatura ambiente, que abre la puerta a ordenadores cuánticos prácticos",
+  "how dark matter interacts with ordinary matter, solving one of the biggest mysteries of the universe": "cómo interactúa la materia oscura con la materia ordinaria, resolviendo uno de los mayores misterios del universo",
+  "a new particle that explains why time only moves forward": "una nueva partícula que explica por qué el tiempo solo avanza hacia delante",
+  "a catalyst that turns CO₂ from the air into clean fuel using only sunlight": "un catalizador que convierte el CO₂ del aire en combustible limpio usando solo la luz del sol",
+  "a new kind of chemical bond that makes unbreakable yet fully recyclable plastics possible": "un nuevo tipo de enlace químico que hace posibles plásticos irrompibles y a la vez totalmente reciclables",
+  "a reaction that splits water into hydrogen at almost no energy cost": "una reacción que separa el hidrógeno del agua casi sin gastar energía",
+  "a universal vaccine that protects against every strain of influenza": "una vacuna universal que protege contra todas las cepas de la gripe",
+  "a treatment that teaches the body's own cells to repair damaged hearts": "un tratamiento que enseña a las propias células del cuerpo a reparar corazones dañados",
+  "a simple blood test that detects over 50 diseases years before symptoms appear": "un sencillo análisis de sangre que detecta más de 50 enfermedades años antes de que aparezcan los síntomas",
+  "how some animals regenerate lost limbs, and how the same process can be switched on in other species": "cómo algunos animales regeneran las extremidades perdidas, y cómo activar ese mismo proceso en otras especies",
+  "the hidden language bacteria use to cooperate, changing how we fight infections": "el lenguaje oculto que usan las bacterias para cooperar, que cambia nuestra forma de combatir las infecciones",
+  "how cells decide when to age, revealing the biological clock of life": "cómo deciden las células cuándo envejecer, revelando el reloj biológico de la vida",
+  "a precise gene-editing method that safely fixes inherited diseases with a single treatment": "un método preciso de edición genética que cura de forma segura enfermedades hereditarias con un solo tratamiento",
+  "the genes that make some people naturally immune to most viruses": "los genes que hacen que algunas personas sean inmunes por naturaleza a la mayoría de los virus",
+  "how 'silent' DNA switches genes on and off, rewriting the textbooks on heredity": "cómo el ADN «silencioso» enciende y apaga genes, reescribiendo los libros de texto sobre la herencia",
+  "the molecular motor cells use to repair their own DNA, and how to make it stronger": "el motor molecular que usan las células para reparar su propio ADN, y cómo hacerlo más fuerte",
+  "how proteins fold in a microsecond, allowing new medicines to be designed in days": "cómo se pliegan las proteínas en un microsegundo, lo que permite diseñar nuevos medicamentos en días",
+  "a molecule that clears the damaged proteins behind many age-related diseases": "una molécula que elimina las proteínas dañadas que causan muchas enfermedades del envejecimiento",
+  "how the brain stores memories, and how lost memories can be restored": "cómo guarda el cerebro los recuerdos, y cómo recuperar los recuerdos perdidos",
+  "the brain circuit that creates consciousness": "el circuito cerebral que crea la consciencia",
+  "a way to regrow damaged nerves, helping paralyzed patients walk again": "una forma de regenerar nervios dañados que ayuda a pacientes con parálisis a volver a caminar",
+  "clear signs of life in the atmosphere of a planet orbiting a nearby star": "señales claras de vida en la atmósfera de un planeta que orbita una estrella cercana",
+  "what happens to information that falls into a black hole": "qué le pasa a la información que cae en un agujero negro",
+  "the first light ever emitted in the universe, revealing how the very first stars were born": "la primera luz emitida en el universo, que revela cómo nacieron las primeras estrellas",
+  "a superconductor that works at room temperature and normal pressure": "un superconductor que funciona a temperatura ambiente y presión normal",
+  "a self-healing material that repairs cracks in bridges and aircraft on its own": "un material autorreparable que arregla solo las grietas de puentes y aviones",
+  "a nanomaterial that stores ten times more energy than today's best batteries": "un nanomaterial que almacena diez veces más energía que las mejores baterías actuales",
+  "a natural process that lets oceans absorb carbon ten times faster, slowing climate change": "un proceso natural que permite a los océanos absorber carbono diez veces más rápido, frenando el cambio climático",
+  "how to restore dying coral reefs in just a few years": "cómo recuperar en solo unos años los arrecifes de coral que se están muriendo",
+  "a way to turn deserts green using microbes that pull water from the air": "una forma de reverdecer los desiertos con microbios que extraen agua del aire" };
+Object.assign(ES, { "Scientific breakthrough!": "¡Avance científico!", "Accept the Nobel Prize": "Aceptar el Premio Nobel" });
+hrx(String.raw`Congratulations! Your researchers have discovered <b>(.+)<\/b>\.`, (m, x) => `¡Enhorabuena! Tus investigadores han descubierto <b>${NOBEL_FIND_ES[x] || x}</b>.`);
+hrx(String.raw`This discovery will change the world, and you have won the <b>Nobel Prize in \{i\}(.+)<\/b>!`, (m, f) => `Este descubrimiento cambiará el mundo y has ganado el <b>Premio Nobel de {i}${NOBEL_FIELD_ES[f] || f}</b>.`);
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -3706,6 +3746,8 @@ var SAVE_KEY = "coinClickerSave", PREFS_KEY = "coinClickerPrefs", IMG_DB = "coin
 var ico = (n, cls = "") => `<img class="ico ${cls}" src="assets/icons/ico-${n}.webp" alt="">`;
 // 🎨 painted worker trait icons (assets/icons/ico-tr-<trait>.webp)
 var trIco = (k) => ico("tr-" + (TRAITS[k] ? k : "normal"), "pti");
+// 🎨 account & friends (ico-ac-*), art studio (ico-ar-*), science & Nebula Strike results (ico-sx-*)
+var acI = (k) => ico("ac-" + k, "pti"), arI = (k) => ico("ar-" + k, "pti"), sxI = (k) => ico("sx-" + k, "pti");
 var bizIco = (id) => ico("biz-" + id, "biz");   // 🏢 business / special building pictures
 // 🧮 accountant / HR manager picture (assets/icons/ico-st-<key>.webp), or the emoji for anything without one
 var STAFF_PICS = ["numbers", "criminal", "embezzler", "gambler", "motivator", "friendship", "talent", "schedule"];
@@ -4126,6 +4168,13 @@ function statusHtml(s) {
   if (!s) return "";
   const e = Object.keys(IN_ICO).find(k => s.startsWith(k));
   return e ? `${inIco(IN_ICO[e])}<span>${s.slice(e.length).trim()}</span>` : escapeHtml(s);
+}
+// 🎨 plain-text notes (notices, settings and backup messages): a known emoji in front becomes its painted icon, the rest is escaped
+var LEAD_ICO = { "✅": "ac-ok", "❌": "ac-error", "☁️": "ac-cloud", "💡": "ac-tips", "⚠️": "ac-warning", "🗑️": "ac-reset", "📋": "ac-copy",
+  "👥": "ac-friends", "💾": "ac-backup", "🏚️": "ivx-crash", "🔄": "tr-replace", "🔬": "sx-molbio" };
+function leadIco(s) {
+  s = String(s || ""); const e = Object.keys(LEAD_ICO).find(k => s.startsWith(k));
+  return e ? `${inIco(LEAD_ICO[e])}<span>${escapeHtml(s.slice(e.length).trim())}</span>` : escapeHtml(s);
 }
 function bizBoostLine(typeId) {
   const b = BIZ_BOOST[typeId]; if (!b) return "";
@@ -4971,7 +5020,7 @@ $("modal").addEventListener("click", (event) => {
 /* ----- Short message under the coin ----- */
 var noticeTimer = null;
 function showNotice(text) {
-  $("hint").textContent = text;
+  $("hint").innerHTML = leadIco(text);
   clearTimeout(noticeTimer);
   noticeTimer = setTimeout(() => { $("hint").textContent = ""; }, 6000);
 }
@@ -6644,8 +6693,8 @@ document.addEventListener("click", (e) => {
 
 var SETTINGS_NOTE = "The game saves itself every 30 seconds and after every action.";
 function settingsNote(text) {
-  $("settingsNote").textContent = text;
-  const n = $("orNote"); if (n) n.textContent = text;
+  $("settingsNote").innerHTML = leadIco(text);
+  const n = $("orNote"); if (n) n.innerHTML = leadIco(text);
   const sv = $("orSaved"); if (sv) sv.textContent = savedAgo();
   setTimeout(() => {
     $("settingsNote").textContent = SETTINGS_NOTE;
@@ -6726,22 +6775,22 @@ function backupShapeOk(d) {
 }
 function backupText() { return saveEncode(splitState(state).progress); }
 function showBackup() {
-  showModal(`<h2>💾 Back up or restore your game</h2>
+  showModal(`<h2>${acI("backup")}Back up or restore your game</h2>
     <p>Keep a copy of your progress in a file, or move it to another browser without an account.</p>
     <div class="row" style="justify-content:center; flex-wrap:wrap; gap:8px">
-      <button class="btn big" id="bkDownload">⬇️ Download backup file</button>
-      <button class="btn big ghost" id="bkCopy">📋 Copy backup code</button></div>
+      <button class="btn big" id="bkDownload">${acI("download")}<span>Download backup file</span></button>
+      <button class="btn big ghost" id="bkCopy">${acI("copy")}<span>Copy backup code</span></button></div>
     <h3 style="margin-top:18px">Restore</h3>
     <p class="muted">Load a backup file or paste a backup code. <b>It replaces the game on this device</b>${typeof cloud === "object" && cloud.user ? " (and your ☁️ cloud save at the next sync)" : ""}.</p>
     <div class="row" style="justify-content:center; flex-wrap:wrap; gap:8px">
-      <label class="btn ghost" style="cursor:pointer; border:1px solid rgba(255,255,255,0.3); padding:8px 14px; border-radius:10px">📂 Choose a file<input type="file" id="bkFile" accept=".txt,text/plain" hidden></label></div>
+      <label class="btn ghost" style="cursor:pointer; border:1px solid rgba(255,255,255,0.3); padding:8px 14px; border-radius:10px">${acI("file")}Choose a file<input type="file" id="bkFile" accept=".txt,text/plain" hidden></label></div>
     <textarea id="bkText" rows="3" style="width:100%; margin-top:8px; font-size:12px" placeholder="${LANG === "es" ? "…o pega aquí un código de copia" : "…or paste a backup code here"}" data-noi18n></textarea>
     <p class="muted" id="bkMsg"></p>
     <div class="row" style="justify-content:center; gap:8px">
       <button class="btn ghost" id="bkBack">← Settings</button>
       <button class="btn dangerBtn" id="bkLoad" disabled>Restore this backup</button></div>`);
   $("modalBox").classList.add("wide");
-  const msg = (t) => { $("bkMsg").textContent = t; };
+  const msg = (t) => { $("bkMsg").innerHTML = leadIco(t); };
   let picked = null;
   const check = (raw) => {
     raw = (raw || "").trim(); picked = null; $("bkLoad").disabled = true;
@@ -6821,7 +6870,7 @@ function showSettings(fromMenu) {
       <div class="orRow orLegal">${typeof legalLinks === "function" ? legalLinks() : ""}</div>
       <div class="orNote" id="orNote"></div>
       ${fromMenu ? "" : `<div class="orBtns"><button class="orBtn orBlue" data-or="menu"><span>${orIcon("menu")}Main menu</span></button></div>`}
-      <div class="orDanger"><span>Danger zone</span><button data-or="reset">🗑️ Reset game</button></div>
+      <div class="orDanger"><span>Danger zone</span><button data-or="reset">${acI("reset")}<span>Reset game</span></button></div>
     </div>`);
   $("modalBox").classList.add("ornate");
 }
@@ -6852,12 +6901,12 @@ $("settingsMenu").addEventListener("click", (e) => {
   if (what === "menu") { $("settingsMenu").hidden = true; openMenu(); return; }
   if (what === "tips") {
     state.tips.on = !state.tips.on; save();
-    $("tipsToggle").textContent = `💡 Show tips: ${state.tips.on ? "ON" : "OFF"}`;
+    $("tipsToggle").innerHTML = leadIco(`💡 Show tips: ${state.tips.on ? "ON" : "OFF"}`);
     settingsNote(state.tips.on ? "💡 Tips are on." : "💡 Tips are off.");
     return;
   }
-  if (what === "tipsReset") { state.tips.seen = {}; state.tips.on = true; state.tips.lastAt = 0; save(); $("tipsToggle").textContent = "💡 Show tips: ON"; settingsNote("↺ All tips will show again."); return; }
-  if (what === "tutorial") { state.tips.tutorial = 0; delete state.tips.energyBase; state.tips.on = true; tutClicks = 0; save(); $("tipsToggle").textContent = "💡 Show tips: ON"; $("settingsMenu").hidden = true; showView("income"); state.incomePage = "biz"; render(); return; }
+  if (what === "tipsReset") { state.tips.seen = {}; state.tips.on = true; state.tips.lastAt = 0; save(); $("tipsToggle").innerHTML = leadIco("💡 Show tips: ON"); settingsNote("↺ All tips will show again."); return; }
+  if (what === "tutorial") { state.tips.tutorial = 0; delete state.tips.energyBase; state.tips.on = true; tutClicks = 0; save(); $("tipsToggle").innerHTML = leadIco("💡 Show tips: ON"); $("settingsMenu").hidden = true; showView("income"); state.incomePage = "biz"; render(); return; }
   if (what === "save") {
     save(); flushSave();
     settingsNote(saveFailedAt ? "❌ Could not save: browser storage is full." : "✅ Game saved!");
@@ -6871,7 +6920,7 @@ $("settingsMenu").addEventListener("click", (e) => {
 
   if (what === "reset") {
     $("settingsMenu").hidden = true;
-    showModal(`<h2>🗑️ Reset game?</h2>
+    showModal(`<h2>${acI("reset")}Reset game?</h2>
                <p>This deletes <b>all</b> your progress: money, businesses, levels and investments.</p>
                <p class="muted">Your ☁️ cloud save is not deleted: sign in again to get it back.</p>
                <div class="row">
@@ -13059,14 +13108,14 @@ function artScore(refCanvas, copyCanvas, tier = "medium") {
 }
 
 /* ----- Drawing on the "Your copy" canvas: brush, fill bucket, eraser, undo, clear. Mouse and touch. ----- */
-var ART_TOOLS = [{ id: "brush", label: "🖌️ Brush" }, { id: "fill", label: "🪣 Fill" }, { id: "eraser", label: "🧽 Eraser" },
-  { id: "pick", label: "💧 Eyedropper", title: "Click either picture to take its colour" },
-  { id: "move", label: "✋ Grab", title: "Drag to move the last shape you drew; pick a color to recolor it (until you draw or paint something else)" }];
+var ART_TOOLS = [{ id: "brush", label: "Brush" }, { id: "fill", label: "Fill" }, { id: "eraser", label: "Eraser" },
+  { id: "pick", label: "Eyedropper", title: "Click either picture to take its colour" },
+  { id: "move", label: "Grab", title: "Drag to move the last shape you drew; pick a color to recolor it (until you draw or paint something else)" }];
 // shape tools: drag a box, the shape is filled with the selected color
-var ART_SHAPES = [{ id: "rect", label: "⬛ Square", title: "Drag to draw a filled rectangle (hold Shift for a perfect square)" },
-  { id: "ellipse", label: "⚫ Circle", title: "Drag to draw a filled oval (hold Shift for a perfect circle)" },
-  { id: "tri", label: "🔺 Triangle", title: "Drag to draw a filled triangle; turn it with the ↻ slider or mouse wheel (180° = upside down)" },
-  { id: "line", label: "➖ Line", title: "Drag to draw a straight line in the brush size (hold Shift for straight 45° angles)" }];
+var ART_SHAPES = [{ id: "rect", label: "Square", title: "Drag to draw a filled rectangle (hold Shift for a perfect square)" },
+  { id: "ellipse", label: "Circle", title: "Drag to draw a filled oval (hold Shift for a perfect circle)" },
+  { id: "tri", label: "Triangle", title: "Drag to draw a filled triangle; turn it with the ↻ slider or mouse wheel (180° = upside down)" },
+  { id: "line", label: "Line", title: "Drag to draw a straight line in the brush size (hold Shift for straight 45° angles)" }];
 var isShapeTool = (t) => ART_SHAPES.some(s => s.id === t);
 var ART_SIZES = [1, 2, 4, 10, 22, 44];
 var artUI = { mirror: false, prevTool: "brush", tool: "brush", tip: "round", color: "black", size: 10, shapeStart: null, shapeBase: null, angles: { ellipse: 0, tri: 0 }, lastShape: null, undo: [], drawing: false, last: null, result: null };
@@ -13154,11 +13203,11 @@ function artShape1(a, b, square) {
 function renderArtTools() {
   $("artPalette").innerHTML = Object.entries(ART_PAL).map(([k, hex]) =>
     `<button class="artColor ${artUI.color === k ? "on" : ""}" data-acolor="${k}" title="${k}" style="background:${hex}"></button>`).join("");
-  $("artToolBtns").innerHTML = ART_TOOLS.map(t => `<button class="seg ${artUI.tool === t.id ? "on" : ""}" data-atool="${t.id}" ${t.title ? `title="${t.title}"` : ""}>${t.label}</button>`).join("")
-    + `<button class="seg ${artUI.mirror ? "on" : ""}" data-amirror="1" title="Mirror mode: everything you paint is copied to the other side (left ↔ right)">🪞 Mirror</button>`;
+  $("artToolBtns").innerHTML = ART_TOOLS.map(t => `<button class="seg ${artUI.tool === t.id ? "on" : ""}" data-atool="${t.id}" ${t.title ? `title="${t.title}"` : ""}>${arI(t.id)}<span>${t.label}</span></button>`).join("")
+    + `<button class="seg ${artUI.mirror ? "on" : ""}" data-amirror="1" title="Mirror mode: everything you paint is copied to the other side (left ↔ right)">${arI("mirror")}<span>Mirror</span></button>`;
   $("artDraw").style.cursor = artUI.tool === "move" ? (artUI.lastShape ? "grab" : "not-allowed") : artUI.tool === "pick" ? "copy" : "crosshair";
   $("artRef").style.cursor = artUI.tool === "pick" ? "copy" : "";
-  $("artShapeBtns").innerHTML = ART_SHAPES.map(t => `<button class="seg ${artUI.tool === t.id ? "on" : ""}" data-atool="${t.id}" title="${t.title}">${t.label}</button>`).join("");
+  $("artShapeBtns").innerHTML = ART_SHAPES.map(t => `<button class="seg ${artUI.tool === t.id ? "on" : ""}" data-atool="${t.id}" title="${t.title}">${arI(t.id)}<span>${t.label}</span></button>`).join("");
   $("artTips").innerHTML = [["round", "Round brush", "50%"], ["square", "Square brush", "1px"]].map(([id, title, r]) =>
     `<button class="seg ${artUI.tip === id ? "on" : ""}" data-atip="${id}" title="${title}"><span class="sizeDot" style="width:11px;height:11px;border-radius:${r}"></span></button>`).join("");
   $("artAngleBox").hidden = !turnable(artUI.tool);
@@ -13202,24 +13251,24 @@ function artSubmit() {
   if (score.total < ART_MIN_MATCH) {   // ❌ too far from the original: no sale, no collection
     $("artResult").innerHTML = `<div class="artResult">
       <div class="artScore" style="color:#ff8a8a">${score.total.toFixed(1)}%<small>match</small></div>
-      <div><div>🎨 Colors <b>${(score.colors * 100).toFixed(0)}%</b> · 📐 Layout <b>${(score.shapes * 100).toFixed(0)}%</b> · 🔷 Shapes found <b>${score.found}/${score.count}</b></div>
+      <div><div>${arI("colors")}Colors <b>${(score.colors * 100).toFixed(0)}%</b> · ${arI("layout")}Layout <b>${(score.shapes * 100).toFixed(0)}%</b> · ${arI("shapes")}Shapes found <b>${score.found}/${score.count}</b></div>
         <div style="color:#ff8a8a"><b>Not close enough.</b> A copy needs at least ${ART_MIN_MATCH}% to be sold or kept, so this one isn't worth anything.</div>
         ${heat}
         <div class="moneyRow" style="margin-top:8px">
-          <button class="btn" id="artRetry">🖌️ Keep working on it</button>
-          <button class="btn ghost" id="artSkip">🔄 New painting</button></div></div></div>`;
+          <button class="btn" id="artRetry">${arI("brush")}<span>Keep working on it</span></button>
+          <button class="btn ghost" id="artSkip">${arI("new")}<span>New painting</span></button></div></div></div>`;
     return;
   }
   const full = state.art.items.length >= state.art.slots;
   $("artResult").innerHTML = `<div class="artResult">
     <div class="artScore">${score.total.toFixed(1)}%<small>match</small></div>
-    <div><div>🎨 Colors <b>${(score.colors * 100).toFixed(0)}%</b> · 📐 Layout <b>${(score.shapes * 100).toFixed(0)}%</b> · 🔷 Shapes found <b>${score.found}/${score.count}</b></div>
+    <div><div>${arI("colors")}Colors <b>${(score.colors * 100).toFixed(0)}%</b> · ${arI("layout")}Layout <b>${(score.shapes * 100).toFixed(0)}%</b> · ${arI("shapes")}Shapes found <b>${score.found}/${score.count}</b></div>
       <div class="muted">${score.total >= 90 ? "Masterpiece! 🏆" : score.total >= 75 ? "Great copy! 👏" : score.total >= 50 ? "Not bad. 🙂" : "Keep practicing. 🖌️"}
         Worth <b>${fmt(value)}</b> (${score.total.toFixed(1)}% of ${fmt(t.value)}${comm ? `, 📜 commission ×${ART_COMM_MULT}` : ""}).</div>
       ${heat}
       <div class="moneyRow" style="margin-top:8px">
-        <button class="btn" id="artSell">💰 Sell for ${fmt(value)}</button>
-        <button class="btn ghost" id="artKeep" ${full ? "disabled" : ""}>🖼️ Keep in collection (${state.art.items.length}/${state.art.slots})</button>
+        <button class="btn" id="artSell">${ico("in-coins","pti")}<span>Sell for ${fmt(value)}</span></button>
+        <button class="btn ghost" id="artKeep" ${full ? "disabled" : ""}>${arI("keep")}<span>Keep in collection (${state.art.items.length}/${state.art.slots})</span></button>
         ${full ? `<span class="muted">Collection full: buy more slots</span>` : ""}</div></div></div>`;
 }
 /* ----- 🔥 Heatmap: after submitting, red marks show where the copy doesn't match the original
@@ -13330,7 +13379,7 @@ function renderArtCollection() {
   const a = state.art;
   $("artSlots").textContent = `(${a.items.length} / ${a.slots})`;
   const maxed = a.slots >= ART_SLOTS_MAX;
-  $("artBuySlots").textContent = maxed ? `✅ Maximum ${ART_SLOTS_MAX} slots` : `➕ ${ART_SLOTS_STEP} slots (${fmt(artSlotPrice())})`;
+  $("artBuySlots").innerHTML = maxed ? `${acI("ok")}<span>Maximum ${ART_SLOTS_MAX} slots</span>` : `${arI("slots")}<span>${ART_SLOTS_STEP} slots (${fmt(artSlotPrice())})</span>`;
   $("artBuySlots").disabled = maxed || state.money < artSlotPrice();
   const total = a.items.reduce((s, x) => s + x.value, 0);
   $("artGrid").innerHTML = a.items.length ? `<div class="muted" style="grid-column:1/-1">Collection value: <b>${fmt(total)}</b> · Average match: <b>${(a.items.reduce((s, x) => s + x.score, 0) / a.items.length).toFixed(1)}%</b></div>` + a.items.map(it => {
@@ -13613,55 +13662,55 @@ var labOdds = () => sci().station ? STATION_LAB_ODDS : LAB_ODDS;
 
 // ----- Nobel Prize texts: one field is chosen at random for each breakthrough -----
 var NOBEL_FIELDS = [
-  { name: "Physics", icon: "⚛️", finds: [
+  { name: "Physics", icon: "⚛️", ico: "physics", finds: [
     "a way to keep quantum states stable at room temperature, opening the door to practical quantum computers",
     "how dark matter interacts with ordinary matter, solving one of the biggest mysteries of the universe",
     "a new particle that explains why time only moves forward"] },
-  { name: "Chemistry", icon: "⚗️", finds: [
+  { name: "Chemistry", icon: "⚗️", ico: "chemistry", finds: [
     "a catalyst that turns CO₂ from the air into clean fuel using only sunlight",
     "a new kind of chemical bond that makes unbreakable yet fully recyclable plastics possible",
     "a reaction that splits water into hydrogen at almost no energy cost"] },
-  { name: "Medicine and Physiology", icon: "🩺", finds: [
+  { name: "Medicine and Physiology", icon: "🩺", ico: "medicine", finds: [
     "a universal vaccine that protects against every strain of influenza",
     "a treatment that teaches the body's own cells to repair damaged hearts",
     "a simple blood test that detects over 50 diseases years before symptoms appear"] },
-  { name: "Biology", icon: "🧬", finds: [
+  { name: "Biology", icon: "🧬", ico: "biology", finds: [
     "how some animals regenerate lost limbs, and how the same process can be switched on in other species",
     "the hidden language bacteria use to cooperate, changing how we fight infections",
     "how cells decide when to age, revealing the biological clock of life"] },
-  { name: "Genetics", icon: "🧬", finds: [
+  { name: "Genetics", icon: "🧬", ico: "biology", finds: [
     "a precise gene-editing method that safely fixes inherited diseases with a single treatment",
     "the genes that make some people naturally immune to most viruses",
     "how 'silent' DNA switches genes on and off, rewriting the textbooks on heredity"] },
-  { name: "Molecular Biology", icon: "🔬", finds: [
+  { name: "Molecular Biology", icon: "🔬", ico: "molbio", finds: [
     "the molecular motor cells use to repair their own DNA, and how to make it stronger",
     "how proteins fold in a microsecond, allowing new medicines to be designed in days",
     "a molecule that clears the damaged proteins behind many age-related diseases"] },
-  { name: "Neuroscience", icon: "🧠", finds: [
+  { name: "Neuroscience", icon: "🧠", ico: "neuro", finds: [
     "how the brain stores memories, and how lost memories can be restored",
     "the brain circuit that creates consciousness",
     "a way to regrow damaged nerves, helping paralyzed patients walk again"] },
-  { name: "Astronomy and Astrophysics", icon: "🔭", finds: [
+  { name: "Astronomy and Astrophysics", icon: "🔭", ico: "astro", finds: [
     "clear signs of life in the atmosphere of a planet orbiting a nearby star",
     "what happens to information that falls into a black hole",
     "the first light ever emitted in the universe, revealing how the very first stars were born"] },
-  { name: "Materials Science", icon: "🧲", finds: [
+  { name: "Materials Science", icon: "🧲", ico: "materials", finds: [
     "a superconductor that works at room temperature and normal pressure",
     "a self-healing material that repairs cracks in bridges and aircraft on its own",
     "a nanomaterial that stores ten times more energy than today's best batteries"] },
-  { name: "Environmental Science", icon: "🌍", finds: [
+  { name: "Environmental Science", icon: "🌍", ico: "environment", finds: [
     "a natural process that lets oceans absorb carbon ten times faster, slowing climate change",
     "how to restore dying coral reefs in just a few years",
     "a way to turn deserts green using microbes that pull water from the air"] },
 ];
 function nobelHtml(p) {
   const f = NOBEL_FIELDS[p.field] || NOBEL_FIELDS[0];
-  return `<div class="nobel"><div class="nobelMedal">🏅</div>
+  return `<div class="nobel"><div class="nobelMedal">${ico("sx-nobel", "nobelMedalImg")}</div>
     <h2>Scientific breakthrough!</h2>
     <p>Congratulations! Your researchers have discovered <b>${f.finds[p.find] || f.finds[0]}</b>.</p>
-    <p>This discovery will change the world, and you have won the <b>Nobel Prize in ${f.icon} ${f.name}</b>!</p>
+    <p>This discovery will change the world, and you have won the <b>Nobel Prize in ${sxI(f.ico)}${f.name}</b>!</p>
     <div class="nobelReward">+${fmt(LAB_REWARD)}</div>
-    <button class="btn big" data-nobel="ok">🏅 Accept the Nobel Prize</button></div>`;
+    <button class="btn big" data-nobel="ok">${sxI("nobel")}<span>Accept the Nobel Prize</span></button></div>`;
 }
 function showNobel() {
   const p = sci().lab && sci().lab.pending;
@@ -13843,7 +13892,7 @@ function renderScience() {
   // 🧪 Research lab
   if (S.lab) {
     html += `<div class="card specialCard"><div class="row"><h3>${ico("sci-lab", "biz")}Research lab</h3>
-        <span class="vialCount" title="Scientific breakthroughs (Nobel Prizes)">⚗️ × ${S.lab.prizes || 0}</span></div>
+        <span class="vialCount" title="Scientific breakthroughs (Nobel Prizes)">${sxI("nobel")}× ${S.lab.prizes || 0}</span></div>
       <div class="muted">Every second: a 1 in ${labOdds().toLocaleString("en-US")} chance of a scientific breakthrough worth ${fmt(LAB_REWARD)}${S.station ? " (🛸 space station)" : ""} · <span id="sci-lab-next"></span></div></div>`;
   } else {
     html += `<div class="card specialCard"><div class="row"><div><h3>${ico("sci-lab", "biz")}Research lab</h3>
@@ -14413,7 +14462,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
-    "🎨 More painted icons instead of emoji: the 🐾 Pets page, worker traits, statuses and buttons on 💰 Income (and the Wiki trait list), the buttons and payout tables in the 🎰 Casino, 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting), and 📈 Investing (selling locks, auto cash-out, sale bonuses, take profit, stop loss, liquidation, open positions and chart buttons).",
+    "🎨 More painted icons instead of emoji: the 🐾 Pets page, worker traits, statuses and buttons on 💰 Income (and the Wiki trait list), the buttons and payout tables in the 🎰 Casino, 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting), 📈 Investing (selling locks, auto cash-out, sale bonuses, take profit, stop loss, liquidation, open positions and chart buttons), ⚙️ Settings, 👤 Profile and 👥 Friends, the 🎨 Art Gallery studio, the 🏅 Nobel Prize window and 🚀 Nebula Strike results. The Nobel Prize window is now in Spanish too.",
     "🚀 Nebula Strike: ✨ stardust is now a little see-through, so it's easier to tell apart from enemy bullets.",
     "⚙️ Settings: the <b>Display</b> section folds away (tap its header). Folded, it shows your language, brightness and number format at a glance.",
     "🎮 Mini-game fixes: 🎨 Art Gallery: Submit copy and New painting sit apart, and New painting asks before throwing your copy away. ⛏️ Gold Mine: a 🏦 Vault box with your ore and what it's worth. 🚀 Nebula Strike: a big Continue button for the next level, and the pirate chest sits right under it. 🧬 Gene Splicer: a start guide for your first splice, and the DNA timer and Hint sit in the splicer box.",
@@ -17156,7 +17205,7 @@ function cloudRowOk(row) {
 function cloudLoad(row) {
   if (!cloudRowOk(row)) {   // changed outside the game: keep this device's progress and put it back in the cloud
     cloud.conflict = false;
-    showModal(`<h2>⚠️ Your cloud save couldn't be loaded</h2><p>The cloud save was changed outside the game, so it was not loaded. This device's progress is kept and saved to the cloud again.</p>
+    showModal(`<h2>${acI("warning")}Your cloud save couldn't be loaded</h2><p>The cloud save was changed outside the game, so it was not loaded. This device's progress is kept and saved to the cloud again.</p>
       <div class="row" style="justify-content:center"><button class="btn big" data-modal="close">OK</button></div>`);
     cloudUpload(true);
     return;
@@ -17166,18 +17215,18 @@ function cloudLoad(row) {
   _saveGameLocal(row.data);
   try { localStorage.setItem(LOCAL_AT, String(Date.now())); } catch (e) {}
   setCloudMeta({ user: cloud.user.id, cloudAt: row.saved_at, localAt: localAt() });
-  showModal(`<h2>☁️ Loading your cloud save…</h2>`);
+  showModal(`<h2>${acI("cloud")}Loading your cloud save…</h2>`);
   setTimeout(() => location.reload(), 300);
 }
 function cloudConflict(row) {
   if (cloud.loading) return;
   cloud.conflict = true;
   const local = splitState(state).progress;
-  showModal(`<h2>☁️ Which progress do you want to keep?</h2>
+  showModal(`<h2>${acI("cloud")}Which progress do you want to keep?</h2>
     <p>Your cloud save and this device have different progress.</p>
     <div class="cloudPick">
-      <button class="btn big" data-cloudpick="cloud"><b>☁️ Cloud save</b><small>${saveSummary(row.data)}</small><small>Saved ${whenText(row.saved_at)}</small></button>
-      <button class="btn big ghost" data-cloudpick="device"><b>💻 This device</b><small>${saveSummary(local)}</small><small>Saved ${whenText(localAt())}</small></button>
+      <button class="btn big" data-cloudpick="cloud"><b>${acI("cloud")}Cloud save</b><small>${saveSummary(row.data)}</small><small>Saved ${whenText(row.saved_at)}</small></button>
+      <button class="btn big ghost" data-cloudpick="device"><b>${acI("device")}This device</b><small>${saveSummary(local)}</small><small>Saved ${whenText(localAt())}</small></button>
     </div>
     <p class="muted">The other one is replaced.</p>`);
   $("modalBox").querySelector('[data-cloudpick="cloud"]').onclick = () => cloudLoad(row);
@@ -17228,7 +17277,7 @@ async function cloudSignOut() {
   updateCloudUi();
 }
 function cloudDeleteAsk() {
-  showModal(`<h2>🗑️ Delete your account?</h2>
+  showModal(`<h2>${acI("reset")}Delete your account?</h2>
     <p>This deletes your account and your <b>cloud save</b> for good.</p>
     <p class="muted">The progress on this device stays (you can keep playing without an account).</p>
     <div class="row"><button class="btn ghost big" data-modal="close">Cancel</button>
@@ -17249,10 +17298,10 @@ function cloudRowsHtml(inSettings) {   // inSettings: the ⚙️ Settings copy a
   const r = (k, text, extra = "") => `<button class="orRow" data-cloud="${k}">${icon}<span class="grow">${text}</span>${extra}</button>`;
   if (!cloud.sb) return `<div class="orRow off">${icon}<span class="grow">Cloud save</span><span class="orSoon">${cloud.status === "loading" ? "Connecting…" : "Not available"}</span></div>`;
   if (!cloud.user) return r("in", `<span class="gIcon">G</span>Sign in with Google`, `<span class="orSoon">Cloud save</span>`) +
-    `<div class="guestWarn">⚠️ Playing as a guest: ${GUEST_WARN}</div>`;
-  const st = cloud.status === "error" ? "⚠️ Last upload failed" : cloud.lastAt ? `Saved ${whenText(cloud.lastAt)}` : "…";
+    `<div class="guestWarn">${acI("warning")}Playing as a guest: ${GUEST_WARN}</div>`;
+  const st = cloud.status === "error" ? acI("warning") + "Last upload failed" : cloud.lastAt ? `Saved ${whenText(cloud.lastAt)}` : "…";
   return `<div class="orRow cloudInfo">${icon}<span class="grow"><b data-noi18n>${escapeHtml(cloud.user.email || "Google account")}</b><small id="cloudSt">${st}</small></span></div>` +
-    `<div class="cloudBtns">${inSettings ? `<button data-cloud="now">☁️ Sync now</button>` : ""}<button data-cloud="out">Sign out</button><button data-cloud="del" class="danger">Delete account</button></div>`;
+    `<div class="cloudBtns">${inSettings ? `<button data-cloud="now">${acI("cloud")}<span>Sync now</span></button>` : ""}<button data-cloud="out">Sign out</button><button data-cloud="del" class="danger">Delete account</button></div>`;
 }
 var escapeHtml = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 function updateCloudUi() {
@@ -17263,8 +17312,8 @@ function updateCloudUi() {
   const b = $("menuAccount");
   // main menu corner: who you are and whether the cloud copy is safe
   if (b) b.innerHTML = !cloud.sb ? "" : cloud.user
-    ? `☁️ ${escapeHtml((cloud.user.user_metadata && cloud.user.user_metadata.name) || cloud.user.email || "")}` +
-      (cloud.status === "error" || cloud.conflict ? `<small class="warn">${LANG === "es" ? "⚠️ Falló el guardado en la nube" : "⚠️ Cloud save failed"}</small>` : `<small>${LANG === "es" ? "✓ Guardado en la nube" : "✓ Saved to cloud"}${cloud.lastAt ? ` · ${new Date(cloud.lastAt).toLocaleTimeString(LANG === "es" ? "es-ES" : undefined, { hour: "2-digit", minute: "2-digit" })}` : ""}</small>`)
+    ? `${acI("cloud")}${escapeHtml((cloud.user.user_metadata && cloud.user.user_metadata.name) || cloud.user.email || "")}` +
+      (cloud.status === "error" || cloud.conflict ? `<small class="warn">${acI("warning")}${LANG === "es" ? "Falló el guardado en la nube" : "Cloud save failed"}</small>` : `<small>${LANG === "es" ? "✓ Guardado en la nube" : "✓ Saved to cloud"}${cloud.lastAt ? ` · ${new Date(cloud.lastAt).toLocaleTimeString(LANG === "es" ? "es-ES" : undefined, { hour: "2-digit", minute: "2-digit" })}` : ""}</small>`)
     : `<span class="gIcon">G</span>${LANG === "es" ? "Inicia sesión para guardar" : "Sign in to save"}<small class="warn">${LANG === "es" ? "Invitado: guardado solo en este dispositivo" : "Guest: saved on this device only"}</small>`;
   if (b) b.hidden = !cloud.sb;
 }
@@ -17294,9 +17343,9 @@ $("mainMenu").addEventListener("click", (e) => {
   if (!b || !cloud.sb || cloud.user || guestAsked || localStorage.getItem(GUEST_OK)) return;
   e.stopPropagation();   // don't start yet: ask first
   guestAsked = true;
-  showModal(`<h2>☁️ Keep your progress safe</h2>
+  showModal(`<h2>${acI("cloud")}Keep your progress safe</h2>
     <p>Sign in with Google to save your progress in the cloud and play on any device.</p>
-    <p class="guestWarn">⚠️ As a guest, ${GUEST_WARN}</p>
+    <p class="guestWarn">${acI("warning")}As a guest, ${GUEST_WARN}</p>
     <div class="cloudPick">
       <button class="btn big" id="guestSignIn"><span class="gIcon">G</span>Sign in with Google</button>
       <button class="btn big ghost" id="guestPlay">Play as guest</button>
@@ -18960,7 +19009,7 @@ function shPause(on) {
       <p class="muted">Level ${R.lv}: ${R.L.name} · ${shClock(R.t)}</p>
       <div class="shScore">⭐ Score: <b>${R.score.toLocaleString()}</b></div>
       <div class="moneyRow" style="justify-content:center"><button class="btn big" data-shp="resume">▶ Resume</button>
-      <button class="btn ghost" data-shp="quit">🏳️ Quit level</button></div>
+      <button class="btn ghost" data-shp="quit">${sxI("quit")}<span>Quit level</span></button></div>
       <div class="shPauseKeys">${shTouchUI
         ? `<span>👆 Drag anywhere to fly</span><span>🛡️ Shield button</span><span>🚀 Special weapon button</span><span>⏸️ Pause button</span>`
         : `<span><b>⬆️⬇️⬅️➡️ / WASD</b> Move</span><span><b>${shBindLabel("shield")}</b> 🛡️ Shield</span><span><b>${shBindLabel("special")}</b> 🚀 Special weapon</span>
@@ -18975,19 +19024,19 @@ function shShowEnd() {
   o.innerHTML = E.win
     ? `<div class="shPanel win"><h2>🏆 Level ${R.lv} cleared!</h2>
         ${R.cfg.survive ? `<p>You survived <b>${shClock(R.cfg.survive)}</b> in the pirates' graveyard!</p>` : `<p><b>${R.L.boss}</b> was defeated in ${shClock(R.t)}.</p>`}
-        <div class="shScore">⭐ Score: <b>${R.score.toLocaleString()}</b>${R.newBest ? ` <span class="shNewBest">🏅 New best score!</span>` : ""}</div>
-        <div class="shEndStats"><span>👾 Enemies destroyed: <b>${R.kills}</b></span><span>💔 Lives lost: <b>${R.hits}</b></span><span>🛡️ Hits blocked: <b>${R.blocks}</b></span></div>
+        <div class="shScore">⭐ Score: <b>${R.score.toLocaleString()}</b>${R.newBest ? ` <span class="shNewBest">${sxI("newbest")}New best score!</span>` : ""}</div>
+        <div class="shEndStats"><span>${sxI("enemies")}Enemies destroyed: <b>${R.kills}</b></span><span>${sxI("lives")}Lives lost: <b>${R.hits}</b></span><span>🛡️ Hits blocked: <b>${R.blocks}</b></span></div>
         ${E.loot ? shLootHtml(E) : `<div class="shEndReward"><span>💰 <b>+${fmt(E.money)}</b></span><span>✨ <b>+${R.dust.toLocaleString()}</b> stardust</span></div>`}
         ${E.first ? `<p class="shFirst">⭐ First clear!${R.lv < SH_LEVELS.length ? ` Level ${R.lv + 1} is now open.` : " You beat every level!"}</p>` : ""}
         <div class="moneyRow" style="justify-content:center" ${E.loot && !E.opened ? "hidden" : ""}>
           ${R.lv < SH_LEVELS.length ? `<button class="btn big" data-shp="next">▶ Level ${R.lv + 1}</button>` : ""}
-          <button class="btn" data-shp="again">🔁 Play again</button><button class="btn ghost" data-shp="hangar">🛸 Hangar</button></div></div>`
-    : `<div class="shPanel lose"><h2>💥 Your ship was destroyed</h2>
+          <button class="btn" data-shp="again">${sxI("again")}<span>Play again</span></button><button class="btn ghost" data-shp="hangar">🛸 Hangar</button></div></div>`
+    : `<div class="shPanel lose"><h2>${sxI("destroyed")}Your ship was destroyed</h2>
         <p>You made it ${E.pct}% of the way through level ${R.lv}. The level starts over from the beginning.</p>
-        <div class="shScore">⭐ Score: <b>${R.score.toLocaleString()}</b>${R.newBest ? ` <span class="shNewBest">🏅 New best score!</span>` : ""}</div>
-        <div class="shEndStats"><span>👾 Enemies destroyed: <b>${R.kills}</b></span><span>🛡️ Hits blocked: <b>${R.blocks}</b></span></div>
+        <div class="shScore">⭐ Score: <b>${R.score.toLocaleString()}</b>${R.newBest ? ` <span class="shNewBest">${sxI("newbest")}New best score!</span>` : ""}</div>
+        <div class="shEndStats"><span>${sxI("enemies")}Enemies destroyed: <b>${R.kills}</b></span><span>🛡️ Hits blocked: <b>${R.blocks}</b></span></div>
         <p>✨ You keep the <b>${R.dust.toLocaleString()}</b> stardust you collected. Spend it on upgrades in the hangar.</p>
-        <div class="moneyRow" style="justify-content:center"><button class="btn big" data-shp="again">🔁 Try again</button>
+        <div class="moneyRow" style="justify-content:center"><button class="btn big" data-shp="again">${sxI("again")}<span>Try again</span></button>
           <button class="btn ghost" data-shp="hangar">🛸 Hangar</button></div></div>`;
 }
 // 🏴‍☠️ loot box on the win screen: closed chest → it shakes → a reel of rarity cards spins and slows down onto the prize
@@ -21764,7 +21813,7 @@ function profCardHtml(row) {
     <div class="profCardInfo"><div class="profNick"><span data-noi18n>${nick ? escapeHtml(nick) : "<i>…</i>"}</span>${row && !prof.editing ? `<button class="profEdit" data-prof="edit" title="Change nickname" aria-label="Change nickname">✏️</button>` : ""}</div>
       <div class="profStats"><span>🏆 <b>${st.ach_done}/${st.ach_total}</b> achievements</span><span>⭐ Prestige <b>${st.prestige}</b></span></div>
       ${profLevelsHtml(profLevels())}
-      <div class="profMoney">${profCoinImg(profCoin())}<b id="profMoney">${fmt(state.money)}</b>${state.profHideMoney ? `<span class="muted profHid">🙈 hidden from others</span>` : ""}</div>
+      <div class="profMoney">${profCoinImg(profCoin())}<b id="profMoney">${fmt(state.money)}</b>${state.profHideMoney ? `<span class="muted profHid">${acI("hidden")}hidden from others</span>` : ""}</div>
       ${pets.length ? `<div class="profPetsN">${pets.map(p => `<span><img src="${p.pic}" alt=""><b data-noi18n>${escapeHtml(p.name)}</b></span>`).join("")}</div>` : ""}
       ${row && prof.extraOn ? profShowcaseHtml(profShowcase(), true) : ""}</div></div>`;
 }
@@ -21776,7 +21825,7 @@ function renderProfile() {
       <button class="btn big" data-prof="signin"><span class="gIcon">G</span>Sign in with Google</button>
       ${typeof cloud === "object" && !cloud.sb ? `<p class="muted">${cloud.status === "loading" ? "Connecting…" : "Sign-in isn't available right now."}</p>` : ""}
       <p class="muted">Signing in also keeps a ☁️ cloud copy of your progress, so you can play on other devices.</p>
-      <div class="guestWarn">⚠️ Playing as a guest: ${GUEST_WARN}</div></div>`;
+      <div class="guestWarn">${acI("warning")}Playing as a guest: ${GUEST_WARN}</div></div>`;
     return;
   }
   if (prof.user !== cloud.user.id && !prof.loading) { prof.row = null; profLoad(); }
@@ -21785,7 +21834,7 @@ function renderProfile() {
   const inc = typeof frIncoming === "function" ? frIncoming() : 0;
   // 👈 Profile / Friends on the left, like the other pages (.subLayout)
   const tabs = `<div class="subLayout"><nav class="subNav"><button class="subTab ${prof.tab !== "friends" ? "active" : ""}" data-prof="tab-me">👤 Profile</button>
-    <button class="subTab ${prof.tab === "friends" ? "active" : ""}" data-prof="tab-friends">👥 Friends${inc ? ` <span class="profBadge">${inc}</span>` : ""}</button></nav><div class="subMain">`;
+    <button class="subTab ${prof.tab === "friends" ? "active" : ""}" data-prof="tab-friends">${acI("friends")}Friends${inc ? ` <span class="profBadge">${inc}</span>` : ""}</button></nav><div class="subMain">`;
   if (prof.tab === "friends" && (__eocLoaded >= 52 && typeof renderFriends === "function")) { box.innerHTML = tabs + `<div id="friendsBox"></div></div></div>`; renderFriends(row); return; }
   const ids = profAvatarIds(), cur = row ? row.avatar : prof.pendingAvatar;
   const shown = prof.showAll ? ids : ids.slice(0, 60);
@@ -21797,7 +21846,7 @@ function renderProfile() {
       ${prof.loading && !row ? `<p class="muted">Loading…</p>` : ""}
       ${!row && !prof.loading ? `<p class="profNew">✨ Choose a nickname and an avatar to create your profile.</p>` : ""}
       ${prof.msg && !showNick ? `<div class="profOk">${prof.msg}</div>` : ""}
-      ${prof.err && !showNick ? `<div class="profErr">❌ ${errText}</div>` : ""}
+      ${prof.err && !showNick ? `<div class="profErr">${acI("error")}${errText}</div>` : ""}
       ${row && prof.extraOn ? `<div class="orRow petOnRow profPriv"><span class="grow"><b>Show my money to other players</b><small>${state.profHideMoney ? "Hidden: friends see 🙈 instead of your money." : "Friends see your money on your profile and in the ⚔️ Online casino."}</small></span>
         <span class="orSwitch ${state.profHideMoney ? "" : "on"}" data-prof="hidemoney" role="switch" tabindex="0"></span></div>` : ""}</div>
     ${showNick ? `<div class="card profWrap"><h3 style="margin-top:0">✏️ ${row ? "Change nickname" : "Nickname"}</h3>
@@ -21806,7 +21855,7 @@ function renderProfile() {
           : `<button class="btn" data-prof="nick" ${prof.busy ? "disabled" : ""}>Create profile</button>`}</div>
       <div class="muted">3–16 characters: letters, numbers, spaces and _ . - · Every nickname is unique. Rude names aren't allowed.</div>
       <div class="muted">${row ? `Changing your nickname costs <b>${fmt(PROF_RENAME_COST)}</b>.${afford ? "" : ` You have ${fmt(state.money)}.`}` : "Your first nickname is free. Changing it later costs 100 gcoin."}</div>
-      ${prof.err ? `<div class="profErr">❌ ${errText}</div>` : ""}
+      ${prof.err ? `<div class="profErr">${acI("error")}${errText}</div>` : ""}
       ${prof.msg ? `<div class="profOk">${prof.msg}</div>` : ""}</div>` : ""}
     ${prof.pickAv || !row || !cur ? `<div class="card profWrap"><div class="row"><h3 style="margin:0">🖼️ Avatar</h3>${row && cur ? `<button class="btn ghost small" data-prof="avdone">Done</button>` : ""}</div>
       <p class="muted">Pick a starter avatar or the emblem of one of your 🎁 reward collections. Unlock more collections (🏆 Achievements → 🎁 Rewards) to get more avatars.</p>
@@ -21814,7 +21863,7 @@ function renderProfile() {
         return `<button class="profAvPick ${id === cur ? "on" : ""}" data-prof-av="${id}" title="${escapeHtml(profAvName(id))}">${profAvatarImg(id)}</button>`; }).join("")}</div>
         ${ids.length > shown.length ? `<button class="btn ghost small" data-prof="all">Show all ${ids.length}</button>` : ""}`
         : `<p>🔒 Unlock your first 🎁 reward collection (🏆 Achievements → 🎁 Rewards) to choose an avatar.</p>`}</div>` : ""}
-    <div class="profAcct muted">☁️ Signed in as <b data-noi18n>${escapeHtml(cloud.user.email || "Google account")}</b> · <button class="linkBtn" data-prof="settings">Manage in ⚙️ Settings</button></div></div></div>`;
+    <div class="profAcct muted">${acI("cloud")}Signed in as <b data-noi18n>${escapeHtml(cloud.user.email || "Google account")}</b> · <button class="linkBtn" data-prof="settings">Manage in ⚙️ Settings</button></div></div></div>`;
 }
 function profUi() {
   const b = $("profileBtn");
@@ -21993,9 +22042,9 @@ function frPersonRow(p, right) {
 }
 function frResultBtn(p) {
   const r = frRowWith(p.user_id);
-  if (!r) return `<button class="btn small" data-fr="add" data-id="${p.user_id}" ${fr.busy ? "disabled" : ""}>➕ Add friend</button>`;
-  if (r.status === "accepted") return `<span class="muted">✅ Friends</span>`;
-  if (r.addressee === frMe()) return `<button class="btn small" data-fr="accept" data-rid="${r.id}">✅ Accept</button>`;
+  if (!r) return `<button class="btn small" data-fr="add" data-id="${p.user_id}" ${fr.busy ? "disabled" : ""}>${acI("addfriend")}<span>Add friend</span></button>`;
+  if (r.status === "accepted") return `<span class="muted">${acI("friends")}Friends</span>`;
+  if (r.addressee === frMe()) return `<button class="btn small" data-fr="accept" data-rid="${r.id}">${acI("ok")}<span>Accept</span></button>`;
   return `<span class="muted">⏳ Request sent</span>`;
 }
 // 📤 your friend code: copy it, or share an invite with the phone's share sheet
@@ -22003,7 +22052,7 @@ var frInvite = (code) => LANG === "es" ? `¡Añádeme como amigo en Empire of Co
 function frCodeBox(row, big) {
   const code = escapeHtml(row.friend_code || "…");
   return `<div class="frCodeBox ${big ? "big" : ""}"><div><span class="muted">Your friend code</span><b data-noi18n>${code}</b></div>
-    <span class="frCodeBtns"><button class="btn ghost small" data-prof="copy">📋 Copy</button>${navigator.share ? `<button class="btn small" data-fr="share">📤 Share</button>` : ""}</span></div>`;
+    <span class="frCodeBtns"><button class="btn ghost small" data-prof="copy">${acI("copy")}<span>Copy</span></button>${navigator.share ? `<button class="btn small" data-fr="share">${acI("share")}<span>Share</span></button>` : ""}</span></div>`;
 }
 // ⚔️ challenge a friend: opens 🎰 Casino → ⚔️ Online casino with this friend picked (choose a game and a bet there)
 function frChallengeBtn(p) {
@@ -22011,8 +22060,8 @@ function frChallengeBtn(p) {
 }
 function renderFriends(row) {
   const box = $("friendsBox"); if (!box) return;
-  if (!row) { box.innerHTML = `<div class="card profWrap"><h2 style="margin-top:0">👥 Friends</h2><p>Create your profile first (👤 Profile tab: choose a nickname). Then you can add friends.</p></div>`; return; }
-  if (prof.friendsOn === false) { box.innerHTML = `<div class="card profWrap"><h2 style="margin-top:0">👥 Friends</h2><p>Friends aren't switched on yet. Please try again later.</p></div>`; return; }
+  if (!row) { box.innerHTML = `<div class="card profWrap"><h2 style="margin-top:0">${acI("friends")}Friends</h2><p>Create your profile first (👤 Profile tab: choose a nickname). Then you can add friends.</p></div>`; return; }
+  if (prof.friendsOn === false) { box.innerHTML = `<div class="card profWrap"><h2 style="margin-top:0">${acI("friends")}Friends</h2><p>Friends aren't switched on yet. Please try again later.</p></div>`; return; }
   if (!fr.loaded && !fr.loading) frLoad();
   const me = frMe(), P = (r) => fr.people[frOther(r)] || { user_id: frOther(r), nickname: "…" };
   const incoming = fr.rows.filter(r => r.status === "pending" && r.addressee === me);
@@ -22023,15 +22072,15 @@ function renderFriends(row) {
   const typed = $("frSearch") ? $("frSearch").value : fr.q;
   const none = fr.loaded && !friends.length;
   // 1. requests for you  2. your friends (or an invite when you have none)  3. add a friend  4. requests you sent
-  const reqs = incoming.length ? `<div class="card profWrap"><h3 style="margin-top:0">📨 Friend requests <span class="profBadge">${incoming.length}</span></h3><div class="frList">${incoming.map(r => frPersonRow(P(r),
-      `<button class="btn small" data-fr="accept" data-rid="${r.id}">✅ Accept</button><button class="btn ghost small" data-fr="decline" data-rid="${r.id}">Decline</button>`)).join("")}</div></div>` : "";
-  const list = `<div class="card profWrap"><div class="row"><h3 style="margin:0">👥 Your friends (${friends.length})</h3><span class="muted">${friends.length ? `🟢 ${online} online` : ""}</span></div>
+  const reqs = incoming.length ? `<div class="card profWrap"><h3 style="margin-top:0">${acI("requests")}Friend requests <span class="profBadge">${incoming.length}</span></h3><div class="frList">${incoming.map(r => frPersonRow(P(r),
+      `<button class="btn small" data-fr="accept" data-rid="${r.id}">${acI("ok")}<span>Accept</span></button><button class="btn ghost small" data-fr="decline" data-rid="${r.id}">Decline</button>`)).join("")}</div></div>` : "";
+  const list = `<div class="card profWrap"><div class="row"><h3 style="margin:0">${acI("friends")}Your friends (${friends.length})</h3><span class="muted">${friends.length ? `🟢 ${online} online` : ""}</span></div>
       ${fr.loading && !fr.loaded ? `<p class="muted">Loading…</p>` : friends.length ? `<div class="frList">${friends.map(p => frPersonRow(p, frOnline(p) ? `<span class="frOn">Online</span>${frChallengeBtn(p)}` : p.last_seen ? `<span class="muted">${frAgo(p.last_seen)}</span>` : "")).join("")}</div>`
         : `<div class="frEmpty"><p><b>No friends yet.</b> Send your friend code to the people you play with, or search for their nickname below.</p>${frCodeBox(row, true)}</div>`}</div>`;
-  const add = `<div class="card profWrap"><h3 style="margin-top:0">➕ Add a friend</h3>
+  const add = `<div class="card profWrap"><h3 style="margin-top:0">${acI("addfriend")}Add a friend</h3>
       <div class="profNickRow"><input id="frSearch" maxlength="20" autocomplete="off" spellcheck="false" placeholder="Nickname or friend code" value="${escapeHtml(typed || "")}" data-noi18n aria-label="Nickname or friend code">
         <button class="btn" data-fr="search" ${fr.searching ? "disabled" : ""}>Search</button></div>
-      ${fr.err ? `<div class="profErr">❌ ${fr.err}</div>` : ""}
+      ${fr.err ? `<div class="profErr">${acI("error")}${fr.err}</div>` : ""}
       ${fr.searching ? `<p class="muted">Searching…</p>` : fr.results ? (fr.results.length ? `<div class="frList">${fr.results.map(p => frPersonRow(p, frResultBtn(p))).join("")}</div>` : `<p class="muted">No players found.</p>`) : ""}
       ${none ? "" : frCodeBox(row, false)}</div>`;
   const sent = outgoing.length ? `<div class="card profWrap"><h3 style="margin-top:0">⏳ Requests you sent</h3><div class="frList">${outgoing.map(r => frPersonRow(P(r),
@@ -22048,13 +22097,13 @@ function frShowProfile(id) {
       <div class="frStatus">${frDot(p)} ${frOnline(p) ? "Online" : p.last_seen ? `Last seen ${frAgo(p.last_seen)}` : "Offline"}</div>
       <div class="profStats" style="justify-content:center"><span>🏆 <b>${p.ach_total ? `${p.ach_done || 0}/${p.ach_total}` : p.ach_done || 0}</b> achievements</span><span>⭐ Prestige <b>${p.prestige || 0}</b></span></div>
       ${p.levels ? profLevelsHtml(p.levels).replace('class="profLvls"', 'class="profLvls" style="justify-content:center"') : ""}
-      ${"money" in p ? (p.hide_money ? `<div class="profMoney" style="justify-content:center"><span class="muted">🙈 Money hidden</span></div>` : `<div class="profMoney" style="justify-content:center">${profCoinImg(p.coin)}<b>${fmt(Number(p.money) || 0)}</b></div>`) : ""}
+      ${"money" in p ? (p.hide_money ? `<div class="profMoney" style="justify-content:center"><span class="muted">${acI("hidden")}Money hidden</span></div>` : `<div class="profMoney" style="justify-content:center">${profCoinImg(p.coin)}<b>${fmt(Number(p.money) || 0)}</b></div>`) : ""}
       ${p.showcase && p.showcase.length ? `<h3 style="margin:16px 0 8px">🏅 Showcase</h3>${profShowcaseHtml(p.showcase, false).replace('class="profShow"', 'class="profShow" style="justify-content:center"')}` : ""}
       <h3 style="margin:16px 0 8px">🐾 Pets</h3>
       ${pets.length ? `<div class="frPets">${pets.map(k => `<div class="frPet"><img src="${PROF_PETS[k].pic}" alt=""><span>${PROF_PETS[k].name}</span></div>`).join("")}</div>` : `<p class="muted">No pets yet.</p>`}
       <div class="row" style="justify-content:center;gap:10px;margin-top:14px;flex-wrap:wrap">
         ${r && r.status === "accepted" ? frChallengeBtn(p) : ""}
-        ${!r ? `<button class="btn" data-fr="add" data-id="${p.user_id}">➕ Add friend</button>` : ""}
+        ${!r ? `<button class="btn" data-fr="add" data-id="${p.user_id}">${acI("addfriend")}<span>Add friend</span></button>` : ""}
         <button class="btn ghost" data-modal="close">Close</button></div>
       ${r && r.status === "accepted" ? `<button class="linkBtn frRemove" data-fr="remove" data-rid="${r.id}" data-name="${escapeHtml(p.nickname)}">Remove friend</button>` : ""}</div>`);
 }

@@ -240,6 +240,8 @@ const SAVE_KEY = "coinClickerSave", PREFS_KEY = "coinClickerPrefs", IMG_DB = "co
 const ico = (n, cls = "") => `<img class="ico ${cls}" src="assets/icons/ico-${n}.webp" alt="">`;
 // 🎨 painted worker trait icons (assets/icons/ico-tr-<trait>.webp)
 const trIco = (k) => ico("tr-" + (TRAITS[k] ? k : "normal"), "pti");
+// 🎨 account & friends (ico-ac-*), art studio (ico-ar-*), science & Nebula Strike results (ico-sx-*)
+const acI = (k) => ico("ac-" + k, "pti"), arI = (k) => ico("ar-" + k, "pti"), sxI = (k) => ico("sx-" + k, "pti");
 const bizIco = (id) => ico("biz-" + id, "biz");   // 🏢 business / special building pictures
 // 🧮 accountant / HR manager picture (assets/icons/ico-st-<key>.webp), or the emoji for anything without one
 const STAFF_PICS = ["numbers", "criminal", "embezzler", "gambler", "motivator", "friendship", "talent", "schedule"];

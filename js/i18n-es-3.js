@@ -1073,7 +1073,7 @@ hrx(String.raw`(.+) Worth <b>(${NUM})<\/b> \(([\d.,]+)% of (${NUM})(, 📜 commi
 hrx(String.raw`🔥 <b>Where it differs:<\/b> red marks the parts that don't match the original \((\d+)% of the picture\)\.`, "🔥 <b>Dónde difiere:</b> el rojo marca las partes que no coinciden con el original ($1 % del cuadro).");
 rx(String.raw`Commission delivered! The collector paid ×(\d+): (${NUM})\.`, "¡Encargo entregado! El coleccionista ha pagado ×$1: $2.");
 rx(String.raw`Keep in collection \((\d+)\/(\d+)\)`, "Guardar en la colección ($1/$2)");
-rx(String.raw`(Easy|Normal|Masterpiece) painting`, (m, t) => `Cuadro ${ART_ES_TIER[t].toLowerCase()}`);
+rx(String.raw`(Starter|Easy|Normal|Masterpiece) painting`, (m, t) => `Cuadro ${ART_ES_TIER[t].toLowerCase()}`);
 rx(String.raw`Easy (${NUM}) · 🟡 Normal (${NUM}) · 🏛️ Masterpiece (${NUM}) \(you earn your match %; at least (\d+)% to sell or keep\)`,
   (m, a, b, c, u) => `Fácil ${a} · 🟡 Normal ${b} · 🏛️ Obra maestra ${c} (ganas tu % de parecido; al menos el ${u} % para vender o guardar)`);
 hrx(String.raw`🟡 Normal unlocks after you submit \(sell or keep\) (\d+) Easy paintings; 🏛️ Masterpiece unlocks after (\d+) Normal paintings\.`, "🟡 Normal se desbloquea al entregar (vender o guardar) $1 cuadros fáciles; 🏛️ Obra maestra, tras $2 cuadros normales.");
@@ -1214,8 +1214,8 @@ Object.assign(ES, { "Friends": "Amigos", "Friend requests": "Solicitudes de amis
   "Friends aren't switched on yet. Please try again later.": "Los amigos todavía no están activados. Inténtalo más tarde.",
   "You have too many requests waiting. Cancel some first.": "Tienes demasiadas solicitudes pendientes. Cancela algunas primero.",
   "Your friend list is full (200 friends).": "Tu lista de amigos está llena (200 amigos).", "There is already a request between you two.": "Ya hay una solicitud entre vosotros dos." });
-hrx(String.raw`👥 Friends <span>(\d+)<\/span>`, "👥 Amigos <span>$1</span>");
-hrx(String.raw`📨 Friend requests <span>(\d+)<\/span>`, "📨 Solicitudes de amistad <span>$1</span>");
+hrx(String.raw`(👥 |\{i\})Friends <span>(\d+)<\/span>`, "$1Amigos <span>$2</span>");
+hrx(String.raw`(📨 |\{i\})Friend requests <span>(\d+)<\/span>`, "$1Solicitudes de amistad <span>$2</span>");
 hrx(String.raw`<span><\/span> Online`, "<span></span> En línea");
 hrx(String.raw`<span><\/span> Offline`, "<span></span> Desconectado");
 hrx(String.raw`<span><\/span> Last seen (\d+) (min|h|days) ago`, (m, n, u) => `<span></span> Visto por última vez hace ${n} ${u === "days" ? (n === "1" ? "día" : "días") : u}`);
@@ -2006,11 +2006,51 @@ rx(String.raw`Always kept: achievements, levels, cosmetics, statistics and your 
 Object.assign(ES, { "no tax inspections for the first 10 minutes.": "sin inspecciones de Hacienda durante los primeros 10 minutos.",
   "Kept: achievements, levels, cosmetics, statistics, Legacy bonuses, free bet chips, Art Gallery unlock, slots and paintings.": "Se conservan: logros, niveles, cosméticos, estadísticas, bonificaciones de Legado, fichas de apuesta gratis, el desbloqueo de la Galería de arte, sus huecos y los cuadros.",
   "No tax inspections for the first 10 minutes after the reset.": "Sin inspecciones de Hacienda durante los 10 primeros minutos tras el reinicio." });
-H("🎨 More painted icons instead of emoji: the 🐾 Pets page, worker traits, statuses and buttons on 💰 Income (and the Wiki trait list), the buttons and payout tables in the 🎰 Casino, 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting), and 📈 Investing (selling locks, auto cash-out, sale bonuses, take profit, stop loss, liquidation, open positions and chart buttons).",
-  "🎨 Más iconos pintados en lugar de emojis: la página de 🐾 Mascotas, los rasgos, los estados de los trabajadores y los botones de 💰 Ingresos (y la lista de rasgos de la Wiki), los botones y tablas de pagos del 🎰 Casino, 🚚 Logística (botones de enviar, niveles de amistad, regalos, piratas, escoltas, rutas comerciales, intercambio, bonificaciones de alianza, puestos avanzados y artesanía), e 📈 Inversiones (bloqueos de venta, retirada automática, bonificaciones de venta, toma de beneficios, stop loss, liquidación, posiciones abiertas y botones del gráfico).");
+H("🎨 More painted icons instead of emoji: the 🐾 Pets page, worker traits, statuses and buttons on 💰 Income (and the Wiki trait list), the buttons and payout tables in the 🎰 Casino, 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting), 📈 Investing (selling locks, auto cash-out, sale bonuses, take profit, stop loss, liquidation, open positions and chart buttons), ⚙️ Settings, 👤 Profile and 👥 Friends, the 🎨 Art Gallery studio, the 🏅 Nobel Prize window and 🚀 Nebula Strike results. The Nobel Prize window is now in Spanish too.",
+  "🎨 Más iconos pintados en lugar de emojis: la página de 🐾 Mascotas, los rasgos, los estados de los trabajadores y los botones de 💰 Ingresos (y la lista de rasgos de la Wiki), los botones y tablas de pagos del 🎰 Casino, 🚚 Logística (botones de enviar, niveles de amistad, regalos, piratas, escoltas, rutas comerciales, intercambio, bonificaciones de alianza, puestos avanzados y artesanía), 📈 Inversiones (bloqueos de venta, retirada automática, bonificaciones de venta, toma de beneficios, stop loss, liquidación, posiciones abiertas y botones del gráfico), ⚙️ Ajustes, 👤 Perfil y 👥 Amigos, el estudio de la 🎨 Galería de arte, la ventana del 🏅 Premio Nobel y los resultados de 🚀 Nebula Strike. La ventana del Premio Nobel ya está también en español.");
 rx(String.raw`Investor level up! Now level (\d+)\. ETF fee is now ([\d.,]+%)\.`, (m, n, f) => `¡Subes de nivel de inversor! Ahora eres nivel ${n}. La comisión del ETF ahora es del ${decFix(f)}.`);
 rx(String.raw`liquidated (${NUM})`, "liquidada $1");
 ES["as"] = "como";   // copycat: " as <trait icon> Gambler" (the trait name is its own piece)
+// 🖼️ Art Gallery: buy more collection slots
+rx(String.raw`(\d+) slots \((${NUM})\)`, "$1 huecos ($2)");
+rx(String.raw`Maximum (\d+) slots`, "Máximo de $1 huecos");
+// 🏅 the Nobel Prize window (was English only)
+const NOBEL_FIELD_ES = { "Physics": "Física", "Chemistry": "Química", "Medicine and Physiology": "Medicina y Fisiología", "Biology": "Biología", "Genetics": "Genética",
+  "Molecular Biology": "Biología molecular", "Neuroscience": "Neurociencia", "Astronomy and Astrophysics": "Astronomía y Astrofísica", "Materials Science": "Ciencia de materiales", "Environmental Science": "Ciencias ambientales" };
+const NOBEL_FIND_ES = {
+  "a way to keep quantum states stable at room temperature, opening the door to practical quantum computers": "una forma de mantener estables los estados cuánticos a temperatura ambiente, que abre la puerta a ordenadores cuánticos prácticos",
+  "how dark matter interacts with ordinary matter, solving one of the biggest mysteries of the universe": "cómo interactúa la materia oscura con la materia ordinaria, resolviendo uno de los mayores misterios del universo",
+  "a new particle that explains why time only moves forward": "una nueva partícula que explica por qué el tiempo solo avanza hacia delante",
+  "a catalyst that turns CO₂ from the air into clean fuel using only sunlight": "un catalizador que convierte el CO₂ del aire en combustible limpio usando solo la luz del sol",
+  "a new kind of chemical bond that makes unbreakable yet fully recyclable plastics possible": "un nuevo tipo de enlace químico que hace posibles plásticos irrompibles y a la vez totalmente reciclables",
+  "a reaction that splits water into hydrogen at almost no energy cost": "una reacción que separa el hidrógeno del agua casi sin gastar energía",
+  "a universal vaccine that protects against every strain of influenza": "una vacuna universal que protege contra todas las cepas de la gripe",
+  "a treatment that teaches the body's own cells to repair damaged hearts": "un tratamiento que enseña a las propias células del cuerpo a reparar corazones dañados",
+  "a simple blood test that detects over 50 diseases years before symptoms appear": "un sencillo análisis de sangre que detecta más de 50 enfermedades años antes de que aparezcan los síntomas",
+  "how some animals regenerate lost limbs, and how the same process can be switched on in other species": "cómo algunos animales regeneran las extremidades perdidas, y cómo activar ese mismo proceso en otras especies",
+  "the hidden language bacteria use to cooperate, changing how we fight infections": "el lenguaje oculto que usan las bacterias para cooperar, que cambia nuestra forma de combatir las infecciones",
+  "how cells decide when to age, revealing the biological clock of life": "cómo deciden las células cuándo envejecer, revelando el reloj biológico de la vida",
+  "a precise gene-editing method that safely fixes inherited diseases with a single treatment": "un método preciso de edición genética que cura de forma segura enfermedades hereditarias con un solo tratamiento",
+  "the genes that make some people naturally immune to most viruses": "los genes que hacen que algunas personas sean inmunes por naturaleza a la mayoría de los virus",
+  "how 'silent' DNA switches genes on and off, rewriting the textbooks on heredity": "cómo el ADN «silencioso» enciende y apaga genes, reescribiendo los libros de texto sobre la herencia",
+  "the molecular motor cells use to repair their own DNA, and how to make it stronger": "el motor molecular que usan las células para reparar su propio ADN, y cómo hacerlo más fuerte",
+  "how proteins fold in a microsecond, allowing new medicines to be designed in days": "cómo se pliegan las proteínas en un microsegundo, lo que permite diseñar nuevos medicamentos en días",
+  "a molecule that clears the damaged proteins behind many age-related diseases": "una molécula que elimina las proteínas dañadas que causan muchas enfermedades del envejecimiento",
+  "how the brain stores memories, and how lost memories can be restored": "cómo guarda el cerebro los recuerdos, y cómo recuperar los recuerdos perdidos",
+  "the brain circuit that creates consciousness": "el circuito cerebral que crea la consciencia",
+  "a way to regrow damaged nerves, helping paralyzed patients walk again": "una forma de regenerar nervios dañados que ayuda a pacientes con parálisis a volver a caminar",
+  "clear signs of life in the atmosphere of a planet orbiting a nearby star": "señales claras de vida en la atmósfera de un planeta que orbita una estrella cercana",
+  "what happens to information that falls into a black hole": "qué le pasa a la información que cae en un agujero negro",
+  "the first light ever emitted in the universe, revealing how the very first stars were born": "la primera luz emitida en el universo, que revela cómo nacieron las primeras estrellas",
+  "a superconductor that works at room temperature and normal pressure": "un superconductor que funciona a temperatura ambiente y presión normal",
+  "a self-healing material that repairs cracks in bridges and aircraft on its own": "un material autorreparable que arregla solo las grietas de puentes y aviones",
+  "a nanomaterial that stores ten times more energy than today's best batteries": "un nanomaterial que almacena diez veces más energía que las mejores baterías actuales",
+  "a natural process that lets oceans absorb carbon ten times faster, slowing climate change": "un proceso natural que permite a los océanos absorber carbono diez veces más rápido, frenando el cambio climático",
+  "how to restore dying coral reefs in just a few years": "cómo recuperar en solo unos años los arrecifes de coral que se están muriendo",
+  "a way to turn deserts green using microbes that pull water from the air": "una forma de reverdecer los desiertos con microbios que extraen agua del aire" };
+Object.assign(ES, { "Scientific breakthrough!": "¡Avance científico!", "Accept the Nobel Prize": "Aceptar el Premio Nobel" });
+hrx(String.raw`Congratulations! Your researchers have discovered <b>(.+)<\/b>\.`, (m, x) => `¡Enhorabuena! Tus investigadores han descubierto <b>${NOBEL_FIND_ES[x] || x}</b>.`);
+hrx(String.raw`This discovery will change the world, and you have won the <b>Nobel Prize in \{i\}(.+)<\/b>!`, (m, f) => `Este descubrimiento cambiará el mundo y has ganado el <b>Premio Nobel de {i}${NOBEL_FIELD_ES[f] || f}</b>.`);
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

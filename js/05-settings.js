@@ -14,8 +14,8 @@ document.addEventListener("click", (e) => {
 
 const SETTINGS_NOTE = "The game saves itself every 30 seconds and after every action.";
 function settingsNote(text) {
-  $("settingsNote").textContent = text;
-  const n = $("orNote"); if (n) n.textContent = text;
+  $("settingsNote").innerHTML = leadIco(text);
+  const n = $("orNote"); if (n) n.innerHTML = leadIco(text);
   const sv = $("orSaved"); if (sv) sv.textContent = savedAgo();
   setTimeout(() => {
     $("settingsNote").textContent = SETTINGS_NOTE;
@@ -96,22 +96,22 @@ function backupShapeOk(d) {
 }
 function backupText() { return saveEncode(splitState(state).progress); }
 function showBackup() {
-  showModal(`<h2>💾 Back up or restore your game</h2>
+  showModal(`<h2>${acI("backup")}Back up or restore your game</h2>
     <p>Keep a copy of your progress in a file, or move it to another browser without an account.</p>
     <div class="row" style="justify-content:center; flex-wrap:wrap; gap:8px">
-      <button class="btn big" id="bkDownload">⬇️ Download backup file</button>
-      <button class="btn big ghost" id="bkCopy">📋 Copy backup code</button></div>
+      <button class="btn big" id="bkDownload">${acI("download")}<span>Download backup file</span></button>
+      <button class="btn big ghost" id="bkCopy">${acI("copy")}<span>Copy backup code</span></button></div>
     <h3 style="margin-top:18px">Restore</h3>
     <p class="muted">Load a backup file or paste a backup code. <b>It replaces the game on this device</b>${typeof cloud === "object" && cloud.user ? " (and your ☁️ cloud save at the next sync)" : ""}.</p>
     <div class="row" style="justify-content:center; flex-wrap:wrap; gap:8px">
-      <label class="btn ghost" style="cursor:pointer; border:1px solid rgba(255,255,255,0.3); padding:8px 14px; border-radius:10px">📂 Choose a file<input type="file" id="bkFile" accept=".txt,text/plain" hidden></label></div>
+      <label class="btn ghost" style="cursor:pointer; border:1px solid rgba(255,255,255,0.3); padding:8px 14px; border-radius:10px">${acI("file")}Choose a file<input type="file" id="bkFile" accept=".txt,text/plain" hidden></label></div>
     <textarea id="bkText" rows="3" style="width:100%; margin-top:8px; font-size:12px" placeholder="${LANG === "es" ? "…o pega aquí un código de copia" : "…or paste a backup code here"}" data-noi18n></textarea>
     <p class="muted" id="bkMsg"></p>
     <div class="row" style="justify-content:center; gap:8px">
       <button class="btn ghost" id="bkBack">← Settings</button>
       <button class="btn dangerBtn" id="bkLoad" disabled>Restore this backup</button></div>`);
   $("modalBox").classList.add("wide");
-  const msg = (t) => { $("bkMsg").textContent = t; };
+  const msg = (t) => { $("bkMsg").innerHTML = leadIco(t); };
   let picked = null;
   const check = (raw) => {
     raw = (raw || "").trim(); picked = null; $("bkLoad").disabled = true;
@@ -191,7 +191,7 @@ function showSettings(fromMenu) {
       <div class="orRow orLegal">${typeof legalLinks === "function" ? legalLinks() : ""}</div>
       <div class="orNote" id="orNote"></div>
       ${fromMenu ? "" : `<div class="orBtns"><button class="orBtn orBlue" data-or="menu"><span>${orIcon("menu")}Main menu</span></button></div>`}
-      <div class="orDanger"><span>Danger zone</span><button data-or="reset">🗑️ Reset game</button></div>
+      <div class="orDanger"><span>Danger zone</span><button data-or="reset">${acI("reset")}<span>Reset game</span></button></div>
     </div>`);
   $("modalBox").classList.add("ornate");
 }
@@ -222,12 +222,12 @@ $("settingsMenu").addEventListener("click", (e) => {
   if (what === "menu") { $("settingsMenu").hidden = true; openMenu(); return; }
   if (what === "tips") {
     state.tips.on = !state.tips.on; save();
-    $("tipsToggle").textContent = `💡 Show tips: ${state.tips.on ? "ON" : "OFF"}`;
+    $("tipsToggle").innerHTML = leadIco(`💡 Show tips: ${state.tips.on ? "ON" : "OFF"}`);
     settingsNote(state.tips.on ? "💡 Tips are on." : "💡 Tips are off.");
     return;
   }
-  if (what === "tipsReset") { state.tips.seen = {}; state.tips.on = true; state.tips.lastAt = 0; save(); $("tipsToggle").textContent = "💡 Show tips: ON"; settingsNote("↺ All tips will show again."); return; }
-  if (what === "tutorial") { state.tips.tutorial = 0; delete state.tips.energyBase; state.tips.on = true; tutClicks = 0; save(); $("tipsToggle").textContent = "💡 Show tips: ON"; $("settingsMenu").hidden = true; showView("income"); state.incomePage = "biz"; render(); return; }
+  if (what === "tipsReset") { state.tips.seen = {}; state.tips.on = true; state.tips.lastAt = 0; save(); $("tipsToggle").innerHTML = leadIco("💡 Show tips: ON"); settingsNote("↺ All tips will show again."); return; }
+  if (what === "tutorial") { state.tips.tutorial = 0; delete state.tips.energyBase; state.tips.on = true; tutClicks = 0; save(); $("tipsToggle").innerHTML = leadIco("💡 Show tips: ON"); $("settingsMenu").hidden = true; showView("income"); state.incomePage = "biz"; render(); return; }
   if (what === "save") {
     save(); flushSave();
     settingsNote(saveFailedAt ? "❌ Could not save: browser storage is full." : "✅ Game saved!");
@@ -241,7 +241,7 @@ $("settingsMenu").addEventListener("click", (e) => {
 
   if (what === "reset") {
     $("settingsMenu").hidden = true;
-    showModal(`<h2>🗑️ Reset game?</h2>
+    showModal(`<h2>${acI("reset")}Reset game?</h2>
                <p>This deletes <b>all</b> your progress: money, businesses, levels and investments.</p>
                <p class="muted">Your ☁️ cloud save is not deleted: sign in again to get it back.</p>
                <div class="row">

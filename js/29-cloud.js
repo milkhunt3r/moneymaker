@@ -110,7 +110,7 @@ function cloudRowOk(row) {
 function cloudLoad(row) {
   if (!cloudRowOk(row)) {   // changed outside the game: keep this device's progress and put it back in the cloud
     cloud.conflict = false;
-    showModal(`<h2>⚠️ Your cloud save couldn't be loaded</h2><p>The cloud save was changed outside the game, so it was not loaded. This device's progress is kept and saved to the cloud again.</p>
+    showModal(`<h2>${acI("warning")}Your cloud save couldn't be loaded</h2><p>The cloud save was changed outside the game, so it was not loaded. This device's progress is kept and saved to the cloud again.</p>
       <div class="row" style="justify-content:center"><button class="btn big" data-modal="close">OK</button></div>`);
     cloudUpload(true);
     return;
@@ -120,18 +120,18 @@ function cloudLoad(row) {
   _saveGameLocal(row.data);
   try { localStorage.setItem(LOCAL_AT, String(Date.now())); } catch (e) {}
   setCloudMeta({ user: cloud.user.id, cloudAt: row.saved_at, localAt: localAt() });
-  showModal(`<h2>☁️ Loading your cloud save…</h2>`);
+  showModal(`<h2>${acI("cloud")}Loading your cloud save…</h2>`);
   setTimeout(() => location.reload(), 300);
 }
 function cloudConflict(row) {
   if (cloud.loading) return;
   cloud.conflict = true;
   const local = splitState(state).progress;
-  showModal(`<h2>☁️ Which progress do you want to keep?</h2>
+  showModal(`<h2>${acI("cloud")}Which progress do you want to keep?</h2>
     <p>Your cloud save and this device have different progress.</p>
     <div class="cloudPick">
-      <button class="btn big" data-cloudpick="cloud"><b>☁️ Cloud save</b><small>${saveSummary(row.data)}</small><small>Saved ${whenText(row.saved_at)}</small></button>
-      <button class="btn big ghost" data-cloudpick="device"><b>💻 This device</b><small>${saveSummary(local)}</small><small>Saved ${whenText(localAt())}</small></button>
+      <button class="btn big" data-cloudpick="cloud"><b>${acI("cloud")}Cloud save</b><small>${saveSummary(row.data)}</small><small>Saved ${whenText(row.saved_at)}</small></button>
+      <button class="btn big ghost" data-cloudpick="device"><b>${acI("device")}This device</b><small>${saveSummary(local)}</small><small>Saved ${whenText(localAt())}</small></button>
     </div>
     <p class="muted">The other one is replaced.</p>`);
   $("modalBox").querySelector('[data-cloudpick="cloud"]').onclick = () => cloudLoad(row);
@@ -182,7 +182,7 @@ async function cloudSignOut() {
   updateCloudUi();
 }
 function cloudDeleteAsk() {
-  showModal(`<h2>🗑️ Delete your account?</h2>
+  showModal(`<h2>${acI("reset")}Delete your account?</h2>
     <p>This deletes your account and your <b>cloud save</b> for good.</p>
     <p class="muted">The progress on this device stays (you can keep playing without an account).</p>
     <div class="row"><button class="btn ghost big" data-modal="close">Cancel</button>
@@ -203,10 +203,10 @@ function cloudRowsHtml(inSettings) {   // inSettings: the ⚙️ Settings copy a
   const r = (k, text, extra = "") => `<button class="orRow" data-cloud="${k}">${icon}<span class="grow">${text}</span>${extra}</button>`;
   if (!cloud.sb) return `<div class="orRow off">${icon}<span class="grow">Cloud save</span><span class="orSoon">${cloud.status === "loading" ? "Connecting…" : "Not available"}</span></div>`;
   if (!cloud.user) return r("in", `<span class="gIcon">G</span>Sign in with Google`, `<span class="orSoon">Cloud save</span>`) +
-    `<div class="guestWarn">⚠️ Playing as a guest: ${GUEST_WARN}</div>`;
-  const st = cloud.status === "error" ? "⚠️ Last upload failed" : cloud.lastAt ? `Saved ${whenText(cloud.lastAt)}` : "…";
+    `<div class="guestWarn">${acI("warning")}Playing as a guest: ${GUEST_WARN}</div>`;
+  const st = cloud.status === "error" ? acI("warning") + "Last upload failed" : cloud.lastAt ? `Saved ${whenText(cloud.lastAt)}` : "…";
   return `<div class="orRow cloudInfo">${icon}<span class="grow"><b data-noi18n>${escapeHtml(cloud.user.email || "Google account")}</b><small id="cloudSt">${st}</small></span></div>` +
-    `<div class="cloudBtns">${inSettings ? `<button data-cloud="now">☁️ Sync now</button>` : ""}<button data-cloud="out">Sign out</button><button data-cloud="del" class="danger">Delete account</button></div>`;
+    `<div class="cloudBtns">${inSettings ? `<button data-cloud="now">${acI("cloud")}<span>Sync now</span></button>` : ""}<button data-cloud="out">Sign out</button><button data-cloud="del" class="danger">Delete account</button></div>`;
 }
 const escapeHtml = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 function updateCloudUi() {
@@ -217,8 +217,8 @@ function updateCloudUi() {
   const b = $("menuAccount");
   // main menu corner: who you are and whether the cloud copy is safe
   if (b) b.innerHTML = !cloud.sb ? "" : cloud.user
-    ? `☁️ ${escapeHtml((cloud.user.user_metadata && cloud.user.user_metadata.name) || cloud.user.email || "")}` +
-      (cloud.status === "error" || cloud.conflict ? `<small class="warn">${LANG === "es" ? "⚠️ Falló el guardado en la nube" : "⚠️ Cloud save failed"}</small>` : `<small>${LANG === "es" ? "✓ Guardado en la nube" : "✓ Saved to cloud"}${cloud.lastAt ? ` · ${new Date(cloud.lastAt).toLocaleTimeString(LANG === "es" ? "es-ES" : undefined, { hour: "2-digit", minute: "2-digit" })}` : ""}</small>`)
+    ? `${acI("cloud")}${escapeHtml((cloud.user.user_metadata && cloud.user.user_metadata.name) || cloud.user.email || "")}` +
+      (cloud.status === "error" || cloud.conflict ? `<small class="warn">${acI("warning")}${LANG === "es" ? "Falló el guardado en la nube" : "Cloud save failed"}</small>` : `<small>${LANG === "es" ? "✓ Guardado en la nube" : "✓ Saved to cloud"}${cloud.lastAt ? ` · ${new Date(cloud.lastAt).toLocaleTimeString(LANG === "es" ? "es-ES" : undefined, { hour: "2-digit", minute: "2-digit" })}` : ""}</small>`)
     : `<span class="gIcon">G</span>${LANG === "es" ? "Inicia sesión para guardar" : "Sign in to save"}<small class="warn">${LANG === "es" ? "Invitado: guardado solo en este dispositivo" : "Guest: saved on this device only"}</small>`;
   if (b) b.hidden = !cloud.sb;
 }
@@ -248,9 +248,9 @@ $("mainMenu").addEventListener("click", (e) => {
   if (!b || !cloud.sb || cloud.user || guestAsked || localStorage.getItem(GUEST_OK)) return;
   e.stopPropagation();   // don't start yet: ask first
   guestAsked = true;
-  showModal(`<h2>☁️ Keep your progress safe</h2>
+  showModal(`<h2>${acI("cloud")}Keep your progress safe</h2>
     <p>Sign in with Google to save your progress in the cloud and play on any device.</p>
-    <p class="guestWarn">⚠️ As a guest, ${GUEST_WARN}</p>
+    <p class="guestWarn">${acI("warning")}As a guest, ${GUEST_WARN}</p>
     <div class="cloudPick">
       <button class="btn big" id="guestSignIn"><span class="gIcon">G</span>Sign in with Google</button>
       <button class="btn big ghost" id="guestPlay">Play as guest</button>

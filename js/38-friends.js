@@ -93,9 +93,9 @@ function frPersonRow(p, right) {
 }
 function frResultBtn(p) {
   const r = frRowWith(p.user_id);
-  if (!r) return `<button class="btn small" data-fr="add" data-id="${p.user_id}" ${fr.busy ? "disabled" : ""}>➕ Add friend</button>`;
-  if (r.status === "accepted") return `<span class="muted">✅ Friends</span>`;
-  if (r.addressee === frMe()) return `<button class="btn small" data-fr="accept" data-rid="${r.id}">✅ Accept</button>`;
+  if (!r) return `<button class="btn small" data-fr="add" data-id="${p.user_id}" ${fr.busy ? "disabled" : ""}>${acI("addfriend")}<span>Add friend</span></button>`;
+  if (r.status === "accepted") return `<span class="muted">${acI("friends")}Friends</span>`;
+  if (r.addressee === frMe()) return `<button class="btn small" data-fr="accept" data-rid="${r.id}">${acI("ok")}<span>Accept</span></button>`;
   return `<span class="muted">⏳ Request sent</span>`;
 }
 // 📤 your friend code: copy it, or share an invite with the phone's share sheet
@@ -103,7 +103,7 @@ const frInvite = (code) => LANG === "es" ? `¡Añádeme como amigo en Empire of 
 function frCodeBox(row, big) {
   const code = escapeHtml(row.friend_code || "…");
   return `<div class="frCodeBox ${big ? "big" : ""}"><div><span class="muted">Your friend code</span><b data-noi18n>${code}</b></div>
-    <span class="frCodeBtns"><button class="btn ghost small" data-prof="copy">📋 Copy</button>${navigator.share ? `<button class="btn small" data-fr="share">📤 Share</button>` : ""}</span></div>`;
+    <span class="frCodeBtns"><button class="btn ghost small" data-prof="copy">${acI("copy")}<span>Copy</span></button>${navigator.share ? `<button class="btn small" data-fr="share">${acI("share")}<span>Share</span></button>` : ""}</span></div>`;
 }
 // ⚔️ challenge a friend: opens 🎰 Casino → ⚔️ Online casino with this friend picked (choose a game and a bet there)
 function frChallengeBtn(p) {
@@ -111,8 +111,8 @@ function frChallengeBtn(p) {
 }
 function renderFriends(row) {
   const box = $("friendsBox"); if (!box) return;
-  if (!row) { box.innerHTML = `<div class="card profWrap"><h2 style="margin-top:0">👥 Friends</h2><p>Create your profile first (👤 Profile tab: choose a nickname). Then you can add friends.</p></div>`; return; }
-  if (prof.friendsOn === false) { box.innerHTML = `<div class="card profWrap"><h2 style="margin-top:0">👥 Friends</h2><p>Friends aren't switched on yet. Please try again later.</p></div>`; return; }
+  if (!row) { box.innerHTML = `<div class="card profWrap"><h2 style="margin-top:0">${acI("friends")}Friends</h2><p>Create your profile first (👤 Profile tab: choose a nickname). Then you can add friends.</p></div>`; return; }
+  if (prof.friendsOn === false) { box.innerHTML = `<div class="card profWrap"><h2 style="margin-top:0">${acI("friends")}Friends</h2><p>Friends aren't switched on yet. Please try again later.</p></div>`; return; }
   if (!fr.loaded && !fr.loading) frLoad();
   const me = frMe(), P = (r) => fr.people[frOther(r)] || { user_id: frOther(r), nickname: "…" };
   const incoming = fr.rows.filter(r => r.status === "pending" && r.addressee === me);
@@ -123,15 +123,15 @@ function renderFriends(row) {
   const typed = $("frSearch") ? $("frSearch").value : fr.q;
   const none = fr.loaded && !friends.length;
   // 1. requests for you  2. your friends (or an invite when you have none)  3. add a friend  4. requests you sent
-  const reqs = incoming.length ? `<div class="card profWrap"><h3 style="margin-top:0">📨 Friend requests <span class="profBadge">${incoming.length}</span></h3><div class="frList">${incoming.map(r => frPersonRow(P(r),
-      `<button class="btn small" data-fr="accept" data-rid="${r.id}">✅ Accept</button><button class="btn ghost small" data-fr="decline" data-rid="${r.id}">Decline</button>`)).join("")}</div></div>` : "";
-  const list = `<div class="card profWrap"><div class="row"><h3 style="margin:0">👥 Your friends (${friends.length})</h3><span class="muted">${friends.length ? `🟢 ${online} online` : ""}</span></div>
+  const reqs = incoming.length ? `<div class="card profWrap"><h3 style="margin-top:0">${acI("requests")}Friend requests <span class="profBadge">${incoming.length}</span></h3><div class="frList">${incoming.map(r => frPersonRow(P(r),
+      `<button class="btn small" data-fr="accept" data-rid="${r.id}">${acI("ok")}<span>Accept</span></button><button class="btn ghost small" data-fr="decline" data-rid="${r.id}">Decline</button>`)).join("")}</div></div>` : "";
+  const list = `<div class="card profWrap"><div class="row"><h3 style="margin:0">${acI("friends")}Your friends (${friends.length})</h3><span class="muted">${friends.length ? `🟢 ${online} online` : ""}</span></div>
       ${fr.loading && !fr.loaded ? `<p class="muted">Loading…</p>` : friends.length ? `<div class="frList">${friends.map(p => frPersonRow(p, frOnline(p) ? `<span class="frOn">Online</span>${frChallengeBtn(p)}` : p.last_seen ? `<span class="muted">${frAgo(p.last_seen)}</span>` : "")).join("")}</div>`
         : `<div class="frEmpty"><p><b>No friends yet.</b> Send your friend code to the people you play with, or search for their nickname below.</p>${frCodeBox(row, true)}</div>`}</div>`;
-  const add = `<div class="card profWrap"><h3 style="margin-top:0">➕ Add a friend</h3>
+  const add = `<div class="card profWrap"><h3 style="margin-top:0">${acI("addfriend")}Add a friend</h3>
       <div class="profNickRow"><input id="frSearch" maxlength="20" autocomplete="off" spellcheck="false" placeholder="Nickname or friend code" value="${escapeHtml(typed || "")}" data-noi18n aria-label="Nickname or friend code">
         <button class="btn" data-fr="search" ${fr.searching ? "disabled" : ""}>Search</button></div>
-      ${fr.err ? `<div class="profErr">❌ ${fr.err}</div>` : ""}
+      ${fr.err ? `<div class="profErr">${acI("error")}${fr.err}</div>` : ""}
       ${fr.searching ? `<p class="muted">Searching…</p>` : fr.results ? (fr.results.length ? `<div class="frList">${fr.results.map(p => frPersonRow(p, frResultBtn(p))).join("")}</div>` : `<p class="muted">No players found.</p>`) : ""}
       ${none ? "" : frCodeBox(row, false)}</div>`;
   const sent = outgoing.length ? `<div class="card profWrap"><h3 style="margin-top:0">⏳ Requests you sent</h3><div class="frList">${outgoing.map(r => frPersonRow(P(r),
@@ -148,13 +148,13 @@ function frShowProfile(id) {
       <div class="frStatus">${frDot(p)} ${frOnline(p) ? "Online" : p.last_seen ? `Last seen ${frAgo(p.last_seen)}` : "Offline"}</div>
       <div class="profStats" style="justify-content:center"><span>🏆 <b>${p.ach_total ? `${p.ach_done || 0}/${p.ach_total}` : p.ach_done || 0}</b> achievements</span><span>⭐ Prestige <b>${p.prestige || 0}</b></span></div>
       ${p.levels ? profLevelsHtml(p.levels).replace('class="profLvls"', 'class="profLvls" style="justify-content:center"') : ""}
-      ${"money" in p ? (p.hide_money ? `<div class="profMoney" style="justify-content:center"><span class="muted">🙈 Money hidden</span></div>` : `<div class="profMoney" style="justify-content:center">${profCoinImg(p.coin)}<b>${fmt(Number(p.money) || 0)}</b></div>`) : ""}
+      ${"money" in p ? (p.hide_money ? `<div class="profMoney" style="justify-content:center"><span class="muted">${acI("hidden")}Money hidden</span></div>` : `<div class="profMoney" style="justify-content:center">${profCoinImg(p.coin)}<b>${fmt(Number(p.money) || 0)}</b></div>`) : ""}
       ${p.showcase && p.showcase.length ? `<h3 style="margin:16px 0 8px">🏅 Showcase</h3>${profShowcaseHtml(p.showcase, false).replace('class="profShow"', 'class="profShow" style="justify-content:center"')}` : ""}
       <h3 style="margin:16px 0 8px">🐾 Pets</h3>
       ${pets.length ? `<div class="frPets">${pets.map(k => `<div class="frPet"><img src="${PROF_PETS[k].pic}" alt=""><span>${PROF_PETS[k].name}</span></div>`).join("")}</div>` : `<p class="muted">No pets yet.</p>`}
       <div class="row" style="justify-content:center;gap:10px;margin-top:14px;flex-wrap:wrap">
         ${r && r.status === "accepted" ? frChallengeBtn(p) : ""}
-        ${!r ? `<button class="btn" data-fr="add" data-id="${p.user_id}">➕ Add friend</button>` : ""}
+        ${!r ? `<button class="btn" data-fr="add" data-id="${p.user_id}">${acI("addfriend")}<span>Add friend</span></button>` : ""}
         <button class="btn ghost" data-modal="close">Close</button></div>
       ${r && r.status === "accepted" ? `<button class="linkBtn frRemove" data-fr="remove" data-rid="${r.id}" data-name="${escapeHtml(p.nickname)}">Remove friend</button>` : ""}</div>`);
 }

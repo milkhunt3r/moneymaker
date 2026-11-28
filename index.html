@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
   <meta property="og:image" content="assets/logo/share.jpg">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="stylesheet" href="css/style.css?v=c455bce0e3">
+  <link rel="stylesheet" href="css/style.css?v=35c46a6f89">
 </head>
 <body>
   <!-- ===== Loading screen (removed when the game has started) ===== -->
@@ -69,12 +69,12 @@
     <div id="settingsWrap">
       <button id="settingsBtn" title="Settings" aria-label="Settings"><img class="ico setIco" src="assets/icons/ico-settings.webp" alt=""></button>
       <div id="settingsMenu" hidden>
-        <button data-setting="save">💾 Save game</button>
-        <button data-setting="tips" id="tipsToggle">💡 Show tips: ON</button>
+        <button data-setting="save"><img class="ico pti" src="assets/icons/ico-ac-backup.webp" alt=""><span>Save game</span></button>
+        <button data-setting="tips" id="tipsToggle"><img class="ico pti" src="assets/icons/ico-ac-tips.webp" alt=""><span>Show tips: ON</span></button>
         <button data-setting="tipsReset">↺ Show all tips again</button>
         <button data-setting="tutorial">▶️ Replay the guided start</button>
         <button data-setting="menu">🏠 Main menu</button>
-        <button data-setting="reset" class="danger">🗑️ Reset game</button>
+        <button data-setting="reset" class="danger"><img class="ico pti" src="assets/icons/ico-ac-reset.webp" alt=""><span>Reset game</span></button>
         <div class="muted" id="settingsNote">The game saves itself every 30 seconds and after every action.</div>
       </div>
     </div>
@@ -303,13 +303,13 @@
       <div id="artHow"></div>
       <div class="subLayout">
         <nav class="subNav" id="artNav">
-          <button class="subTab active" data-art="studio">🎨 Art studio</button>
-          <button class="subTab" data-art="collection">🖼️ Collection</button>
+          <button class="subTab active" data-art="studio"><img class="ico pti" src="assets/icons/ico-ar-colors.webp" alt="">Art studio</button>
+          <button class="subTab" data-art="collection"><img class="ico pti" src="assets/icons/ico-ar-keep.webp" alt="">Collection</button>
         </nav>
         <div class="subMain">
           <div id="artStudio">
             <div class="card">
-              <h3 style="margin:0 0 8px">🎨 Art studio</h3>
+              <h3 style="margin:0 0 8px"><img class="ico pti" src="assets/icons/ico-ar-colors.webp" alt="">Art studio</h3>
               <div id="artComm"></div>
               <span class="segGroup" id="artTiers"></span>
               <div class="muted" id="artTierInfo" style="margin-top:6px"></div>
@@ -329,8 +329,8 @@
                   <span id="artAngleBox" class="artAngle" hidden title="Turn the shape: drag the slider or use the mouse wheel over the canvas (also right after drawing it)">
                     ↻ <input type="range" id="artAngle" min="0" max="179" step="1" value="0"> <b id="artAngleVal">0°</b></span>
                   <span class="artEdit"><button class="btn ghost small" id="artUndo">↶ Undo</button>
-                  <button class="btn ghost small" id="artClear">🗑️ Clear</button></span>
-                  <span class="artGo"><button class="btn ghost small" id="artNew">🔄 New painting</button>
+                  <button class="btn ghost small" id="artClear"><img class="ico pti" src="assets/icons/ico-ac-reset.webp" alt=""><span>Clear</span></button></span>
+                  <span class="artGo"><button class="btn ghost small" id="artNew"><img class="ico pti" src="assets/icons/ico-ar-new.webp" alt=""><span>New painting</span></button>
                   <button class="btn" id="artSubmit">✅ Submit copy</button></span>
                 </div>
               </div>
@@ -339,7 +339,7 @@
           </div>
           <div id="artCollection" hidden>
             <div class="card">
-              <div class="row"><h3 style="margin:0">🖼️ Collection <span class="muted" id="artSlots"></span></h3>
+              <div class="row"><h3 style="margin:0"><img class="ico pti" src="assets/icons/ico-ar-keep.webp" alt="">Collection <span class="muted" id="artSlots"></span></h3>
                 <button class="btn" id="artBuySlots"></button></div>
               <div class="muted" style="margin-top:6px">Paintings you kept. You can sell any of them later for its full value.</div>
               <div class="artGrid" id="artGrid"></div>
@@ -611,6 +611,6 @@
   <div id="tipCard" hidden role="status"></div>
   <div id="tutBubble" hidden role="dialog" aria-label="Guided start"></div>
   <!-- Game code, split by section. Files share one global scope and must load in this order. -->
-  <script src="game.js?v=6045e8d96f"></script>
+  <script src="game.js?v=deac2aac72"></script>
 </body>
 </html>

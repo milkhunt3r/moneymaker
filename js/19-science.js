@@ -64,55 +64,55 @@ const labOdds = () => sci().station ? STATION_LAB_ODDS : LAB_ODDS;
 
 // ----- Nobel Prize texts: one field is chosen at random for each breakthrough -----
 const NOBEL_FIELDS = [
-  { name: "Physics", icon: "⚛️", finds: [
+  { name: "Physics", icon: "⚛️", ico: "physics", finds: [
     "a way to keep quantum states stable at room temperature, opening the door to practical quantum computers",
     "how dark matter interacts with ordinary matter, solving one of the biggest mysteries of the universe",
     "a new particle that explains why time only moves forward"] },
-  { name: "Chemistry", icon: "⚗️", finds: [
+  { name: "Chemistry", icon: "⚗️", ico: "chemistry", finds: [
     "a catalyst that turns CO₂ from the air into clean fuel using only sunlight",
     "a new kind of chemical bond that makes unbreakable yet fully recyclable plastics possible",
     "a reaction that splits water into hydrogen at almost no energy cost"] },
-  { name: "Medicine and Physiology", icon: "🩺", finds: [
+  { name: "Medicine and Physiology", icon: "🩺", ico: "medicine", finds: [
     "a universal vaccine that protects against every strain of influenza",
     "a treatment that teaches the body's own cells to repair damaged hearts",
     "a simple blood test that detects over 50 diseases years before symptoms appear"] },
-  { name: "Biology", icon: "🧬", finds: [
+  { name: "Biology", icon: "🧬", ico: "biology", finds: [
     "how some animals regenerate lost limbs, and how the same process can be switched on in other species",
     "the hidden language bacteria use to cooperate, changing how we fight infections",
     "how cells decide when to age, revealing the biological clock of life"] },
-  { name: "Genetics", icon: "🧬", finds: [
+  { name: "Genetics", icon: "🧬", ico: "biology", finds: [
     "a precise gene-editing method that safely fixes inherited diseases with a single treatment",
     "the genes that make some people naturally immune to most viruses",
     "how 'silent' DNA switches genes on and off, rewriting the textbooks on heredity"] },
-  { name: "Molecular Biology", icon: "🔬", finds: [
+  { name: "Molecular Biology", icon: "🔬", ico: "molbio", finds: [
     "the molecular motor cells use to repair their own DNA, and how to make it stronger",
     "how proteins fold in a microsecond, allowing new medicines to be designed in days",
     "a molecule that clears the damaged proteins behind many age-related diseases"] },
-  { name: "Neuroscience", icon: "🧠", finds: [
+  { name: "Neuroscience", icon: "🧠", ico: "neuro", finds: [
     "how the brain stores memories, and how lost memories can be restored",
     "the brain circuit that creates consciousness",
     "a way to regrow damaged nerves, helping paralyzed patients walk again"] },
-  { name: "Astronomy and Astrophysics", icon: "🔭", finds: [
+  { name: "Astronomy and Astrophysics", icon: "🔭", ico: "astro", finds: [
     "clear signs of life in the atmosphere of a planet orbiting a nearby star",
     "what happens to information that falls into a black hole",
     "the first light ever emitted in the universe, revealing how the very first stars were born"] },
-  { name: "Materials Science", icon: "🧲", finds: [
+  { name: "Materials Science", icon: "🧲", ico: "materials", finds: [
     "a superconductor that works at room temperature and normal pressure",
     "a self-healing material that repairs cracks in bridges and aircraft on its own",
     "a nanomaterial that stores ten times more energy than today's best batteries"] },
-  { name: "Environmental Science", icon: "🌍", finds: [
+  { name: "Environmental Science", icon: "🌍", ico: "environment", finds: [
     "a natural process that lets oceans absorb carbon ten times faster, slowing climate change",
     "how to restore dying coral reefs in just a few years",
     "a way to turn deserts green using microbes that pull water from the air"] },
 ];
 function nobelHtml(p) {
   const f = NOBEL_FIELDS[p.field] || NOBEL_FIELDS[0];
-  return `<div class="nobel"><div class="nobelMedal">🏅</div>
+  return `<div class="nobel"><div class="nobelMedal">${ico("sx-nobel", "nobelMedalImg")}</div>
     <h2>Scientific breakthrough!</h2>
     <p>Congratulations! Your researchers have discovered <b>${f.finds[p.find] || f.finds[0]}</b>.</p>
-    <p>This discovery will change the world, and you have won the <b>Nobel Prize in ${f.icon} ${f.name}</b>!</p>
+    <p>This discovery will change the world, and you have won the <b>Nobel Prize in ${sxI(f.ico)}${f.name}</b>!</p>
     <div class="nobelReward">+${fmt(LAB_REWARD)}</div>
-    <button class="btn big" data-nobel="ok">🏅 Accept the Nobel Prize</button></div>`;
+    <button class="btn big" data-nobel="ok">${sxI("nobel")}<span>Accept the Nobel Prize</span></button></div>`;
 }
 function showNobel() {
   const p = sci().lab && sci().lab.pending;
@@ -294,7 +294,7 @@ function renderScience() {
   // 🧪 Research lab
   if (S.lab) {
     html += `<div class="card specialCard"><div class="row"><h3>${ico("sci-lab", "biz")}Research lab</h3>
-        <span class="vialCount" title="Scientific breakthroughs (Nobel Prizes)">⚗️ × ${S.lab.prizes || 0}</span></div>
+        <span class="vialCount" title="Scientific breakthroughs (Nobel Prizes)">${sxI("nobel")}× ${S.lab.prizes || 0}</span></div>
       <div class="muted">Every second: a 1 in ${labOdds().toLocaleString("en-US")} chance of a scientific breakthrough worth ${fmt(LAB_REWARD)}${S.station ? " (🛸 space station)" : ""} · <span id="sci-lab-next"></span></div></div>`;
   } else {
     html += `<div class="card specialCard"><div class="row"><div><h3>${ico("sci-lab", "biz")}Research lab</h3>

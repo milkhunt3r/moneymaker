@@ -27,6 +27,13 @@ function statusHtml(s) {
   const e = Object.keys(IN_ICO).find(k => s.startsWith(k));
   return e ? `${inIco(IN_ICO[e])}<span>${s.slice(e.length).trim()}</span>` : escapeHtml(s);
 }
+// 🎨 plain-text notes (notices, settings and backup messages): a known emoji in front becomes its painted icon, the rest is escaped
+const LEAD_ICO = { "✅": "ac-ok", "❌": "ac-error", "☁️": "ac-cloud", "💡": "ac-tips", "⚠️": "ac-warning", "🗑️": "ac-reset", "📋": "ac-copy",
+  "👥": "ac-friends", "💾": "ac-backup", "🏚️": "ivx-crash", "🔄": "tr-replace", "🔬": "sx-molbio" };
+function leadIco(s) {
+  s = String(s || ""); const e = Object.keys(LEAD_ICO).find(k => s.startsWith(k));
+  return e ? `${inIco(LEAD_ICO[e])}<span>${escapeHtml(s.slice(e.length).trim())}</span>` : escapeHtml(s);
+}
 function bizBoostLine(typeId) {
   const b = BIZ_BOOST[typeId]; if (!b) return "";
   const owned = ownedOf(typeId), max = (BUSINESS_TYPES.find(t => t.id === typeId) || {}).maxOwned || 0;
@@ -871,7 +878,7 @@ $("modal").addEventListener("click", (event) => {
 /* ----- Short message under the coin ----- */
 let noticeTimer = null;
 function showNotice(text) {
-  $("hint").textContent = text;
+  $("hint").innerHTML = leadIco(text);
   clearTimeout(noticeTimer);
   noticeTimer = setTimeout(() => { $("hint").textContent = ""; }, 6000);
 }
