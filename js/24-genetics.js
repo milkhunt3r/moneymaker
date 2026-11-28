@@ -225,7 +225,7 @@ function geneUnfound(n) {
 }
 const geneFound = () => G.known.filter(n => GENE_SPECIES[n] && GENE_SPECIES[n].rar !== "s").length;
 const geneKnows = (n) => G.known.includes(n);
-let geneSlots = [null, null], geneLast = null, geneTab = "freezer", geneCat = "all";
+let geneSlots = [null, null], geneLast = null, geneTab = (state.mgTabs && state.mgTabs.gene) || "freezer", geneCat = "all";   // the side tab is remembered (state.mgTabs.gene)
 
 // 🔓 the mini-game opens (for good) once the 🧬 Genetics Laboratory is bought; you start with 3 of each base sample
 function geneUnlock() {
@@ -334,6 +334,11 @@ function renderGene() {
       <li>⏱️ Every species you know holds up to ${GENE_DNA_MAX} DNA and gets +1 every ${GENE_REGEN_MS / 60000} minutes, also while the game is closed.</li>
       <li>💡 Stuck? A hint costs 👩‍🔬 ${GENE_HINT_SCI} scientists and shows one recipe you can make right now.</li>
       <li>🏆 Each species also raises a bonus elsewhere in the game (see Species bonuses).</li></ul>`, !found)}
+    <div class="subLayout"><nav class="subNav mgNav">
+      <button class="subTab ${geneTab === "freezer" ? "active" : ""}" data-gtab="freezer">❄️ Freezer (${G.known.length})</button>
+      <button class="subTab ${geneTab === "codex" ? "active" : ""}" data-gtab="codex">${gx("codex")} Codex</button>
+      <button class="subTab ${geneTab === "mutants" ? "active" : ""}" data-gtab="mutants">${gx("mutant")} Mutants (${mutantCount()})</button>
+      <button class="subTab ${geneTab === "perks" ? "active" : ""}" data-gtab="perks">🏆 Bonuses</button></nav><div class="subMain">
     <div class="card geneLab">
       <div class="geneSplicer">${slot(0)}<div class="genePlus">+</div>${slot(1)}
         <button class="btn big ${knownRecipe ? "ghost" : ""}" data-gene="splice" ${canSplice && !tried ? "" : "disabled"}>🧬 Splice</button></div>
@@ -350,15 +355,13 @@ function renderGene() {
         title="${!sci().uni ? "Needs a University with scientists" : hintOpts ? "" : "No new recipe is possible with what you have"}">${gx("hint")} Hint · 👩‍🔬 ${GENE_HINT_SCI} scientists</button>
       <span class="muted">You have ${ico("sci-scientist")}${sciHave} scientists</span>
     </div>
-    <div class="genePerkTitle">🏆 Species bonuses <span class="muted">+1% for every species you discover in each category, for good</span></div>
+    ${geneTab === "perks" ? `<div class="card"><div class="genePerkTitle">🏆 Species bonuses <span class="muted">+1% for every species you discover in each category, for good</span></div>
     <div class="genePerks" title="Every species you discover in these categories gives +1% for good">${GENE_PERKS.map(([c, e, what]) =>
-      `<span>${e} <b>+${geneCatCount(c)}%</b> ${what}</span>`).join("")}</div>
+      `<span>${e} <b>+${geneCatCount(c)}%</b> ${what}</span>`).join("")}</div></div>` : ""}
     ${hintsOpen.length ? `<div class="geneHints">${hintsOpen.map(p => { const [a, b] = p.split("|");
       return `<span>${gx("hint")} Try ${gEm(a, "sm")} ${a} + ${gEm(b, "sm")} ${b}</span>`; }).join("")}</div>` : ""}
-    <div class="card">
-      <div class="geneTabs"><button class="subTab ${geneTab === "freezer" ? "active" : ""}" data-gtab="freezer">❄️ Freezer (${G.known.length})</button>
-        <button class="subTab ${geneTab === "codex" ? "active" : ""}" data-gtab="codex">${gx("codex")} Codex</button>
-        <button class="subTab ${geneTab === "mutants" ? "active" : ""}" data-gtab="mutants">${gx("mutant")} Mutants (${mutantCount()})</button>
+    <div class="card" ${geneTab === "perks" ? "hidden" : ""}>
+      <div class="geneTabs"><b class="geneListTitle">${geneTab === "codex" ? `${gx("codex")} Codex` : geneTab === "mutants" ? `${gx("mutant")} Mutants` : "❄️ Freezer"}</b>
         ${geneTab === "freezer" ? `<button class="subTab geneOnly ${G.onlyOpen ? "active" : ""}" data-gonly="1" title="Show only samples that can still make a new species with what you have (hides ✓ done and 🔒 later)">🔎 Only with recipes</button>` : ""}
         <input id="geneSearch" type="search" placeholder="🔍 Search" autocomplete="off"></div>
       <div class="achCats" ${geneTab === "mutants" ? "hidden" : ""}>${GENE_CATS.filter(([c]) => geneTab === "codex" ? c !== "start" || true : true).map(([c, l]) =>
@@ -367,7 +370,7 @@ function renderGene() {
         <div class="geneGrid">${Object.keys(G.mutants).reverse().map(k => { const m = mutantOf(k);
           return `<div class="geneCard r-m codex" data-name="${m.name.toLowerCase()}" title="${m.a} + ${m.b}"><span class="geneEmoji">${gEm(m.a, "half")}${gEm(m.b, "half")}</span><span class="geneName">${m.name}</span><span class="geneHow">${gEm(m.a, "sm")} + ${gEm(m.b, "sm")}</span></div>`; }).join("") || `<p class="muted">No mutants yet.</p>`}</div>`
       : `<div class="geneGrid">${cards || `<p class="muted">${geneTab === "freezer" && G.onlyOpen ? "No sample can make a new species right now." : "Nothing here yet."}</p>`}</div>`}
-    </div>`;
+    </div></div></div>`;
 }
 
 function geneSplice() {
@@ -428,7 +431,7 @@ $("geneView").addEventListener("click", (e) => {
   const sl = t.closest("[data-gslot]"); if (sl) { geneSlots[+sl.dataset.gslot] = null; return renderGene(); }
   const g = t.closest("[data-gene]");
   if (g && !g.disabled) { if (g.dataset.gene === "splice") geneSplice(); if (g.dataset.gene === "hint") geneHint(); return; }
-  const tab = t.closest("[data-gtab]"); if (tab) { geneTab = tab.dataset.gtab; return renderGene(); }
+  const tab = t.closest("[data-gtab]"); if (tab) { geneTab = tab.dataset.gtab; state.mgTabs = state.mgTabs || {}; state.mgTabs.gene = geneTab; save(); return renderGene(); }
   const c = t.closest("[data-gcat]"); if (c) { geneCat = c.dataset.gcat; return renderGene(); }
   if (t.closest("[data-gonly]")) { G.onlyOpen = !G.onlyOpen; save(); return renderGene(); }
 });

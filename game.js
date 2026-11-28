@@ -3350,6 +3350,9 @@ rx(String.raw`Submit \(sell or keep\) (\d+) (Easy|Normal|Masterpiece) paintings 
 rx(String.raw`(Easy|Normal|Masterpiece) · (\d+)/(\d+) (Easy|Normal|Masterpiece)`, (m, a, x, y, b) => `${ART_TIER_ES[a]} · ${x}/${y} ${ART_TIER_ES[b]}`);
 H("🎮 Mini-games: every game now has the same header (← back, title and its key number: 🖼️ collection, ⚡ energy, 🏁 levels and ✨ stardust, or species found), and the rules are folded into <b>ℹ️ How to play</b> (open the first time, folded once you've played).",
   "🎮 Minijuegos: todos los juegos tienen ahora la misma cabecera (← volver, título y su dato clave: 🖼️ colección, ⚡ energía, 🏁 niveles y ✨ polvo estelar, o especies encontradas), y las reglas están plegadas en <b>ℹ️ Cómo se juega</b> (abierto la primera vez, plegado cuando ya has jugado).");
+Object.assign(ES, { "Dig": "Excavar", "Freezer": "Congelador", "Bonuses": "Bonificaciones" });
+H("🎮 Mini-games: side tabs keep each game tidy. ⛏️ Gold Mine Dig: Dig / Upgrades. 🚀 Nebula Strike: Levels / Hangar / Upgrades. 🧬 Gene Splicer: Freezer / Codex / Mutants / Bonuses, with the splicer always on top. A <b>!</b> shows when you can buy an upgrade or a ship.",
+  "🎮 Minijuegos: pestañas laterales para ordenar cada juego. ⛏️ Excavación en la mina de oro: Excavar / Mejoras. 🚀 Nebula Strike: Niveles / Hangar / Mejoras. 🧬 Empalmador genético: Congelador / Códice / Mutantes / Bonificaciones, con el empalmador siempre arriba. Un <b>!</b> avisa cuando puedes comprar una mejora o una nave.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -3674,7 +3677,7 @@ var staffIco = (key, o, cls = "staffI") => STAFF_PICS.includes(key) ? ico("st-" 
 var alienBonus = (key) => ((__eocLoaded >= 44 && typeof spAllyBonus === "function") ? spAllyBonus(key) : 0);
 var geneBonus = (cat) => (typeof geneCatCount === "function" ? geneCatCount(cat) * 0.01 : 0);
 var PREF_KEYS = ["view", "coinUnit", "casinoPage", "logiPage", "rewardType", "rewardState", "gamePage", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage", "cryptoSel", "ivCard", "logiFleet", "mapBig", "mapHelp",
-                   "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage", "numFmt", "lowFx", "popups"];
+                   "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage", "numFmt", "lowFx", "popups", "mgTabs"];
 function splitState(st) {   // -> { progress, prefs }
   const progress = {}, prefs = {};
   for (const k in st) (PREF_KEYS.includes(k) ? prefs : progress)[k] = st[k];
@@ -4813,6 +4816,19 @@ function mgHow(key, html, fresh) {
   const open = key in mgHowOpen ? mgHowOpen[key] : !!fresh;
   return `<details class="card mgHow" data-mghow="${key}" ${open ? "open" : ""}><summary>ℹ️ How to play</summary><div class="mgHowBody">${html}</div></details>`;
 }
+// 👈 side tabs inside a mini-game (Mine: Dig / Upgrades, Nebula Strike: Levels / Hangar / Upgrades).
+// Every section is drawn once; a tab only shows one and hides the others (no redraw). The choice is remembered.
+var mgTab = (key, def) => { const t = (state.mgTabs || {})[key]; return t || def; };
+var mgNav = (key, tabs, cur) => `<nav class="subNav mgNav">${tabs.map(([id, label, dot]) =>
+  `<button class="subTab ${id === cur ? "active" : ""}" data-mgtab="${key}:${id}">${label}${dot ? ` <span class="tabWarn gold">!</span>` : ""}</button>`).join("")}</nav>`;
+var mgSec = (key, id, cur) => `data-mgsec="${key}:${id}" ${id === cur ? "" : "hidden"}`;
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-mgtab]"); if (!b) return;
+  const [key, id] = b.dataset.mgtab.split(":");
+  state.mgTabs = state.mgTabs || {}; state.mgTabs[key] = id; save();
+  document.querySelectorAll(`[data-mgtab^="${key}:"]`).forEach(x => x.classList.toggle("active", x === b));
+  document.querySelectorAll(`[data-mgsec^="${key}:"]`).forEach(x => { x.hidden = x.dataset.mgsec !== `${key}:${id}`; });
+});
 document.addEventListener("toggle", (e) => { const d = e.target; if (d && d.dataset && d.dataset.mghow) mgHowOpen[d.dataset.mghow] = d.open; }, true);
 
 /* ----- Pop-up window ----- */
@@ -14310,6 +14326,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "🎮 Mini-games: side tabs keep each game tidy. ⛏️ Gold Mine Dig: Dig / Upgrades. 🚀 Nebula Strike: Levels / Hangar / Upgrades. 🧬 Gene Splicer: Freezer / Codex / Mutants / Bonuses, with the splicer always on top. A <b>!</b> shows when you can buy an upgrade or a ship.",
     "🎮 Mini-games: every game now has the same header (← back, title and its key number: 🖼️ collection, ⚡ energy, 🏁 levels and ✨ stardust, or species found), and the rules are folded into <b>ℹ️ How to play</b> (open the first time, folded once you've played).",
     "🛠️ Space crafting level 3 now also unlocks crafting in batches of <b>150</b>.",
     "🏆 6 new achievements: <b>🐾 Pet lover</b> (have 2 pets) and <b>🏡 Full house</b> (have 3 pets), plus 4 Mining achievements for 🤖 Digy: adopt him, let him dig 5 and 50 times, and pet him 100 times.",
@@ -15488,14 +15505,17 @@ function renderMine() {
   const v = $("mineView"); if (!v) return;
   const e = mineEnergy();
   if (!M.run) {
+    const mineTabNow = mgTab("mine", "dig");
     v.innerHTML = `${mgHead(`<img class="mgIco" src="assets/mine/entrance.webp" alt="">`, "Gold Mine Dig", mineHeadStat(e))}
-      <div id="digyCorner"></div>
       ${mgHow("mine", `<p>Dig down into your gold mine and grab as much ore as your bag can hold. The deeper you go, the better the ore,
           but every step burns lamp oil. Back at the surface, sell your ore or keep it in your ${mnIco("vault")}vault to pay for upgrades. If the lamp runs out underground, the rescue team saves ${Math.round(rescueKeep() * 100)}% of your ore.</p>
         <p class="muted">🌋 Below <b>100 m</b>: lava pools block the way and rocks with glowing red cracks hide lava pockets. Breaking one splashes you (−${LAVA_SPLASH[upLv("heat")] * 100}% lamp) and the lava flows fast, even if you stand still (it can rise 1 tile). Every step next to lava burns ${LAVA_HEAT[upLv("heat")] * 100}% of your lamp. Getting caught saves only ${Math.round(lavaKeep() * 100)}% of your ore.
           🔥 Below <b>150 m</b> the heat burns your lamp 25% faster, and 🔴 rubies appear.
           📦 Below <b>130 m</b> are 1–2 treasure chests (${CHEST_SLOTS} bag slots each): bring them up yourself to open them. The rescue team leaves them behind.</p>
         <p class="muted">Ore is worth seconds of your income (${ORES.coal.sec}–${ORES.ruby.sec} sec each, based on your business income over the last minute). 🔥 A gold rush in your mines doubles it.</p>`, !M.runs)}
+      <div class="subLayout">${mgNav("mine", [["dig", `${mnIco("pick")}Dig`], ["ups", "⬆️ Upgrades", Object.keys(MINE_UPS).some(canBuyUp)]], mineTabNow)}<div class="subMain">
+      <div ${mgSec("mine", "dig", mineTabNow)}>
+      <div id="digyCorner"></div>
       <div class="card mineIntro">
         <div class="mineOreRow">${ORE_KEYS.map(k => `<span>${oreIcon(k)} ${ORES[k].name}: <b>${fmt(oreValue(k))}</b></span>`).join("")}</div>
         ${vaultLine()}
@@ -15506,6 +15526,8 @@ function renderMine() {
           <button class="btn ghost" data-mine="vault" ${ORE_KEYS.some(k => M.vault[k] > 0) ? "" : "disabled"}>💰 Sell vault ore</button></div>
         <p class="muted">Runs: ${M.runs} · Deepest ever: ${M.best * 2} m · Chests opened: ${M.chests} · Earned: ${fmt(M.earned)}</p>
       </div>
+      </div>
+      <div ${mgSec("mine", "ups", mineTabNow)}>
       <div class="card mineUps">
         <h3>⬆️ Upgrades</h3>
         <div class="mineLiftBox">
@@ -15527,7 +15549,7 @@ function renderMine() {
             : `<div class="mineUpEff next">✅ Max level</div>`}
           </div>`;
         }).join("")}</div>
-      </div>`;
+      </div></div></div></div>`;
     return;
   }
   v.innerHTML = `${mgHead(`<img class="mgIco" src="assets/mine/entrance.webp" alt="">`, "Gold Mine Dig", "")}
@@ -15872,7 +15894,7 @@ function geneUnfound(n) {
 }
 var geneFound = () => G.known.filter(n => GENE_SPECIES[n] && GENE_SPECIES[n].rar !== "s").length;
 var geneKnows = (n) => G.known.includes(n);
-var geneSlots = [null, null], geneLast = null, geneTab = "freezer", geneCat = "all";
+var geneSlots = [null, null], geneLast = null, geneTab = (state.mgTabs && state.mgTabs.gene) || "freezer", geneCat = "all";   // the side tab is remembered (state.mgTabs.gene)
 
 // 🔓 the mini-game opens (for good) once the 🧬 Genetics Laboratory is bought; you start with 3 of each base sample
 function geneUnlock() {
@@ -15981,6 +16003,11 @@ function renderGene() {
       <li>⏱️ Every species you know holds up to ${GENE_DNA_MAX} DNA and gets +1 every ${GENE_REGEN_MS / 60000} minutes, also while the game is closed.</li>
       <li>💡 Stuck? A hint costs 👩‍🔬 ${GENE_HINT_SCI} scientists and shows one recipe you can make right now.</li>
       <li>🏆 Each species also raises a bonus elsewhere in the game (see Species bonuses).</li></ul>`, !found)}
+    <div class="subLayout"><nav class="subNav mgNav">
+      <button class="subTab ${geneTab === "freezer" ? "active" : ""}" data-gtab="freezer">❄️ Freezer (${G.known.length})</button>
+      <button class="subTab ${geneTab === "codex" ? "active" : ""}" data-gtab="codex">${gx("codex")} Codex</button>
+      <button class="subTab ${geneTab === "mutants" ? "active" : ""}" data-gtab="mutants">${gx("mutant")} Mutants (${mutantCount()})</button>
+      <button class="subTab ${geneTab === "perks" ? "active" : ""}" data-gtab="perks">🏆 Bonuses</button></nav><div class="subMain">
     <div class="card geneLab">
       <div class="geneSplicer">${slot(0)}<div class="genePlus">+</div>${slot(1)}
         <button class="btn big ${knownRecipe ? "ghost" : ""}" data-gene="splice" ${canSplice && !tried ? "" : "disabled"}>🧬 Splice</button></div>
@@ -15997,15 +16024,13 @@ function renderGene() {
         title="${!sci().uni ? "Needs a University with scientists" : hintOpts ? "" : "No new recipe is possible with what you have"}">${gx("hint")} Hint · 👩‍🔬 ${GENE_HINT_SCI} scientists</button>
       <span class="muted">You have ${ico("sci-scientist")}${sciHave} scientists</span>
     </div>
-    <div class="genePerkTitle">🏆 Species bonuses <span class="muted">+1% for every species you discover in each category, for good</span></div>
+    ${geneTab === "perks" ? `<div class="card"><div class="genePerkTitle">🏆 Species bonuses <span class="muted">+1% for every species you discover in each category, for good</span></div>
     <div class="genePerks" title="Every species you discover in these categories gives +1% for good">${GENE_PERKS.map(([c, e, what]) =>
-      `<span>${e} <b>+${geneCatCount(c)}%</b> ${what}</span>`).join("")}</div>
+      `<span>${e} <b>+${geneCatCount(c)}%</b> ${what}</span>`).join("")}</div></div>` : ""}
     ${hintsOpen.length ? `<div class="geneHints">${hintsOpen.map(p => { const [a, b] = p.split("|");
       return `<span>${gx("hint")} Try ${gEm(a, "sm")} ${a} + ${gEm(b, "sm")} ${b}</span>`; }).join("")}</div>` : ""}
-    <div class="card">
-      <div class="geneTabs"><button class="subTab ${geneTab === "freezer" ? "active" : ""}" data-gtab="freezer">❄️ Freezer (${G.known.length})</button>
-        <button class="subTab ${geneTab === "codex" ? "active" : ""}" data-gtab="codex">${gx("codex")} Codex</button>
-        <button class="subTab ${geneTab === "mutants" ? "active" : ""}" data-gtab="mutants">${gx("mutant")} Mutants (${mutantCount()})</button>
+    <div class="card" ${geneTab === "perks" ? "hidden" : ""}>
+      <div class="geneTabs"><b class="geneListTitle">${geneTab === "codex" ? `${gx("codex")} Codex` : geneTab === "mutants" ? `${gx("mutant")} Mutants` : "❄️ Freezer"}</b>
         ${geneTab === "freezer" ? `<button class="subTab geneOnly ${G.onlyOpen ? "active" : ""}" data-gonly="1" title="Show only samples that can still make a new species with what you have (hides ✓ done and 🔒 later)">🔎 Only with recipes</button>` : ""}
         <input id="geneSearch" type="search" placeholder="🔍 Search" autocomplete="off"></div>
       <div class="achCats" ${geneTab === "mutants" ? "hidden" : ""}>${GENE_CATS.filter(([c]) => geneTab === "codex" ? c !== "start" || true : true).map(([c, l]) =>
@@ -16014,7 +16039,7 @@ function renderGene() {
         <div class="geneGrid">${Object.keys(G.mutants).reverse().map(k => { const m = mutantOf(k);
           return `<div class="geneCard r-m codex" data-name="${m.name.toLowerCase()}" title="${m.a} + ${m.b}"><span class="geneEmoji">${gEm(m.a, "half")}${gEm(m.b, "half")}</span><span class="geneName">${m.name}</span><span class="geneHow">${gEm(m.a, "sm")} + ${gEm(m.b, "sm")}</span></div>`; }).join("") || `<p class="muted">No mutants yet.</p>`}</div>`
       : `<div class="geneGrid">${cards || `<p class="muted">${geneTab === "freezer" && G.onlyOpen ? "No sample can make a new species right now." : "Nothing here yet."}</p>`}</div>`}
-    </div>`;
+    </div></div></div>`;
 }
 
 function geneSplice() {
@@ -16075,7 +16100,7 @@ $("geneView").addEventListener("click", (e) => {
   const sl = t.closest("[data-gslot]"); if (sl) { geneSlots[+sl.dataset.gslot] = null; return renderGene(); }
   const g = t.closest("[data-gene]");
   if (g && !g.disabled) { if (g.dataset.gene === "splice") geneSplice(); if (g.dataset.gene === "hint") geneHint(); return; }
-  const tab = t.closest("[data-gtab]"); if (tab) { geneTab = tab.dataset.gtab; return renderGene(); }
+  const tab = t.closest("[data-gtab]"); if (tab) { geneTab = tab.dataset.gtab; state.mgTabs = state.mgTabs || {}; state.mgTabs.gene = geneTab; save(); return renderGene(); }
   const c = t.closest("[data-gcat]"); if (c) { geneCat = c.dataset.gcat; return renderGene(); }
   if (t.closest("[data-gonly]")) { G.onlyOpen = !G.onlyOpen; save(); return renderGene(); }
 });
@@ -17321,6 +17346,9 @@ var shClock = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStar
 var shDustIco = `<span class="shDustIco">✨</span>`;
 
 /* ----- 🛸 HANGAR PAGE ----- */
+// "!" on the side tabs: a ship you can buy now / an upgrade for your ship you can afford now
+var shShipBuyable = () => SH_SHIP_IDS.some(id => { const s = SH_SHIPS[id]; return !SH.owned.includes(id) && !(s.needs && SH.done < s.needs) && SH.dust >= s.price; });
+var shUpBuyable = () => SH_UP_IDS.some(k => { const c = shUpCost(SH.ship, k); return c && SH.dust >= c && shHasOre(shUpOre(SH.ship, k)); });
 function renderShooter() {
   const v = $("shooterView"); if (!v) return;
   if (!shUnlocked()) {
@@ -17328,7 +17356,7 @@ function renderShooter() {
     return;
   }
   if (typeof shR !== "undefined" && shR) return shRenderPlay();
-  const ship = SH.ship;
+  const ship = SH.ship, shTabNow = mgTab("sh", "levels");
   v.innerHTML = `${mgHead(`<img class="mgIco" src="assets/icons/ico-sh-game.webp" alt="">`, "Nebula Strike", `<span class="shHeadStat">🏁 <b>${SH.done} / ${SH_LEVELS.length}</b> <span>levels</span> · ${shDustIco} <b>${SH.dust.toLocaleString()}</b></span>`)}
     ${mgHow("shooter", `
       <p>Fly through five sectors of space, shoot everything that moves, defeat the bosses and survive the pirates' graveyard.
@@ -17344,6 +17372,8 @@ function renderShooter() {
         ${SH.bind.shield || SH.bind.special ? `<button class="btn ghost small" data-sh-bind="reset">↺ Default keys</button>` : ""}
       </div>
       <label class="shAuto"><input type="checkbox" data-sh="auto" ${SH.auto ? "checked" : ""}> ${ico("sh-auto", "shAutoIco")} Auto-fire (turn it off to shoot by holding Space)</label>`, !SH.runs)}
+    <div class="subLayout">${mgNav("sh", [["levels", "🚀 Levels"], ["hangar", "🛸 Hangar", shShipBuyable()], ["ups", "⬆️ Upgrades", shUpBuyable()]], shTabNow)}<div class="subMain">
+    <div ${mgSec("sh", "levels", shTabNow)}>
     <div class="shLevels">${SH_LEVELS.map(L => {
       const open = SH.done >= L.n - 1, done = SH.done >= L.n;
       return `<div class="card shLevel ${open ? "" : "locked"} ${done ? "done" : ""}">
@@ -17359,6 +17389,8 @@ function renderShooter() {
       </div>`;
     }).join("")}</div>
     ${shChestCard()}
+    </div>
+    <div ${mgSec("sh", "hangar", shTabNow)}>
     <div class="card shHangar">
       <h3>🛸 Hangar</h3>
       <div class="shShips">${SH_SHIP_IDS.map(id => {
@@ -17374,7 +17406,10 @@ function renderShooter() {
             : `<button class="btn small" data-sh-buy="${id}" ${SH.dust >= s.price ? "" : "disabled"}>Buy · ${shDustIco} ${s.price.toLocaleString()}</button>`}
         </div>`;
       }).join("")}</div>
-      <h3 class="shUpTitle">⬆️ Upgrades for the ${SH_SHIPS[ship].name}</h3>
+    </div></div>
+    <div ${mgSec("sh", "ups", shTabNow)}>
+    <div class="card shHangar">
+      <h3 class="shUpTitle" style="margin-top:0">⬆️ Upgrades for the ${SH_SHIPS[ship].name}</h3>
       <p class="muted">Every ship has its own upgrades. They are paid with ${shDustIco} stardust.</p>
       <p class="muted shOreNote">⛏️ The top levels also need 💎 diamonds or 🔴 rubies from your 🏦 vault in the Gold Mine Dig (keep ore after a run instead of selling it).
         You have ${shOreTag("diamond", `<b>${shVault().diamond || 0}</b>`)} · ${shOreTag("ruby", `<b>${shVault().ruby || 0}</b>`)}</p>
@@ -17389,7 +17424,7 @@ function renderShooter() {
           : `<div class="mineUpEff next">✅ Max level</div>`}
         </div>`;
       }).join("")}</div>
-    </div>
+    </div></div></div></div>
     <p class="muted shStatsLine">Runs: ${SH.runs} · Levels won: ${SH.wins} · Enemies destroyed: ${SH.kills.toLocaleString()} · Hits blocked: ${SH.blocks} · Stardust earned: ${SH.dustAll.toLocaleString()} · Money earned: ${fmt(SH.earned)}</p>`;
 }
 

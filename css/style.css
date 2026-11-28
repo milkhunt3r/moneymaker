@@ -2775,3 +2775,7 @@ body.phone .digyDirt { width: 70px; }
 body.phone .mgHead h2 { font-size: 20px; }
 body.phone .mgHead .mgIco { width: 32px; height: 32px; }
 body.phone .mgStat { margin-left: 0; width: 100%; justify-content: flex-start; }
+/* 👈 side tabs inside the mini-games */
+.mgNav .subTab .ico { width: 1.2em; height: 1.2em; vertical-align: -0.2em; margin-right: 4px; }
+.geneListTitle { font-size: 16px; margin-right: auto; }
+#mineView .subMain .mineIntro, #mineView .subMain .mineUps { max-width: none; width: auto; margin-left: 0; margin-right: 0; }

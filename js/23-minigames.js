@@ -817,14 +817,17 @@ function renderMine() {
   const v = $("mineView"); if (!v) return;
   const e = mineEnergy();
   if (!M.run) {
+    const mineTabNow = mgTab("mine", "dig");
     v.innerHTML = `${mgHead(`<img class="mgIco" src="assets/mine/entrance.webp" alt="">`, "Gold Mine Dig", mineHeadStat(e))}
-      <div id="digyCorner"></div>
       ${mgHow("mine", `<p>Dig down into your gold mine and grab as much ore as your bag can hold. The deeper you go, the better the ore,
           but every step burns lamp oil. Back at the surface, sell your ore or keep it in your ${mnIco("vault")}vault to pay for upgrades. If the lamp runs out underground, the rescue team saves ${Math.round(rescueKeep() * 100)}% of your ore.</p>
         <p class="muted">🌋 Below <b>100 m</b>: lava pools block the way and rocks with glowing red cracks hide lava pockets. Breaking one splashes you (−${LAVA_SPLASH[upLv("heat")] * 100}% lamp) and the lava flows fast, even if you stand still (it can rise 1 tile). Every step next to lava burns ${LAVA_HEAT[upLv("heat")] * 100}% of your lamp. Getting caught saves only ${Math.round(lavaKeep() * 100)}% of your ore.
           🔥 Below <b>150 m</b> the heat burns your lamp 25% faster, and 🔴 rubies appear.
           📦 Below <b>130 m</b> are 1–2 treasure chests (${CHEST_SLOTS} bag slots each): bring them up yourself to open them. The rescue team leaves them behind.</p>
         <p class="muted">Ore is worth seconds of your income (${ORES.coal.sec}–${ORES.ruby.sec} sec each, based on your business income over the last minute). 🔥 A gold rush in your mines doubles it.</p>`, !M.runs)}
+      <div class="subLayout">${mgNav("mine", [["dig", `${mnIco("pick")}Dig`], ["ups", "⬆️ Upgrades", Object.keys(MINE_UPS).some(canBuyUp)]], mineTabNow)}<div class="subMain">
+      <div ${mgSec("mine", "dig", mineTabNow)}>
+      <div id="digyCorner"></div>
       <div class="card mineIntro">
         <div class="mineOreRow">${ORE_KEYS.map(k => `<span>${oreIcon(k)} ${ORES[k].name}: <b>${fmt(oreValue(k))}</b></span>`).join("")}</div>
         ${vaultLine()}
@@ -835,6 +838,8 @@ function renderMine() {
           <button class="btn ghost" data-mine="vault" ${ORE_KEYS.some(k => M.vault[k] > 0) ? "" : "disabled"}>💰 Sell vault ore</button></div>
         <p class="muted">Runs: ${M.runs} · Deepest ever: ${M.best * 2} m · Chests opened: ${M.chests} · Earned: ${fmt(M.earned)}</p>
       </div>
+      </div>
+      <div ${mgSec("mine", "ups", mineTabNow)}>
       <div class="card mineUps">
         <h3>⬆️ Upgrades</h3>
         <div class="mineLiftBox">
@@ -856,7 +861,7 @@ function renderMine() {
             : `<div class="mineUpEff next">✅ Max level</div>`}
           </div>`;
         }).join("")}</div>
-      </div>`;
+      </div></div></div></div>`;
     return;
   }
   v.innerHTML = `${mgHead(`<img class="mgIco" src="assets/mine/entrance.webp" alt="">`, "Gold Mine Dig", "")}

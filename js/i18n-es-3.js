@@ -1974,6 +1974,9 @@ rx(String.raw`Submit \(sell or keep\) (\d+) (Easy|Normal|Masterpiece) paintings 
 rx(String.raw`(Easy|Normal|Masterpiece) · (\d+)/(\d+) (Easy|Normal|Masterpiece)`, (m, a, x, y, b) => `${ART_TIER_ES[a]} · ${x}/${y} ${ART_TIER_ES[b]}`);
 H("🎮 Mini-games: every game now has the same header (← back, title and its key number: 🖼️ collection, ⚡ energy, 🏁 levels and ✨ stardust, or species found), and the rules are folded into <b>ℹ️ How to play</b> (open the first time, folded once you've played).",
   "🎮 Minijuegos: todos los juegos tienen ahora la misma cabecera (← volver, título y su dato clave: 🖼️ colección, ⚡ energía, 🏁 niveles y ✨ polvo estelar, o especies encontradas), y las reglas están plegadas en <b>ℹ️ Cómo se juega</b> (abierto la primera vez, plegado cuando ya has jugado).");
+Object.assign(ES, { "Dig": "Excavar", "Freezer": "Congelador", "Bonuses": "Bonificaciones" });
+H("🎮 Mini-games: side tabs keep each game tidy. ⛏️ Gold Mine Dig: Dig / Upgrades. 🚀 Nebula Strike: Levels / Hangar / Upgrades. 🧬 Gene Splicer: Freezer / Codex / Mutants / Bonuses, with the splicer always on top. A <b>!</b> shows when you can buy an upgrade or a ship.",
+  "🎮 Minijuegos: pestañas laterales para ordenar cada juego. ⛏️ Excavación en la mina de oro: Excavar / Mejoras. 🚀 Nebula Strike: Niveles / Hangar / Mejoras. 🧬 Empalmador genético: Congelador / Códice / Mutantes / Bonificaciones, con el empalmador siempre arriba. Un <b>!</b> avisa cuando puedes comprar una mejora o una nave.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

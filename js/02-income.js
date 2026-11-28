@@ -758,6 +758,19 @@ function mgHow(key, html, fresh) {
   const open = key in mgHowOpen ? mgHowOpen[key] : !!fresh;
   return `<details class="card mgHow" data-mghow="${key}" ${open ? "open" : ""}><summary>ℹ️ How to play</summary><div class="mgHowBody">${html}</div></details>`;
 }
+// 👈 side tabs inside a mini-game (Mine: Dig / Upgrades, Nebula Strike: Levels / Hangar / Upgrades).
+// Every section is drawn once; a tab only shows one and hides the others (no redraw). The choice is remembered.
+const mgTab = (key, def) => { const t = (state.mgTabs || {})[key]; return t || def; };
+const mgNav = (key, tabs, cur) => `<nav class="subNav mgNav">${tabs.map(([id, label, dot]) =>
+  `<button class="subTab ${id === cur ? "active" : ""}" data-mgtab="${key}:${id}">${label}${dot ? ` <span class="tabWarn gold">!</span>` : ""}</button>`).join("")}</nav>`;
+const mgSec = (key, id, cur) => `data-mgsec="${key}:${id}" ${id === cur ? "" : "hidden"}`;
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-mgtab]"); if (!b) return;
+  const [key, id] = b.dataset.mgtab.split(":");
+  state.mgTabs = state.mgTabs || {}; state.mgTabs[key] = id; save();
+  document.querySelectorAll(`[data-mgtab^="${key}:"]`).forEach(x => x.classList.toggle("active", x === b));
+  document.querySelectorAll(`[data-mgsec^="${key}:"]`).forEach(x => { x.hidden = x.dataset.mgsec !== `${key}:${id}`; });
+});
 document.addEventListener("toggle", (e) => { const d = e.target; if (d && d.dataset && d.dataset.mghow) mgHowOpen[d.dataset.mghow] = d.open; }, true);
 
 /* ----- Pop-up window ----- */

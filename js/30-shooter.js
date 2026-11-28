@@ -123,6 +123,9 @@ const shClock = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padSt
 const shDustIco = `<span class="shDustIco">✨</span>`;
 
 /* ----- 🛸 HANGAR PAGE ----- */
+// "!" on the side tabs: a ship you can buy now / an upgrade for your ship you can afford now
+const shShipBuyable = () => SH_SHIP_IDS.some(id => { const s = SH_SHIPS[id]; return !SH.owned.includes(id) && !(s.needs && SH.done < s.needs) && SH.dust >= s.price; });
+const shUpBuyable = () => SH_UP_IDS.some(k => { const c = shUpCost(SH.ship, k); return c && SH.dust >= c && shHasOre(shUpOre(SH.ship, k)); });
 function renderShooter() {
   const v = $("shooterView"); if (!v) return;
   if (!shUnlocked()) {
@@ -130,7 +133,7 @@ function renderShooter() {
     return;
   }
   if (typeof shR !== "undefined" && shR) return shRenderPlay();
-  const ship = SH.ship;
+  const ship = SH.ship, shTabNow = mgTab("sh", "levels");
   v.innerHTML = `${mgHead(`<img class="mgIco" src="assets/icons/ico-sh-game.webp" alt="">`, "Nebula Strike", `<span class="shHeadStat">🏁 <b>${SH.done} / ${SH_LEVELS.length}</b> <span>levels</span> · ${shDustIco} <b>${SH.dust.toLocaleString()}</b></span>`)}
     ${mgHow("shooter", `
       <p>Fly through five sectors of space, shoot everything that moves, defeat the bosses and survive the pirates' graveyard.
@@ -146,6 +149,8 @@ function renderShooter() {
         ${SH.bind.shield || SH.bind.special ? `<button class="btn ghost small" data-sh-bind="reset">↺ Default keys</button>` : ""}
       </div>
       <label class="shAuto"><input type="checkbox" data-sh="auto" ${SH.auto ? "checked" : ""}> ${ico("sh-auto", "shAutoIco")} Auto-fire (turn it off to shoot by holding Space)</label>`, !SH.runs)}
+    <div class="subLayout">${mgNav("sh", [["levels", "🚀 Levels"], ["hangar", "🛸 Hangar", shShipBuyable()], ["ups", "⬆️ Upgrades", shUpBuyable()]], shTabNow)}<div class="subMain">
+    <div ${mgSec("sh", "levels", shTabNow)}>
     <div class="shLevels">${SH_LEVELS.map(L => {
       const open = SH.done >= L.n - 1, done = SH.done >= L.n;
       return `<div class="card shLevel ${open ? "" : "locked"} ${done ? "done" : ""}">
@@ -161,6 +166,8 @@ function renderShooter() {
       </div>`;
     }).join("")}</div>
     ${shChestCard()}
+    </div>
+    <div ${mgSec("sh", "hangar", shTabNow)}>
     <div class="card shHangar">
       <h3>🛸 Hangar</h3>
       <div class="shShips">${SH_SHIP_IDS.map(id => {
@@ -176,7 +183,10 @@ function renderShooter() {
             : `<button class="btn small" data-sh-buy="${id}" ${SH.dust >= s.price ? "" : "disabled"}>Buy · ${shDustIco} ${s.price.toLocaleString()}</button>`}
         </div>`;
       }).join("")}</div>
-      <h3 class="shUpTitle">⬆️ Upgrades for the ${SH_SHIPS[ship].name}</h3>
+    </div></div>
+    <div ${mgSec("sh", "ups", shTabNow)}>
+    <div class="card shHangar">
+      <h3 class="shUpTitle" style="margin-top:0">⬆️ Upgrades for the ${SH_SHIPS[ship].name}</h3>
       <p class="muted">Every ship has its own upgrades. They are paid with ${shDustIco} stardust.</p>
       <p class="muted shOreNote">⛏️ The top levels also need 💎 diamonds or 🔴 rubies from your 🏦 vault in the Gold Mine Dig (keep ore after a run instead of selling it).
         You have ${shOreTag("diamond", `<b>${shVault().diamond || 0}</b>`)} · ${shOreTag("ruby", `<b>${shVault().ruby || 0}</b>`)}</p>
@@ -191,7 +201,7 @@ function renderShooter() {
           : `<div class="mineUpEff next">✅ Max level</div>`}
         </div>`;
       }).join("")}</div>
-    </div>
+    </div></div></div></div>
     <p class="muted shStatsLine">Runs: ${SH.runs} · Levels won: ${SH.wins} · Enemies destroyed: ${SH.kills.toLocaleString()} · Hits blocked: ${SH.blocks} · Stardust earned: ${SH.dustAll.toLocaleString()} · Money earned: ${fmt(SH.earned)}</p>`;
 }
 

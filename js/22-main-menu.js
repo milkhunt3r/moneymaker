@@ -65,6 +65,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "🎮 Mini-games: side tabs keep each game tidy. ⛏️ Gold Mine Dig: Dig / Upgrades. 🚀 Nebula Strike: Levels / Hangar / Upgrades. 🧬 Gene Splicer: Freezer / Codex / Mutants / Bonuses, with the splicer always on top. A <b>!</b> shows when you can buy an upgrade or a ship.",
     "🎮 Mini-games: every game now has the same header (← back, title and its key number: 🖼️ collection, ⚡ energy, 🏁 levels and ✨ stardust, or species found), and the rules are folded into <b>ℹ️ How to play</b> (open the first time, folded once you've played).",
     "🛠️ Space crafting level 3 now also unlocks crafting in batches of <b>150</b>.",
     "🏆 6 new achievements: <b>🐾 Pet lover</b> (have 2 pets) and <b>🏡 Full house</b> (have 3 pets), plus 4 Mining achievements for 🤖 Digy: adopt him, let him dig 5 and 50 times, and pet him 100 times.",
