@@ -3365,8 +3365,8 @@ rx(String.raw`(${NUM}) each`, "$1 cada uno");
 rx(String.raw`Next: level (\d+) of (\d+)`, "Siguiente: nivel $1 de $2");
 H("👋 <b>Start here:</b> tap a sample in your ❄️ Freezer below to put it in the splicer, then a second one (the same one twice works too), and press <b>🧬 Splice</b>. Try 🐟 Fish + 🐟 Fish!",
   "👋 <b>Empieza aquí:</b> toca una muestra de tu ❄️ Congelador de abajo para ponerla en el empalmador, luego una segunda (la misma dos veces también vale), y pulsa <b>🧬 Empalmar</b>. ¡Prueba 🐟 Pez + 🐟 Pez!");
-H("🎮 Mini-game fixes: 🎨 Art Gallery: Submit copy and New painting sit apart, and New painting asks before throwing your copy away. ⛏️ Gold Mine: a 🏦 Vault box with your ore and what it's worth. 🚀 Nebula Strike: a big Continue button for the next level, and the pirate chest moved to the Hangar. 🧬 Gene Splicer: a start guide for your first splice, and the DNA timer and Hint sit in the splicer box.",
-  "🎮 Arreglos en los minijuegos: 🎨 Galería de arte: Entregar copia y Cuadro nuevo están separados, y Cuadro nuevo pregunta antes de tirar tu copia. ⛏️ Mina de oro: un recuadro de 🏦 Cámara con tu mineral y lo que vale. 🚀 Nebula Strike: un botón grande Continuar para el siguiente nivel, y el cofre pirata pasa al Hangar. 🧬 Empalmador genético: una guía para tu primer empalme, y el temporizador de ADN y la Pista están en el recuadro del empalmador.");
+H("🎮 Mini-game fixes: 🎨 Art Gallery: Submit copy and New painting sit apart, and New painting asks before throwing your copy away. ⛏️ Gold Mine: a 🏦 Vault box with your ore and what it's worth. 🚀 Nebula Strike: a big Continue button for the next level, and the pirate chest sits right under it. 🧬 Gene Splicer: a start guide for your first splice, and the DNA timer and Hint sit in the splicer box.",
+  "🎮 Arreglos en los minijuegos: 🎨 Galería de arte: Entregar copia y Cuadro nuevo están separados, y Cuadro nuevo pregunta antes de tirar tu copia. ⛏️ Mina de oro: un recuadro de 🏦 Cámara con tu mineral y lo que vale. 🚀 Nebula Strike: un botón grande Continuar para el siguiente nivel, y el cofre pirata justo debajo. 🧬 Empalmador genético: una guía para tu primer empalme, y el temporizador de ADN y la Pista están en el recuadro del empalmador.");
 H("⚙️ Settings: the <b>Display</b> section folds away (tap its header). Folded, it shows your language, brightness and number format at a glance.",
   "⚙️ Ajustes: la sección <b>Pantalla</b> se puede plegar (toca su cabecera). Plegada, muestra tu idioma, brillo y formato de números de un vistazo.");
 Object.assign(ES, { "This file is far too big to be an Empire of Coins backup.": "Este archivo es demasiado grande para ser una copia de Empire of Coins." });
@@ -14379,7 +14379,7 @@ addEventListener("resize", fitBrand); fitBrand();
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
     "⚙️ Settings: the <b>Display</b> section folds away (tap its header). Folded, it shows your language, brightness and number format at a glance.",
-    "🎮 Mini-game fixes: 🎨 Art Gallery: Submit copy and New painting sit apart, and New painting asks before throwing your copy away. ⛏️ Gold Mine: a 🏦 Vault box with your ore and what it's worth. 🚀 Nebula Strike: a big Continue button for the next level, and the pirate chest moved to the Hangar. 🧬 Gene Splicer: a start guide for your first splice, and the DNA timer and Hint sit in the splicer box.",
+    "🎮 Mini-game fixes: 🎨 Art Gallery: Submit copy and New painting sit apart, and New painting asks before throwing your copy away. ⛏️ Gold Mine: a 🏦 Vault box with your ore and what it's worth. 🚀 Nebula Strike: a big Continue button for the next level, and the pirate chest sits right under it. 🧬 Gene Splicer: a start guide for your first splice, and the DNA timer and Hint sit in the splicer box.",
     "🎮 Mini-games hub: 🎨 Pip now paints at the top of the 🖼️ Art Gallery page, a <b>!</b> on a game (and on the Mini-games tab) shows when it wants you: today's art commission, full mine energy, full DNA or something to buy in Nebula Strike. On phones the games sit two per row.",
     "🎮 Mini-games: side tabs keep each game tidy. ⛏️ Gold Mine Dig: Dig / Upgrades. 🚀 Nebula Strike: Levels / Hangar / Upgrades. 🧬 Gene Splicer: Freezer / Codex / Mutants / Bonuses, with the splicer always on top. A <b>!</b> shows when you can buy an upgrade or a ship.",
     "🎮 Mini-games: every game now has the same header (← back, title and its key number: 🖼️ collection, ⚡ energy, 🏁 levels and ✨ stardust, or species found), and the rules are folded into <b>ℹ️ How to play</b> (open the first time, folded once you've played).",
@@ -17458,6 +17458,7 @@ function renderShooter() {
       return `<div class="card shNext"><img src="assets/shooter/${L.img}.webp" alt=""><div><div class="muted">${all ? "All levels cleared! Play again for more stardust:" : `Next: level ${L.n} of ${SH_LEVELS.length}`}</div>
         <h3>Level ${L.n}: ${L.name}</h3><div class="muted">${L.diff} · ${L.time}${L.boss ? ` · Boss: <b>${L.boss}</b>` : ""}</div></div>
         <button class="btn big" data-sh-play="${L.n}">▶ ${all ? "Play again" : SH.done ? "Continue" : "Start"}</button></div>`; })()}
+    ${shChestCard()}
     <div class="shLevels">${SH_LEVELS.map(L => {
       const open = SH.done >= L.n - 1, done = SH.done >= L.n;
       return `<div class="card shLevel ${open ? "" : "locked"} ${done ? "done" : ""}">
@@ -17474,7 +17475,6 @@ function renderShooter() {
     }).join("")}</div>
     </div>
     <div ${mgSec("sh", "hangar", shTabNow)}>
-    ${shChestCard()}
     <div class="card shHangar">
       <h3>🛸 Hangar</h3>
       <div class="shShips">${SH_SHIP_IDS.map(id => {

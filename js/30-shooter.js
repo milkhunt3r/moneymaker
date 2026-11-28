@@ -155,6 +155,7 @@ function renderShooter() {
       return `<div class="card shNext"><img src="assets/shooter/${L.img}.webp" alt=""><div><div class="muted">${all ? "All levels cleared! Play again for more stardust:" : `Next: level ${L.n} of ${SH_LEVELS.length}`}</div>
         <h3>Level ${L.n}: ${L.name}</h3><div class="muted">${L.diff} · ${L.time}${L.boss ? ` · Boss: <b>${L.boss}</b>` : ""}</div></div>
         <button class="btn big" data-sh-play="${L.n}">▶ ${all ? "Play again" : SH.done ? "Continue" : "Start"}</button></div>`; })()}
+    ${shChestCard()}
     <div class="shLevels">${SH_LEVELS.map(L => {
       const open = SH.done >= L.n - 1, done = SH.done >= L.n;
       return `<div class="card shLevel ${open ? "" : "locked"} ${done ? "done" : ""}">
@@ -171,7 +172,6 @@ function renderShooter() {
     }).join("")}</div>
     </div>
     <div ${mgSec("sh", "hangar", shTabNow)}>
-    ${shChestCard()}
     <div class="card shHangar">
       <h3>🛸 Hangar</h3>
       <div class="shShips">${SH_SHIP_IDS.map(id => {
