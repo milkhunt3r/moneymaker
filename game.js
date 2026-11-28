@@ -3477,6 +3477,8 @@ hrx(String.raw`⏳ <span>(.+?)<\/span> is hiding the coin…`, "⏳ <span>$1</sp
 hrx(String.raw`<span>(.+?)<\/span> put a sparkle on a chest\. A tip or a trick\?`, "<span>$1</span> ha puesto un destello en un cofre. ¿Pista o trampa?");
 H("💰 Online casino, Bluff Chest: the hider now hides first and may put a <b>sparkle</b> on any chest (a tip or a trick), then the other guesses. Both players always hide equally often, so it's fair: first to 3, and a tie keeps going. A banner shows whether you hide or guess, and the chests now wobble and open one by one.",
   "💰 Casino online, cofre farol: ahora quien esconde lo hace primero y puede poner un <b>destello</b> en cualquier cofre (una pista o una trampa); después el otro adivina. Ambos esconden siempre las mismas veces, así que es justo: gana quien llegue a 3 y, con empate, se sigue jugando. Un cartel te dice si escondes o adivinas, y ahora los cofres se tambalean y se abren uno a uno.");
+H("⛏️ Every haul Digy brings home now counts as a finished Gold Mine Dig run for the run achievements (his earlier hauls count too).",
+  "⛏️ Cada botín que trae Digy cuenta ahora como una partida terminada de Excavación en la mina de oro para los logros de partidas (sus botines anteriores también cuentan).");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -14511,6 +14513,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "⛏️ Every haul Digy brings home now counts as a finished Gold Mine Dig run for the run achievements (his earlier hauls count too).",
     "💰 Online casino, Bluff Chest: the hider now hides first and may put a <b>sparkle</b> on any chest (a tip or a trick), then the other guesses. Both players always hide equally often, so it's fair: first to 3, and a tie keeps going. A banner shows whether you hide or guess, and the chests now wobble and open one by one.",
     "🎲 Online casino, Dice Battle: each round both pick <b>2 to 5 dice</b> in secret, but any 1 scores 0, so more dice is a gamble. Choose <b>best of 3 or 5</b> when you challenge. Hold Roll to shake the dice, the dice now tumble in one by one with a short pause before your friend's are revealed, the winner glows, and dots show the rounds won.",
     "🤖 Digy: pet him on his charging station and he hops off happily, enjoys it beside the station and steps back on to charge. He also hops off and back on when he goes digging, and his station now looks the same whether he's on it or not.",
@@ -15033,12 +15036,14 @@ function digyHaul(t) {
   const D = state.digy;
   for (const k in DIGY_HAUL) { M.vault[k] = (M.vault[k] || 0) + DIGY_HAUL[k]; D.ores[k] = (D.ores[k] || 0) + DIGY_HAUL[k]; }
   D.hauls++; D.lastHaul = t;
+  M.runs++;   // 🏆 each haul counts as a finished run for the Gold Mine Dig run achievements
   if (Date.now() - t > 5000) D.awayHauls = (D.awayHauls || 0) + 1;   // happened while the game was closed: told once, all together
   else if ((__eocLoaded >= 7 && typeof showNotice === "function")) showNotice(LANG === "es" ? `🐾 ${digyName()} ha llevado un botín de mineral a tu cámara.` : `🐾 ${digyName()} brought a haul of ore to your vault.`);
 }
 function digyAdvance(now = Date.now()) {
   const D = state.digy; if (!digyOwned() || !mineUnlocked()) return;
   D.ores = D.ores || {}; D.hauls = D.hauls || 0;
+  if (!D.runsCounted) { M.runs += D.hauls; D.runsCounted = true; }   // (once: hauls from before this counted too)
   if (D.off) { D.seen = now; return; }
   const max = energyMax(), cutoff = (D.seen || now) + DIGY_AWAY;
   let changed = false;

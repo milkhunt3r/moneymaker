@@ -151,12 +151,14 @@ function digyHaul(t) {
   const D = state.digy;
   for (const k in DIGY_HAUL) { M.vault[k] = (M.vault[k] || 0) + DIGY_HAUL[k]; D.ores[k] = (D.ores[k] || 0) + DIGY_HAUL[k]; }
   D.hauls++; D.lastHaul = t;
+  M.runs++;   // 🏆 each haul counts as a finished run for the Gold Mine Dig run achievements
   if (Date.now() - t > 5000) D.awayHauls = (D.awayHauls || 0) + 1;   // happened while the game was closed: told once, all together
   else if (typeof showNotice === "function") showNotice(LANG === "es" ? `🐾 ${digyName()} ha llevado un botín de mineral a tu cámara.` : `🐾 ${digyName()} brought a haul of ore to your vault.`);
 }
 function digyAdvance(now = Date.now()) {
   const D = state.digy; if (!digyOwned() || !mineUnlocked()) return;
   D.ores = D.ores || {}; D.hauls = D.hauls || 0;
+  if (!D.runsCounted) { M.runs += D.hauls; D.runsCounted = true; }   // (once: hauls from before this counted too)
   if (D.off) { D.seen = now; return; }
   const max = energyMax(), cutoff = (D.seen || now) + DIGY_AWAY;
   let changed = false;

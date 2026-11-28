@@ -2099,6 +2099,8 @@ hrx(String.raw`⏳ <span>(.+?)<\/span> is hiding the coin…`, "⏳ <span>$1</sp
 hrx(String.raw`<span>(.+?)<\/span> put a sparkle on a chest\. A tip or a trick\?`, "<span>$1</span> ha puesto un destello en un cofre. ¿Pista o trampa?");
 H("💰 Online casino, Bluff Chest: the hider now hides first and may put a <b>sparkle</b> on any chest (a tip or a trick), then the other guesses. Both players always hide equally often, so it's fair: first to 3, and a tie keeps going. A banner shows whether you hide or guess, and the chests now wobble and open one by one.",
   "💰 Casino online, cofre farol: ahora quien esconde lo hace primero y puede poner un <b>destello</b> en cualquier cofre (una pista o una trampa); después el otro adivina. Ambos esconden siempre las mismas veces, así que es justo: gana quien llegue a 3 y, con empate, se sigue jugando. Un cartel te dice si escondes o adivinas, y ahora los cofres se tambalean y se abren uno a uno.");
+H("⛏️ Every haul Digy brings home now counts as a finished Gold Mine Dig run for the run achievements (his earlier hauls count too).",
+  "⛏️ Cada botín que trae Digy cuenta ahora como una partida terminada de Excavación en la mina de oro para los logros de partidas (sus botines anteriores también cuentan).");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

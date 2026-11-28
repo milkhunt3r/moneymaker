@@ -65,6 +65,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "⛏️ Every haul Digy brings home now counts as a finished Gold Mine Dig run for the run achievements (his earlier hauls count too).",
     "💰 Online casino, Bluff Chest: the hider now hides first and may put a <b>sparkle</b> on any chest (a tip or a trick), then the other guesses. Both players always hide equally often, so it's fair: first to 3, and a tie keeps going. A banner shows whether you hide or guess, and the chests now wobble and open one by one.",
     "🎲 Online casino, Dice Battle: each round both pick <b>2 to 5 dice</b> in secret, but any 1 scores 0, so more dice is a gamble. Choose <b>best of 3 or 5</b> when you challenge. Hold Roll to shake the dice, the dice now tumble in one by one with a short pause before your friend's are revealed, the winner glows, and dots show the rounds won.",
     "🤖 Digy: pet him on his charging station and he hops off happily, enjoys it beside the station and steps back on to charge. He also hops off and back on when he goes digging, and his station now looks the same whether he's on it or not.",
