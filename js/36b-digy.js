@@ -58,12 +58,12 @@ function digyFullIn() {   // ms until the energy is full again
 const digyBattery = () => Math.max(0, Math.min(100, Math.round(100 * state.mine.energy / energyMax())));
 function digyStatus() {
   const es = LANG === "es", M = state.mine, D = state.digy, now = Date.now();
-  if (D.off) return es ? "💤 <b>Descansando.</b> Apagado: no excava." : "💤 <b>Resting.</b> Turned off: he doesn't dig.";
-  if (D.dig) return es ? `⛏️ <b>Excavando</b> · listo en <b>${clockMs(D.dig.end - now)}</b>` : `⛏️ <b>Digging</b> · done in <b>${clockMs(D.dig.end - now)}</b>`;
-  if (M.run || M.pending) return es ? `⏸️ <b>Esperando.</b> Estás jugando en la mina: excavará cuando termines.` : `⏸️ <b>Waiting.</b> You're playing the mine: he digs once you're done.`;
+  if (D.off) return es ? `${pi("resting", "💤")} <b>Descansando.</b> Apagado: no excava.` : `${pi("resting", "💤")} <b>Resting.</b> Turned off: he doesn't dig.`;
+  if (D.dig) return es ? `${pi("digging", "⛏️")} <b>Excavando</b> · listo en <b>${clockMs(D.dig.end - now)}</b>` : `${pi("digging", "⛏️")} <b>Digging</b> · done in <b>${clockMs(D.dig.end - now)}</b>`;
+  if (M.run || M.pending) return es ? `${pi("waiting", "⏸️")} <b>Esperando.</b> Estás jugando en la mina: excavará cuando termines.` : `${pi("waiting", "⏸️")} <b>Waiting.</b> You're playing the mine: he digs once you're done.`;
   const pct = digyBattery(), full = digyFullIn();
-  return es ? `🔋 <b>Cargando ${pct}%</b>${full ? ` · excava cuando la energía esté llena, en <b>${clockMs(full)}</b>` : ""}`
-    : `🔋 <b>Charging ${pct}%</b>${full ? ` · digs when your energy is full, in <b>${clockMs(full)}</b>` : ""}`;
+  return es ? `${pi("charging", "🔋")} <b>Cargando ${pct}%</b>${full ? ` · excava cuando la energía esté llena, en <b>${clockMs(full)}</b>` : ""}`
+    : `${pi("charging", "🔋")} <b>Charging ${pct}%</b>${full ? ` · digs when your energy is full, in <b>${clockMs(full)}</b>` : ""}`;
 }
 // one line on the 🎮 Mini-games hub card
 function digyHubLine() {

@@ -2824,3 +2824,5 @@ body.phone .shNext .btn { width: 100%; }
 .orFoldHint { order: 2; font-family: system-ui, sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0; text-transform: none; color: #d9d6ea;
   padding: 3px 10px; border-radius: 999px; border: 1px solid rgba(255, 211, 77, 0.45); background: rgba(255, 255, 255, 0.05); white-space: nowrap; }
 .orSec.orFold:hover .orFoldHint { border-color: #ffd34d; color: #fff; }
+/* 🐾 painted icons in the pets' texts (pi() in js/33-pet.js) */
+.ico.pti { width: 1.25em; height: 1.25em; vertical-align: -0.28em; margin-right: 2px; }

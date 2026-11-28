@@ -182,10 +182,10 @@ function pipTick(force) {
   pipDrawEasel(ph, now);
   const t = $("pipTitle"), tn = pipName(); if (t && t.dataset.n !== tn) { t.dataset.n = tn; t.innerHTML = `<img class="petNameIco" src="assets/icons/tab-pet.webp" alt="" style="width:1.2em;height:1.2em;object-fit:contain;vertical-align:-0.22em;margin-right:6px;display:inline-block">${escapeHtml(tn)}`; }
   const s = $("pipStatus");
-  if (s) s.innerHTML = ph.painting ? `🎨 <b>Painting…</b> done in <b>${clockMs(ph.next - now)}</b>`
-    : `😴 <b>Asleep.</b> Next painting starts in <b>${clockMs(ph.next - PIP_PAINT - now)}</b>`;
+  if (s) s.innerHTML = ph.painting ? `${pi("painting", "🎨")} <b>Painting…</b> done in <b>${clockMs(ph.next - now)}</b>`
+    : `${pi("sleep", "😴")} <b>Asleep.</b> Next painting starts in <b>${clockMs(ph.next - PIP_PAINT - now)}</b>`;
   const n = $("pipNums");
-  if (n) n.innerHTML = `<span>🖼️ Painted: <b>${p.painted.toLocaleString()}</b></span>${p.last ? `<span>⭐ Last: <b>${p.last.score.toFixed(1)}%</b></span>` : ""}<span>💰 Auto-sold: <b>${p.sold.toLocaleString()}</b></span>`;
+  if (n) n.innerHTML = `<span>${pi("paintings", "🖼️")} Painted: <b>${p.painted.toLocaleString()}</b></span>${p.last ? `<span>${pi("match", "⭐")} Last: <b>${p.last.score.toFixed(1)}%</b></span>` : ""}<span>${pi("sold", "💰")} Auto-sold: <b>${p.sold.toLocaleString()}</b></span>`;
 }
 setInterval(() => pipTick(false), 120);
 setInterval(() => { if (pipOwned()) pipProcess(false); }, 1000);

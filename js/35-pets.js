@@ -22,25 +22,25 @@ function petLive() {
   if (petHas()) {
     const P = state.pet;
     const es = LANG === "es";
-    v.mStatus = !petOn() ? (es ? "💤 <b>Descansando.</b> Apagado: no está en la página de 💰 Ingresos y no compra bebidas ni toca la moneda." : "💤 <b>Resting.</b> Turned off: he isn't on the 💰 Income page and doesn't buy drinks or tap.")
-      : energyActive() ? (es ? `👆 <b>Bebida energética activa</b> · quedan ${state.energyLeft} s. Toca la moneda mientras estás en la página de 💰 Ingresos.` : `👆 <b>Energy drink active</b> · ${state.energyLeft} s left. He taps the coin while you're on the 💰 Income page.`)
-      : state.energyCooldown > PET_WAKE_BEFORE ? (es ? `😴 <b>Durmiendo.</b> Se despierta en <b>${clockMs((state.energyCooldown - PET_WAKE_BEFORE) * 1000)}</b>, justo antes de la próxima bebida.` : `😴 <b>Sleeping.</b> Wakes up in <b>${clockMs((state.energyCooldown - PET_WAKE_BEFORE) * 1000)}</b>, just before the next drink.`)
-      : state.money >= ENERGY_PRICE ? (es ? "⚡ <b>Despierto.</b> Comprará la próxima bebida energética en cuanto abras la página de 💰 Ingresos." : "⚡ <b>Awake.</b> He'll buy the next energy drink as soon as you open the 💰 Income page.")
-      : (es ? `⚡ <b>Despierto.</b> Esperando a que tengas ${fmt(ENERGY_PRICE)} para la próxima bebida energética.` : `⚡ <b>Awake.</b> Waiting until you have ${fmt(ENERGY_PRICE)} for the next energy drink.`);
-    v.mStats = `<span>💰 Earned: <b>${fmt(P.earned || 0)}</b></span><span>👆 Coin taps: <b>${(P.taps || 0).toLocaleString()}</b></span><span>⚡ Energy drinks: <b>${(P.drinks || 0).toLocaleString()}</b></span><span>❤️ Petted: <b>${(P.pets || 0).toLocaleString()}</b></span>`;
+    v.mStatus = !petOn() ? (es ? `${pi("resting", "💤")} <b>Descansando.</b> Apagado: no está en la página de ${pi("income", "💰")} Ingresos y no compra bebidas ni toca la moneda.` : `${pi("resting", "💤")} <b>Resting.</b> Turned off: he isn't on the ${pi("income", "💰")} Income page and doesn't buy drinks or tap.`)
+      : energyActive() ? (es ? `${pi("tap", "👆")} <b>Bebida energética activa</b> · quedan ${state.energyLeft} s. Toca la moneda mientras estás en la página de ${pi("income", "💰")} Ingresos.` : `${pi("tap", "👆")} <b>Energy drink active</b> · ${state.energyLeft} s left. He taps the coin while you're on the ${pi("income", "💰")} Income page.`)
+      : state.energyCooldown > PET_WAKE_BEFORE ? (es ? `${pi("sleep", "😴")} <b>Durmiendo.</b> Se despierta en <b>${clockMs((state.energyCooldown - PET_WAKE_BEFORE) * 1000)}</b>, justo antes de la próxima bebida.` : `${pi("sleep", "😴")} <b>Sleeping.</b> Wakes up in <b>${clockMs((state.energyCooldown - PET_WAKE_BEFORE) * 1000)}</b>, just before the next drink.`)
+      : state.money >= ENERGY_PRICE ? (es ? `${pi("awake", "⚡")} <b>Despierto.</b> Comprará la próxima bebida energética en cuanto abras la página de ${pi("income", "💰")} Ingresos.` : `${pi("awake", "⚡")} <b>Awake.</b> He'll buy the next energy drink as soon as you open the ${pi("income", "💰")} Income page.`)
+      : (es ? `${pi("awake", "⚡")} <b>Despierto.</b> Esperando a que tengas ${fmt(ENERGY_PRICE)} para la próxima bebida energética.` : `${pi("awake", "⚡")} <b>Awake.</b> Waiting until you have ${fmt(ENERGY_PRICE)} for the next energy drink.`);
+    v.mStats = `<span>${pi("money", "💰")} Earned: <b>${fmt(P.earned || 0)}</b></span><span>${pi("tap", "👆")} Coin taps: <b>${(P.taps || 0).toLocaleString()}</b></span><span>${pi("drink", "⚡")} Energy drinks: <b>${(P.drinks || 0).toLocaleString()}</b></span><span>${pi("heart", "❤️")} Petted: <b>${(P.pets || 0).toLocaleString()}</b></span>`;
   }
   if (pipHas()) {
     const Q = state.pip, now = Date.now(), ph = pipPhase(now);
     const es = LANG === "es";
-    v.pStatus = !pipOn() ? (es ? "💤 <b>Descansando.</b> Apagado: no está en la página de la 🖼️ Galería de arte y su reloj de pintura está en pausa." : "💤 <b>Resting.</b> Turned off: he isn't on the 🖼️ Art Gallery page and his painting clock is paused.")
-      : ph.painting ? (es ? `🎨 <b>Pintando el cuadro n.º ${(Q.painted + 1).toLocaleString()}</b> · listo en <b>${clockMs(ph.next - now)}</b>` : `🎨 <b>Painting #${(Q.painted + 1).toLocaleString()}</b> · done in <b>${clockMs(ph.next - now)}</b>`)
-      : (es ? `😴 <b>Dormido.</b> El próximo cuadro empieza en <b>${clockMs(ph.next - PIP_PAINT - now)}</b>` : `😴 <b>Asleep.</b> Next painting starts in <b>${clockMs(ph.next - PIP_PAINT - now)}</b>`);
-    v.pStats = `<span>💰 Earned: <b>${fmt(Q.earned || 0)}</b></span><span>🖼️ Paintings: <b>${(Q.painted || 0).toLocaleString()}</b></span><span>📥 Kept: <b>${(Q.kept || 0).toLocaleString()}</b></span><span>💵 Sold: <b>${(Q.sold || 0).toLocaleString()}</b></span><span>❤️ Petted: <b>${(Q.pets || 0).toLocaleString()}</b></span><span>😤 Disturbed: <b>${(Q.pokes || 0).toLocaleString()}</b></span>`;
+    v.pStatus = !pipOn() ? (es ? `${pi("resting", "💤")} <b>Descansando.</b> Apagado: no está en la página de la ${pi("art", "🖼️")} Galería de arte y su reloj de pintura está en pausa.` : `${pi("resting", "💤")} <b>Resting.</b> Turned off: he isn't on the ${pi("art", "🖼️")} Art Gallery page and his painting clock is paused.`)
+      : ph.painting ? (es ? `${pi("painting", "🎨")} <b>Pintando el cuadro n.º ${(Q.painted + 1).toLocaleString()}</b> · listo en <b>${clockMs(ph.next - now)}</b>` : `${pi("painting", "🎨")} <b>Painting #${(Q.painted + 1).toLocaleString()}</b> · done in <b>${clockMs(ph.next - now)}</b>`)
+      : (es ? `${pi("sleep", "😴")} <b>Dormido.</b> El próximo cuadro empieza en <b>${clockMs(ph.next - PIP_PAINT - now)}</b>` : `${pi("sleep", "😴")} <b>Asleep.</b> Next painting starts in <b>${clockMs(ph.next - PIP_PAINT - now)}</b>`);
+    v.pStats = `<span>${pi("money", "💰")} Earned: <b>${fmt(Q.earned || 0)}</b></span><span>${pi("paintings", "🖼️")} Paintings: <b>${(Q.painted || 0).toLocaleString()}</b></span><span>${pi("kept", "📥")} Kept: <b>${(Q.kept || 0).toLocaleString()}</b></span><span>${pi("sold", "💵")} Sold: <b>${(Q.sold || 0).toLocaleString()}</b></span><span>${pi("heart", "❤️")} Petted: <b>${(Q.pets || 0).toLocaleString()}</b></span><span>${pi("grumpy", "😤")} Disturbed: <b>${(Q.pokes || 0).toLocaleString()}</b></span>`;
   }
   if (digyHas()) {
     const D = state.digy, o = D.ores || {};
     v.dStatus = digyStatus();
-    v.dStats = `<span>⛏️ Hauls: <b>${(D.hauls || 0).toLocaleString()}</b></span>${Object.keys(DIGY_HAUL).map(k => `<span class="digyOre">${oreIcon(k)}<b>${(o[k] || 0).toLocaleString()}</b></span>`).join("")}<span>❤️ Petted: <b>${(D.pets || 0).toLocaleString()}</b></span><span>😤 Disturbed: <b>${(D.pokes || 0).toLocaleString()}</b></span>`;
+    v.dStats = `<span>${pi("hauls", "⛏️")} Hauls: <b>${(D.hauls || 0).toLocaleString()}</b></span>${Object.keys(DIGY_HAUL).map(k => `<span class="digyOre">${oreIcon(k)}<b>${(o[k] || 0).toLocaleString()}</b></span>`).join("")}<span>${pi("heart", "❤️")} Petted: <b>${(D.pets || 0).toLocaleString()}</b></span><span>${pi("grumpy", "😤")} Disturbed: <b>${(D.pokes || 0).toLocaleString()}</b></span>`;
   }
   return v;
 }
@@ -50,7 +50,7 @@ function petNameHtml(k, name) {
   return `<span data-noi18n>${escapeHtml(name)}</span><button class="petEdit" data-petedit="${k}" title="Rename" aria-label="Rename">✏️</button>`;
 }
 function petSwitchRow(attr, on, onText, offText) {
-  return `<div class="orRow petOnRow"><span class="grow"><b>${on ? "🟢 Active" : "💤 Resting"}</b><small>${on ? onText : offText}</small></span>
+  return `<div class="orRow petOnRow"><span class="grow"><b>${on ? pi("awake", "🟢") : pi("resting", "💤")} <span>${on ? "Active" : "Resting"}</span></b><small>${on ? onText : offText}</small></span>
     <span class="orSwitch ${on ? "on" : ""}" ${attr} role="switch" tabindex="0" aria-checked="${on}"></span></div>`;
 }
 

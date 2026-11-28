@@ -19167,6 +19167,12 @@ if (state.view === "games" && state.gamePage === "shooter") renderGames();
 
 // ===== js/33-pet.js =====
 __eocLoaded = 42;
+// 🖼️ painted icons for the pets' texts (🐾 Pets page, Pip's and Digy's corners). pi(key, emoji): the painted icon
+// when its file exists (assets/icons/ico-<file>.webp), the emoji until then (PT_NEW lists the new pet set once its art is in).
+var PT_OLD = { money: "money", income: "ui-income", art: "ui-art", pick: "mn-pick", energy: "mn-energy" };
+var PT_NEW = new Set([]);   // pt-heart, pt-grumpy, pt-paintings, pt-match, pt-kept, pt-sold, pt-tap, pt-drink, pt-sleep, pt-awake, pt-painting, pt-resting, pt-charging, pt-digging, pt-waiting, pt-hauls
+var pi = (k, emoji) => PT_OLD[k] ? `<img class="ico pti" src="assets/icons/ico-${PT_OLD[k]}.webp" alt="">`
+  : PT_NEW.has(k) ? `<img class="ico pti" src="assets/icons/ico-pt-${k}.webp" alt="">` : emoji;
 /* =====================================================================
    🐾 PET (found in the 🏴‍☠️ pirate loot box of Nebula Strike level 4, only one).
    Lives on the 💰 Income page next to the coin and runs the ⚡ energy drink for you:
@@ -19416,25 +19422,25 @@ function petLive() {
   if (petHas()) {
     const P = state.pet;
     const es = LANG === "es";
-    v.mStatus = !petOn() ? (es ? "💤 <b>Descansando.</b> Apagado: no está en la página de 💰 Ingresos y no compra bebidas ni toca la moneda." : "💤 <b>Resting.</b> Turned off: he isn't on the 💰 Income page and doesn't buy drinks or tap.")
-      : energyActive() ? (es ? `👆 <b>Bebida energética activa</b> · quedan ${state.energyLeft} s. Toca la moneda mientras estás en la página de 💰 Ingresos.` : `👆 <b>Energy drink active</b> · ${state.energyLeft} s left. He taps the coin while you're on the 💰 Income page.`)
-      : state.energyCooldown > PET_WAKE_BEFORE ? (es ? `😴 <b>Durmiendo.</b> Se despierta en <b>${clockMs((state.energyCooldown - PET_WAKE_BEFORE) * 1000)}</b>, justo antes de la próxima bebida.` : `😴 <b>Sleeping.</b> Wakes up in <b>${clockMs((state.energyCooldown - PET_WAKE_BEFORE) * 1000)}</b>, just before the next drink.`)
-      : state.money >= ENERGY_PRICE ? (es ? "⚡ <b>Despierto.</b> Comprará la próxima bebida energética en cuanto abras la página de 💰 Ingresos." : "⚡ <b>Awake.</b> He'll buy the next energy drink as soon as you open the 💰 Income page.")
-      : (es ? `⚡ <b>Despierto.</b> Esperando a que tengas ${fmt(ENERGY_PRICE)} para la próxima bebida energética.` : `⚡ <b>Awake.</b> Waiting until you have ${fmt(ENERGY_PRICE)} for the next energy drink.`);
-    v.mStats = `<span>💰 Earned: <b>${fmt(P.earned || 0)}</b></span><span>👆 Coin taps: <b>${(P.taps || 0).toLocaleString()}</b></span><span>⚡ Energy drinks: <b>${(P.drinks || 0).toLocaleString()}</b></span><span>❤️ Petted: <b>${(P.pets || 0).toLocaleString()}</b></span>`;
+    v.mStatus = !petOn() ? (es ? `${pi("resting", "💤")} <b>Descansando.</b> Apagado: no está en la página de ${pi("income", "💰")} Ingresos y no compra bebidas ni toca la moneda.` : `${pi("resting", "💤")} <b>Resting.</b> Turned off: he isn't on the ${pi("income", "💰")} Income page and doesn't buy drinks or tap.`)
+      : energyActive() ? (es ? `${pi("tap", "👆")} <b>Bebida energética activa</b> · quedan ${state.energyLeft} s. Toca la moneda mientras estás en la página de ${pi("income", "💰")} Ingresos.` : `${pi("tap", "👆")} <b>Energy drink active</b> · ${state.energyLeft} s left. He taps the coin while you're on the ${pi("income", "💰")} Income page.`)
+      : state.energyCooldown > PET_WAKE_BEFORE ? (es ? `${pi("sleep", "😴")} <b>Durmiendo.</b> Se despierta en <b>${clockMs((state.energyCooldown - PET_WAKE_BEFORE) * 1000)}</b>, justo antes de la próxima bebida.` : `${pi("sleep", "😴")} <b>Sleeping.</b> Wakes up in <b>${clockMs((state.energyCooldown - PET_WAKE_BEFORE) * 1000)}</b>, just before the next drink.`)
+      : state.money >= ENERGY_PRICE ? (es ? `${pi("awake", "⚡")} <b>Despierto.</b> Comprará la próxima bebida energética en cuanto abras la página de ${pi("income", "💰")} Ingresos.` : `${pi("awake", "⚡")} <b>Awake.</b> He'll buy the next energy drink as soon as you open the ${pi("income", "💰")} Income page.`)
+      : (es ? `${pi("awake", "⚡")} <b>Despierto.</b> Esperando a que tengas ${fmt(ENERGY_PRICE)} para la próxima bebida energética.` : `${pi("awake", "⚡")} <b>Awake.</b> Waiting until you have ${fmt(ENERGY_PRICE)} for the next energy drink.`);
+    v.mStats = `<span>${pi("money", "💰")} Earned: <b>${fmt(P.earned || 0)}</b></span><span>${pi("tap", "👆")} Coin taps: <b>${(P.taps || 0).toLocaleString()}</b></span><span>${pi("drink", "⚡")} Energy drinks: <b>${(P.drinks || 0).toLocaleString()}</b></span><span>${pi("heart", "❤️")} Petted: <b>${(P.pets || 0).toLocaleString()}</b></span>`;
   }
   if (pipHas()) {
     const Q = state.pip, now = Date.now(), ph = pipPhase(now);
     const es = LANG === "es";
-    v.pStatus = !pipOn() ? (es ? "💤 <b>Descansando.</b> Apagado: no está en la página de la 🖼️ Galería de arte y su reloj de pintura está en pausa." : "💤 <b>Resting.</b> Turned off: he isn't on the 🖼️ Art Gallery page and his painting clock is paused.")
-      : ph.painting ? (es ? `🎨 <b>Pintando el cuadro n.º ${(Q.painted + 1).toLocaleString()}</b> · listo en <b>${clockMs(ph.next - now)}</b>` : `🎨 <b>Painting #${(Q.painted + 1).toLocaleString()}</b> · done in <b>${clockMs(ph.next - now)}</b>`)
-      : (es ? `😴 <b>Dormido.</b> El próximo cuadro empieza en <b>${clockMs(ph.next - PIP_PAINT - now)}</b>` : `😴 <b>Asleep.</b> Next painting starts in <b>${clockMs(ph.next - PIP_PAINT - now)}</b>`);
-    v.pStats = `<span>💰 Earned: <b>${fmt(Q.earned || 0)}</b></span><span>🖼️ Paintings: <b>${(Q.painted || 0).toLocaleString()}</b></span><span>📥 Kept: <b>${(Q.kept || 0).toLocaleString()}</b></span><span>💵 Sold: <b>${(Q.sold || 0).toLocaleString()}</b></span><span>❤️ Petted: <b>${(Q.pets || 0).toLocaleString()}</b></span><span>😤 Disturbed: <b>${(Q.pokes || 0).toLocaleString()}</b></span>`;
+    v.pStatus = !pipOn() ? (es ? `${pi("resting", "💤")} <b>Descansando.</b> Apagado: no está en la página de la ${pi("art", "🖼️")} Galería de arte y su reloj de pintura está en pausa.` : `${pi("resting", "💤")} <b>Resting.</b> Turned off: he isn't on the ${pi("art", "🖼️")} Art Gallery page and his painting clock is paused.`)
+      : ph.painting ? (es ? `${pi("painting", "🎨")} <b>Pintando el cuadro n.º ${(Q.painted + 1).toLocaleString()}</b> · listo en <b>${clockMs(ph.next - now)}</b>` : `${pi("painting", "🎨")} <b>Painting #${(Q.painted + 1).toLocaleString()}</b> · done in <b>${clockMs(ph.next - now)}</b>`)
+      : (es ? `${pi("sleep", "😴")} <b>Dormido.</b> El próximo cuadro empieza en <b>${clockMs(ph.next - PIP_PAINT - now)}</b>` : `${pi("sleep", "😴")} <b>Asleep.</b> Next painting starts in <b>${clockMs(ph.next - PIP_PAINT - now)}</b>`);
+    v.pStats = `<span>${pi("money", "💰")} Earned: <b>${fmt(Q.earned || 0)}</b></span><span>${pi("paintings", "🖼️")} Paintings: <b>${(Q.painted || 0).toLocaleString()}</b></span><span>${pi("kept", "📥")} Kept: <b>${(Q.kept || 0).toLocaleString()}</b></span><span>${pi("sold", "💵")} Sold: <b>${(Q.sold || 0).toLocaleString()}</b></span><span>${pi("heart", "❤️")} Petted: <b>${(Q.pets || 0).toLocaleString()}</b></span><span>${pi("grumpy", "😤")} Disturbed: <b>${(Q.pokes || 0).toLocaleString()}</b></span>`;
   }
   if (digyHas()) {
     const D = state.digy, o = D.ores || {};
     v.dStatus = digyStatus();
-    v.dStats = `<span>⛏️ Hauls: <b>${(D.hauls || 0).toLocaleString()}</b></span>${Object.keys(DIGY_HAUL).map(k => `<span class="digyOre">${oreIcon(k)}<b>${(o[k] || 0).toLocaleString()}</b></span>`).join("")}<span>❤️ Petted: <b>${(D.pets || 0).toLocaleString()}</b></span><span>😤 Disturbed: <b>${(D.pokes || 0).toLocaleString()}</b></span>`;
+    v.dStats = `<span>${pi("hauls", "⛏️")} Hauls: <b>${(D.hauls || 0).toLocaleString()}</b></span>${Object.keys(DIGY_HAUL).map(k => `<span class="digyOre">${oreIcon(k)}<b>${(o[k] || 0).toLocaleString()}</b></span>`).join("")}<span>${pi("heart", "❤️")} Petted: <b>${(D.pets || 0).toLocaleString()}</b></span><span>${pi("grumpy", "😤")} Disturbed: <b>${(D.pokes || 0).toLocaleString()}</b></span>`;
   }
   return v;
 }
@@ -19444,7 +19450,7 @@ function petNameHtml(k, name) {
   return `<span data-noi18n>${escapeHtml(name)}</span><button class="petEdit" data-petedit="${k}" title="Rename" aria-label="Rename">✏️</button>`;
 }
 function petSwitchRow(attr, on, onText, offText) {
-  return `<div class="orRow petOnRow"><span class="grow"><b>${on ? "🟢 Active" : "💤 Resting"}</b><small>${on ? onText : offText}</small></span>
+  return `<div class="orRow petOnRow"><span class="grow"><b>${on ? pi("awake", "🟢") : pi("resting", "💤")} <span>${on ? "Active" : "Resting"}</span></b><small>${on ? onText : offText}</small></span>
     <span class="orSwitch ${on ? "on" : ""}" ${attr} role="switch" tabindex="0" aria-checked="${on}"></span></div>`;
 }
 
@@ -21308,10 +21314,10 @@ function pipTick(force) {
   pipDrawEasel(ph, now);
   const t = $("pipTitle"), tn = pipName(); if (t && t.dataset.n !== tn) { t.dataset.n = tn; t.innerHTML = `<img class="petNameIco" src="assets/icons/tab-pet.webp" alt="" style="width:1.2em;height:1.2em;object-fit:contain;vertical-align:-0.22em;margin-right:6px;display:inline-block">${escapeHtml(tn)}`; }
   const s = $("pipStatus");
-  if (s) s.innerHTML = ph.painting ? `🎨 <b>Painting…</b> done in <b>${clockMs(ph.next - now)}</b>`
-    : `😴 <b>Asleep.</b> Next painting starts in <b>${clockMs(ph.next - PIP_PAINT - now)}</b>`;
+  if (s) s.innerHTML = ph.painting ? `${pi("painting", "🎨")} <b>Painting…</b> done in <b>${clockMs(ph.next - now)}</b>`
+    : `${pi("sleep", "😴")} <b>Asleep.</b> Next painting starts in <b>${clockMs(ph.next - PIP_PAINT - now)}</b>`;
   const n = $("pipNums");
-  if (n) n.innerHTML = `<span>🖼️ Painted: <b>${p.painted.toLocaleString()}</b></span>${p.last ? `<span>⭐ Last: <b>${p.last.score.toFixed(1)}%</b></span>` : ""}<span>💰 Auto-sold: <b>${p.sold.toLocaleString()}</b></span>`;
+  if (n) n.innerHTML = `<span>${pi("paintings", "🖼️")} Painted: <b>${p.painted.toLocaleString()}</b></span>${p.last ? `<span>${pi("match", "⭐")} Last: <b>${p.last.score.toFixed(1)}%</b></span>` : ""}<span>${pi("sold", "💰")} Auto-sold: <b>${p.sold.toLocaleString()}</b></span>`;
 }
 setInterval(() => pipTick(false), 120);
 setInterval(() => { if (pipOwned()) pipProcess(false); }, 1000);
@@ -21416,12 +21422,12 @@ function digyFullIn() {   // ms until the energy is full again
 var digyBattery = () => Math.max(0, Math.min(100, Math.round(100 * state.mine.energy / energyMax())));
 function digyStatus() {
   const es = LANG === "es", M = state.mine, D = state.digy, now = Date.now();
-  if (D.off) return es ? "💤 <b>Descansando.</b> Apagado: no excava." : "💤 <b>Resting.</b> Turned off: he doesn't dig.";
-  if (D.dig) return es ? `⛏️ <b>Excavando</b> · listo en <b>${clockMs(D.dig.end - now)}</b>` : `⛏️ <b>Digging</b> · done in <b>${clockMs(D.dig.end - now)}</b>`;
-  if (M.run || M.pending) return es ? `⏸️ <b>Esperando.</b> Estás jugando en la mina: excavará cuando termines.` : `⏸️ <b>Waiting.</b> You're playing the mine: he digs once you're done.`;
+  if (D.off) return es ? `${pi("resting", "💤")} <b>Descansando.</b> Apagado: no excava.` : `${pi("resting", "💤")} <b>Resting.</b> Turned off: he doesn't dig.`;
+  if (D.dig) return es ? `${pi("digging", "⛏️")} <b>Excavando</b> · listo en <b>${clockMs(D.dig.end - now)}</b>` : `${pi("digging", "⛏️")} <b>Digging</b> · done in <b>${clockMs(D.dig.end - now)}</b>`;
+  if (M.run || M.pending) return es ? `${pi("waiting", "⏸️")} <b>Esperando.</b> Estás jugando en la mina: excavará cuando termines.` : `${pi("waiting", "⏸️")} <b>Waiting.</b> You're playing the mine: he digs once you're done.`;
   const pct = digyBattery(), full = digyFullIn();
-  return es ? `🔋 <b>Cargando ${pct}%</b>${full ? ` · excava cuando la energía esté llena, en <b>${clockMs(full)}</b>` : ""}`
-    : `🔋 <b>Charging ${pct}%</b>${full ? ` · digs when your energy is full, in <b>${clockMs(full)}</b>` : ""}`;
+  return es ? `${pi("charging", "🔋")} <b>Cargando ${pct}%</b>${full ? ` · excava cuando la energía esté llena, en <b>${clockMs(full)}</b>` : ""}`
+    : `${pi("charging", "🔋")} <b>Charging ${pct}%</b>${full ? ` · digs when your energy is full, in <b>${clockMs(full)}</b>` : ""}`;
 }
 // one line on the 🎮 Mini-games hub card
 function digyHubLine() {
