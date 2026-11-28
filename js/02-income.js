@@ -999,6 +999,8 @@ function showView(view) {
     if (state.view === "wiki" && $("wikiBody")) $("wikiBody").innerHTML = "";
   }
   state.view = view;
+  // 🔕 opening a mini-game silences its ! alert for 20 minutes (js/23-minigames.js: mgReady)
+  if (view === "games" && state.gamePage) { state.mgSnooze = state.mgSnooze || {}; state.mgSnooze[state.gamePage] = Date.now() + 20 * 60e3; if (typeof updateArtTab === "function") updateArtTab(); }
   $("incomeView").hidden = view !== "income";
   $("casinoView").hidden = view !== "casino";
   $("investView").hidden = view !== "invest";

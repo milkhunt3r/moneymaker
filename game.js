@@ -3693,7 +3693,7 @@ var staffIco = (key, o, cls = "staffI") => STAFF_PICS.includes(key) ? ico("st-" 
 var alienBonus = (key) => ((__eocLoaded >= 44 && typeof spAllyBonus === "function") ? spAllyBonus(key) : 0);
 var geneBonus = (cat) => (typeof geneCatCount === "function" ? geneCatCount(cat) * 0.01 : 0);
 var PREF_KEYS = ["view", "coinUnit", "casinoPage", "logiPage", "rewardType", "rewardState", "gamePage", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage", "cryptoSel", "ivCard", "logiFleet", "mapBig", "mapHelp",
-                   "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage", "numFmt", "lowFx", "popups", "mgTabs", "orDispOpen"];
+                   "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage", "numFmt", "lowFx", "popups", "mgTabs", "orDispOpen", "mgSnooze"];
 function splitState(st) {   // -> { progress, prefs }
   const progress = {}, prefs = {};
   for (const k in st) (PREF_KEYS.includes(k) ? prefs : progress)[k] = st[k];
@@ -5073,6 +5073,8 @@ function showView(view) {
     if (state.view === "wiki" && $("wikiBody")) $("wikiBody").innerHTML = "";
   }
   state.view = view;
+  // 🔕 opening a mini-game silences its ! alert for 20 minutes (js/23-minigames.js: mgReady)
+  if (view === "games" && state.gamePage) { state.mgSnooze = state.mgSnooze || {}; state.mgSnooze[state.gamePage] = Date.now() + 20 * 60e3; if ((__eocLoaded >= 25 && typeof updateArtTab === "function")) updateArtTab(); }
   $("incomeView").hidden = view !== "income";
   $("casinoView").hidden = view !== "casino";
   $("investView").hidden = view !== "invest";
@@ -15694,8 +15696,11 @@ function mgReady() {
   const r = {};
   if (state.art.unlocked && (__eocLoaded >= 25 && typeof artCommCheck === "function")) { const c = artCommCheck(); if (c && !c.done && Date.now() < c.until) r.art = "📜 Today's commission is waiting (×3 value)"; }
   if (mineUnlocked() && !M.run && mineEnergy() >= energyMax() && !(typeof digyOn === "function" && digyOn())) r.mine = "⚡ Energy full: time to dig!";
-  if (typeof G !== "undefined" && G.unlocked && G.known.length && G.known.every(k => (G.dna[k] || 0) >= GENE_DNA_MAX)) r.gene = "🧬 DNA is full: splice before new DNA goes to waste";
+  if (typeof G !== "undefined" && G.unlocked && geneFound() < GENE_TOTAL && G.known.length && G.known.every(k => (G.dna[k] || 0) >= GENE_DNA_MAX)) r.gene = "🧬 DNA is full: splice before new DNA goes to waste";
   if (typeof SH !== "undefined" && shUnlocked() && (shShipBuyable() || shUpBuyable())) r.shooter = "⬆️ You can buy a ship or an upgrade";
+  // 🔕 opening a game silences its alert for 20 minutes (even if you don't play), so it doesn't nag
+  const sn = state.mgSnooze || {}, now = Date.now();
+  for (const k in r) if (sn[k] > now) delete r[k];
   return r;
 }
 var mgBang = (why) => why ? ` <span class="tabWarn gold" title="${why}">!</span>` : "";

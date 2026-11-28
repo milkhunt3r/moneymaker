@@ -970,8 +970,11 @@ function mgReady() {
   const r = {};
   if (state.art.unlocked && typeof artCommCheck === "function") { const c = artCommCheck(); if (c && !c.done && Date.now() < c.until) r.art = "📜 Today's commission is waiting (×3 value)"; }
   if (mineUnlocked() && !M.run && mineEnergy() >= energyMax() && !(typeof digyOn === "function" && digyOn())) r.mine = "⚡ Energy full: time to dig!";
-  if (typeof G !== "undefined" && G.unlocked && G.known.length && G.known.every(k => (G.dna[k] || 0) >= GENE_DNA_MAX)) r.gene = "🧬 DNA is full: splice before new DNA goes to waste";
+  if (typeof G !== "undefined" && G.unlocked && geneFound() < GENE_TOTAL && G.known.length && G.known.every(k => (G.dna[k] || 0) >= GENE_DNA_MAX)) r.gene = "🧬 DNA is full: splice before new DNA goes to waste";
   if (typeof SH !== "undefined" && shUnlocked() && (shShipBuyable() || shUpBuyable())) r.shooter = "⬆️ You can buy a ship or an upgrade";
+  // 🔕 opening a game silences its alert for 20 minutes (even if you don't play), so it doesn't nag
+  const sn = state.mgSnooze || {}, now = Date.now();
+  for (const k in r) if (sn[k] > now) delete r[k];
   return r;
 }
 const mgBang = (why) => why ? ` <span class="tabWarn gold" title="${why}">!</span>` : "";
