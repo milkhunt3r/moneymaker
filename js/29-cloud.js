@@ -196,7 +196,7 @@ function cloudDeleteAsk() {
 }
 
 // ---------- UI: the ⚙️ Settings account rows and the main menu badge ----------
-function cloudRowsHtml() {
+function cloudRowsHtml(inSettings) {   // inSettings: the ⚙️ Settings copy also gets a "Sync now" button
   const icon = '<svg viewBox="0 0 24 24"><path d="M19 18H6.5a4.5 4.5 0 0 1-.6-9 6 6 0 0 1 11.6 1.5A3.8 3.8 0 0 1 19 18z"/></svg>';
   const r = (k, text, extra = "") => `<button class="orRow" data-cloud="${k}">${icon}<span class="grow">${text}</span>${extra}</button>`;
   if (!cloud.sb) return `<div class="orRow off">${icon}<span class="grow">Cloud save</span><span class="orSoon">${cloud.status === "loading" ? "Connecting…" : "Not available"}</span></div>`;
@@ -204,14 +204,20 @@ function cloudRowsHtml() {
     `<div class="guestWarn">⚠️ Playing as a guest: ${GUEST_WARN}</div>`;
   const st = cloud.status === "error" ? "⚠️ Last upload failed" : cloud.lastAt ? `Saved ${whenText(cloud.lastAt)}` : "…";
   return `<div class="orRow cloudInfo">${icon}<span class="grow"><b data-noi18n>${escapeHtml(cloud.user.email || "Google account")}</b><small id="cloudSt">${st}</small></span></div>` +
-    `<div class="cloudBtns"><button data-cloud="out">Sign out</button><button data-cloud="del" class="danger">Delete account</button></div>`;
+    `<div class="cloudBtns">${inSettings ? `<button data-cloud="now">☁️ Sync now</button>` : ""}<button data-cloud="out">Sign out</button><button data-cloud="del" class="danger">Delete account</button></div>`;
 }
 const escapeHtml = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 function updateCloudUi() {
   const box = $("cloudRows");
   if (box) box.innerHTML = cloudRowsHtml();
+  const box2 = $("orCloud");   // ⚙️ Settings copy
+  if (box2) box2.innerHTML = cloudRowsHtml(true);
   const b = $("menuAccount");
-  if (b) b.innerHTML = !cloud.sb ? "" : cloud.user ? `☁️ ${escapeHtml((cloud.user.user_metadata && cloud.user.user_metadata.name) || cloud.user.email || "")}` : `<span class="gIcon">G</span>Sign in`;
+  // main menu corner: who you are and whether the cloud copy is safe
+  if (b) b.innerHTML = !cloud.sb ? "" : cloud.user
+    ? `☁️ ${escapeHtml((cloud.user.user_metadata && cloud.user.user_metadata.name) || cloud.user.email || "")}` +
+      (cloud.status === "error" || cloud.conflict ? `<small class="warn">${LANG === "es" ? "⚠️ Falló el guardado en la nube" : "⚠️ Cloud save failed"}</small>` : `<small>${LANG === "es" ? "✓ Guardado en la nube" : "✓ Saved to cloud"}${cloud.lastAt ? ` · ${new Date(cloud.lastAt).toLocaleTimeString(LANG === "es" ? "es-ES" : undefined, { hour: "2-digit", minute: "2-digit" })}` : ""}</small>`)
+    : `<span class="gIcon">G</span>${LANG === "es" ? "Inicia sesión para guardar" : "Sign in to save"}<small class="warn">${LANG === "es" ? "Invitado: guardado solo en este dispositivo" : "Guest: saved on this device only"}</small>`;
   if (b) b.hidden = !cloud.sb;
 }
 // the account rows live on the 👤 Profile page (js/37-profile.js), not in ⚙️ Settings
@@ -228,6 +234,7 @@ $("modalBox").addEventListener("click", (e) => {
   }
 });
 $("menuCorner").insertAdjacentHTML("beforeend", `<button id="menuAccount" hidden data-noi18n></button>`);
+setInterval(() => { if (!$("mainMenu").hidden) updateCloudUi(); }, 5000);   // keep the corner status fresh while the menu is open
 $("menuAccount").addEventListener("click", () => { if (!cloud.user) return cloudSignIn(); closeMenu(); showView("profile"); });
 
 // 👤 Playing as a guest: pressing ▶ Play without being signed in asks once (until "don't ask again" is ticked)

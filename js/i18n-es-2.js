@@ -17,6 +17,8 @@ function esq(s) {
 // an ES_HTML sentence, also under the key it gets when its bold words were already translated
 function H(en, sp) {
   ES_HTML[en] = sp;
+  // a note with no tags shows as plain text: translate it by its words, without the leading emoji
+  if (!/<[a-z]/i.test(en)) { const strip = (x) => x.replace(/^[^\p{L}\d]+/u, ""); ES[strip(en)] = strip(sp); }
   const v = en.replace(/<b>([^<]+)<\/b>/g, (m, x) => `<b>${ES[x.replace(/:$/, "")] !== undefined && /:$/.test(x) ? ES[x.replace(/:$/, "")] + ":" : (ES[x] ?? x)}</b>`);
   if (v !== en) ES_HTML[v] = sp;
 }

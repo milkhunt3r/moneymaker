@@ -16,9 +16,11 @@ const SETTINGS_NOTE = "The game saves itself every 30 seconds and after every ac
 function settingsNote(text) {
   $("settingsNote").textContent = text;
   const n = $("orNote"); if (n) n.textContent = text;
+  const sv = $("orSaved"); if (sv) sv.textContent = savedAgo();
   setTimeout(() => {
     $("settingsNote").textContent = SETTINGS_NOTE;
-    const n2 = $("orNote"); if (n2) n2.textContent = SETTINGS_NOTE;
+    const n2 = $("orNote"); if (n2) n2.textContent = "";
+    const sv = $("orSaved"); if (sv) sv.textContent = savedAgo();
   }, 3000);
 }
 
@@ -51,6 +53,12 @@ $("modalBox").addEventListener("input", (e) => {
   $("orBrightVal").textContent = state.bgBright + "%";
   applyBgBright(); save();
 });
+// 💾 "Saved 12 s ago" in ⚙️ Settings (ticks while the window is open)
+function savedAgo() {
+  const s = Math.max(0, Math.round((Date.now() - lastSaveAt) / 1000));
+  return s < 5 ? "just now" : s < 60 ? `${s} s ago` : s < 3600 ? `${Math.floor(s / 60)} min ago` : `${Math.floor(s / 3600)} h ago`;
+}
+setInterval(() => { const el = $("orSaved"); if (el) el.textContent = savedAgo(); }, 1000);
 function showSettings(fromMenu) {
   settingsFromMenu = !!fromMenu;
   $("settingsMenu").hidden = true;
@@ -59,7 +67,10 @@ function showSettings(fromMenu) {
       <div class="orRibbon"><span>Settings</span></div>
       <button class="orClose" data-modal="close" aria-label="Close">✕</button>
       <div class="orSec">Game</div>
-      ${row("save", "Save game")}
+      <div class="orRow orSave">${orIcon("save")}<span class="grow"><span>Saved <b id="orSaved">${savedAgo()}</b></span><small>Saves itself every 30 seconds and after every action.</small></span>
+        <button class="orMini" data-or="save">Save now</button></div>
+      <div class="orSec">Account</div>
+      <div id="orCloud">${typeof cloudRowsHtml === "function" ? cloudRowsHtml(true) : ""}</div>
       <div class="orSec">Display</div>
       <div class="orRow slider">${orIcon("bright")}<span class="grow">Background brightness</span><span class="orVal" id="orBrightVal">${bgBright()}%</span>
         <input type="range" class="orRange" id="orBright" min="20" max="100" step="5" value="${bgBright()}" style="--p:${(bgBright() - 20) / 0.8}%" aria-label="Background brightness"></div>
@@ -69,14 +80,13 @@ function showSettings(fromMenu) {
       ${row("tips", "Show tips", `<span class="orSwitch ${state.tips.on ? "on" : ""}" id="orTips"></span>`)}
       ${row("tipsReset", "Show all tips again")}
       ${row("tutorial", "Replay the guided start")}
+      <div class="orSec">About</div>
       <button class="orRow" data-or="donate">${orIcon("cup")}<span class="grow">Support the game</span><span class="orArrow">›</span></button>
       <button class="orRow" data-or="bug">${orIcon("bug")}<span class="grow">Report a bug</span><span class="orArrow">›</span></button>
       <div class="orRow orLegal">${typeof legalLinks === "function" ? legalLinks() : ""}</div>
-      <div class="orNote" id="orNote">${SETTINGS_NOTE}</div>
-      <div class="orBtns">
-        ${fromMenu ? "" : `<button class="orBtn orBlue" data-or="menu"><span>${orIcon("menu")}Main menu</span></button>`}
-        <button class="orBtn orRed" data-or="reset"><span>${orIcon("reset")}Reset game</span></button>
-      </div>
+      <div class="orNote" id="orNote"></div>
+      ${fromMenu ? "" : `<div class="orBtns"><button class="orBtn orBlue" data-or="menu"><span>${orIcon("menu")}Main menu</span></button></div>`}
+      <div class="orDanger"><span>Danger zone</span><button data-or="reset">🗑️ Reset game</button></div>
     </div>`);
   $("modalBox").classList.add("ornate");
 }

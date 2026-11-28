@@ -27,8 +27,21 @@ function layoutMenu() {
 }
 function openMenu() {
   $("mainMenu").hidden = false; document.body.classList.add("menuOpen");
+  menuInfo();
   layoutMenu();
 }
+// ▶ the line under Play (your progress at a glance) and the 🆕 badge on About (patch notes you haven't seen)
+const NOTES_SEEN = "eoc-notes-seen";
+function menuInfo() {
+  const fresh = !state.legacy.count && !state.companies.length && state.money < 1000;
+  const c = $("menuContinue");
+  const es = LANG === "es";
+  if (c) c.innerHTML = fresh ? (es ? "Nueva partida: empieza con una moneda" : "New game: start with one coin") :
+    `${es ? "Continuar" : "Continue"} · <b>${fmt(state.money)}</b>${state.legacy.count ? ` · ⭐ ${es ? "Prestigio" : "Prestige"} <b>${state.legacy.count}/${PRESTIGE_MAX}</b>` : ""}`;
+  let seen = ""; try { seen = localStorage.getItem(NOTES_SEEN) || ""; } catch (e) {}
+  const n = $("menuNew"); if (n) n.hidden = !PATCH_NOTES.length || seen === PATCH_NOTES[0].date;
+}
+setInterval(() => { if (!$("mainMenu").hidden) menuInfo(); }, 1000);
 function closeMenu() {
   $("mainMenu").hidden = true; document.body.classList.remove("menuOpen");
   if (state.taxHoliday > 0) showNotice(`🛡️ Tax holiday: no tax inspections for the next ${Math.ceil(state.taxHoliday / 60)} minutes.`);
@@ -52,6 +65,8 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "🏠 Main menu: a line under Play shows your progress (money and prestige), a <b>NEW</b> badge on About marks patch notes you haven't read, Donate is now a small button, and the top corner shows whether your game is saved to the ☁️ cloud.",
+    "⚙️ Settings: a new <b>Account</b> section (sign in, ☁️ Sync now, sign out), a \"Saved 12 s ago\" row with a Save now button, an About section, and 🗑️ Reset game moved to a small danger zone at the bottom.",
     "🎁 Free casino bet chips now go back to 0 on a prestige reset. 🎟️ VIP Coins keeps them: pick it and your free chips stay on that and every later reset.",
     "🌌 Prestige resets no longer touch Space: friendships, goods, stardust, crafted items, research and contracts all stay. Ships in flight finish their trip, and friendships don't cool off while you have no ships.",
   ] },
@@ -284,6 +299,8 @@ function showAbout() {
     ${notes}
     <div class="closeRow"><button class="btn big" data-modal="close">Close</button></div>`);
   $("modalBox").classList.add("wide", "about");
+  try { localStorage.setItem(NOTES_SEEN, PATCH_NOTES[0].date); } catch (e) {}
+  menuInfo();
 }
 
 $("mainMenu").addEventListener("click", (e) => {

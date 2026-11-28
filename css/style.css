@@ -41,6 +41,22 @@
   text-shadow: 0 2px 0 rgba(0, 0, 0, 0.45), 0 0 10px rgba(0, 0, 0, 0.35); pointer-events: none; padding-top: 2px; }
 .menuBtn.mGreen .menuLabel { font-size: 36px; }
 .menuLabel svg { width: 0.95em; height: 0.95em; fill: url(#menuGold); filter: drop-shadow(0 1.5px 0 rgba(60, 30, 0, 0.7)); }
+/* ▶ progress line under Play ("Continue · 3.9 pcoin · Prestige 2/4") */
+#menuContinue { position: absolute; text-align: center; font: 800 17px/1.2 system-ui, sans-serif; color: #ffe8a8; letter-spacing: 0.3px; pointer-events: none;
+  text-shadow: 0 1px 0 #000, 0 0 6px rgba(0, 0, 0, 0.9), 0 0 12px rgba(0, 0, 0, 0.7); white-space: nowrap; }
+#menuContinue b { color: #fff; }
+/* 🆕 badge on About when there are patch notes you haven't seen */
+.menuNew { position: absolute; right: -6px; top: -12px; font: 800 13px/1 system-ui, sans-serif; color: #fff; padding: 5px 8px; border-radius: 999px;
+  background: linear-gradient(180deg, #ff5a5a, #d01f1f); border: 2px solid #ffe08a; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5); animation: menuNewPulse 1.6s ease-in-out infinite; }
+.menuNew[hidden] { display: none; }
+@keyframes menuNewPulse { 50% { transform: scale(1.1); } }
+/* ♥ Donate: a small pill under the main buttons */
+.menuDonate { position: absolute; border-radius: 999px; cursor: pointer; padding: 0; -webkit-tap-highlight-color: transparent;
+  background: linear-gradient(180deg, rgba(40, 30, 90, 0.85), rgba(15, 10, 45, 0.85)); border: 2px solid rgba(255, 211, 77, 0.75);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45); transition: transform 0.12s ease; }
+.menuDonate .menuLabel { font-size: 20px; -webkit-text-stroke: 1px rgba(40, 20, 0, 0.55); padding-top: 1px; }
+.menuDonate:hover, .menuDonate:focus-visible { transform: scale(1.06); border-color: #ffd34d; outline: none; }
+.menuDonate:active { transform: scale(0.97); }
 /* effects go on the picture (not the button box), so the glow follows the real outline */
 .menuBtn img { transition: filter 0.15s ease; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45)); }
 .menuBtn:hover, .menuBtn:focus-visible { transform: scale(1.045); outline: none; }
@@ -96,7 +112,24 @@ body.menuOpen #tipCard, body.menuOpen #tutBubble, body.menuOpen #alerts { displa
 .orRange::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; border: 2px solid #8a5a00;
   background: radial-gradient(circle at 35% 30%, #fff6c8, #d9a400); box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
 .orRange::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #8a5a00; background: radial-gradient(circle at 35% 30%, #fff6c8, #d9a400); }
-.orNote { color: #c6bfe8; font-size: 13px; text-align: center; min-height: 18px; margin: 4px 0 8px; }
+.orNote { color: #c6bfe8; font-size: 13px; text-align: center; margin: 4px 0 8px; }
+.orNote:empty { display: none; }
+/* 💾 "Saved 12 s ago" row with a small Save now button */
+.orRow.orSave { cursor: default; }
+.orRow.orSave:hover { background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)); border-color: rgba(255, 211, 77, 0.22); }
+.orSave .grow { display: flex; flex-direction: column; gap: 2px; }
+.orSave .grow b { color: #ffd34d; }
+.orSave small { color: #b9b4d6; font-weight: 600; font-size: 12px; }
+.orMini { font: 700 13px/1 inherit; font-family: inherit; color: #2a1a00; cursor: pointer; padding: 8px 12px; border-radius: 9px; border: 1px solid #ffe08a;
+  background: linear-gradient(180deg, #ffe17a, #f4b62c); box-shadow: 0 2px 0 #9a6a10; white-space: nowrap; }
+.orMini:hover { filter: brightness(1.08); }
+.orMini:active { transform: translateY(1px); box-shadow: 0 1px 0 #9a6a10; }
+/* 🗑️ Reset game: a small red link at the very bottom, away from the everyday buttons */
+.orDanger { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 14px 0 2px; padding-top: 10px; border-top: 1px dashed rgba(255, 107, 107, 0.35);
+  font-size: 12px; color: #c99; text-transform: uppercase; letter-spacing: 0.08em; }
+.orDanger button { font: 700 13px/1 inherit; font-family: inherit; color: #ff8a8a; background: none; border: 1px solid rgba(255, 107, 107, 0.45); border-radius: 8px;
+  padding: 6px 10px; cursor: pointer; text-transform: none; letter-spacing: 0; }
+.orDanger button:hover { background: rgba(255, 80, 80, 0.12); color: #ffb3b3; }
 .orBtns { display: flex; gap: 10px; }
 .orBtn { position: relative; flex: 1; border: 0; padding: 0; background: 0 / 100% 100% no-repeat; cursor: pointer;
   transition: transform 0.12s, filter 0.15s; }
@@ -1697,6 +1730,9 @@ body.phone .debtBanner { top: 56px; }
 #menuLang { display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: rgba(10, 8, 24, 0.75); border: 1px solid rgba(255, 211, 77, 0.5); }
 #menuLang button { font: 700 15px/1 inherit; font-family: inherit; color: #d9d6ea; background: transparent; border: none; padding: 8px 12px; border-radius: 9px; cursor: pointer; }
 #menuLang button:hover { color: #fff; }
+#menuAccount:has(small) { flex-wrap: wrap; justify-content: flex-end; row-gap: 3px; }
+#menuAccount small { display: block; flex-basis: 100%; text-align: right; font-size: 11px; font-weight: 700; color: #9fe09f; }
+#menuAccount small.warn { color: #ffcf7a; }
 html[lang="en"] [data-lang="en"], html[lang="es"] [data-lang="es"] { background: linear-gradient(180deg, #ffe27a, #f0a81c) !important; color: #2a1800 !important; }
 .orLang { display: flex; gap: 4px; }
 .orLang button { font: 700 13px system-ui, sans-serif; padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(255, 211, 77, 0.5); background: rgba(255, 255, 255, 0.06); color: #fff; cursor: pointer; }

@@ -401,6 +401,7 @@ let stopSaving = false;   // set while resetting / loading, so the old game isn'
 let saveFailedAt = 0;
 let catchingUp = false;   // true while the game clock runs several seconds at once
 let saveDirty = false, actionSaveTimer = null, lastPrefs = "";
+let lastSaveAt = Date.now();   // 💾 when this device last saved (the game you just loaded counts as saved)
 function save() { if (!stopSaving) saveDirty = true; }
 function flushSave() {
   clearTimeout(actionSaveTimer); actionSaveTimer = null;
@@ -410,7 +411,7 @@ function flushSave() {
   if (p !== lastPrefs) { storage.savePrefs(prefs); lastPrefs = p; }
   try {
     storage.saveGame(progress);
-    saveDirty = false;
+    saveDirty = false; lastSaveAt = Date.now();
     if (saveFailedAt) { saveFailedAt = 0; const w = document.getElementById("saveWarn"); if (w) w.hidden = true; }
   } catch (e) {
     if (!saveFailedAt) console.warn("Saving failed:", e);
