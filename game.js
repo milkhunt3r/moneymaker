@@ -3322,6 +3322,12 @@ H("🤖 New pet: <b>Digy</b>, a little Kragg mining robot! Get him from the 🗿
   "🤖 Nueva mascota: <b>Digy</b>, un pequeño robot minero de los Kragg. Consíguelo de los 🗿 Kragg cuando seáis 😊 amigos (💎 50 diamantes + 🔴 10 rubíes). Cuando la energía de tu ⛏️ mina está llena, excava durante 30 segundos (⚡ 3 de energía) y lleva 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25 a tu 🏦 cámara, también con el juego cerrado (hasta 24 horas).");
 H("🤖 Digy reacts now: click him to pet him (5 in a row and he jumps for joy), he wakes up with a stretch and does a ta-da once he's clean. Don't poke him while he digs: he gets grumpy!",
   "🤖 Digy ya reacciona: haz clic en él para acariciarlo (5 seguidas y salta de alegría), se despierta estirándose y hace un «¡tachán!» cuando está limpio. No lo molestes mientras excava: ¡se enfada!");
+// 🏆 pet achievements (Have 2 / 3 pets, Digy)
+Object.assign(ES, { "Pet lover": "Amante de las mascotas", "Have 2 pets": "Ten 2 mascotas", "Full house": "Casa llena", "Have 3 pets": "Ten 3 mascotas",
+  "Kragg engineering": "Ingeniería Kragg", "Adopt Digy from the Kragg": "Adopta a Digy de los Kragg", "Little helper": "Pequeño ayudante", "Let Digy dig 5 times": "Deja que Digy excave 5 veces",
+  "Tireless digger": "Excavador incansable", "Let Digy dig 50 times": "Deja que Digy excave 50 veces", "Well oiled": "Bien engrasado", "Pet Digy 100 times": "Acaricia a Digy 100 veces" });
+H("🏆 6 new achievements: <b>🐾 Pet lover</b> (have 2 pets) and <b>🏡 Full house</b> (have 3 pets), plus 4 Mining achievements for 🤖 Digy: adopt him, let him dig 5 and 50 times, and pet him 100 times.",
+  "🏆 6 logros nuevos: <b>🐾 Amante de las mascotas</b> (ten 2 mascotas) y <b>🏡 Casa llena</b> (ten 3 mascotas), además de 4 logros de Minería para 🤖 Digy: adóptalo, deja que excave 5 y 50 veces, y acarícialo 100 veces.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -10943,6 +10949,9 @@ var ACHIEVEMENTS = [
   { id: "deep10",   cat: "secret", tier: 2, icon: "🌌", name: "Deep space veteran", desc: "Complete 10 successful deep space missions", goal: 10, get: () => state.stats.deepOk || 0 },
   { id: "mars",     cat: "secret", tier: 2, icon: "🔴", name: "Red planet", desc: "Build the Mars Base", goal: 1, get: () => state.science && state.science.mars ? 1 : 0 },
   { id: "gene",     cat: "secret", tier: 2, icon: "🧬", name: "Rewriting the code", desc: "Open the Genetics Laboratory", goal: 1, get: () => state.science && state.science.gene ? 1 : 0 },
+  // 🐾 pets you own (Mochi, Pip, Digy)
+  { id: "pets2",      cat: "general", icon: "🐾", name: "Pet lover",          desc: "Have 2 pets", goal: 2, get: () => petCount() },
+  { id: "pets3",      cat: "general", icon: "🏡", name: "Full house",         desc: "Have 3 pets", goal: 3, get: () => petCount() },
   { id: "fullSet",    cat: "general", icon: "🎨", name: "Dressed to impress", desc: "Wear the coin and background from the same collection", goal: 1, get: () => matchingSet() ? 1 : 0 },
   // Income
   { id: "click100",   cat: "income", icon: "👆", name: "Warming up",         desc: "Click the coin 100 times",            goal: 100,    get: () => state.stats.clicks },
@@ -11098,6 +11107,11 @@ var ACHIEVEMENTS = [
       { id: "mineChest50", icon: "💰", name: "Treasure hunter",    desc: "Open 50 treasure chests",                    goal: 50,  get: () => Mn().chests || 0 },
       { id: "mineLift1",   icon: "🛗", name: "Going up",           desc: "Take the mine lift up",                      goal: 1,   get: () => Mn().liftsUsed || 0 },
       { id: "mineLift20",  icon: "🛗", name: "Frequent rider",     desc: "Take the mine lift up 20 times",             goal: 20,  get: () => Mn().liftsUsed || 0 },
+      // 🤖 Digy, the mining robot pet (js/36b-digy.js)
+      { id: "digyGet",     icon: "🤖", name: "Kragg engineering",  desc: "Adopt Digy from the Kragg",                  goal: 1,   get: () => state.digy && state.digy.owned ? 1 : 0 },
+      { id: "digy5",       icon: "⛏️", name: "Little helper",      desc: "Let Digy dig 5 times",                       goal: 5,   get: () => (state.digy && state.digy.hauls) || 0 },
+      { id: "digy50",      icon: "🔋", name: "Tireless digger",    desc: "Let Digy dig 50 times",                      goal: 50,  get: () => (state.digy && state.digy.hauls) || 0 },
+      { id: "digyLove",    icon: "💚", name: "Well oiled",         desc: "Pet Digy 100 times",                         goal: 100, get: () => (state.digy && state.digy.pets) || 0 },
       { id: "mineMaster",  icon: "🏅", name: "Master Miner",       desc: "Max out every Gold Mine Dig upgrade",        goal: 1,   get: () => ups().length && ups().every(k => ((Mn().up || {})[k] || 0) >= MINE_UPS[k].max) ? 1 : 0 },
     ].map(a => ({ ...a, cat: "mine" }));
   })(),
@@ -11180,6 +11194,7 @@ if (!state.achievements) state.achievements = {};
 if (state.achievements.bigWin) { if (!state.achievements.royal) state.achievements.royal = state.achievements.bigWin; delete state.achievements.bigWin; }
 
 // 🏅 painted achievement badges (assets/ach/<id>.webp); achievements without one keep their emoji
+var petCount = () => [state.pet && state.pet.owned && !state.pet.pending, state.pip && state.pip.owned, state.digy && state.digy.owned].filter(Boolean).length;
 var ACH_PICS = new Set(["cash1s", "cash10s", "cash100s", "cash1g", "cash5g", "cash10g", "cash20g", "prestige1", "prestige2", "prestige4",
   "tax10", "tax100", "tax1000", "cosmetic1", "emperor", "fullSet",
   "click100", "click1k", "click10k", "click100k", "inc5k", "inc10k", "nobel1", "nobel5", "nobel10", "sciSpace", "spaceOk", "spaceFail",
@@ -14239,6 +14254,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "🏆 6 new achievements: <b>🐾 Pet lover</b> (have 2 pets) and <b>🏡 Full house</b> (have 3 pets), plus 4 Mining achievements for 🤖 Digy: adopt him, let him dig 5 and 50 times, and pet him 100 times.",
     "🤖 Digy reacts now: click him to pet him (5 in a row and he jumps for joy), he wakes up with a stretch and does a ta-da once he's clean. Don't poke him while he digs: he gets grumpy!",
     "🤖 New pet: <b>Digy</b>, a little Kragg mining robot! Get him from the 🗿 Kragg once you're 😊 Friendly (💎 50 diamonds + 🔴 10 rubies). When your ⛏️ mine energy is full, he digs for 30 seconds (⚡ 3 energy) and brings 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25 to your 🏦 vault, also while the game is closed (up to 24 hours).",
     "👥 Friends: your friend requests and friends now come first, with a big friend code box (📋 Copy, 📤 Share) and an invite when you have no friends yet. Online friends have a <b>⚔️ Challenge</b> button that opens the Online casino with them picked.",

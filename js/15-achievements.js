@@ -60,6 +60,9 @@ const ACHIEVEMENTS = [
   { id: "deep10",   cat: "secret", tier: 2, icon: "🌌", name: "Deep space veteran", desc: "Complete 10 successful deep space missions", goal: 10, get: () => state.stats.deepOk || 0 },
   { id: "mars",     cat: "secret", tier: 2, icon: "🔴", name: "Red planet", desc: "Build the Mars Base", goal: 1, get: () => state.science && state.science.mars ? 1 : 0 },
   { id: "gene",     cat: "secret", tier: 2, icon: "🧬", name: "Rewriting the code", desc: "Open the Genetics Laboratory", goal: 1, get: () => state.science && state.science.gene ? 1 : 0 },
+  // 🐾 pets you own (Mochi, Pip, Digy)
+  { id: "pets2",      cat: "general", icon: "🐾", name: "Pet lover",          desc: "Have 2 pets", goal: 2, get: () => petCount() },
+  { id: "pets3",      cat: "general", icon: "🏡", name: "Full house",         desc: "Have 3 pets", goal: 3, get: () => petCount() },
   { id: "fullSet",    cat: "general", icon: "🎨", name: "Dressed to impress", desc: "Wear the coin and background from the same collection", goal: 1, get: () => matchingSet() ? 1 : 0 },
   // Income
   { id: "click100",   cat: "income", icon: "👆", name: "Warming up",         desc: "Click the coin 100 times",            goal: 100,    get: () => state.stats.clicks },
@@ -215,6 +218,11 @@ const ACHIEVEMENTS = [
       { id: "mineChest50", icon: "💰", name: "Treasure hunter",    desc: "Open 50 treasure chests",                    goal: 50,  get: () => Mn().chests || 0 },
       { id: "mineLift1",   icon: "🛗", name: "Going up",           desc: "Take the mine lift up",                      goal: 1,   get: () => Mn().liftsUsed || 0 },
       { id: "mineLift20",  icon: "🛗", name: "Frequent rider",     desc: "Take the mine lift up 20 times",             goal: 20,  get: () => Mn().liftsUsed || 0 },
+      // 🤖 Digy, the mining robot pet (js/36b-digy.js)
+      { id: "digyGet",     icon: "🤖", name: "Kragg engineering",  desc: "Adopt Digy from the Kragg",                  goal: 1,   get: () => state.digy && state.digy.owned ? 1 : 0 },
+      { id: "digy5",       icon: "⛏️", name: "Little helper",      desc: "Let Digy dig 5 times",                       goal: 5,   get: () => (state.digy && state.digy.hauls) || 0 },
+      { id: "digy50",      icon: "🔋", name: "Tireless digger",    desc: "Let Digy dig 50 times",                      goal: 50,  get: () => (state.digy && state.digy.hauls) || 0 },
+      { id: "digyLove",    icon: "💚", name: "Well oiled",         desc: "Pet Digy 100 times",                         goal: 100, get: () => (state.digy && state.digy.pets) || 0 },
       { id: "mineMaster",  icon: "🏅", name: "Master Miner",       desc: "Max out every Gold Mine Dig upgrade",        goal: 1,   get: () => ups().length && ups().every(k => ((Mn().up || {})[k] || 0) >= MINE_UPS[k].max) ? 1 : 0 },
     ].map(a => ({ ...a, cat: "mine" }));
   })(),
@@ -297,6 +305,7 @@ if (!state.achievements) state.achievements = {};
 if (state.achievements.bigWin) { if (!state.achievements.royal) state.achievements.royal = state.achievements.bigWin; delete state.achievements.bigWin; }
 
 // 🏅 painted achievement badges (assets/ach/<id>.webp); achievements without one keep their emoji
+const petCount = () => [state.pet && state.pet.owned && !state.pet.pending, state.pip && state.pip.owned, state.digy && state.digy.owned].filter(Boolean).length;
 const ACH_PICS = new Set(["cash1s", "cash10s", "cash100s", "cash1g", "cash5g", "cash10g", "cash20g", "prestige1", "prestige2", "prestige4",
   "tax10", "tax100", "tax1000", "cosmetic1", "emperor", "fullSet",
   "click100", "click1k", "click10k", "click100k", "inc5k", "inc10k", "nobel1", "nobel5", "nobel10", "sciSpace", "spaceOk", "spaceFail",

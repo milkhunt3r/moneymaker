@@ -1946,6 +1946,12 @@ H("🤖 New pet: <b>Digy</b>, a little Kragg mining robot! Get him from the 🗿
   "🤖 Nueva mascota: <b>Digy</b>, un pequeño robot minero de los Kragg. Consíguelo de los 🗿 Kragg cuando seáis 😊 amigos (💎 50 diamantes + 🔴 10 rubíes). Cuando la energía de tu ⛏️ mina está llena, excava durante 30 segundos (⚡ 3 de energía) y lleva 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25 a tu 🏦 cámara, también con el juego cerrado (hasta 24 horas).");
 H("🤖 Digy reacts now: click him to pet him (5 in a row and he jumps for joy), he wakes up with a stretch and does a ta-da once he's clean. Don't poke him while he digs: he gets grumpy!",
   "🤖 Digy ya reacciona: haz clic en él para acariciarlo (5 seguidas y salta de alegría), se despierta estirándose y hace un «¡tachán!» cuando está limpio. No lo molestes mientras excava: ¡se enfada!");
+// 🏆 pet achievements (Have 2 / 3 pets, Digy)
+Object.assign(ES, { "Pet lover": "Amante de las mascotas", "Have 2 pets": "Ten 2 mascotas", "Full house": "Casa llena", "Have 3 pets": "Ten 3 mascotas",
+  "Kragg engineering": "Ingeniería Kragg", "Adopt Digy from the Kragg": "Adopta a Digy de los Kragg", "Little helper": "Pequeño ayudante", "Let Digy dig 5 times": "Deja que Digy excave 5 veces",
+  "Tireless digger": "Excavador incansable", "Let Digy dig 50 times": "Deja que Digy excave 50 veces", "Well oiled": "Bien engrasado", "Pet Digy 100 times": "Acaricia a Digy 100 veces" });
+H("🏆 6 new achievements: <b>🐾 Pet lover</b> (have 2 pets) and <b>🏡 Full house</b> (have 3 pets), plus 4 Mining achievements for 🤖 Digy: adopt him, let him dig 5 and 50 times, and pet him 100 times.",
+  "🏆 6 logros nuevos: <b>🐾 Amante de las mascotas</b> (ten 2 mascotas) y <b>🏡 Casa llena</b> (ten 3 mascotas), además de 4 logros de Minería para 🤖 Digy: adóptalo, deja que excave 5 y 50 veces, y acarícialo 100 veces.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
