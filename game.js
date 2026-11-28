@@ -3330,6 +3330,26 @@ H("🏆 6 new achievements: <b>🐾 Pet lover</b> (have 2 pets) and <b>🏡 Full
   "🏆 6 logros nuevos: <b>🐾 Amante de las mascotas</b> (ten 2 mascotas) y <b>🏡 Casa llena</b> (ten 3 mascotas), además de 4 logros de Minería para 🤖 Digy: adóptalo, deja que excave 5 y 50 veces, y acarícialo 100 veces.");
 H("🛠️ Space crafting level 3 now also unlocks crafting in batches of <b>150</b>.",
   "🛠️ La artesanía espacial de nivel 3 desbloquea ahora también la fabricación en lotes de <b>150</b>.");
+// 🎮 mini-games: shared header and "How to play"
+Object.assign(ES, { "in your collection": "en tu colección", "levels": "niveles",
+  "Copy the painting on the left onto your canvas on the right, with the brush, fill, shapes and the other tools.": "Copia el cuadro de la izquierda en tu lienzo de la derecha, con el pincel, el relleno, las formas y las demás herramientas.",
+  "Sell a copy right away, or keep it in your collection (more room costs money). Kept paintings can be sold any time.": "Vende una copia al momento o guárdala en tu colección (más espacio cuesta dinero). Los cuadros guardados se pueden vender cuando quieras.",
+  "Easy → 🟡 Normal → 🏛️ Masterpiece: finish paintings to unlock the harder, more valuable tiers.": "Fácil → 🟡 Normal → 🏛️ Obra maestra: termina cuadros para desbloquear los niveles más difíciles y valiosos.",
+  "Once Normal is open, a daily commission pays ×3 for one painting a day.": "Cuando se abre Normal, un encargo diario paga ×3 por un cuadro al día.",
+  "If the pair is a real recipe, you discover a new species: it goes into your freezer and pays minutes of income (the rarer, the more).": "Si la pareja es una receta real, descubres una especie nueva: va a tu congelador y paga minutos de ingresos (cuanto más rara, más).",
+  "A pair that isn't a recipe makes a 🧪 mutant. They have their own tab.": "Una pareja que no es una receta crea un 🧪 mutante. Tienen su propia pestaña.",
+  "Each species also raises a bonus elsewhere in the game (see Species bonuses).": "Cada especie también aumenta una bonificación en otra parte del juego (mira Bonificaciones de especies)." });
+H("✅ Press <b>Submit copy</b> to score it: you earn your match % of the painting's value. Under 50% it can't be sold or kept.",
+  "✅ Pulsa <b>Entregar copia</b> para puntuarla: ganas tu % de parecido del valor del cuadro. Por debajo del 50% no se puede vender ni guardar.");
+H("🧪 Put two DNA samples from your ❄️ freezer into the splicer and press <b>Splice</b>. The same sample twice works too.",
+  "🧪 Pon dos muestras de ADN de tu ❄️ congelador en el empalmador y pulsa <b>Empalmar</b>. La misma muestra dos veces también vale.");
+rx(String.raw`Every species you know holds up to (\d+) DNA and gets \+1 every (\d+) minutes, also while the game is closed\.`, "Cada especie que conoces guarda hasta $1 de ADN y recibe +1 cada $2 minutos, también con el juego cerrado.");
+rx(String.raw`Stuck\? A hint costs 👩‍🔬 (\d+) scientists and shows one recipe you can make right now\.`, "¿Atascado? Una pista cuesta 👩‍🔬 $1 científicos y te muestra una receta que puedes hacer ahora mismo.");
+var ART_TIER_ES = { Easy: "Fácil", Normal: "Normal", Masterpiece: "Obra maestra" };
+rx(String.raw`Submit \(sell or keep\) (\d+) (Easy|Normal|Masterpiece) paintings to unlock`, (m, n, t) => `Entrega (vende o guarda) ${n} cuadros de nivel ${ART_TIER_ES[t]} para desbloquearlo`);
+rx(String.raw`(Easy|Normal|Masterpiece) · (\d+)/(\d+) (Easy|Normal|Masterpiece)`, (m, a, x, y, b) => `${ART_TIER_ES[a]} · ${x}/${y} ${ART_TIER_ES[b]}`);
+H("🎮 Mini-games: every game now has the same header (← back, title and its key number: 🖼️ collection, ⚡ energy, 🏁 levels and ✨ stardust, or species found), and the rules are folded into <b>ℹ️ How to play</b> (open the first time, folded once you've played).",
+  "🎮 Minijuegos: todos los juegos tienen ahora la misma cabecera (← volver, título y su dato clave: 🖼️ colección, ⚡ energía, 🏁 niveles y ✨ polvo estelar, o especies encontradas), y las reglas están plegadas en <b>ℹ️ Cómo se juega</b> (abierto la primera vez, plegado cuando ya has jugado).");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -4779,6 +4799,21 @@ function showAlert(title, text, kind = "") {
   $("alerts").appendChild(el);
   setTimeout(() => el.remove(), 8000);
 }
+
+/* ----- 🎮 MINI-GAMES: one shared header row and one shared "How to play" fold for every mini-game -----
+   mgHead: ← Mini-games · icon + title · the game's key number on the right.
+   mgHow: the rules, folded. Open the first time (new players), folded once you've played; the player's own
+   open / close choice is kept while the page redraws. */
+var mgHowOpen = {};
+function mgHead(icon, title, stat = "") {
+  return `<div class="mgHead"><button class="btn ghost small" data-games-back>← Mini-games</button>
+    <h2>${icon}<span>${title}</span></h2>${stat ? `<div class="mgStat">${stat}</div>` : ""}</div>`;
+}
+function mgHow(key, html, fresh) {
+  const open = key in mgHowOpen ? mgHowOpen[key] : !!fresh;
+  return `<details class="card mgHow" data-mghow="${key}" ${open ? "open" : ""}><summary>ℹ️ How to play</summary><div class="mgHowBody">${html}</div></details>`;
+}
+document.addEventListener("toggle", (e) => { const d = e.target; if (d && d.dataset && d.dataset.mghow) mgHowOpen[d.dataset.mghow] = d.open; }, true);
 
 /* ----- Pop-up window ----- */
 function showModal(html) {
@@ -13195,6 +13230,7 @@ var artTierOpen = (k) => { const n = ART_TIER_NEED[k]; return !n || (state.art.d
 if (!ART_TIERS[state.art.tier] || ART_TIERS[state.art.tier].hidden || !artTierOpen(state.art.tier)) { state.art.tier = "medium"; state.art.seed = 0; }
 var artSlotPrice = () => ART_SLOT_PRICE + ART_SLOT_PRICE_STEP * (state.art.slotBuys || 0);
 function renderArtCollection() {
+  renderArtHead();
   const a = state.art;
   $("artSlots").textContent = `(${a.items.length} / ${a.slots})`;
   const maxed = a.slots >= ART_SLOTS_MAX;
@@ -13208,7 +13244,24 @@ function renderArtCollection() {
       <button class="btn ghost small" data-asell="${it.id}">💰 Sell</button></div>`;
   }).join("") : `<div class="muted">No paintings yet. Make a copy in the 🎨 Art studio and choose "Keep".</div>`;
 }
+// 🎮 the shared mini-game header (🖼️ collection count) and the folded rules
+function renderArtHead() {
+  const a = state.art, h = $("artHead");
+  if (h) h.innerHTML = mgHead(`<img class="mgIco" src="assets/icons/ico-artgallery.webp" alt="">`, "Art Gallery",
+    a.unlocked ? `<span>🖼️ <b>${(a.items || []).length} / ${a.slots}</b> <span>in your collection</span></span>` : "");
+  const w = $("artHow");
+  if (w) w.innerHTML = mgHow("art", `<ul class="mgHowList">
+      <li>🎨 Copy the painting on the left onto your canvas on the right, with the brush, fill, shapes and the other tools.</li>
+      <li>✅ Press <b>Submit copy</b> to score it: you earn your match % of the painting's value. Under ${ART_MIN_MATCH}% it can't be sold or kept.</li>
+      <li>🖼️ Sell a copy right away, or keep it in your collection (more room costs money). Kept paintings can be sold any time.</li>
+      <li>🟢 Easy → 🟡 Normal → 🏛️ Masterpiece: finish paintings to unlock the harder, more valuable tiers.</li>
+      <li>📜 Once Normal is open, a daily commission pays ×3 for one painting a day.</li></ul>`, !(state.stats.artSold || 0) && !(a.items || []).length);
+}
+// keep the 🖼️ count fresh (keeping or selling a copy changes it)
+setInterval(() => { const h = $("artHead"); if (!h || $("artView").hidden || !state.art.unlocked) return;
+  const b = h.querySelector(".mgStat b"), t = `${(state.art.items || []).length} / ${state.art.slots}`; if (b && b.textContent !== t) b.textContent = t; }, 1000);
 function showArtPage(p) {
+  renderArtHead();
   state.art.page = p === "collection" ? "collection" : "studio";
   $("artStudio").hidden = state.art.page !== "studio";
   $("artCollection").hidden = state.art.page !== "collection";
@@ -13225,6 +13278,7 @@ function renderArt() {
   const open = state.art.unlocked;
   updateArtTab();
   $("artLocked").hidden = open; $("artOpen").hidden = !open;
+  renderArtHead();
   if (!open) {
     $("artLocked").innerHTML = `<h2>${ico("lock", "lockS")}${ico("artgallery", "biz")}Art Gallery</h2>
       <p>Copy paintings as closely as you can: the better the match, the more they're worth. Sell your copies right away or keep them in your collection.</p>
@@ -14256,6 +14310,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "🎮 Mini-games: every game now has the same header (← back, title and its key number: 🖼️ collection, ⚡ energy, 🏁 levels and ✨ stardust, or species found), and the rules are folded into <b>ℹ️ How to play</b> (open the first time, folded once you've played).",
     "🛠️ Space crafting level 3 now also unlocks crafting in batches of <b>150</b>.",
     "🏆 6 new achievements: <b>🐾 Pet lover</b> (have 2 pets) and <b>🏡 Full house</b> (have 3 pets), plus 4 Mining achievements for 🤖 Digy: adopt him, let him dig 5 and 50 times, and pet him 100 times.",
     "🤖 Digy reacts now: click him to pet him (5 in a row and he jumps for joy), he wakes up with a stretch and does a ta-da once he's clean. Don't poke him while he digs: he gets grumpy!",
@@ -15427,23 +15482,22 @@ function mineHud() {
          <button class="btn ghost small" data-mine="quit" title="You keep only part of your ore${R.chests ? " and lose the chests" : ""}">🆘 Call the rescue team (keep ${Math.round(rescueKeep() * 100)}%)</button>`}`;
 }
 
+// ⚡ the energy in the shared header (the timer keeps its id, so the 1-second update below still finds it)
+var mineHeadStat = (e) => `<span class="mineEnergy">${energyIcons(e)}<span class="muted">${e < energyMax() && M.regenAt ? `+1 in <b id="mineRegen">${clockMs(M.regenAt - Date.now())}</b>` : "full"}</span></span>`;
 function renderMine() {
   const v = $("mineView"); if (!v) return;
   const e = mineEnergy();
   if (!M.run) {
-    v.innerHTML = `<button class="btn ghost small gamesBack" data-games-back>← 🎮 Mini-games</button>
+    v.innerHTML = `${mgHead(`<img class="mgIco" src="assets/mine/entrance.webp" alt="">`, "Gold Mine Dig", mineHeadStat(e))}
       <div id="digyCorner"></div>
-      <div class="card mineIntro">
-        <h2>⛏️ Gold Mine Dig</h2>
-        <p>Dig down into your gold mine and grab as much ore as your bag can hold. The deeper you go, the better the ore,
+      ${mgHow("mine", `<p>Dig down into your gold mine and grab as much ore as your bag can hold. The deeper you go, the better the ore,
           but every step burns lamp oil. Back at the surface, sell your ore or keep it in your ${mnIco("vault")}vault to pay for upgrades. If the lamp runs out underground, the rescue team saves ${Math.round(rescueKeep() * 100)}% of your ore.</p>
         <p class="muted">🌋 Below <b>100 m</b>: lava pools block the way and rocks with glowing red cracks hide lava pockets. Breaking one splashes you (−${LAVA_SPLASH[upLv("heat")] * 100}% lamp) and the lava flows fast, even if you stand still (it can rise 1 tile). Every step next to lava burns ${LAVA_HEAT[upLv("heat")] * 100}% of your lamp. Getting caught saves only ${Math.round(lavaKeep() * 100)}% of your ore.
           🔥 Below <b>150 m</b> the heat burns your lamp 25% faster, and 🔴 rubies appear.
           📦 Below <b>130 m</b> are 1–2 treasure chests (${CHEST_SLOTS} bag slots each): bring them up yourself to open them. The rescue team leaves them behind.</p>
+        <p class="muted">Ore is worth seconds of your income (${ORES.coal.sec}–${ORES.ruby.sec} sec each, based on your business income over the last minute). 🔥 A gold rush in your mines doubles it.</p>`, !M.runs)}
+      <div class="card mineIntro">
         <div class="mineOreRow">${ORE_KEYS.map(k => `<span>${oreIcon(k)} ${ORES[k].name}: <b>${fmt(oreValue(k))}</b></span>`).join("")}</div>
-        <p class="muted">Ore is worth seconds of your income (${ORES.coal.sec}–${ORES.ruby.sec} sec each, based on your business income over the last minute). 🔥 A gold rush in your mines doubles it.</p>
-        <div class="mineEnergy">${energyIcons(e)}
-          <span class="muted">${e < energyMax() && M.regenAt ? `+1 in <b id="mineRegen">${clockMs(M.regenAt - Date.now())}</b>` : "full"}</span></div>
         ${vaultLine()}
         <div class="moneyRow" style="justify-content:center">
           ${M.pending ? `<button class="btn big" data-mine="pending">${mnIco("bag")}Ore from your last run: sell or keep</button>`
@@ -15476,7 +15530,7 @@ function renderMine() {
       </div>`;
     return;
   }
-  v.innerHTML = `<button class="btn ghost small gamesBack" data-games-back>← 🎮 Mini-games</button>
+  v.innerHTML = `${mgHead(`<img class="mgIco" src="assets/mine/entrance.webp" alt="">`, "Gold Mine Dig", "")}
     <div class="mineLayout">
       <div class="mineStage">
         <canvas id="mineCanvas" width="${VIEW_COLS * TS}" height="${VIEW_ROWS * TS}"></canvas>
@@ -15877,7 +15931,7 @@ function geneHintOptions() {
 function renderGene() {
   const box = $("geneView"); if (!box) return;
   geneRegen();
-  if (!G.unlocked) { box.innerHTML = `<button class="btn ghost small" data-games-back>← Mini-games</button><p>🔒 Buy the 🧬 Genetics Laboratory in 🔬 Science first.</p>`; return; }
+  if (!G.unlocked) { box.innerHTML = `${mgHead(`<img class="mgIco" src="assets/gene/gx-splicer.webp" alt="">`, "Gene Splicer")}<p>🔒 Buy the 🧬 Genetics Laboratory in 🔬 Science first.</p>`; return; }
   const found = geneFound(), [A, B] = geneSlots;
   const need = (n) => (A === B && n === A ? 2 : 1);
   const canSplice = A && B && (G.dna[A] || 0) >= need(A) && (G.dna[B] || 0) >= need(B);
@@ -15918,12 +15972,15 @@ function renderGene() {
     return k ? `<div class="geneCard r-${s.rar} codex" data-name="${(n + " " + t(n)).toLowerCase()}" title="${s.why}">${geneCard(n, s.a ? `<span class="geneHow">${gEm(s.a, "sm")} + ${gEm(s.b, "sm")}</span>` : "")}</div>`
       : `<div class="geneCard unknown" data-name=""><span class="geneEmoji">${gx("unknown", "")}</span><span class="geneName">???</span><span class="geneHow">${GENE_RARITY[s.rar].name}</span></div>`; }).join("");
   box.innerHTML = `
-    <div class="geneTop">
-      <button class="btn ghost small" data-games-back>← Mini-games</button>
-      <h2>${gx("splicer", "title")}Gene Splicer</h2>
-      <div class="geneProg"><b>${found}</b> / ${GENE_TOTAL} species
-        <div class="xpBar"><div class="xpFill" style="width:${found / GENE_TOTAL * 100}%"></div></div></div>
-    </div>
+    ${mgHead(`<img class="mgIco" src="assets/gene/gx-splicer.webp" alt="">`, "Gene Splicer", `<div class="geneProg"><b>${found}</b> / ${GENE_TOTAL} <span>species</span>
+        <div class="xpBar"><div class="xpFill" style="width:${found / GENE_TOTAL * 100}%"></div></div></div>`)}
+    ${mgHow("gene", `<ul class="mgHowList">
+      <li>🧪 Put two DNA samples from your ❄️ freezer into the splicer and press <b>Splice</b>. The same sample twice works too.</li>
+      <li>🧬 If the pair is a real recipe, you discover a new species: it goes into your freezer and pays minutes of income (the rarer, the more).</li>
+      <li>❓ A pair that isn't a recipe makes a 🧪 mutant. They have their own tab.</li>
+      <li>⏱️ Every species you know holds up to ${GENE_DNA_MAX} DNA and gets +1 every ${GENE_REGEN_MS / 60000} minutes, also while the game is closed.</li>
+      <li>💡 Stuck? A hint costs 👩‍🔬 ${GENE_HINT_SCI} scientists and shows one recipe you can make right now.</li>
+      <li>🏆 Each species also raises a bonus elsewhere in the game (see Species bonuses).</li></ul>`, !found)}
     <div class="card geneLab">
       <div class="geneSplicer">${slot(0)}<div class="genePlus">+</div>${slot(1)}
         <button class="btn big ${knownRecipe ? "ghost" : ""}" data-gene="splice" ${canSplice && !tried ? "" : "disabled"}>🧬 Splice</button></div>
@@ -17267,14 +17324,13 @@ var shDustIco = `<span class="shDustIco">✨</span>`;
 function renderShooter() {
   const v = $("shooterView"); if (!v) return;
   if (!shUnlocked()) {
-    v.innerHTML = `<button class="btn ghost small gamesBack" data-games-back>← 🎮 Mini-games</button><p>🔒 Build the 🚀 Space Mission Center (💰 Income → 🔬 Science) first.</p>`;
+    v.innerHTML = `${mgHead(`<img class="mgIco" src="assets/icons/ico-sh-game.webp" alt="">`, "Nebula Strike")}<p>🔒 Build the 🚀 Space Mission Center (💰 Income → 🔬 Science) first.</p>`;
     return;
   }
   if (typeof shR !== "undefined" && shR) return shRenderPlay();
   const ship = SH.ship;
-  v.innerHTML = `<button class="btn ghost small gamesBack" data-games-back>← 🎮 Mini-games</button>
-    <div class="card shIntro">
-      <h2>🚀 Nebula Strike</h2>
+  v.innerHTML = `${mgHead(`<img class="mgIco" src="assets/icons/ico-sh-game.webp" alt="">`, "Nebula Strike", `<span class="shHeadStat">🏁 <b>${SH.done} / ${SH_LEVELS.length}</b> <span>levels</span> · ${shDustIco} <b>${SH.dust.toLocaleString()}</b></span>`)}
+    ${mgHow("shooter", `
       <p>Fly through five sectors of space, shoot everything that moves, defeat the bosses and survive the pirates' graveyard.
         Lose all your lives and the level starts over from the beginning.</p>
       <p class="muted">🛡️ <b>Shield:</b> every ${15 - shUp(ship, "shieldCd")} sec. It stays up ${(1.5 + shUp(ship, "shieldTime") * 0.1).toFixed(1)} sec and blocks the next hit, so time it well.
@@ -17287,9 +17343,7 @@ function renderShooter() {
         </div>`).join("")}
         ${SH.bind.shield || SH.bind.special ? `<button class="btn ghost small" data-sh-bind="reset">↺ Default keys</button>` : ""}
       </div>
-      <label class="shAuto"><input type="checkbox" data-sh="auto" ${SH.auto ? "checked" : ""}> ${ico("sh-auto", "shAutoIco")} Auto-fire (turn it off to shoot by holding Space)</label>
-      <div class="shDustBig">${shDustIco} Stardust: <b>${SH.dust.toLocaleString()}</b></div>
-    </div>
+      <label class="shAuto"><input type="checkbox" data-sh="auto" ${SH.auto ? "checked" : ""}> ${ico("sh-auto", "shAutoIco")} Auto-fire (turn it off to shoot by holding Space)</label>`, !SH.runs)}
     <div class="shLevels">${SH_LEVELS.map(L => {
       const open = SH.done >= L.n - 1, done = SH.done >= L.n;
       return `<div class="card shLevel ${open ? "" : "locked"} ${done ? "done" : ""}">

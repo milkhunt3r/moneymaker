@@ -745,6 +745,21 @@ function showAlert(title, text, kind = "") {
   setTimeout(() => el.remove(), 8000);
 }
 
+/* ----- 🎮 MINI-GAMES: one shared header row and one shared "How to play" fold for every mini-game -----
+   mgHead: ← Mini-games · icon + title · the game's key number on the right.
+   mgHow: the rules, folded. Open the first time (new players), folded once you've played; the player's own
+   open / close choice is kept while the page redraws. */
+const mgHowOpen = {};
+function mgHead(icon, title, stat = "") {
+  return `<div class="mgHead"><button class="btn ghost small" data-games-back>← Mini-games</button>
+    <h2>${icon}<span>${title}</span></h2>${stat ? `<div class="mgStat">${stat}</div>` : ""}</div>`;
+}
+function mgHow(key, html, fresh) {
+  const open = key in mgHowOpen ? mgHowOpen[key] : !!fresh;
+  return `<details class="card mgHow" data-mghow="${key}" ${open ? "open" : ""}><summary>ℹ️ How to play</summary><div class="mgHowBody">${html}</div></details>`;
+}
+document.addEventListener("toggle", (e) => { const d = e.target; if (d && d.dataset && d.dataset.mghow) mgHowOpen[d.dataset.mghow] = d.open; }, true);
+
 /* ----- Pop-up window ----- */
 function showModal(html) {
   $("modalBox").classList.remove("gold", "wide", "about", "ornate");

@@ -284,7 +284,7 @@ function geneHintOptions() {
 function renderGene() {
   const box = $("geneView"); if (!box) return;
   geneRegen();
-  if (!G.unlocked) { box.innerHTML = `<button class="btn ghost small" data-games-back>← Mini-games</button><p>🔒 Buy the 🧬 Genetics Laboratory in 🔬 Science first.</p>`; return; }
+  if (!G.unlocked) { box.innerHTML = `${mgHead(`<img class="mgIco" src="assets/gene/gx-splicer.webp" alt="">`, "Gene Splicer")}<p>🔒 Buy the 🧬 Genetics Laboratory in 🔬 Science first.</p>`; return; }
   const found = geneFound(), [A, B] = geneSlots;
   const need = (n) => (A === B && n === A ? 2 : 1);
   const canSplice = A && B && (G.dna[A] || 0) >= need(A) && (G.dna[B] || 0) >= need(B);
@@ -325,12 +325,15 @@ function renderGene() {
     return k ? `<div class="geneCard r-${s.rar} codex" data-name="${(n + " " + t(n)).toLowerCase()}" title="${s.why}">${geneCard(n, s.a ? `<span class="geneHow">${gEm(s.a, "sm")} + ${gEm(s.b, "sm")}</span>` : "")}</div>`
       : `<div class="geneCard unknown" data-name=""><span class="geneEmoji">${gx("unknown", "")}</span><span class="geneName">???</span><span class="geneHow">${GENE_RARITY[s.rar].name}</span></div>`; }).join("");
   box.innerHTML = `
-    <div class="geneTop">
-      <button class="btn ghost small" data-games-back>← Mini-games</button>
-      <h2>${gx("splicer", "title")}Gene Splicer</h2>
-      <div class="geneProg"><b>${found}</b> / ${GENE_TOTAL} species
-        <div class="xpBar"><div class="xpFill" style="width:${found / GENE_TOTAL * 100}%"></div></div></div>
-    </div>
+    ${mgHead(`<img class="mgIco" src="assets/gene/gx-splicer.webp" alt="">`, "Gene Splicer", `<div class="geneProg"><b>${found}</b> / ${GENE_TOTAL} <span>species</span>
+        <div class="xpBar"><div class="xpFill" style="width:${found / GENE_TOTAL * 100}%"></div></div></div>`)}
+    ${mgHow("gene", `<ul class="mgHowList">
+      <li>🧪 Put two DNA samples from your ❄️ freezer into the splicer and press <b>Splice</b>. The same sample twice works too.</li>
+      <li>🧬 If the pair is a real recipe, you discover a new species: it goes into your freezer and pays minutes of income (the rarer, the more).</li>
+      <li>❓ A pair that isn't a recipe makes a 🧪 mutant. They have their own tab.</li>
+      <li>⏱️ Every species you know holds up to ${GENE_DNA_MAX} DNA and gets +1 every ${GENE_REGEN_MS / 60000} minutes, also while the game is closed.</li>
+      <li>💡 Stuck? A hint costs 👩‍🔬 ${GENE_HINT_SCI} scientists and shows one recipe you can make right now.</li>
+      <li>🏆 Each species also raises a bonus elsewhere in the game (see Species bonuses).</li></ul>`, !found)}
     <div class="card geneLab">
       <div class="geneSplicer">${slot(0)}<div class="genePlus">+</div>${slot(1)}
         <button class="btn big ${knownRecipe ? "ghost" : ""}" data-gene="splice" ${canSplice && !tried ? "" : "disabled"}>🧬 Splice</button></div>

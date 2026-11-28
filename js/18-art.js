@@ -776,6 +776,7 @@ const artTierOpen = (k) => { const n = ART_TIER_NEED[k]; return !n || (state.art
 if (!ART_TIERS[state.art.tier] || ART_TIERS[state.art.tier].hidden || !artTierOpen(state.art.tier)) { state.art.tier = "medium"; state.art.seed = 0; }
 const artSlotPrice = () => ART_SLOT_PRICE + ART_SLOT_PRICE_STEP * (state.art.slotBuys || 0);
 function renderArtCollection() {
+  renderArtHead();
   const a = state.art;
   $("artSlots").textContent = `(${a.items.length} / ${a.slots})`;
   const maxed = a.slots >= ART_SLOTS_MAX;
@@ -789,7 +790,24 @@ function renderArtCollection() {
       <button class="btn ghost small" data-asell="${it.id}">💰 Sell</button></div>`;
   }).join("") : `<div class="muted">No paintings yet. Make a copy in the 🎨 Art studio and choose "Keep".</div>`;
 }
+// 🎮 the shared mini-game header (🖼️ collection count) and the folded rules
+function renderArtHead() {
+  const a = state.art, h = $("artHead");
+  if (h) h.innerHTML = mgHead(`<img class="mgIco" src="assets/icons/ico-artgallery.webp" alt="">`, "Art Gallery",
+    a.unlocked ? `<span>🖼️ <b>${(a.items || []).length} / ${a.slots}</b> <span>in your collection</span></span>` : "");
+  const w = $("artHow");
+  if (w) w.innerHTML = mgHow("art", `<ul class="mgHowList">
+      <li>🎨 Copy the painting on the left onto your canvas on the right, with the brush, fill, shapes and the other tools.</li>
+      <li>✅ Press <b>Submit copy</b> to score it: you earn your match % of the painting's value. Under ${ART_MIN_MATCH}% it can't be sold or kept.</li>
+      <li>🖼️ Sell a copy right away, or keep it in your collection (more room costs money). Kept paintings can be sold any time.</li>
+      <li>🟢 Easy → 🟡 Normal → 🏛️ Masterpiece: finish paintings to unlock the harder, more valuable tiers.</li>
+      <li>📜 Once Normal is open, a daily commission pays ×3 for one painting a day.</li></ul>`, !(state.stats.artSold || 0) && !(a.items || []).length);
+}
+// keep the 🖼️ count fresh (keeping or selling a copy changes it)
+setInterval(() => { const h = $("artHead"); if (!h || $("artView").hidden || !state.art.unlocked) return;
+  const b = h.querySelector(".mgStat b"), t = `${(state.art.items || []).length} / ${state.art.slots}`; if (b && b.textContent !== t) b.textContent = t; }, 1000);
 function showArtPage(p) {
+  renderArtHead();
   state.art.page = p === "collection" ? "collection" : "studio";
   $("artStudio").hidden = state.art.page !== "studio";
   $("artCollection").hidden = state.art.page !== "collection";
@@ -806,6 +824,7 @@ function renderArt() {
   const open = state.art.unlocked;
   updateArtTab();
   $("artLocked").hidden = open; $("artOpen").hidden = !open;
+  renderArtHead();
   if (!open) {
     $("artLocked").innerHTML = `<h2>${ico("lock", "lockS")}${ico("artgallery", "biz")}Art Gallery</h2>
       <p>Copy paintings as closely as you can: the better the match, the more they're worth. Sell your copies right away or keep them in your collection.</p>

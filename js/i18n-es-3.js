@@ -1954,6 +1954,26 @@ H("🏆 6 new achievements: <b>🐾 Pet lover</b> (have 2 pets) and <b>🏡 Full
   "🏆 6 logros nuevos: <b>🐾 Amante de las mascotas</b> (ten 2 mascotas) y <b>🏡 Casa llena</b> (ten 3 mascotas), además de 4 logros de Minería para 🤖 Digy: adóptalo, deja que excave 5 y 50 veces, y acarícialo 100 veces.");
 H("🛠️ Space crafting level 3 now also unlocks crafting in batches of <b>150</b>.",
   "🛠️ La artesanía espacial de nivel 3 desbloquea ahora también la fabricación en lotes de <b>150</b>.");
+// 🎮 mini-games: shared header and "How to play"
+Object.assign(ES, { "in your collection": "en tu colección", "levels": "niveles",
+  "Copy the painting on the left onto your canvas on the right, with the brush, fill, shapes and the other tools.": "Copia el cuadro de la izquierda en tu lienzo de la derecha, con el pincel, el relleno, las formas y las demás herramientas.",
+  "Sell a copy right away, or keep it in your collection (more room costs money). Kept paintings can be sold any time.": "Vende una copia al momento o guárdala en tu colección (más espacio cuesta dinero). Los cuadros guardados se pueden vender cuando quieras.",
+  "Easy → 🟡 Normal → 🏛️ Masterpiece: finish paintings to unlock the harder, more valuable tiers.": "Fácil → 🟡 Normal → 🏛️ Obra maestra: termina cuadros para desbloquear los niveles más difíciles y valiosos.",
+  "Once Normal is open, a daily commission pays ×3 for one painting a day.": "Cuando se abre Normal, un encargo diario paga ×3 por un cuadro al día.",
+  "If the pair is a real recipe, you discover a new species: it goes into your freezer and pays minutes of income (the rarer, the more).": "Si la pareja es una receta real, descubres una especie nueva: va a tu congelador y paga minutos de ingresos (cuanto más rara, más).",
+  "A pair that isn't a recipe makes a 🧪 mutant. They have their own tab.": "Una pareja que no es una receta crea un 🧪 mutante. Tienen su propia pestaña.",
+  "Each species also raises a bonus elsewhere in the game (see Species bonuses).": "Cada especie también aumenta una bonificación en otra parte del juego (mira Bonificaciones de especies)." });
+H("✅ Press <b>Submit copy</b> to score it: you earn your match % of the painting's value. Under 50% it can't be sold or kept.",
+  "✅ Pulsa <b>Entregar copia</b> para puntuarla: ganas tu % de parecido del valor del cuadro. Por debajo del 50% no se puede vender ni guardar.");
+H("🧪 Put two DNA samples from your ❄️ freezer into the splicer and press <b>Splice</b>. The same sample twice works too.",
+  "🧪 Pon dos muestras de ADN de tu ❄️ congelador en el empalmador y pulsa <b>Empalmar</b>. La misma muestra dos veces también vale.");
+rx(String.raw`Every species you know holds up to (\d+) DNA and gets \+1 every (\d+) minutes, also while the game is closed\.`, "Cada especie que conoces guarda hasta $1 de ADN y recibe +1 cada $2 minutos, también con el juego cerrado.");
+rx(String.raw`Stuck\? A hint costs 👩‍🔬 (\d+) scientists and shows one recipe you can make right now\.`, "¿Atascado? Una pista cuesta 👩‍🔬 $1 científicos y te muestra una receta que puedes hacer ahora mismo.");
+const ART_TIER_ES = { Easy: "Fácil", Normal: "Normal", Masterpiece: "Obra maestra" };
+rx(String.raw`Submit \(sell or keep\) (\d+) (Easy|Normal|Masterpiece) paintings to unlock`, (m, n, t) => `Entrega (vende o guarda) ${n} cuadros de nivel ${ART_TIER_ES[t]} para desbloquearlo`);
+rx(String.raw`(Easy|Normal|Masterpiece) · (\d+)/(\d+) (Easy|Normal|Masterpiece)`, (m, a, x, y, b) => `${ART_TIER_ES[a]} · ${x}/${y} ${ART_TIER_ES[b]}`);
+H("🎮 Mini-games: every game now has the same header (← back, title and its key number: 🖼️ collection, ⚡ energy, 🏁 levels and ✨ stardust, or species found), and the rules are folded into <b>ℹ️ How to play</b> (open the first time, folded once you've played).",
+  "🎮 Minijuegos: todos los juegos tienen ahora la misma cabecera (← volver, título y su dato clave: 🖼️ colección, ⚡ energía, 🏁 niveles y ✨ polvo estelar, o especies encontradas), y las reglas están plegadas en <b>ℹ️ Cómo se juega</b> (abierto la primera vez, plegado cuando ya has jugado).");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

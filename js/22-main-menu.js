@@ -65,6 +65,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "🎮 Mini-games: every game now has the same header (← back, title and its key number: 🖼️ collection, ⚡ energy, 🏁 levels and ✨ stardust, or species found), and the rules are folded into <b>ℹ️ How to play</b> (open the first time, folded once you've played).",
     "🛠️ Space crafting level 3 now also unlocks crafting in batches of <b>150</b>.",
     "🏆 6 new achievements: <b>🐾 Pet lover</b> (have 2 pets) and <b>🏡 Full house</b> (have 3 pets), plus 4 Mining achievements for 🤖 Digy: adopt him, let him dig 5 and 50 times, and pet him 100 times.",
     "🤖 Digy reacts now: click him to pet him (5 in a row and he jumps for joy), he wakes up with a stretch and does a ta-da once he's clean. Don't poke him while he digs: he gets grumpy!",

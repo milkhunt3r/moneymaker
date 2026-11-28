@@ -126,14 +126,13 @@ const shDustIco = `<span class="shDustIco">✨</span>`;
 function renderShooter() {
   const v = $("shooterView"); if (!v) return;
   if (!shUnlocked()) {
-    v.innerHTML = `<button class="btn ghost small gamesBack" data-games-back>← 🎮 Mini-games</button><p>🔒 Build the 🚀 Space Mission Center (💰 Income → 🔬 Science) first.</p>`;
+    v.innerHTML = `${mgHead(`<img class="mgIco" src="assets/icons/ico-sh-game.webp" alt="">`, "Nebula Strike")}<p>🔒 Build the 🚀 Space Mission Center (💰 Income → 🔬 Science) first.</p>`;
     return;
   }
   if (typeof shR !== "undefined" && shR) return shRenderPlay();
   const ship = SH.ship;
-  v.innerHTML = `<button class="btn ghost small gamesBack" data-games-back>← 🎮 Mini-games</button>
-    <div class="card shIntro">
-      <h2>🚀 Nebula Strike</h2>
+  v.innerHTML = `${mgHead(`<img class="mgIco" src="assets/icons/ico-sh-game.webp" alt="">`, "Nebula Strike", `<span class="shHeadStat">🏁 <b>${SH.done} / ${SH_LEVELS.length}</b> <span>levels</span> · ${shDustIco} <b>${SH.dust.toLocaleString()}</b></span>`)}
+    ${mgHow("shooter", `
       <p>Fly through five sectors of space, shoot everything that moves, defeat the bosses and survive the pirates' graveyard.
         Lose all your lives and the level starts over from the beginning.</p>
       <p class="muted">🛡️ <b>Shield:</b> every ${15 - shUp(ship, "shieldCd")} sec. It stays up ${(1.5 + shUp(ship, "shieldTime") * 0.1).toFixed(1)} sec and blocks the next hit, so time it well.
@@ -146,9 +145,7 @@ function renderShooter() {
         </div>`).join("")}
         ${SH.bind.shield || SH.bind.special ? `<button class="btn ghost small" data-sh-bind="reset">↺ Default keys</button>` : ""}
       </div>
-      <label class="shAuto"><input type="checkbox" data-sh="auto" ${SH.auto ? "checked" : ""}> ${ico("sh-auto", "shAutoIco")} Auto-fire (turn it off to shoot by holding Space)</label>
-      <div class="shDustBig">${shDustIco} Stardust: <b>${SH.dust.toLocaleString()}</b></div>
-    </div>
+      <label class="shAuto"><input type="checkbox" data-sh="auto" ${SH.auto ? "checked" : ""}> ${ico("sh-auto", "shAutoIco")} Auto-fire (turn it off to shoot by holding Space)</label>`, !SH.runs)}
     <div class="shLevels">${SH_LEVELS.map(L => {
       const open = SH.done >= L.n - 1, done = SH.done >= L.n;
       return `<div class="card shLevel ${open ? "" : "locked"} ${done ? "done" : ""}">

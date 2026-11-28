@@ -2759,3 +2759,19 @@ body.phone .digyDirt { width: 70px; }
 .digyHaulBox { display: flex; justify-content: center; margin: 4px 0 10px; font-size: 17px; }
 .digyHave { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
 .pipOffer .ico { width: 1.3em; height: 1.3em; vertical-align: -0.3em; }
+
+/* 🎮 Mini-games: shared header row and folded "How to play" */
+.mgHead { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; margin-bottom: 12px; }
+.mgHead h2 { margin: 0; flex: 1 1 auto; display: flex; align-items: center; gap: 8px; font-size: 24px; }
+.mgHead .mgIco { width: 40px; height: 40px; object-fit: contain; }
+.mgStat { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 15px; }
+.mgStat .mineEnergy { margin: 0; display: flex; align-items: center; gap: 6px; }
+.mgStat .geneProg { text-align: right; }
+.mgHow { padding: 8px 16px; margin-bottom: 12px; }
+.mgHow summary { cursor: pointer; font-weight: 700; color: #ffd34d; padding: 4px 0; }
+.mgHow[open] summary { margin-bottom: 6px; }
+.mgHowBody p { margin: 6px 0; }
+.mgHowList { margin: 4px 0; padding-left: 20px; display: grid; gap: 4px; }
+body.phone .mgHead h2 { font-size: 20px; }
+body.phone .mgHead .mgIco { width: 32px; height: 32px; }
+body.phone .mgStat { margin-left: 0; width: 100%; justify-content: flex-start; }

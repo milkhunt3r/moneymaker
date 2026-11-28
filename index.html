@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
   <meta property="og:image" content="assets/logo/share.jpg">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="stylesheet" href="css/style.css?v=34d6cbb07d">
+  <link rel="stylesheet" href="css/style.css?v=4427e7c5a5">
 </head>
 <body>
   <!-- ===== Loading screen (removed when the game has started) ===== -->
@@ -297,9 +297,10 @@
 
   <section id="artView" hidden>
     <button class="debtBanner" hidden></button>
-    <button class="btn ghost small gamesBack" data-games-back>← 🎮 Mini-games</button>
+    <div id="artHead"></div>
     <div id="artLocked" class="card" style="text-align:center"></div>
     <div id="artOpen" hidden>
+      <div id="artHow"></div>
       <div class="subLayout">
         <nav class="subNav" id="artNav">
           <button class="subTab active" data-art="studio">🎨 Art studio</button>
@@ -608,6 +609,6 @@
   <div id="tipCard" hidden role="status"></div>
   <div id="tutBubble" hidden role="dialog" aria-label="Guided start"></div>
   <!-- Game code, split by section. Files share one global scope and must load in this order. -->
-  <script src="game.js?v=2a46cebe5e"></script>
+  <script src="game.js?v=c7a373017a"></script>
 </body>
 </html>
