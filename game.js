@@ -13396,7 +13396,8 @@ function artFinish(keep) {
    If IndexedDB is not available, the picture stays in the save as before. ----- */
 var artImgs = {};   // id -> picture (data URL), loaded through storage.images
 var artImgDel = (id) => storage.images.del(id);
-var artImgOf = (it) => it.img || artImgs[it.id] || artCanvasOf(it.tier, it.seed, 160).toDataURL();   // last resort: the original
+var artImgFallback = {};   // (drawn once per painting, not on every redraw)
+var artImgOf = (it) => it.img || artImgs[it.id] || artImgFallback[it.id] || (artImgFallback[it.id] = artCanvasOf(it.tier, it.seed, 160).toDataURL());   // last resort: the original
 async function artStoreImg(it) {   // move a painting's picture out of the save
   if (!it.img) return;
   const ok = await storage.images.put(it.id, it.img);
@@ -20457,10 +20458,10 @@ function spRenderPick() {
       <img src="${typeof artImgOf === "function" ? artImgOf(it) : ""}" alt=""><small>${fmt(it.value)}</small></button>`).join("")}</div>`;
   }
   showModal(`<h2>${P.pip ? "🐾 Adopt Pip" : `${lgxI("gift")}Gift for the ${R.name}`}</h2>
-    <p>Choose <b>${P.need}</b> ${P.kind === "dna" ? "DNA samples" : "paintings"} to send: <b>${got} / ${P.need}</b> chosen.</p>
+    <p>Choose <b>${P.need}</b> ${P.kind === "dna" ? "DNA samples" : "paintings"} to send: <b data-spgot>${got} / ${P.need}</b> chosen.</p>
     ${P.kind === "art" ? `<p class="muted">Paintings you give away leave your collection (they count as sold for 🏆 achievements).</p>` : `<p class="muted">Samples refill over time in the Gene Splicer.</p>`}
     ${body}
-    <div class="row" style="justify-content:center;gap:10px;margin-top:10px"><button class="btn big" data-spg="send" ${got === P.need ? "" : "disabled"}>${P.pip ? "🎨 Adopt" : `${lgxI("send")}<span>Send</span>`}</button><button class="btn ghost" data-modal="close">Cancel</button></div>`);
+    <div class="row" style="justify-content:center;gap:10px;margin-top:10px"><button class="btn big" id="spSend" data-spg="send" ${got === P.need ? "" : "disabled"}>${P.pip ? "🎨 Adopt" : `${lgxI("send")}<span>Send</span>`}</button><button class="btn ghost" data-modal="close">Cancel</button></div>`);
   $("modalBox").classList.add("wide");
 }
 $("modal").addEventListener("click", (e) => {
@@ -20477,9 +20478,12 @@ $("modal").addEventListener("click", (e) => {
     return spRenderPick();
   }
   const a = e.target.closest("[data-spa]");
-  if (a) { const id = Number(a.dataset.spa), s = spPick.sel;
+  if (a) { const id = Number(a.dataset.spa), s = spPick.sel;   // 🖼️ only the tapped painting, the counter and Send change (redrawing 100 pictures was slow and jumped to the top)
     if (s.includes(id)) s.splice(s.indexOf(id), 1); else if (s.length < spPick.need) s.push(id);
-    return spRenderPick(); }
+    a.classList.toggle("on", s.includes(id));
+    const g = $("modalBox").querySelector("[data-spgot]"); if (g) g.textContent = `${s.length} / ${spPick.need}`;   // (a data attribute, not an id: an id would stop the sentence being translated as a whole)
+    const b = $("spSend"); if (b) b.disabled = s.length !== spPick.need;
+    return; }
   if (e.target.closest('[data-spg="send"]')) {
     const P = spPick; spPick = null;
     if (P.pip) { if (!pipAdopt(P.sel)) { hideModal(); showNotice("❌ Pip couldn't be adopted."); } return; }

@@ -749,7 +749,8 @@ function artFinish(keep) {
    If IndexedDB is not available, the picture stays in the save as before. ----- */
 const artImgs = {};   // id -> picture (data URL), loaded through storage.images
 const artImgDel = (id) => storage.images.del(id);
-const artImgOf = (it) => it.img || artImgs[it.id] || artCanvasOf(it.tier, it.seed, 160).toDataURL();   // last resort: the original
+const artImgFallback = {};   // (drawn once per painting, not on every redraw)
+const artImgOf = (it) => it.img || artImgs[it.id] || artImgFallback[it.id] || (artImgFallback[it.id] = artCanvasOf(it.tier, it.seed, 160).toDataURL());   // last resort: the original
 async function artStoreImg(it) {   // move a painting's picture out of the save
   if (!it.img) return;
   const ok = await storage.images.put(it.id, it.img);
