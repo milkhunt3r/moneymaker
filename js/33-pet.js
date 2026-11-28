@@ -91,7 +91,7 @@ function petTap() {
   if (isPaused() || !canClick(performance.now())) return;
   const v = clickValue();
   state.money += v; clickedThisSecond += v;
-  state.stats.clicks++; state.pet.taps++;
+  state.stats.clicks++; state.pet.taps++; state.pet.earned = (state.pet.earned || 0) + v;   // 💰 shown on the 🐾 Pets page
   updateCounter(); save();
   P_.tapSum = (P_.tapSum || 0) + v;   // shown all at once on the next visible slap
 }
@@ -214,7 +214,8 @@ function petSettingsHtml() {
 }
 document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-pet=show]"); if (!b || !petOwned()) return;
-  state.pet.hidden = !state.pet.hidden; b.classList.toggle("on", !state.pet.hidden); save(); petSync();   // (🐾 Pet page)
+  state.pet.hidden = !state.pet.hidden; b.classList.toggle("on", !state.pet.hidden); save(); petSync();   // (🐾 Pets page)
+  if (b.closest("#petPage") && typeof renderPetPage === "function") renderPetPage();
 });
 document.addEventListener("change", (e) => {
   if (e.target.id !== "petName" || !petOwned()) return;

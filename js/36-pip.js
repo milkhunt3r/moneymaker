@@ -43,6 +43,7 @@ function pipCopyCanvas(seed, score) {   // the original with a few small smudges
 
 /* ----- ⏱️ the 15-minute cycle ----- */
 function pipPhase(now = Date.now()) {   // -> { k: painting being worked on, painting: bool, t: ms into the cycle, next: when painting k is done }
+  if (state.pip.off) now = state.pip.off;   // 💤 resting (🐾 Pets page): his clock stands still
   const p = state.pip, since = Math.max(0, now - p.start), k = Math.floor(since / PIP_CYCLE) + 1, t = since % PIP_CYCLE;
   return { k, t, painting: t >= PIP_CYCLE - PIP_PAINT, next: p.start + k * PIP_CYCLE };
 }
@@ -52,7 +53,7 @@ function pipFinish(k, quiet) {
   best[PIP_TIER] = Math.max(best[PIP_TIER] || 0, score);
   p.painted++; p.last = { seed, score };
   let kept = false;
-  if (a.items.length < a.slots) {
+  if (a.items.length < a.slots && !p.sellAll) {   // 💵 "Always sell" (🐾 Pets page) skips the collection
     const item = { id: state.nextId++, tier: PIP_TIER, seed, score, value, img: pipCopyCanvas(seed, score).toDataURL("image/jpeg", 0.7), at: Date.now(), by: "pip" };
     a.items.unshift(item); if (typeof artStoreImg === "function") artStoreImg(item);
     p.kept++; kept = true;
@@ -62,6 +63,7 @@ function pipFinish(k, quiet) {
     p.sold++; p.earned += value;
   }
   if (!quiet) showNotice(kept ? `🎨 ${pipName()} finished a painting (${score.toFixed(1)}% match, worth ${fmt(value)}). It's in your 🖼️ collection.`
+    : p.sellAll ? `🎨 ${pipName()} finished a painting (${score.toFixed(1)}%) and sold it for ${fmt(value)}.`
     : `🎨 ${pipName()} finished a painting (${score.toFixed(1)}%). Your collection is full, so he sold it for ${fmt(value)}.`);
   return { kept, value };
 }
@@ -118,7 +120,7 @@ const PIP_PATCH = (() => {   // the order the canvas gets painted in: 12 × 9 pa
 function pipCornerVisible() { const el = $("pipCorner"); return !!el && !el.hidden && state.view === "games" && !document.hidden; }
 function renderPipCorner() {
   const el = $("pipCorner"); if (!el) return;
-  el.hidden = !pipOwned() || !!state.gamePage;
+  el.hidden = !pipOwned() || !!state.gamePage || !!state.pip.off;   // 💤 resting: not in his corner
   if (el.hidden) return;
   if (!pipUI.built) {
     el.innerHTML = `<div class="card pipCard"><div class="pipStage">
@@ -204,6 +206,13 @@ document.addEventListener("click", (e) => {
     spPick = { k: "art", kind: "art", need: PIP_COST, sel: [], pip: true }; spRenderPick();
   }
   if (b.dataset.pip === "visit") { hideModal(); openGame(null); }
+  // 🐾 Pets page: Active / Resting (resting pauses the painting clock: the time off is added to his start) and Always sell
+  if (b.dataset.pip === "toggle" && pipOwned()) {
+    const p = state.pip;
+    if (p.off) { p.start += Math.max(0, Date.now() - p.off); delete p.off; } else p.off = Date.now();
+    pipUI.pos = null; save(); renderPipCorner(); if (typeof renderPetPage === "function") renderPetPage();
+  }
+  if (b.dataset.pip === "sell" && pipOwned()) { state.pip.sellAll = !state.pip.sellAll; save(); if (typeof renderPetPage === "function") renderPetPage(); }
 });
 document.addEventListener("change", (e) => {
   if (e.target.id !== "pipName" || !pipOwned()) return;

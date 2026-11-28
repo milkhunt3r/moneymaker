@@ -65,6 +65,8 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "🐾 The Pet tab is now <b>Pets</b>: your pet collection at the top (2 of 4 found so far), a live status line for each pet with a Go see him button, and earnings for both pets.",
+    "🐾 Every pet has an <b>Active / Resting</b> switch. Resting hides it and stops its work (Pip's painting clock pauses). Pip also has a new <b>Always sell his paintings</b> option. Rename a pet with the ✏️ next to its name.",
     "⚙️ More settings: <b>Numbers</b> (coins like 3.92 gcoin, short like 3.92T, or full), <b>Reduce effects</b> (no blur, glows play once, no floating click numbers) and <b>Pop-ups</b> (all, only warnings, or none).",
     "💾 <b>Back up or restore your game</b> in ⚙️ Settings: download a backup file or copy a backup code, and load it on any browser, no account needed. Backups can't be edited to cheat.",
     "🏠 Main menu: a line under Play shows your progress (money and prestige), a <b>NEW</b> badge on About marks patch notes you haven't read, Donate is now a small button, and the top corner shows whether your game is saved to the ☁️ cloud.",

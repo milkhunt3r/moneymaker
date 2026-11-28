@@ -1886,6 +1886,24 @@ H("⚙️ More settings: <b>Numbers</b> (coins like 3.92 gcoin, short like 3.92T
   "⚙️ Más ajustes: <b>Números</b> (en monedas como 3,92 gcoin, cortos como 3,92T o completos), <b>Reducir efectos</b> (sin desenfoque, los brillos se ven una vez, sin números flotantes al hacer clic) y <b>Avisos emergentes</b> (todos, solo alertas o ninguno).");
 H("💾 <b>Back up or restore your game</b> in ⚙️ Settings: download a backup file or copy a backup code, and load it on any browser, no account needed. Backups can't be edited to cheat.",
   "💾 <b>Copia de seguridad o restaurar</b> en ⚙️ Ajustes: descarga un archivo de copia o copia un código, y cárgalo en cualquier navegador, sin cuenta. Las copias no se pueden modificar para hacer trampas.");
+// 🐾 Pets page
+Object.assign(ES, { "Your pets": "Tus mascotas", "Pets stay with you through prestige resets.": "Las mascotas se quedan contigo en los reinicios de prestigio.",
+  "Coming in a future update": "Llegará en una futura actualización", "Rename": "Cambiar nombre", "Go see him →": "Ir a verlo →", "Active": "Activo", "Resting": "Descansando",
+  "Lives on the 💰 Income page and runs your ⚡ energy drink.": "Vive en la página de 💰 Ingresos y se encarga de tu ⚡ bebida energética.",
+  "Hidden. He doesn't buy energy drinks or tap the coin.": "Oculto. No compra bebidas energéticas ni toca la moneda.",
+  "Lives on the 🎮 Mini-games page and paints every 15 minutes.": "Vive en la página de 🎮 Minijuegos y pinta cada 15 minutos.",
+  "Hidden, and his painting clock is paused until you turn him back on.": "Oculto, y su reloj de pintura queda en pausa hasta que lo vuelvas a activar.",
+  "Always sell his paintings": "Vender siempre sus cuadros", "Every painting is sold right away for money.": "Cada cuadro se vende al momento por dinero.",
+  "Paintings go to your 🖼️ collection; he only sells when it's full.": "Los cuadros van a tu 🖼️ colección; solo vende cuando está llena.",
+  "How it works": "Cómo funciona", "Earned": "Ganado", "Kept": "Guardados", "Sold": "Vendidos",
+  "\"Earned\" counts his coin taps from this update on.": "«Ganado» cuenta sus toques a la moneda desde esta actualización.",
+  "The painting goes to your collection. If it's full (or \"Always sell\" is on), he sells it right away. Both count for 🏆 achievements.": "El cuadro va a tu colección. Si está llena (o «Vender siempre» está activado), lo vende al momento. Ambas cosas cuentan para los 🏆 logros.",
+  "Where to find a pet:": "Dónde encontrar una mascota:" });
+rx(String.raw`🎨 (.+) finished a painting \(([\d.,]+)%\) and sold it for (${NUM})\.`, "🎨 $1 ha terminado un cuadro ($2%) y lo ha vendido por $3.");
+H("🐾 The Pet tab is now <b>Pets</b>: your pet collection at the top (2 of 4 found so far), a live status line for each pet with a Go see him button, and earnings for both pets.",
+  "🐾 La pestaña Mascota ahora es <b>Mascotas</b>: tu colección de mascotas arriba (2 de 4 encontradas por ahora), una línea de estado en directo para cada mascota con un botón Ir a verlo, y las ganancias de las dos.");
+H("🐾 Every pet has an <b>Active / Resting</b> switch. Resting hides it and stops its work (Pip's painting clock pauses). Pip also has a new <b>Always sell his paintings</b> option. Rename a pet with the ✏️ next to its name.",
+  "🐾 Cada mascota tiene un interruptor <b>Activo / Descansando</b>. Descansando la oculta y detiene su trabajo (el reloj de pintura de Pip se pausa). Pip tiene además la opción <b>Vender siempre sus cuadros</b>. Cambia el nombre de una mascota con el ✏️ junto a su nombre.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

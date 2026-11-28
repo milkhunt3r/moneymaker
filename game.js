@@ -3262,6 +3262,24 @@ H("⚙️ More settings: <b>Numbers</b> (coins like 3.92 gcoin, short like 3.92T
   "⚙️ Más ajustes: <b>Números</b> (en monedas como 3,92 gcoin, cortos como 3,92T o completos), <b>Reducir efectos</b> (sin desenfoque, los brillos se ven una vez, sin números flotantes al hacer clic) y <b>Avisos emergentes</b> (todos, solo alertas o ninguno).");
 H("💾 <b>Back up or restore your game</b> in ⚙️ Settings: download a backup file or copy a backup code, and load it on any browser, no account needed. Backups can't be edited to cheat.",
   "💾 <b>Copia de seguridad o restaurar</b> en ⚙️ Ajustes: descarga un archivo de copia o copia un código, y cárgalo en cualquier navegador, sin cuenta. Las copias no se pueden modificar para hacer trampas.");
+// 🐾 Pets page
+Object.assign(ES, { "Your pets": "Tus mascotas", "Pets stay with you through prestige resets.": "Las mascotas se quedan contigo en los reinicios de prestigio.",
+  "Coming in a future update": "Llegará en una futura actualización", "Rename": "Cambiar nombre", "Go see him →": "Ir a verlo →", "Active": "Activo", "Resting": "Descansando",
+  "Lives on the 💰 Income page and runs your ⚡ energy drink.": "Vive en la página de 💰 Ingresos y se encarga de tu ⚡ bebida energética.",
+  "Hidden. He doesn't buy energy drinks or tap the coin.": "Oculto. No compra bebidas energéticas ni toca la moneda.",
+  "Lives on the 🎮 Mini-games page and paints every 15 minutes.": "Vive en la página de 🎮 Minijuegos y pinta cada 15 minutos.",
+  "Hidden, and his painting clock is paused until you turn him back on.": "Oculto, y su reloj de pintura queda en pausa hasta que lo vuelvas a activar.",
+  "Always sell his paintings": "Vender siempre sus cuadros", "Every painting is sold right away for money.": "Cada cuadro se vende al momento por dinero.",
+  "Paintings go to your 🖼️ collection; he only sells when it's full.": "Los cuadros van a tu 🖼️ colección; solo vende cuando está llena.",
+  "How it works": "Cómo funciona", "Earned": "Ganado", "Kept": "Guardados", "Sold": "Vendidos",
+  "\"Earned\" counts his coin taps from this update on.": "«Ganado» cuenta sus toques a la moneda desde esta actualización.",
+  "The painting goes to your collection. If it's full (or \"Always sell\" is on), he sells it right away. Both count for 🏆 achievements.": "El cuadro va a tu colección. Si está llena (o «Vender siempre» está activado), lo vende al momento. Ambas cosas cuentan para los 🏆 logros.",
+  "Where to find a pet:": "Dónde encontrar una mascota:" });
+rx(String.raw`🎨 (.+) finished a painting \(([\d.,]+)%\) and sold it for (${NUM})\.`, "🎨 $1 ha terminado un cuadro ($2%) y lo ha vendido por $3.");
+H("🐾 The Pet tab is now <b>Pets</b>: your pet collection at the top (2 of 4 found so far), a live status line for each pet with a Go see him button, and earnings for both pets.",
+  "🐾 La pestaña Mascota ahora es <b>Mascotas</b>: tu colección de mascotas arriba (2 de 4 encontradas por ahora), una línea de estado en directo para cada mascota con un botón Ir a verlo, y las ganancias de las dos.");
+H("🐾 Every pet has an <b>Active / Resting</b> switch. Resting hides it and stops its work (Pip's painting clock pauses). Pip also has a new <b>Always sell his paintings</b> option. Rename a pet with the ✏️ next to its name.",
+  "🐾 Cada mascota tiene un interruptor <b>Activo / Descansando</b>. Descansando la oculta y detiene su trabajo (el reloj de pintura de Pip se pausa). Pip tiene además la opción <b>Vender siempre sus cuadros</b>. Cambia el nombre de una mascota con el ✏️ junto a su nombre.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -14177,6 +14195,8 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "🐾 The Pet tab is now <b>Pets</b>: your pet collection at the top (2 of 4 found so far), a live status line for each pet with a Go see him button, and earnings for both pets.",
+    "🐾 Every pet has an <b>Active / Resting</b> switch. Resting hides it and stops its work (Pip's painting clock pauses). Pip also has a new <b>Always sell his paintings</b> option. Rename a pet with the ✏️ next to its name.",
     "⚙️ More settings: <b>Numbers</b> (coins like 3.92 gcoin, short like 3.92T, or full), <b>Reduce effects</b> (no blur, glows play once, no floating click numbers) and <b>Pop-ups</b> (all, only warnings, or none).",
     "💾 <b>Back up or restore your game</b> in ⚙️ Settings: download a backup file or copy a backup code, and load it on any browser, no account needed. Backups can't be edited to cheat.",
     "🏠 Main menu: a line under Play shows your progress (money and prestige), a <b>NEW</b> badge on About marks patch notes you haven't read, Donate is now a small button, and the top corner shows whether your game is saved to the ☁️ cloud.",
@@ -18948,7 +18968,7 @@ function petTap() {
   if (isPaused() || !canClick(performance.now())) return;
   const v = clickValue();
   state.money += v; clickedThisSecond += v;
-  state.stats.clicks++; state.pet.taps++;
+  state.stats.clicks++; state.pet.taps++; state.pet.earned = (state.pet.earned || 0) + v;   // 💰 shown on the 🐾 Pets page
   updateCounter(); save();
   P_.tapSum = (P_.tapSum || 0) + v;   // shown all at once on the next visible slap
 }
@@ -19071,7 +19091,8 @@ function petSettingsHtml() {
 }
 document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-pet=show]"); if (!b || !petOwned()) return;
-  state.pet.hidden = !state.pet.hidden; b.classList.toggle("on", !state.pet.hidden); save(); petSync();   // (🐾 Pet page)
+  state.pet.hidden = !state.pet.hidden; b.classList.toggle("on", !state.pet.hidden); save(); petSync();   // (🐾 Pets page)
+  if (b.closest("#petPage") && (__eocLoaded >= 43 && typeof renderPetPage === "function")) renderPetPage();
 });
 document.addEventListener("change", (e) => {
   if (e.target.id !== "petName" || !petOwned()) return;
@@ -19082,54 +19103,135 @@ document.addEventListener("change", (e) => {
 // ===== js/35-pets.js =====
 __eocLoaded = 43;
 /* =====================================================================
-   🐾 PET PAGE (top tab, where the Shop used to be). Room for more pets later.
-   - Your pet: picture, name, show on the Income page, what it does, and its stats.
-   - No pet yet: where to find one (🏴‍☠️ pirate loot box in 🚀 Nebula Strike).
+   🐾 PETS PAGE (top tab). Room for more pets later.
+   - Top: your pet collection (owned pets in colour, unknown ones as "?"), and a reminder that pets stay through prestiges.
+   - One card per pet: portrait, name (✏️ to rename), a live status line with "Go see", stats,
+     an Active / Resting switch (resting = hidden and not working), its own settings, and "How it works" folded away.
+   - The page is built once; every second only the live parts (status, numbers) are updated, so taps on the
+     switches are never lost and the pictures don't reload.
    ===================================================================== */
+var PET_SLOTS = 4;   // pets in the game (owned + still to find), for the "2 / 4" count
+var petPageSig = "", petEditing = "";
+
+var petHas = () => typeof petOwned === "function" && petOwned();
+var pipHas = () => typeof pipOwned === "function" && pipOwned();
+var petOn = () => petHas() && !state.pet.hidden;
+var pipOn = () => pipHas() && !state.pip.off;
+
+// 🔴 live parts (keyed by data-pv)
+function petLive() {
+  const v = {};
+  if (petHas()) {
+    const P = state.pet;
+    const es = LANG === "es";
+    v.mStatus = !petOn() ? (es ? "💤 <b>Descansando.</b> Apagado: no está en la página de 💰 Ingresos y no compra bebidas ni toca la moneda." : "💤 <b>Resting.</b> Turned off: he isn't on the 💰 Income page and doesn't buy drinks or tap.")
+      : energyActive() ? (es ? `👆 <b>Bebida energética activa</b> · quedan ${state.energyLeft} s. Toca la moneda mientras estás en la página de 💰 Ingresos.` : `👆 <b>Energy drink active</b> · ${state.energyLeft} s left. He taps the coin while you're on the 💰 Income page.`)
+      : state.energyCooldown > PET_WAKE_BEFORE ? (es ? `😴 <b>Durmiendo.</b> Se despierta en <b>${clockMs((state.energyCooldown - PET_WAKE_BEFORE) * 1000)}</b>, justo antes de la próxima bebida.` : `😴 <b>Sleeping.</b> Wakes up in <b>${clockMs((state.energyCooldown - PET_WAKE_BEFORE) * 1000)}</b>, just before the next drink.`)
+      : state.money >= ENERGY_PRICE ? (es ? "⚡ <b>Despierto.</b> Comprará la próxima bebida energética en cuanto abras la página de 💰 Ingresos." : "⚡ <b>Awake.</b> He'll buy the next energy drink as soon as you open the 💰 Income page.")
+      : (es ? `⚡ <b>Despierto.</b> Esperando a que tengas ${fmt(ENERGY_PRICE)} para la próxima bebida energética.` : `⚡ <b>Awake.</b> Waiting until you have ${fmt(ENERGY_PRICE)} for the next energy drink.`);
+    v.mStats = `<span>💰 Earned: <b>${fmt(P.earned || 0)}</b></span><span>👆 Coin taps: <b>${(P.taps || 0).toLocaleString()}</b></span><span>⚡ Energy drinks: <b>${(P.drinks || 0).toLocaleString()}</b></span><span>❤️ Petted: <b>${(P.pets || 0).toLocaleString()}</b></span>`;
+  }
+  if (pipHas()) {
+    const Q = state.pip, now = Date.now(), ph = pipPhase(now);
+    const es = LANG === "es";
+    v.pStatus = !pipOn() ? (es ? "💤 <b>Descansando.</b> Apagado: no está en la página de 🎮 Minijuegos y su reloj de pintura está en pausa." : "💤 <b>Resting.</b> Turned off: he isn't on the 🎮 Mini-games page and his painting clock is paused.")
+      : ph.painting ? (es ? `🎨 <b>Pintando el cuadro n.º ${(Q.painted + 1).toLocaleString()}</b> · listo en <b>${clockMs(ph.next - now)}</b>` : `🎨 <b>Painting #${(Q.painted + 1).toLocaleString()}</b> · done in <b>${clockMs(ph.next - now)}</b>`)
+      : (es ? `😴 <b>Dormido.</b> El próximo cuadro empieza en <b>${clockMs(ph.next - PIP_PAINT - now)}</b>` : `😴 <b>Asleep.</b> Next painting starts in <b>${clockMs(ph.next - PIP_PAINT - now)}</b>`);
+    v.pStats = `<span>💰 Earned: <b>${fmt(Q.earned || 0)}</b></span><span>🖼️ Paintings: <b>${(Q.painted || 0).toLocaleString()}</b></span><span>📥 Kept: <b>${(Q.kept || 0).toLocaleString()}</b></span><span>💵 Sold: <b>${(Q.sold || 0).toLocaleString()}</b></span><span>❤️ Petted: <b>${(Q.pets || 0).toLocaleString()}</b></span><span>😤 Disturbed: <b>${(Q.pokes || 0).toLocaleString()}</b></span>`;
+  }
+  return v;
+}
+
+function petNameHtml(k, name) {
+  if (petEditing === k) return `<input class="petNameInput" id="${k === "pet" ? "petName" : "pipName"}" maxlength="16" value="${escapeHtml(name)}" aria-label="Name" data-noi18n>`;
+  return `<span data-noi18n>${escapeHtml(name)}</span><button class="petEdit" data-petedit="${k}" title="Rename" aria-label="Rename">✏️</button>`;
+}
+function petSwitchRow(attr, on, onText, offText) {
+  return `<div class="orRow petOnRow"><span class="grow"><b>${on ? "🟢 Active" : "💤 Resting"}</b><small>${on ? onText : offText}</small></span>
+    <span class="orSwitch ${on ? "on" : ""}" ${attr} role="switch" tabindex="0" aria-checked="${on}"></span></div>`;
+}
+
 function renderPetPage() {
   const box = $("petPage"); if (!box) return;
-  const has = typeof petOwned === "function" && petOwned(), P = state.pet || {};
-  const since = has && P.at ? new Date(P.at).toLocaleDateString() : "";
-  const mine = has ? `<div class="card petCard">
+  const has = petHas(), pip = pipHas(), P = state.pet || {}, Q = state.pip || {}, v = petLive();
+  const owned = (has ? 1 : 0) + (pip ? 1 : 0);
+  // 🐾 collection row
+  const slot = (k, img, name, hint) => k ? `<button class="petPick" data-petgo="${k}"><img src="${img}" alt=""><span data-noi18n>${escapeHtml(name)}</span></button>`
+    : `<div class="petPick unknown" title="${hint}"><span class="petQ">?</span><span>${hint}</span></div>`;
+  const top = `<div class="card petTop"><div class="petTopHead"><h2 style="margin:0"><span>🐾 Your pets</span> <span class="muted" data-noi18n>${owned} / ${PET_SLOTS}</span></h2>
+      <span class="muted">🔁 Pets stay with you through prestige resets.</span></div>
+    <div class="petPicks">
+      ${slot(has && "pet", "assets/pet/pet-portrait.webp", petCleanName(P.name) || "Mochi", "🏴‍☠️ Pirate loot boxes")}
+      ${slot(pip && "pip", "assets/pip/pip-portrait.webp", pipHas() ? pipName() : "", "🎨 An art-loving alien race")}
+      ${Array.from({ length: PET_SLOTS - 2 }, () => slot(null, "", "", "Coming in a future update")).join("")}
+    </div>
+    ${owned < 2 ? `<div class="muted petFind">${!has ? "🏴‍☠️ <b>Where to find a pet:</b> open pirate loot boxes in 🎮 Mini-games → 🚀 Nebula Strike (levels 4 and 5, or the pirate chest in the hangar). Every box has a small chance to hold one." : ""}
+      ${!pip ? " 🎨 Rumour has it an art-loving alien race has a painter who'd love a new home." : ""}</div>` : ""}</div>`;
+  const mine = has ? `<div class="card petCard" id="petCard-pet">
       <div class="petHero"><img class="petHeroPic" src="assets/pet/pet-portrait.webp" alt="">
-        <div class="petHeroInfo"><h2 style="margin:0" data-noi18n><img class="petNameIco" src="assets/icons/tab-pet.webp" alt="" style="width:1.2em;height:1.2em;object-fit:contain;vertical-align:-0.22em;margin-right:6px;display:inline-block">${petCleanName(P.name) || "Mochi"}</h2>
-          <div class="muted">Your baby dragon-moth${since ? ` · together since ${since}` : ""}</div>
-          <div class="petStats"><span>❤️ Petted: <b>${(P.pets || 0).toLocaleString()}</b></span><span>👆 Coin taps: <b>${(P.taps || 0).toLocaleString()}</b></span><span>⚡ Energy drinks: <b>${(P.drinks || 0).toLocaleString()}</b></span></div></div></div>
-      <div class="orRow petSetRow"><span class="grow">Show on the 💰 Income page</span>
-        <span class="orSwitch ${P.hidden ? "" : "on"}" data-pet="show" role="switch" tabindex="0"></span></div>
-      <div class="orRow slider"><span class="grow">Name</span><input class="petNameInput" id="petName" maxlength="16" value="${petCleanName(P.name)}" aria-label="Pet name" data-noi18n></div>
-      <h3>What it does</h3>
+        <div class="petHeroInfo"><h2 class="petNameH">${petNameHtml("pet", petCleanName(P.name) || "Mochi")}</h2>
+          <div class="muted">Your baby dragon-moth${P.at ? ` · together since ${new Date(P.at).toLocaleDateString()}` : ""}</div>
+          <div class="petStatus"><span data-pv="mStatus" data-noi18n>${v.mStatus}</span><button class="btn small" data-petvisit="pet">Go see him →</button></div>
+          <div class="petStats" data-pv="mStats">${v.mStats}</div></div></div>
+      ${petSwitchRow('data-pet="show"', petOn(), "Lives on the 💰 Income page and runs your ⚡ energy drink.", "Hidden. He doesn't buy energy drinks or tap the coin.")}
+      <details class="petHow"><summary>ℹ️ How it works</summary>
       <ul class="petDoes">
         <li>⚡ Buys the energy drink by itself when it's ready and you can afford it.</li>
         <li>👆 While the drink is active, it taps the coin for you: 10 clicks per second, worth the same as yours (they count for 🏆 achievements too).</li>
         <li>😴 While the drink cools down it walks off and sleeps, and wakes up 10 seconds before the next drink.</li>
         <li>❤️ Click it to pet it. Pet it 5 times in a row and it jumps for joy!</li>
-      </ul></div>`
-    : `<div class="card petCard empty"><h2 style="margin:0">${typeof pipOwned === "function" && pipOwned() ? "🏴‍☠️ Another pet is out there" : "🐾 No pet yet"}</h2>
-      <p>Pets live on your 💰 Income page, keep you company and help you out.</p>
-      <p>🏴‍☠️ <b>How to find one:</b> open pirate loot boxes in 🎮 Mini-games → 🚀 Nebula Strike (levels 4 and 5, or the pirate chest in the hangar). Every box has a small chance to hold a pet.</p></div>`;
-  const pip = typeof pipOwned === "function" && pipOwned(), Q = state.pip || {};
-  const pipCard = pip ? `<div class="card petCard">
+        <li>💰 "Earned" counts his coin taps from this update on.</li>
+      </ul></details></div>` : "";
+  const pipCard = pip ? `<div class="card petCard" id="petCard-pip">
       <div class="petHero"><img class="petHeroPic" src="assets/pip/pip-portrait.webp" alt="">
-        <div class="petHeroInfo"><h2 style="margin:0" data-noi18n><img class="petNameIco" src="assets/icons/tab-pet.webp" alt="" style="width:1.2em;height:1.2em;object-fit:contain;vertical-align:-0.22em;margin-right:6px;display:inline-block">${escapeHtml(pipName())}</h2>
+        <div class="petHeroInfo"><h2 class="petNameH">${petNameHtml("pip", pipName())}</h2>
           <div class="muted">Your Lumerian painter${Q.at ? ` · together since ${new Date(Q.at).toLocaleDateString()}` : ""}</div>
-          <div class="petStats"><span>🖼️ Paintings: <b>${(Q.painted || 0).toLocaleString()}</b></span><span>💰 Auto-sold: <b>${(Q.sold || 0).toLocaleString()}</b> (${fmt(Q.earned || 0)})</span><span>❤️ Petted: <b>${(Q.pets || 0).toLocaleString()}</b></span><span>😤 Disturbed: <b>${(Q.pokes || 0).toLocaleString()}</b></span></div></div></div>
-      <div class="orRow slider"><span class="grow">Name</span><input class="petNameInput" id="pipName" maxlength="16" value="${pipName()}" aria-label="Pip's name" data-noi18n></div>
-      <h3>What he does</h3>
+          <div class="petStatus"><span data-pv="pStatus" data-noi18n>${v.pStatus}</span><button class="btn small" data-petvisit="pip">Go see him →</button></div>
+          <div class="petStats" data-pv="pStats">${v.pStats}</div></div></div>
+      ${petSwitchRow('data-pip="toggle"', pipOn(), "Lives on the 🎮 Mini-games page and paints every 15 minutes.", "Hidden, and his painting clock is paused until you turn him back on.")}
+      <div class="orRow petOnRow"><span class="grow"><b>Always sell his paintings</b><small>${Q.sellAll ? "Every painting is sold right away for money." : "Paintings go to your 🖼️ collection; he only sells when it's full."}</small></span>
+        <span class="orSwitch ${Q.sellAll ? "on" : ""}" data-pip="sell" role="switch" tabindex="0" aria-checked="${!!Q.sellAll}"></span></div>
+      <details class="petHow"><summary>ℹ️ How it works</summary>
       <ul class="petDoes">
         <li>🎮 Lives at the top of the Mini-games page, next to his easel.</li>
         <li>🎨 Every 15 minutes he paints a 🟡 Normal painting: 14 minutes asleep, then 1 minute of painting. His copies are 85–95% matches.</li>
-        <li>🖼️ The painting goes to your collection. If it's full, he sells it right away. Both count for 🏆 achievements.</li>
+        <li>🖼️ The painting goes to your collection. If it's full (or "Always sell" is on), he sells it right away. Both count for 🏆 achievements.</li>
         <li>🌙 He keeps painting while the game is closed (up to 24 hours).</li>
         <li>❤️ Click him while he sleeps to pet him. Don't poke him while he's painting: he gets a bit grumpy!</li>
-      </ul></div>` : "";
-  const free = pip ? 2 : 3;
-  box.innerHTML = (has ? mine + pipCard : pipCard + mine) + `<div class="card petSoon"><h3 style="margin:0 0 6px">🔜 More pets are coming</h3>
-    <div class="petSlots">${pip ? "" : `<div class="petSlot" title="A painter from the stars">🎨</div>`}${Array.from({ length: free - (pip ? 0 : 1) }, () => `<div class="petSlot">❔</div>`).join("")}</div>
-    <div class="muted">${pip ? "New friends will join in future updates." : "🎨 Rumour has it an art-loving alien race has a painter who'd love a new home. New friends will also join in future updates."}</div></div>`;
+      </ul></details></div>` : "";
+  // keep the folded / unfolded "How it works" as it was
+  const open = [...box.querySelectorAll("details.petHow")].map(d => d.open);
+  box.innerHTML = top + mine + pipCard;
+  box.querySelectorAll("details.petHow").forEach((d, i) => { if (open[i]) d.open = true; });
+  petPageSig = petSig();
+  const inp = box.querySelector(".petNameInput"); if (inp) { inp.focus(); inp.select(); }
 }
-// keep the numbers fresh while the page is open
-setInterval(() => { if (state.view === "pet" && !$("petView").hidden && !(document.activeElement && (document.activeElement.id === "petName" || document.activeElement.id === "pipName"))) renderPetPage(); }, 2000);
+// what decides the page's layout (anything else is a live part)
+var petSig = () => [petHas(), pipHas(), petOn(), pipOn(), !!(state.pip && state.pip.sellAll), state.pet && state.pet.name, state.pip && state.pip.name, petEditing, LANG].join("|");
+
+// every second: update the live parts only (or rebuild if the layout changed)
+setInterval(() => {
+  if (state.view !== "pet" || $("petView").hidden) return;
+  if (petEditing) return;   // typing a name: leave the page alone
+  if (petSig() !== petPageSig) return renderPetPage();
+  const v = petLive();
+  document.querySelectorAll("#petPage [data-pv]").forEach(el => { const h = v[el.dataset.pv]; if (h != null && el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; } });
+}, 1000);
+
+$("petPage").addEventListener("click", (e) => {
+  const ed = e.target.closest("[data-petedit]");
+  if (ed) { petEditing = ed.dataset.petedit; renderPetPage(); return; }
+  const go = e.target.closest("[data-petgo]");
+  if (go) { const c = $("petCard-" + go.dataset.petgo); if (c) c.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+  const vis = e.target.closest("[data-petvisit]");
+  if (vis) { if (vis.dataset.petvisit === "pet") showView("income"); else openGame(null); }
+});
+// ✏️ rename: Enter or leaving the field saves (the change handlers in js/33-pet.js and js/36-pip.js store the name)
+$("petPage").addEventListener("keydown", (e) => { if (e.target.classList.contains("petNameInput") && (e.key === "Enter" || e.key === "Escape")) e.target.blur(); });
+$("petPage").addEventListener("focusout", (e) => {
+  if (!e.target.classList.contains("petNameInput")) return;
+  setTimeout(() => { petEditing = ""; renderPetPage(); }, 0);
+});
 
 // ===== js/34-space.js =====
 __eocLoaded = 44;
@@ -20750,6 +20852,7 @@ function pipCopyCanvas(seed, score) {   // the original with a few small smudges
 
 /* ----- ⏱️ the 15-minute cycle ----- */
 function pipPhase(now = Date.now()) {   // -> { k: painting being worked on, painting: bool, t: ms into the cycle, next: when painting k is done }
+  if (state.pip.off) now = state.pip.off;   // 💤 resting (🐾 Pets page): his clock stands still
   const p = state.pip, since = Math.max(0, now - p.start), k = Math.floor(since / PIP_CYCLE) + 1, t = since % PIP_CYCLE;
   return { k, t, painting: t >= PIP_CYCLE - PIP_PAINT, next: p.start + k * PIP_CYCLE };
 }
@@ -20759,7 +20862,7 @@ function pipFinish(k, quiet) {
   best[PIP_TIER] = Math.max(best[PIP_TIER] || 0, score);
   p.painted++; p.last = { seed, score };
   let kept = false;
-  if (a.items.length < a.slots) {
+  if (a.items.length < a.slots && !p.sellAll) {   // 💵 "Always sell" (🐾 Pets page) skips the collection
     const item = { id: state.nextId++, tier: PIP_TIER, seed, score, value, img: pipCopyCanvas(seed, score).toDataURL("image/jpeg", 0.7), at: Date.now(), by: "pip" };
     a.items.unshift(item); if ((__eocLoaded >= 25 && typeof artStoreImg === "function")) artStoreImg(item);
     p.kept++; kept = true;
@@ -20769,6 +20872,7 @@ function pipFinish(k, quiet) {
     p.sold++; p.earned += value;
   }
   if (!quiet) showNotice(kept ? `🎨 ${pipName()} finished a painting (${score.toFixed(1)}% match, worth ${fmt(value)}). It's in your 🖼️ collection.`
+    : p.sellAll ? `🎨 ${pipName()} finished a painting (${score.toFixed(1)}%) and sold it for ${fmt(value)}.`
     : `🎨 ${pipName()} finished a painting (${score.toFixed(1)}%). Your collection is full, so he sold it for ${fmt(value)}.`);
   return { kept, value };
 }
@@ -20825,7 +20929,7 @@ var PIP_PATCH = (() => {   // the order the canvas gets painted in: 12 × 9 patc
 function pipCornerVisible() { const el = $("pipCorner"); return !!el && !el.hidden && state.view === "games" && !document.hidden; }
 function renderPipCorner() {
   const el = $("pipCorner"); if (!el) return;
-  el.hidden = !pipOwned() || !!state.gamePage;
+  el.hidden = !pipOwned() || !!state.gamePage || !!state.pip.off;   // 💤 resting: not in his corner
   if (el.hidden) return;
   if (!pipUI.built) {
     el.innerHTML = `<div class="card pipCard"><div class="pipStage">
@@ -20911,6 +21015,13 @@ document.addEventListener("click", (e) => {
     spPick = { k: "art", kind: "art", need: PIP_COST, sel: [], pip: true }; spRenderPick();
   }
   if (b.dataset.pip === "visit") { hideModal(); openGame(null); }
+  // 🐾 Pets page: Active / Resting (resting pauses the painting clock: the time off is added to his start) and Always sell
+  if (b.dataset.pip === "toggle" && pipOwned()) {
+    const p = state.pip;
+    if (p.off) { p.start += Math.max(0, Date.now() - p.off); delete p.off; } else p.off = Date.now();
+    pipUI.pos = null; save(); renderPipCorner(); if ((__eocLoaded >= 43 && typeof renderPetPage === "function")) renderPetPage();
+  }
+  if (b.dataset.pip === "sell" && pipOwned()) { state.pip.sellAll = !state.pip.sellAll; save(); if ((__eocLoaded >= 43 && typeof renderPetPage === "function")) renderPetPage(); }
 });
 document.addEventListener("change", (e) => {
   if (e.target.id !== "pipName" || !pipOwned()) return;
