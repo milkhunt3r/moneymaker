@@ -2643,7 +2643,7 @@ hrx(String.raw`🎲 Dice Battle: <b>(\d+)<\/b> won · <b>(\d+)<\/b> lost`, "🎲
 hrx(String.raw`💰 Won <b>(.+?)<\/b> · lost <b>(.+?)<\/b>`, "💰 Ganado <b>$1</b> · perdido <b>$2</b>");
 hrx(String.raw`⏳ Waiting for <span>(.+?)<\/span> to accept…`, "⏳ Esperando a que <span>$1</span> acepte…");
 hrx(String.raw`⏳ Waiting for <span>(.+?)<\/span>…`, "⏳ Esperando a <span>$1</span>…");
-hrx(String.raw`(Rock Paper Scissors|Dice Battle|Bluff Chest|Race to 21) · bet (.+) · expires in <span>(\d*)<\/span> s`, (m, g, b, t) => `${duGameEs(g)} · apuesta ${b} · caduca en <span>${t}</span> s`);
+hrx(String.raw`(Rock Paper Scissors|Dice Battle|Bluff Chest|Race to 21|Race to 42) · bet (.+) · expires in <span>(\d*)<\/span> s`, (m, g, b, t) => `${duGameEs(g)} · apuesta ${b} · caduca en <span>${t}</span> s`);
 rx(String.raw`Round (\d+) · Bet (.+)`, "Ronda $1 · Apuesta $2");
 rx(String.raw`You won the duel! \+(.+)`, "¡Has ganado el duelo! +$1");
 rx(String.raw`You lost the duel\. −(.+)`, "Has perdido el duelo. −$1");
@@ -2652,8 +2652,8 @@ rx(String.raw`(Best of 3\. .+?) The winner gets the other player's bet\.`, (m, r
 hrx(String.raw`You need (.+?) to accept \(you have (.+?)\)\.`, "Necesitas $1 para aceptar (tienes $2).");
 hrx(String.raw`Your friend wins the duel and your bet of <b>(.+?)<\/b>\.`, "Tu amigo gana el duelo y tu apuesta de <b>$1</b>.");
 rx(String.raw`Your duel with (.+) has started!`, "¡Tu duelo con $1 ha empezado!");
-rx(String.raw`You won your (Rock Paper Scissors|Dice Battle|Bluff Chest|Race to 21) duel against (.+): \+(.+)!`, (m, g, n, x) => `Has ganado tu duelo de ${duGameEs(g).toLowerCase()} contra ${n}: +${x}!`);
-rx(String.raw`You lost your (Rock Paper Scissors|Dice Battle|Bluff Chest|Race to 21) duel against (.+): −(.+)\.`, (m, g, n, x) => `Has perdido tu duelo de ${duGameEs(g).toLowerCase()} contra ${n}: −${x}.`);
+rx(String.raw`You won your (Rock Paper Scissors|Dice Battle|Bluff Chest|Race to 21|Race to 42) duel against (.+): \+(.+)!`, (m, g, n, x) => `Has ganado tu duelo de ${duGameEs(g).toLowerCase()} contra ${n}: +${x}!`);
+rx(String.raw`You lost your (Rock Paper Scissors|Dice Battle|Bluff Chest|Race to 21|Race to 42) duel against (.+): −(.+)\.`, (m, g, n, x) => `Has perdido tu duelo de ${duGameEs(g).toLowerCase()} contra ${n}: −${x}.`);
 H("⚔️ <b>Online casino!</b> In 🎰 Casino → ⚔️ Online casino, challenge a friend who is online to ✊ Rock Paper Scissors or 🎲 Dice Battle and choose your bet. Best of 3: the winner takes the other player's bet. 6 new achievements.",
   "⚔️ <b>¡Casino online!</b> En 🎰 Casino → ⚔️ Casino online, reta a un amigo que esté en línea a ✊ piedra, papel o tijera o a 🎲 batalla de dados y elige tu apuesta. Al mejor de 3: el ganador se lleva la apuesta del otro. 6 logros nuevos.");
 Object.assign(ES, {
@@ -2685,7 +2685,7 @@ Object.assign(ES, { "Bluff Chest": "Cofre farol", "Race to 21": "Carrera a 21",
   "Risk taker": "Amante del riesgo", "Win 5 Races to 21": "Gana 5 carreras a 21", "Race champion": "Campeón de carreras", "Win 20 Races to 21": "Gana 20 carreras a 21" });
 hrx(String.raw`💰 Bluff Chest: <b>(\d+)<\/b> won · <b>(\d+)<\/b> lost`, "💰 Cofre farol: <b>$1</b> ganados · <b>$2</b> perdidos");
 hrx(String.raw`🏁 Race to 21: <b>(\d+)<\/b> won · <b>(\d+)<\/b> lost`, "🏁 Carrera a 21: <b>$1</b> ganadas · <b>$2</b> perdidas");
-rx(String.raw`First to 21 · Bet (.+)`, "Gana quien llegue a 21 · Apuesta $1");
+rx(String.raw`First to (21|42) · Bet (.+)`, "Gana quien llegue a $1 · Apuesta $2");
 hrx(String.raw`🎲 This turn: <b>(\d+)<\/b> points\. Roll again or Bank\?`, "🎲 Este turno: <b>$1</b> puntos. ¿Tiras otra vez o guardas?");
 hrx(String.raw`⏳ <span>(.+?)<\/span>'s turn: <b>(\d+)<\/b> points this turn…`, "⏳ Turno de <span>$1</span>: <b>$2</b> puntos este turno…");
 hrx(String.raw`⏳ <span>(.+?)<\/span>'s turn…`, "⏳ Turno de <span>$1</span>…");
@@ -3429,6 +3429,21 @@ var NOBEL_FIND_ES = {
 Object.assign(ES, { "Scientific breakthrough!": "¡Avance científico!", "Accept the Nobel Prize": "Aceptar el Premio Nobel" });
 hrx(String.raw`Congratulations! Your researchers have discovered <b>(.+)<\/b>\.`, (m, x) => `¡Enhorabuena! Tus investigadores han descubierto <b>${NOBEL_FIND_ES[x] || x}</b>.`);
 hrx(String.raw`This discovery will change the world, and you have won the <b>Nobel Prize in \{i\}(.+)<\/b>!`, (m, f) => `Este descubrimiento cambiará el mundo y has ganado el <b>Premio Nobel de {i}${NOBEL_FIELD_ES[f] || f}</b>.`);
+// 🏁 Race: 21 or 42, ghost runner, turn history, tips
+Object.assign(ES, { "Race length": "Duración de la carrera", "Race to 42": "Carrera a 42", "quick": "rápida", "long": "larga",
+  "Take turns rolling a die as often as you dare, then Bank your points. Rolling a 1 loses this turn's points. First to 42 wins.": "Por turnos, tira el dado tantas veces como te atrevas y después guarda tus puntos. Si sacas un 1, pierdes los puntos de ese turno. Gana quien llegue a 42." });
+rx(String.raw`Bank → (\d+) \/ (21|42)`, "Guardar → $1 / $2");
+hrx(String.raw`You need <b>(\d+)<\/b> more · each roll has a 1 in 6 chance to lose these <b>(\d+)<\/b> points\.`, "Te faltan <b>$1</b> · cada tirada tiene 1 posibilidad entre 6 de perder estos <b>$2</b> puntos.");
+hrx(String.raw`You need <b>(\d+)<\/b> more · each roll has a 1 in 6 chance to lose this turn's points\.`, "Te faltan <b>$1</b> · cada tirada tiene 1 posibilidad entre 6 de perder los puntos de este turno.");
+{ const DIE = String.raw`<span>((?:\{i\})*)<\/span>`;
+  hrx(String.raw`\{i\} ?You banked (\d+) ` + DIE, "{i} Has guardado $1 <span>$2</span>");
+  hrx(String.raw`\{i\} ?You lost (\d+) ` + DIE, "{i} Has perdido $1 <span>$2</span>");
+  hrx(String.raw`\{i\} ?You won! ` + DIE, "{i} ¡Has ganado! <span>$1</span>");
+  hrx(String.raw`\{i\}<span>(.+?)<\/span> banked (\d+) ` + DIE, "{i}<span>$1</span> ha guardado $2 <span>$3</span>");
+  hrx(String.raw`\{i\}<span>(.+?)<\/span> lost (\d+) ` + DIE, "{i}<span>$1</span> ha perdido $2 <span>$3</span>");
+  hrx(String.raw`\{i\}<span>(.+?)<\/span> won! ` + DIE, "{i}<span>$1</span> ¡ha ganado! <span>$2</span>"); }
+H("🏁 Online casino, Race to 21: choose <b>21</b> (quick) or <b>42</b> (long) when you challenge. While someone is rolling, a faded runner shows where banking now would put them. The last turns are listed under the track with their dice, the die tumbles when it's rolled, a 1 shakes the screen, and on your turn a tip shows how much you still need. Bank shows your total after banking.",
+  "🏁 Casino online, Carrera a 21: al retar, elige <b>21</b> (rápida) o <b>42</b> (larga). Mientras alguien tira, un corredor transparente muestra dónde quedaría si guardase ahora. Los últimos turnos aparecen bajo la pista con sus dados, el dado da vueltas al tirarlo, un 1 sacude la pantalla y, en tu turno, una pista te dice cuánto te falta. Guardar muestra tu total después de guardar.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -3757,7 +3772,7 @@ var staffIco = (key, o, cls = "staffI") => STAFF_PICS.includes(key) ? ico("st-" 
 var alienBonus = (key) => ((__eocLoaded >= 44 && typeof spAllyBonus === "function") ? spAllyBonus(key) : 0);
 var geneBonus = (cat) => (typeof geneCatCount === "function" ? geneCatCount(cat) * 0.01 : 0);
 var PREF_KEYS = ["view", "coinUnit", "casinoPage", "logiPage", "rewardType", "rewardState", "gamePage", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage", "cryptoSel", "ivCard", "logiFleet", "mapBig", "mapHelp",
-                   "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage", "numFmt", "lowFx", "popups", "mgTabs", "orDispOpen", "mgSnooze"];
+                   "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage", "numFmt", "lowFx", "popups", "mgTabs", "orDispOpen", "mgSnooze", "duGoal"];
 function splitState(st) {   // -> { progress, prefs }
   const progress = {}, prefs = {};
   for (const k in st) (PREF_KEYS.includes(k) ? prefs : progress)[k] = st[k];
@@ -14462,6 +14477,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "🏁 Online casino, Race to 21: choose <b>21</b> (quick) or <b>42</b> (long) when you challenge. While someone is rolling, a faded runner shows where banking now would put them. The last turns are listed under the track with their dice, the die tumbles when it's rolled, a 1 shakes the screen, and on your turn a tip shows how much you still need. Bank shows your total after banking.",
     "🎨 More painted icons instead of emoji: the 🐾 Pets page, worker traits, statuses and buttons on 💰 Income (and the Wiki trait list), the buttons and payout tables in the 🎰 Casino, 🚚 Logistics (Send buttons, friendship levels, gifts, pirates, escorts, trade routes, trading, alliance bonuses, outposts and crafting), 📈 Investing (selling locks, auto cash-out, sale bonuses, take profit, stop loss, liquidation, open positions and chart buttons), ⚙️ Settings, 👤 Profile and 👥 Friends, the 🎨 Art Gallery studio, the 🏅 Nobel Prize window and 🚀 Nebula Strike results. The Nobel Prize window is now in Spanish too.",
     "🚀 Nebula Strike: ✨ stardust is now a little see-through, so it's easier to tell apart from enemy bullets.",
     "⚙️ Settings: the <b>Display</b> section folds away (tap its header). Folded, it shows your language, brightness and number format at a glance.",
@@ -22178,11 +22194,15 @@ var DU_GAMES = {
     rules: "Take turns rolling a die as often as you dare, then Bank your points. Rolling a 1 loses this turn's points. First to 21 wins." },
 };
 var DU_NEED = { rps: 2, dice: 2, chest: 3, race: 21 };
+// 🏁 Race length: 21 (quick) or 42 (long), chosen when you challenge (kept per device)
+var duGoalOf = (v) => (v && Number(v.goal) === 42 ? 42 : 21);
+var duName = (k, goal) => k === "race" && goal === 42 ? "Race to 42" : DU_GAMES[k].name;
+var duRules = (k, goal) => k === "race" && goal === 42 ? DU_GAMES.race.rules.replace("First to 21 wins.", "First to 42 wins.") : DU_GAMES[k].rules;
 if (!state.duels || typeof state.duels !== "object") state.duels = {};
 Object.keys(DU_GAMES).forEach(g => { state.duels[g] = state.duels[g] || { w: 0, l: 0 }; });
 state.duels.won = state.duels.won || 0; state.duels.lost = state.duels.lost || 0;
 var DU = { game: "rps", bet: "", cur: null, out: null, invites: {}, shownInvite: null, busy: false, err: "",
-  res: null, lastLog: 0, ticking: false, pendAt: 0, final: null };
+  goal: state.duGoal === 42 ? 42 : 21, res: null, lastLog: 0, ticking: false, pendAt: 0, final: null };
 var duOn = () => typeof profSignedIn === "function" && profSignedIn() && prof.row && prof.friendsOn !== false;
 var duRpc = async (fn, args) => { const { data, error } = await cloud.sb.rpc(fn, args || {}); if (error) throw error; return data; };
 function duErr(e) {
@@ -22241,7 +22261,7 @@ async function duLoop() {   // once a second during a duel: "still here" + timer
 function duUpdate(v) {
   if (!v || !DU.cur || v.id !== DU.cur.id) return;
   const n = (v.log || []).length;
-  if (n > DU.lastLog) { DU.res = { e: v.log[n - 1], until: Date.now() + (v.game === "race" ? 1200 : 3000) }; DU.lastLog = n; }
+  if (n > DU.lastLog) { DU.res = { e: v.log[n - 1], at: Date.now(), until: Date.now() + (v.game === "race" ? 1200 : 3000) }; DU.lastLog = n; }
   DU.cur = v;
   if (v.status === "done") { DU.final = v; duSettle(v); }
   else if (v.status !== "active") { DU.cur = null; }
@@ -22257,7 +22277,7 @@ async function duSettle(v) {   // collect your result once
       if (amt > 0) { state.money += amt; g.w++; state.duels.won += amt; }
       else { const lose = Math.min(-amt, Math.max(0, state.money)); state.money -= lose; g.l++; state.duels.lost += lose; }
       v.settled = true; updateCounter(); save(); flushSave();
-      if (!DU.final || DU.final.id !== v.id) showNotice(amt > 0 ? `⚔️ You won your ${DU_GAMES[v.game].name} duel against ${duPerson(v).nick}: +${fmt(amt)}!` : `⚔️ You lost your ${DU_GAMES[v.game].name} duel against ${duPerson(v).nick}: −${fmt(-amt)}.`);
+      if (!DU.final || DU.final.id !== v.id) showNotice(amt > 0 ? `⚔️ You won your ${duName(v.game, duGoalOf(v))} duel against ${duPerson(v).nick}: +${fmt(amt)}!` : `⚔️ You lost your ${duName(v.game, duGoalOf(v))} duel against ${duPerson(v).nick}: −${fmt(-amt)}.`);
       if ((__eocLoaded >= 21 && typeof checkAchievements === "function")) checkAchievements();
     }
   } catch (e) { console.warn("Duel settle failed:", e); }
@@ -22277,7 +22297,9 @@ function duChallenge(oppId) {
   if (!(bet >= 1)) { DU.err = "Choose a bet of at least 1."; return renderDuels(); }
   if (bet > state.money) { DU.err = "You don't have enough money for this bet."; return renderDuels(); }
   if ((__eocLoaded >= 51 && typeof profPushStats === "function")) profPushStats();   // the referee checks the money on your profile
-  duDo("duel_invite", { p_opp: oppId, p_game: DU.game, p_bet: bet }, () => { setTimeout(duPending, 300); });
+  const args = { p_opp: oppId, p_game: DU.game, p_bet: bet };
+  if (DU.game === "race" && DU.goal === 42) args.p_goal = 42;   // (left out for 21: also works before the 42 update is on the server)
+  duDo("duel_invite", args, () => { setTimeout(duPending, 300); });
 }
 
 /* ----- 📨 a challenge for you (pop-up anywhere in the game) ----- */
@@ -22293,8 +22315,8 @@ function duShowInvite() {
   showModal(`<div class="duInvite" data-du-inv="${v.id}"><img class="duInvIco" src="${g.ico}" alt="">
     <h2>⚔️ You've been challenged!</h2>
     <div class="duInvWho">${profAvatarImg(p.avatar, "frAv")}<b data-noi18n>${escapeHtml(p.nick)}</b></div>
-    <p>challenges you to <b>${g.name}</b> for <b>${fmt(v.bet)}</b>.</p>
-    <p class="muted">${g.rules} The winner takes both bets minus a 2% fee.</p>
+    <p>challenges you to <b>${duName(v.game, duGoalOf(v))}</b> for <b>${fmt(v.bet)}</b>.</p>
+    <p class="muted">${duRules(v.game, duGoalOf(v))} The winner takes both bets minus a 2% fee.</p>
     <p>🏆 Win: <b>+${fmt(duWinAmt(v.bet))}</b> · 💸 Lose: <b>−${fmt(v.bet)}</b></p>
     ${can ? "" : `<p class="profErr">You need ${fmt(v.bet)} to accept (you have ${fmt(state.money)}).</p>`}
     <p class="muted">Expires in <b id="duInvT">${Math.ceil(v.secs_left || 0)}</b> s</p>
@@ -22324,9 +22346,11 @@ function duOddsHtml() {   // what this bet wins or loses
 }
 function duLobbyHtml() {
   const st = state.duels, typed = DU.bet;   // the box keeps DU.bet up to date (input event)
-  const games = Object.entries(DU_GAMES).map(([k, g]) => `<button class="duGame ${DU.game === k ? "on" : ""}" data-du="game" data-g="${k}"><img src="${g.ico}" alt=""><b>${g.name}</b><span>${g.rules}</span>
+  const games = Object.entries(DU_GAMES).map(([k, g]) => `<button class="duGame ${DU.game === k ? "on" : ""}" data-du="game" data-g="${k}"><img src="${g.ico}" alt=""><b>${duName(k, DU.goal)}</b><span>${duRules(k, DU.goal)}</span>
     <span class="duRec">🏆 ${st[k].w} · ❌ ${st[k].l}</span></button>`).join("");
-  return `<div class="card"><h3 style="margin-top:0">1. Choose a game</h3><div class="duGames">${games}</div></div>
+  const goal = DU.game === "race" ? `<div class="duGoalPick"><span>Race length:</span>${[[21, "quick"], [42, "long"]].map(([n, t]) =>
+    `<button class="seg ${DU.goal === n ? "on" : ""}" data-du="goal" data-n="${n}"><b>${n}</b> <span>${t}</span></button>`).join("")}</div>` : "";
+  return `<div class="card"><h3 style="margin-top:0">1. Choose a game</h3><div class="duGames">${games}</div>${goal}</div>
     <div class="card"><h3 style="margin-top:0">2. Your bet</h3>
       <div class="moneyRow"><input id="duBet" type="number" min="1" placeholder="Amount" value="${escapeHtml(typed || "")}" aria-label="Bet">
         <button class="btn ghost small" data-du="pct" data-p="0.01">1%</button><button class="btn ghost small" data-du="pct" data-p="0.1">10%</button>
@@ -22334,7 +22358,7 @@ function duLobbyHtml() {
       <div class="muted">You have ${fmt(state.money)}. Your friend must have at least the same. The winner takes both bets minus a 2% fee.</div>
       <div class="duOdds" id="duOdds">${duOddsHtml()}</div></div>
     ${DU.out ? `<div class="card duWait"><img src="${DU_GAMES[DU.out.game].ico}" alt=""><div><b>⏳ Waiting for <span data-noi18n>${escapeHtml(duPerson(DU.out).nick)}</span> to accept…</b>
-        <div class="muted">${DU_GAMES[DU.out.game].name} · bet ${fmt(DU.out.bet)} · expires in <span data-du-t="${Date.now() + (DU.out.secs_left || 0) * 1000}">${Math.ceil(DU.out.secs_left || 0)}</span> s</div></div>
+        <div class="muted">${duName(DU.out.game, duGoalOf(DU.out))} · bet ${fmt(DU.out.bet)} · expires in <span data-du-t="${Date.now() + (DU.out.secs_left || 0) * 1000}">${Math.ceil(DU.out.secs_left || 0)}</span> s</div></div>
         <button class="btn ghost small" data-du="cancel" data-id="${DU.out.id}">Cancel</button></div>` : ""}
     <div class="card"><h3 style="margin-top:0">3. Challenge a friend</h3>${duFriendsHtml()}</div>
     <div class="card duStats"><span>✊ Rock Paper Scissors: <b>${st.rps.w}</b> won · <b>${st.rps.l}</b> lost</span><span>🎲 Dice Battle: <b>${st.dice.w}</b> won · <b>${st.dice.l}</b> lost</span>
@@ -22359,16 +22383,40 @@ function duChestSay(v, showing) {
   if (v.my_pick) return null;
   return duChestRole(v) === "hide" ? "🙈 Hide your coin: pick a chest!" : "🔍 Find the coin: pick a chest!";
 }
-// 🏁 Race to 21: totals are the scores, st = {turn, tp}
+// 🏁 Race to 21 / 42: totals are the scores, st = {turn, tp}
+// the finished turns, from the log: [{who, dice: [..], kind: "bank" / "bust" / "win", pts}]
+function duRaceTurns(log) {
+  const out = []; let cur = null;
+  for (const e of log || []) {
+    if (!cur || cur.who !== e.who) cur = { who: e.who, dice: [] };
+    if (e.roll) cur.dice.push(e.roll);
+    if (e.bust) { out.push({ ...cur, kind: "bust", pts: e.lost || 0 }); cur = null; }
+    else if (e.win) { out.push({ ...cur, kind: "win" }); cur = null; }
+    else if ("bank" in e) { out.push({ ...cur, kind: "bank", pts: e.bank }); cur = null; }
+  }
+  return out;
+}
 function duRaceHtml(v, fin) {
   const p = duPerson(v), me = prof.row || {}, st = v.st || {}, mine = st.turn === v.me, ev = (v.log || [])[(v.log || []).length - 1];
-  const lane = (who, total, name, av) => `<div class="duLane"><div class="duRunner" style="left:calc(${Math.min(100, total / 21 * 100)}% - 22px)">${profAvatarImg(av, "frAv")}</div>
-    <span class="duLaneName" data-noi18n>${escapeHtml(name)}</span><b class="duLaneTot">${total}</b><img class="duFlag" src="assets/duel/race-flag.webp" alt=""></div>`;
-  const mineName = me.nickname || "You";
+  const goal = duGoalOf(v), tp = st.tp || 0, now = Date.now();
+  // ✨ a fresh event animates once; a redraw in the middle carries on where it was (negative delay)
+  const age = DU.res && DU.res.e === ev && DU.res.at ? now - DU.res.at : 1e9, fresh = age < 900;
+  const fx = (cls) => fresh ? ` ${cls}" style="animation-delay:-${age}ms` : "";
+  const pct = (n) => Math.min(100, n / goal * 100);
+  const lane = (who, total, name, av) => {
+    const turn = !fin && st.turn === who && tp > 0, bust = fresh && ev && ev.bust && ev.who === who;
+    return `<div class="duLane${bust ? fx("bust") : ""}">
+      ${turn ? `<div class="duGhostBar" style="left:${pct(total)}%;width:${pct(total + tp) - pct(total)}%"></div>
+        <div class="duRunner ghost" style="left:calc(${pct(total + tp)}% - 22px)">${profAvatarImg(av, "frAv")}</div>` : ""}
+      <div class="duRunner" style="left:calc(${pct(total)}% - 22px)">${profAvatarImg(av, "frAv")}</div>
+      <span class="duLaneName" data-noi18n>${escapeHtml(name)}</span><b class="duLaneTot">${total}${turn ? `<small>+${tp}</small>` : ""}</b><img class="duFlag" src="assets/duel/race-flag.webp" alt=""></div>`;
+  };
+  const mineName = me.nickname || "You", oppSide = v.me === "a" ? "b" : "a";
   let pic = "", say;
-  if (ev && ev.bust) pic = `<img class="duBust" src="assets/duel/race-bust.webp" alt="">`;
-  else if (ev && ev.roll) pic = `<img class="duDie big" src="assets/duel/die-${ev.roll}.webp" alt="${ev.roll}">`;
-  else if (ev && "bank" in ev) pic = `<img class="duBank" src="assets/duel/race-bank.webp" alt="">`;
+  if (!fin && mine && DU.busy) pic = `<img class="duDie big spin" src="assets/duel/die-${1 + Math.floor(Math.random() * 6)}.webp" alt="">`;   // 🎲 rolling…
+  else if (ev && ev.bust) pic = `<img class="duBust${fx("fresh")}" src="assets/duel/race-bust.webp" alt="">`;
+  else if (ev && ev.roll) pic = `<img class="duDie big${fx("tumble")}" src="assets/duel/die-${ev.roll}.webp" alt="${ev.roll}">`;
+  else if (ev && "bank" in ev) pic = `<img class="duBank${fx("fresh")}" src="assets/duel/race-bank.webp" alt="">`;
   const whoEv = ev ? (ev.who === v.me ? "You" : p.nick) : "";
   const evWho = (txt) => whoEv === "You" ? txt.you : `<span data-noi18n>${escapeHtml(whoEv)}</span> ${txt.them}`;
   const parts = [];
@@ -22376,10 +22424,19 @@ function duRaceHtml(v, fin) {
   if (!fin && ev && "bank" in ev && !st.tp) parts.push(`💰 ${evWho({ you: "You banked", them: "banked" })} ${ev.bank} points.`);
   if (!fin) parts.push(mine ? (st.tp ? `🎲 This turn: <b>${st.tp}</b> points. Roll again or Bank?` : "🎲 Your turn: roll the die!")
     : `⏳ <span data-noi18n>${escapeHtml(p.nick)}</span>'s turn${st.tp ? `: <b>${st.tp}</b> points this turn` : ""}…`);
+  const myTotal = v.my_score;
+  if (!fin && mine) parts.push(`<span class="duTip">You need <b>${Math.max(0, goal - myTotal - tp)}</b> more · each roll has a 1 in 6 chance to lose ${tp ? `these <b>${tp}</b> points` : "this turn's points"}.</span>`);
   say = parts.length ? parts.map(x => `<div>${x}</div>`).join("") : null;
+  // 📜 the last turns, newest first
+  const turns = duRaceTurns(v.log).slice(-4).reverse();
+  const hist = turns.length ? `<ul class="duHist">${turns.map(t => {
+    const you = t.who === v.me, img = t.kind === "bust" ? "race-bust" : t.kind === "win" ? "race-flag" : "race-bank";
+    const txt = t.kind === "bust" ? (you ? `You lost ${t.pts}` : `lost ${t.pts}`) : t.kind === "win" ? (you ? "You won!" : "won!") : (you ? `You banked ${t.pts}` : `banked ${t.pts}`);
+    return `<li class="${t.kind}"><img class="duHIco" src="assets/duel/${img}.webp" alt="">${you ? "" : `<span class="duHWho" data-noi18n>${escapeHtml(p.nick)}</span>`} ${txt} <span class="duHDice">${t.dice.map(n => `<img src="assets/duel/die-${n}.webp" alt="${n}">`).join("")}</span></li>`; }).join("")}</ul>` : "";
+  const bankTo = st.tp && mine ? ` → ${myTotal + tp} / ${goal}` : "";
   const controls = fin ? "" : `<div class="duPicks"><button class="btn big duRoll" data-du="roll" ${mine && !DU.busy ? "" : "disabled"}>🎲 Roll</button>
-    <button class="btn big duBankBtn" data-du="bank" ${mine && !DU.busy ? "" : "disabled"}><img class="ico" src="assets/duel/race-bank.webp" alt="">Bank${st.tp && mine ? ` +${st.tp}` : ""}</button></div>`;
-  return { stage: `<div class="duRace">${lane("me", v.my_score, mineName, me.avatar)}${lane("opp", v.opp_score, p.nick, p.avatar)}<div class="duRacePic">${pic}</div></div>`, say, controls };
+    <button class="btn big duBankBtn" data-du="bank" ${mine && !DU.busy ? "" : "disabled"}><img class="ico" src="assets/duel/race-bank.webp" alt=""><span>Bank${bankTo}</span></button></div>`;
+  return { stage: `<div class="duRace">${lane(v.me, v.my_score, mineName, me.avatar)}${lane(oppSide, v.opp_score, p.nick, p.avatar)}<div class="duRacePic">${pic}</div>${hist}</div>`, say, controls };
 }
 function duMatchHtml(v) {
   const g = DU_GAMES[v.game], p = duPerson(v), me = prof.row || {}, now = Date.now();
@@ -22412,7 +22469,7 @@ function duMatchHtml(v) {
       : `<div class="duPicks"><button class="btn big duRoll" data-du="roll" ${v.my_pick || showing || DU.busy ? "disabled" : ""}>🎲 Roll</button></div>`;
   return `<div class="card duMatch ${v.game}" style="background-image:url('${g.bg}')">
     <div class="duTop"><div class="duPl">${profAvatarImg(me.avatar, "frAv")}<b data-noi18n>${escapeHtml(me.nickname || "You")}</b><span class="duScore">${v.my_score}</span></div>
-      <div class="duMid"><b>${g.name}</b><span>${v.game === "race" ? `First to 21 · Bet ${fmt(v.bet)}` : `Round ${v.round} · Bet ${fmt(v.bet)}`}</span>${left}</div>
+      <div class="duMid"><b>${duName(v.game, duGoalOf(v))}</b><span>${v.game === "race" ? `First to ${duGoalOf(v)} · Bet ${fmt(v.bet)}` : `Round ${v.round} · Bet ${fmt(v.bet)}`}</span>${left}</div>
       <div class="duPl r"><span class="duScore">${v.opp_score}</span><b data-noi18n>${escapeHtml(p.nick)}</b>${profAvatarImg(p.avatar, "frAv")}</div></div>
     <div class="duStage">${stage}</div>
     <div class="duSay ${fin ? (v.won ? "win" : "lose") : ""}">${say}</div>
@@ -22451,6 +22508,7 @@ document.addEventListener("click", (e) => {
   if (k === "signin" && (__eocLoaded >= 38 && typeof cloudSignIn === "function")) cloudSignIn();
   if (k === "profile") showView("profile");
   if (k === "game") { DU.game = b.dataset.g; renderDuels(); }
+  if (k === "goal") { DU.goal = Number(b.dataset.n) === 42 ? 42 : 21; state.duGoal = DU.goal; save(); renderDuels(); }
   if (k === "pct") { DU.bet = String(Math.max(1, Math.floor(state.money * Number(b.dataset.p)))); DU.err = ""; renderDuels(); }
   if (k === "challenge") duChallenge(b.dataset.id);
   if (k === "cancel") duDo("duel_cancel", { p_id: id }, () => { DU.out = null; });

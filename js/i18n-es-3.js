@@ -1265,7 +1265,7 @@ hrx(String.raw`🎲 Dice Battle: <b>(\d+)<\/b> won · <b>(\d+)<\/b> lost`, "🎲
 hrx(String.raw`💰 Won <b>(.+?)<\/b> · lost <b>(.+?)<\/b>`, "💰 Ganado <b>$1</b> · perdido <b>$2</b>");
 hrx(String.raw`⏳ Waiting for <span>(.+?)<\/span> to accept…`, "⏳ Esperando a que <span>$1</span> acepte…");
 hrx(String.raw`⏳ Waiting for <span>(.+?)<\/span>…`, "⏳ Esperando a <span>$1</span>…");
-hrx(String.raw`(Rock Paper Scissors|Dice Battle|Bluff Chest|Race to 21) · bet (.+) · expires in <span>(\d*)<\/span> s`, (m, g, b, t) => `${duGameEs(g)} · apuesta ${b} · caduca en <span>${t}</span> s`);
+hrx(String.raw`(Rock Paper Scissors|Dice Battle|Bluff Chest|Race to 21|Race to 42) · bet (.+) · expires in <span>(\d*)<\/span> s`, (m, g, b, t) => `${duGameEs(g)} · apuesta ${b} · caduca en <span>${t}</span> s`);
 rx(String.raw`Round (\d+) · Bet (.+)`, "Ronda $1 · Apuesta $2");
 rx(String.raw`You won the duel! \+(.+)`, "¡Has ganado el duelo! +$1");
 rx(String.raw`You lost the duel\. −(.+)`, "Has perdido el duelo. −$1");
@@ -1274,8 +1274,8 @@ rx(String.raw`(Best of 3\. .+?) The winner gets the other player's bet\.`, (m, r
 hrx(String.raw`You need (.+?) to accept \(you have (.+?)\)\.`, "Necesitas $1 para aceptar (tienes $2).");
 hrx(String.raw`Your friend wins the duel and your bet of <b>(.+?)<\/b>\.`, "Tu amigo gana el duelo y tu apuesta de <b>$1</b>.");
 rx(String.raw`Your duel with (.+) has started!`, "¡Tu duelo con $1 ha empezado!");
-rx(String.raw`You won your (Rock Paper Scissors|Dice Battle|Bluff Chest|Race to 21) duel against (.+): \+(.+)!`, (m, g, n, x) => `Has ganado tu duelo de ${duGameEs(g).toLowerCase()} contra ${n}: +${x}!`);
-rx(String.raw`You lost your (Rock Paper Scissors|Dice Battle|Bluff Chest|Race to 21) duel against (.+): −(.+)\.`, (m, g, n, x) => `Has perdido tu duelo de ${duGameEs(g).toLowerCase()} contra ${n}: −${x}.`);
+rx(String.raw`You won your (Rock Paper Scissors|Dice Battle|Bluff Chest|Race to 21|Race to 42) duel against (.+): \+(.+)!`, (m, g, n, x) => `Has ganado tu duelo de ${duGameEs(g).toLowerCase()} contra ${n}: +${x}!`);
+rx(String.raw`You lost your (Rock Paper Scissors|Dice Battle|Bluff Chest|Race to 21|Race to 42) duel against (.+): −(.+)\.`, (m, g, n, x) => `Has perdido tu duelo de ${duGameEs(g).toLowerCase()} contra ${n}: −${x}.`);
 H("⚔️ <b>Online casino!</b> In 🎰 Casino → ⚔️ Online casino, challenge a friend who is online to ✊ Rock Paper Scissors or 🎲 Dice Battle and choose your bet. Best of 3: the winner takes the other player's bet. 6 new achievements.",
   "⚔️ <b>¡Casino online!</b> En 🎰 Casino → ⚔️ Casino online, reta a un amigo que esté en línea a ✊ piedra, papel o tijera o a 🎲 batalla de dados y elige tu apuesta. Al mejor de 3: el ganador se lleva la apuesta del otro. 6 logros nuevos.");
 Object.assign(ES, {
@@ -1307,7 +1307,7 @@ Object.assign(ES, { "Bluff Chest": "Cofre farol", "Race to 21": "Carrera a 21",
   "Risk taker": "Amante del riesgo", "Win 5 Races to 21": "Gana 5 carreras a 21", "Race champion": "Campeón de carreras", "Win 20 Races to 21": "Gana 20 carreras a 21" });
 hrx(String.raw`💰 Bluff Chest: <b>(\d+)<\/b> won · <b>(\d+)<\/b> lost`, "💰 Cofre farol: <b>$1</b> ganados · <b>$2</b> perdidos");
 hrx(String.raw`🏁 Race to 21: <b>(\d+)<\/b> won · <b>(\d+)<\/b> lost`, "🏁 Carrera a 21: <b>$1</b> ganadas · <b>$2</b> perdidas");
-rx(String.raw`First to 21 · Bet (.+)`, "Gana quien llegue a 21 · Apuesta $1");
+rx(String.raw`First to (21|42) · Bet (.+)`, "Gana quien llegue a $1 · Apuesta $2");
 hrx(String.raw`🎲 This turn: <b>(\d+)<\/b> points\. Roll again or Bank\?`, "🎲 Este turno: <b>$1</b> puntos. ¿Tiras otra vez o guardas?");
 hrx(String.raw`⏳ <span>(.+?)<\/span>'s turn: <b>(\d+)<\/b> points this turn…`, "⏳ Turno de <span>$1</span>: <b>$2</b> puntos este turno…");
 hrx(String.raw`⏳ <span>(.+?)<\/span>'s turn…`, "⏳ Turno de <span>$1</span>…");
@@ -2051,6 +2051,21 @@ const NOBEL_FIND_ES = {
 Object.assign(ES, { "Scientific breakthrough!": "¡Avance científico!", "Accept the Nobel Prize": "Aceptar el Premio Nobel" });
 hrx(String.raw`Congratulations! Your researchers have discovered <b>(.+)<\/b>\.`, (m, x) => `¡Enhorabuena! Tus investigadores han descubierto <b>${NOBEL_FIND_ES[x] || x}</b>.`);
 hrx(String.raw`This discovery will change the world, and you have won the <b>Nobel Prize in \{i\}(.+)<\/b>!`, (m, f) => `Este descubrimiento cambiará el mundo y has ganado el <b>Premio Nobel de {i}${NOBEL_FIELD_ES[f] || f}</b>.`);
+// 🏁 Race: 21 or 42, ghost runner, turn history, tips
+Object.assign(ES, { "Race length": "Duración de la carrera", "Race to 42": "Carrera a 42", "quick": "rápida", "long": "larga",
+  "Take turns rolling a die as often as you dare, then Bank your points. Rolling a 1 loses this turn's points. First to 42 wins.": "Por turnos, tira el dado tantas veces como te atrevas y después guarda tus puntos. Si sacas un 1, pierdes los puntos de ese turno. Gana quien llegue a 42." });
+rx(String.raw`Bank → (\d+) \/ (21|42)`, "Guardar → $1 / $2");
+hrx(String.raw`You need <b>(\d+)<\/b> more · each roll has a 1 in 6 chance to lose these <b>(\d+)<\/b> points\.`, "Te faltan <b>$1</b> · cada tirada tiene 1 posibilidad entre 6 de perder estos <b>$2</b> puntos.");
+hrx(String.raw`You need <b>(\d+)<\/b> more · each roll has a 1 in 6 chance to lose this turn's points\.`, "Te faltan <b>$1</b> · cada tirada tiene 1 posibilidad entre 6 de perder los puntos de este turno.");
+{ const DIE = String.raw`<span>((?:\{i\})*)<\/span>`;
+  hrx(String.raw`\{i\} ?You banked (\d+) ` + DIE, "{i} Has guardado $1 <span>$2</span>");
+  hrx(String.raw`\{i\} ?You lost (\d+) ` + DIE, "{i} Has perdido $1 <span>$2</span>");
+  hrx(String.raw`\{i\} ?You won! ` + DIE, "{i} ¡Has ganado! <span>$1</span>");
+  hrx(String.raw`\{i\}<span>(.+?)<\/span> banked (\d+) ` + DIE, "{i}<span>$1</span> ha guardado $2 <span>$3</span>");
+  hrx(String.raw`\{i\}<span>(.+?)<\/span> lost (\d+) ` + DIE, "{i}<span>$1</span> ha perdido $2 <span>$3</span>");
+  hrx(String.raw`\{i\}<span>(.+?)<\/span> won! ` + DIE, "{i}<span>$1</span> ¡ha ganado! <span>$2</span>"); }
+H("🏁 Online casino, Race to 21: choose <b>21</b> (quick) or <b>42</b> (long) when you challenge. While someone is rolling, a faded runner shows where banking now would put them. The last turns are listed under the track with their dice, the die tumbles when it's rolled, a 1 shakes the screen, and on your turn a tip shows how much you still need. Bank shows your total after banking.",
+  "🏁 Casino online, Carrera a 21: al retar, elige <b>21</b> (rápida) o <b>42</b> (larga). Mientras alguien tira, un corredor transparente muestra dónde quedaría si guardase ahora. Los últimos turnos aparecen bajo la pista con sus dados, el dado da vueltas al tirarlo, un 1 sacude la pantalla y, en tu turno, una pista te dice cuánto te falta. Guardar muestra tu total después de guardar.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

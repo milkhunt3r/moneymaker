@@ -24,11 +24,15 @@ const DU_GAMES = {
     rules: "Take turns rolling a die as often as you dare, then Bank your points. Rolling a 1 loses this turn's points. First to 21 wins." },
 };
 const DU_NEED = { rps: 2, dice: 2, chest: 3, race: 21 };
+// 🏁 Race length: 21 (quick) or 42 (long), chosen when you challenge (kept per device)
+const duGoalOf = (v) => (v && Number(v.goal) === 42 ? 42 : 21);
+const duName = (k, goal) => k === "race" && goal === 42 ? "Race to 42" : DU_GAMES[k].name;
+const duRules = (k, goal) => k === "race" && goal === 42 ? DU_GAMES.race.rules.replace("First to 21 wins.", "First to 42 wins.") : DU_GAMES[k].rules;
 if (!state.duels || typeof state.duels !== "object") state.duels = {};
 Object.keys(DU_GAMES).forEach(g => { state.duels[g] = state.duels[g] || { w: 0, l: 0 }; });
 state.duels.won = state.duels.won || 0; state.duels.lost = state.duels.lost || 0;
 const DU = { game: "rps", bet: "", cur: null, out: null, invites: {}, shownInvite: null, busy: false, err: "",
-  res: null, lastLog: 0, ticking: false, pendAt: 0, final: null };
+  goal: state.duGoal === 42 ? 42 : 21, res: null, lastLog: 0, ticking: false, pendAt: 0, final: null };
 const duOn = () => typeof profSignedIn === "function" && profSignedIn() && prof.row && prof.friendsOn !== false;
 const duRpc = async (fn, args) => { const { data, error } = await cloud.sb.rpc(fn, args || {}); if (error) throw error; return data; };
 function duErr(e) {
@@ -87,7 +91,7 @@ async function duLoop() {   // once a second during a duel: "still here" + timer
 function duUpdate(v) {
   if (!v || !DU.cur || v.id !== DU.cur.id) return;
   const n = (v.log || []).length;
-  if (n > DU.lastLog) { DU.res = { e: v.log[n - 1], until: Date.now() + (v.game === "race" ? 1200 : 3000) }; DU.lastLog = n; }
+  if (n > DU.lastLog) { DU.res = { e: v.log[n - 1], at: Date.now(), until: Date.now() + (v.game === "race" ? 1200 : 3000) }; DU.lastLog = n; }
   DU.cur = v;
   if (v.status === "done") { DU.final = v; duSettle(v); }
   else if (v.status !== "active") { DU.cur = null; }
@@ -103,7 +107,7 @@ async function duSettle(v) {   // collect your result once
       if (amt > 0) { state.money += amt; g.w++; state.duels.won += amt; }
       else { const lose = Math.min(-amt, Math.max(0, state.money)); state.money -= lose; g.l++; state.duels.lost += lose; }
       v.settled = true; updateCounter(); save(); flushSave();
-      if (!DU.final || DU.final.id !== v.id) showNotice(amt > 0 ? `⚔️ You won your ${DU_GAMES[v.game].name} duel against ${duPerson(v).nick}: +${fmt(amt)}!` : `⚔️ You lost your ${DU_GAMES[v.game].name} duel against ${duPerson(v).nick}: −${fmt(-amt)}.`);
+      if (!DU.final || DU.final.id !== v.id) showNotice(amt > 0 ? `⚔️ You won your ${duName(v.game, duGoalOf(v))} duel against ${duPerson(v).nick}: +${fmt(amt)}!` : `⚔️ You lost your ${duName(v.game, duGoalOf(v))} duel against ${duPerson(v).nick}: −${fmt(-amt)}.`);
       if (typeof checkAchievements === "function") checkAchievements();
     }
   } catch (e) { console.warn("Duel settle failed:", e); }
@@ -123,7 +127,9 @@ function duChallenge(oppId) {
   if (!(bet >= 1)) { DU.err = "Choose a bet of at least 1."; return renderDuels(); }
   if (bet > state.money) { DU.err = "You don't have enough money for this bet."; return renderDuels(); }
   if (typeof profPushStats === "function") profPushStats();   // the referee checks the money on your profile
-  duDo("duel_invite", { p_opp: oppId, p_game: DU.game, p_bet: bet }, () => { setTimeout(duPending, 300); });
+  const args = { p_opp: oppId, p_game: DU.game, p_bet: bet };
+  if (DU.game === "race" && DU.goal === 42) args.p_goal = 42;   // (left out for 21: also works before the 42 update is on the server)
+  duDo("duel_invite", args, () => { setTimeout(duPending, 300); });
 }
 
 /* ----- 📨 a challenge for you (pop-up anywhere in the game) ----- */
@@ -139,8 +145,8 @@ function duShowInvite() {
   showModal(`<div class="duInvite" data-du-inv="${v.id}"><img class="duInvIco" src="${g.ico}" alt="">
     <h2>⚔️ You've been challenged!</h2>
     <div class="duInvWho">${profAvatarImg(p.avatar, "frAv")}<b data-noi18n>${escapeHtml(p.nick)}</b></div>
-    <p>challenges you to <b>${g.name}</b> for <b>${fmt(v.bet)}</b>.</p>
-    <p class="muted">${g.rules} The winner takes both bets minus a 2% fee.</p>
+    <p>challenges you to <b>${duName(v.game, duGoalOf(v))}</b> for <b>${fmt(v.bet)}</b>.</p>
+    <p class="muted">${duRules(v.game, duGoalOf(v))} The winner takes both bets minus a 2% fee.</p>
     <p>🏆 Win: <b>+${fmt(duWinAmt(v.bet))}</b> · 💸 Lose: <b>−${fmt(v.bet)}</b></p>
     ${can ? "" : `<p class="profErr">You need ${fmt(v.bet)} to accept (you have ${fmt(state.money)}).</p>`}
     <p class="muted">Expires in <b id="duInvT">${Math.ceil(v.secs_left || 0)}</b> s</p>
@@ -170,9 +176,11 @@ function duOddsHtml() {   // what this bet wins or loses
 }
 function duLobbyHtml() {
   const st = state.duels, typed = DU.bet;   // the box keeps DU.bet up to date (input event)
-  const games = Object.entries(DU_GAMES).map(([k, g]) => `<button class="duGame ${DU.game === k ? "on" : ""}" data-du="game" data-g="${k}"><img src="${g.ico}" alt=""><b>${g.name}</b><span>${g.rules}</span>
+  const games = Object.entries(DU_GAMES).map(([k, g]) => `<button class="duGame ${DU.game === k ? "on" : ""}" data-du="game" data-g="${k}"><img src="${g.ico}" alt=""><b>${duName(k, DU.goal)}</b><span>${duRules(k, DU.goal)}</span>
     <span class="duRec">🏆 ${st[k].w} · ❌ ${st[k].l}</span></button>`).join("");
-  return `<div class="card"><h3 style="margin-top:0">1. Choose a game</h3><div class="duGames">${games}</div></div>
+  const goal = DU.game === "race" ? `<div class="duGoalPick"><span>Race length:</span>${[[21, "quick"], [42, "long"]].map(([n, t]) =>
+    `<button class="seg ${DU.goal === n ? "on" : ""}" data-du="goal" data-n="${n}"><b>${n}</b> <span>${t}</span></button>`).join("")}</div>` : "";
+  return `<div class="card"><h3 style="margin-top:0">1. Choose a game</h3><div class="duGames">${games}</div>${goal}</div>
     <div class="card"><h3 style="margin-top:0">2. Your bet</h3>
       <div class="moneyRow"><input id="duBet" type="number" min="1" placeholder="Amount" value="${escapeHtml(typed || "")}" aria-label="Bet">
         <button class="btn ghost small" data-du="pct" data-p="0.01">1%</button><button class="btn ghost small" data-du="pct" data-p="0.1">10%</button>
@@ -180,7 +188,7 @@ function duLobbyHtml() {
       <div class="muted">You have ${fmt(state.money)}. Your friend must have at least the same. The winner takes both bets minus a 2% fee.</div>
       <div class="duOdds" id="duOdds">${duOddsHtml()}</div></div>
     ${DU.out ? `<div class="card duWait"><img src="${DU_GAMES[DU.out.game].ico}" alt=""><div><b>⏳ Waiting for <span data-noi18n>${escapeHtml(duPerson(DU.out).nick)}</span> to accept…</b>
-        <div class="muted">${DU_GAMES[DU.out.game].name} · bet ${fmt(DU.out.bet)} · expires in <span data-du-t="${Date.now() + (DU.out.secs_left || 0) * 1000}">${Math.ceil(DU.out.secs_left || 0)}</span> s</div></div>
+        <div class="muted">${duName(DU.out.game, duGoalOf(DU.out))} · bet ${fmt(DU.out.bet)} · expires in <span data-du-t="${Date.now() + (DU.out.secs_left || 0) * 1000}">${Math.ceil(DU.out.secs_left || 0)}</span> s</div></div>
         <button class="btn ghost small" data-du="cancel" data-id="${DU.out.id}">Cancel</button></div>` : ""}
     <div class="card"><h3 style="margin-top:0">3. Challenge a friend</h3>${duFriendsHtml()}</div>
     <div class="card duStats"><span>✊ Rock Paper Scissors: <b>${st.rps.w}</b> won · <b>${st.rps.l}</b> lost</span><span>🎲 Dice Battle: <b>${st.dice.w}</b> won · <b>${st.dice.l}</b> lost</span>
@@ -205,16 +213,40 @@ function duChestSay(v, showing) {
   if (v.my_pick) return null;
   return duChestRole(v) === "hide" ? "🙈 Hide your coin: pick a chest!" : "🔍 Find the coin: pick a chest!";
 }
-// 🏁 Race to 21: totals are the scores, st = {turn, tp}
+// 🏁 Race to 21 / 42: totals are the scores, st = {turn, tp}
+// the finished turns, from the log: [{who, dice: [..], kind: "bank" / "bust" / "win", pts}]
+function duRaceTurns(log) {
+  const out = []; let cur = null;
+  for (const e of log || []) {
+    if (!cur || cur.who !== e.who) cur = { who: e.who, dice: [] };
+    if (e.roll) cur.dice.push(e.roll);
+    if (e.bust) { out.push({ ...cur, kind: "bust", pts: e.lost || 0 }); cur = null; }
+    else if (e.win) { out.push({ ...cur, kind: "win" }); cur = null; }
+    else if ("bank" in e) { out.push({ ...cur, kind: "bank", pts: e.bank }); cur = null; }
+  }
+  return out;
+}
 function duRaceHtml(v, fin) {
   const p = duPerson(v), me = prof.row || {}, st = v.st || {}, mine = st.turn === v.me, ev = (v.log || [])[(v.log || []).length - 1];
-  const lane = (who, total, name, av) => `<div class="duLane"><div class="duRunner" style="left:calc(${Math.min(100, total / 21 * 100)}% - 22px)">${profAvatarImg(av, "frAv")}</div>
-    <span class="duLaneName" data-noi18n>${escapeHtml(name)}</span><b class="duLaneTot">${total}</b><img class="duFlag" src="assets/duel/race-flag.webp" alt=""></div>`;
-  const mineName = me.nickname || "You";
+  const goal = duGoalOf(v), tp = st.tp || 0, now = Date.now();
+  // ✨ a fresh event animates once; a redraw in the middle carries on where it was (negative delay)
+  const age = DU.res && DU.res.e === ev && DU.res.at ? now - DU.res.at : 1e9, fresh = age < 900;
+  const fx = (cls) => fresh ? ` ${cls}" style="animation-delay:-${age}ms` : "";
+  const pct = (n) => Math.min(100, n / goal * 100);
+  const lane = (who, total, name, av) => {
+    const turn = !fin && st.turn === who && tp > 0, bust = fresh && ev && ev.bust && ev.who === who;
+    return `<div class="duLane${bust ? fx("bust") : ""}">
+      ${turn ? `<div class="duGhostBar" style="left:${pct(total)}%;width:${pct(total + tp) - pct(total)}%"></div>
+        <div class="duRunner ghost" style="left:calc(${pct(total + tp)}% - 22px)">${profAvatarImg(av, "frAv")}</div>` : ""}
+      <div class="duRunner" style="left:calc(${pct(total)}% - 22px)">${profAvatarImg(av, "frAv")}</div>
+      <span class="duLaneName" data-noi18n>${escapeHtml(name)}</span><b class="duLaneTot">${total}${turn ? `<small>+${tp}</small>` : ""}</b><img class="duFlag" src="assets/duel/race-flag.webp" alt=""></div>`;
+  };
+  const mineName = me.nickname || "You", oppSide = v.me === "a" ? "b" : "a";
   let pic = "", say;
-  if (ev && ev.bust) pic = `<img class="duBust" src="assets/duel/race-bust.webp" alt="">`;
-  else if (ev && ev.roll) pic = `<img class="duDie big" src="assets/duel/die-${ev.roll}.webp" alt="${ev.roll}">`;
-  else if (ev && "bank" in ev) pic = `<img class="duBank" src="assets/duel/race-bank.webp" alt="">`;
+  if (!fin && mine && DU.busy) pic = `<img class="duDie big spin" src="assets/duel/die-${1 + Math.floor(Math.random() * 6)}.webp" alt="">`;   // 🎲 rolling…
+  else if (ev && ev.bust) pic = `<img class="duBust${fx("fresh")}" src="assets/duel/race-bust.webp" alt="">`;
+  else if (ev && ev.roll) pic = `<img class="duDie big${fx("tumble")}" src="assets/duel/die-${ev.roll}.webp" alt="${ev.roll}">`;
+  else if (ev && "bank" in ev) pic = `<img class="duBank${fx("fresh")}" src="assets/duel/race-bank.webp" alt="">`;
   const whoEv = ev ? (ev.who === v.me ? "You" : p.nick) : "";
   const evWho = (txt) => whoEv === "You" ? txt.you : `<span data-noi18n>${escapeHtml(whoEv)}</span> ${txt.them}`;
   const parts = [];
@@ -222,10 +254,19 @@ function duRaceHtml(v, fin) {
   if (!fin && ev && "bank" in ev && !st.tp) parts.push(`💰 ${evWho({ you: "You banked", them: "banked" })} ${ev.bank} points.`);
   if (!fin) parts.push(mine ? (st.tp ? `🎲 This turn: <b>${st.tp}</b> points. Roll again or Bank?` : "🎲 Your turn: roll the die!")
     : `⏳ <span data-noi18n>${escapeHtml(p.nick)}</span>'s turn${st.tp ? `: <b>${st.tp}</b> points this turn` : ""}…`);
+  const myTotal = v.my_score;
+  if (!fin && mine) parts.push(`<span class="duTip">You need <b>${Math.max(0, goal - myTotal - tp)}</b> more · each roll has a 1 in 6 chance to lose ${tp ? `these <b>${tp}</b> points` : "this turn's points"}.</span>`);
   say = parts.length ? parts.map(x => `<div>${x}</div>`).join("") : null;
+  // 📜 the last turns, newest first
+  const turns = duRaceTurns(v.log).slice(-4).reverse();
+  const hist = turns.length ? `<ul class="duHist">${turns.map(t => {
+    const you = t.who === v.me, img = t.kind === "bust" ? "race-bust" : t.kind === "win" ? "race-flag" : "race-bank";
+    const txt = t.kind === "bust" ? (you ? `You lost ${t.pts}` : `lost ${t.pts}`) : t.kind === "win" ? (you ? "You won!" : "won!") : (you ? `You banked ${t.pts}` : `banked ${t.pts}`);
+    return `<li class="${t.kind}"><img class="duHIco" src="assets/duel/${img}.webp" alt="">${you ? "" : `<span class="duHWho" data-noi18n>${escapeHtml(p.nick)}</span>`} ${txt} <span class="duHDice">${t.dice.map(n => `<img src="assets/duel/die-${n}.webp" alt="${n}">`).join("")}</span></li>`; }).join("")}</ul>` : "";
+  const bankTo = st.tp && mine ? ` → ${myTotal + tp} / ${goal}` : "";
   const controls = fin ? "" : `<div class="duPicks"><button class="btn big duRoll" data-du="roll" ${mine && !DU.busy ? "" : "disabled"}>🎲 Roll</button>
-    <button class="btn big duBankBtn" data-du="bank" ${mine && !DU.busy ? "" : "disabled"}><img class="ico" src="assets/duel/race-bank.webp" alt="">Bank${st.tp && mine ? ` +${st.tp}` : ""}</button></div>`;
-  return { stage: `<div class="duRace">${lane("me", v.my_score, mineName, me.avatar)}${lane("opp", v.opp_score, p.nick, p.avatar)}<div class="duRacePic">${pic}</div></div>`, say, controls };
+    <button class="btn big duBankBtn" data-du="bank" ${mine && !DU.busy ? "" : "disabled"}><img class="ico" src="assets/duel/race-bank.webp" alt=""><span>Bank${bankTo}</span></button></div>`;
+  return { stage: `<div class="duRace">${lane(v.me, v.my_score, mineName, me.avatar)}${lane(oppSide, v.opp_score, p.nick, p.avatar)}<div class="duRacePic">${pic}</div>${hist}</div>`, say, controls };
 }
 function duMatchHtml(v) {
   const g = DU_GAMES[v.game], p = duPerson(v), me = prof.row || {}, now = Date.now();
@@ -258,7 +299,7 @@ function duMatchHtml(v) {
       : `<div class="duPicks"><button class="btn big duRoll" data-du="roll" ${v.my_pick || showing || DU.busy ? "disabled" : ""}>🎲 Roll</button></div>`;
   return `<div class="card duMatch ${v.game}" style="background-image:url('${g.bg}')">
     <div class="duTop"><div class="duPl">${profAvatarImg(me.avatar, "frAv")}<b data-noi18n>${escapeHtml(me.nickname || "You")}</b><span class="duScore">${v.my_score}</span></div>
-      <div class="duMid"><b>${g.name}</b><span>${v.game === "race" ? `First to 21 · Bet ${fmt(v.bet)}` : `Round ${v.round} · Bet ${fmt(v.bet)}`}</span>${left}</div>
+      <div class="duMid"><b>${duName(v.game, duGoalOf(v))}</b><span>${v.game === "race" ? `First to ${duGoalOf(v)} · Bet ${fmt(v.bet)}` : `Round ${v.round} · Bet ${fmt(v.bet)}`}</span>${left}</div>
       <div class="duPl r"><span class="duScore">${v.opp_score}</span><b data-noi18n>${escapeHtml(p.nick)}</b>${profAvatarImg(p.avatar, "frAv")}</div></div>
     <div class="duStage">${stage}</div>
     <div class="duSay ${fin ? (v.won ? "win" : "lose") : ""}">${say}</div>
@@ -297,6 +338,7 @@ document.addEventListener("click", (e) => {
   if (k === "signin" && typeof cloudSignIn === "function") cloudSignIn();
   if (k === "profile") showView("profile");
   if (k === "game") { DU.game = b.dataset.g; renderDuels(); }
+  if (k === "goal") { DU.goal = Number(b.dataset.n) === 42 ? 42 : 21; state.duGoal = DU.goal; save(); renderDuels(); }
   if (k === "pct") { DU.bet = String(Math.max(1, Math.floor(state.money * Number(b.dataset.p)))); DU.err = ""; renderDuels(); }
   if (k === "challenge") duChallenge(b.dataset.id);
   if (k === "cancel") duDo("duel_cancel", { p_id: id }, () => { DU.out = null; });

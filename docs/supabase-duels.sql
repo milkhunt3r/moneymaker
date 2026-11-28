@@ -1,4 +1,4 @@
--- ⚔️ Empire of Coins: online casino duels between friends (✊ Rock Paper Scissors, 🎲 Dice Battle, 💰 Bluff Chest, 🏁 Race to 21).
+-- ⚔️ Empire of Coins: online casino duels between friends (✊ Rock Paper Scissors, 🎲 Dice Battle, 💰 Bluff Chest, 🏁 Race to 21 or 42).
 -- Run AFTER supabase-friends.sql and supabase-profiles-money.sql.
 -- Paste all of this into Supabase → SQL Editor → New query, and click "Run". It is safe to run again.
 --
@@ -32,6 +32,9 @@ create table if not exists public.duels (
 alter table public.duels add column if not exists st jsonb not null default '{}';   -- 🏁 Race to 21: {"turn": "a"/"b", "tp": points this turn}
 alter table public.duels drop constraint if exists duels_game_check;
 alter table public.duels add constraint duels_game_check check (game in ('rps', 'dice', 'chest', 'race'));
+alter table public.duels add column if not exists goal int not null default 21;   -- 🏁 Race: first to 21 (quick) or 42 (long)
+alter table public.duels drop constraint if exists duels_goal_check;
+alter table public.duels add constraint duels_goal_check check (goal in (21, 42));
 create index if not exists duels_a_idx on public.duels (a, status);
 create index if not exists duels_b_idx on public.duels (b, status);
 
@@ -67,7 +70,7 @@ begin
   select pick into mine from public.duel_moves where duel_id = d.id and round = d.round and player = me;
   opp_moved := exists (select 1 from public.duel_moves where duel_id = d.id and round = d.round and player = opp);
   return jsonb_build_object(
-    'id', d.id, 'game', d.game, 'status', d.status, 'bet', d.bet, 'round', d.round, 'log', d.log, 'st', d.st,
+    'id', d.id, 'game', d.game, 'status', d.status, 'bet', d.bet, 'round', d.round, 'log', d.log, 'st', d.st, 'goal', d.goal,
     'me', case when me = d.a then 'a' else 'b' end,
     'my_score', case when me = d.a then d.score_a else d.score_b end,
     'opp_score', case when me = d.a then d.score_b else d.score_a end,
@@ -79,7 +82,7 @@ begin
                       when d.deadline is null then null else greatest(0, extract(epoch from d.deadline - now())) end);
 end; $$;
 
--- 🏁 Race to 21: one action of the player whose turn it is ('roll' or 'bank'). Totals live in score_a / score_b.
+-- 🏁 Race to 21 / 42: one action of the player whose turn it is ('roll' or 'bank'). Totals live in score_a / score_b.
 create or replace function public.duel_race(p_id bigint, who text, act text) returns void language plpgsql security definer set search_path = '' as $$
 declare d public.duels; tp int; r int; total int; other text;
 begin
@@ -93,7 +96,7 @@ begin
     if r = 1 then   -- 💥 bust: this turn's points are lost, the other player goes
       update public.duels set log = log || jsonb_build_array(jsonb_build_object('who', who, 'roll', 1, 'bust', true, 'lost', tp)),
         st = jsonb_build_object('turn', other, 'tp', 0), round = round + 1, deadline = now() + interval '17 seconds' where id = d.id;
-    elsif total + tp + r >= 21 then   -- 🏁 reached 21: banked and won
+    elsif total + tp + r >= d.goal then   -- 🏁 reached the goal (21 or 42): banked and won
       update public.duels set log = log || jsonb_build_array(jsonb_build_object('who', who, 'roll', r, 'win', true)),
         score_a = score_a + case when who = 'a' then tp + r else 0 end, score_b = score_b + case when who = 'b' then tp + r else 0 end,
         st = jsonb_build_object('turn', who, 'tp', 0), status = 'done', reason = 'score', ended_at = now(), deadline = null,
@@ -151,13 +154,16 @@ revoke all on function public.duel_step(bigint) from public, anon, authenticated
 
 -- ---------- what the game calls ----------
 -- challenge a friend who is online (both players must have at least the bet, as their profiles show)
-create or replace function public.duel_invite(p_opp uuid, p_game text, p_bet double precision) returns bigint
+-- p_goal: 🏁 Race only, 21 or 42 (older game versions leave it out: 21)
+drop function if exists public.duel_invite(uuid, text, double precision);
+create or replace function public.duel_invite(p_opp uuid, p_game text, p_bet double precision, p_goal int default 21) returns bigint
 language plpgsql security definer set search_path = '' as $$
 declare me uuid := auth.uid(); new_id bigint;
 begin
   if me is null or p_opp is null or me = p_opp then raise exception 'bad_player' using errcode = 'P0001'; end if;
   if p_game not in ('rps', 'dice', 'chest', 'race') then raise exception 'bad_game' using errcode = 'P0001'; end if;
   if p_bet is null or p_bet < 1 or p_bet >= 1e300 then raise exception 'bad_bet' using errcode = 'P0001'; end if;
+  if p_goal is null or p_goal not in (21, 42) or p_game <> 'race' then p_goal := 21; end if;
   if not exists (select 1 from public.friendships f where f.status = 'accepted'
                  and ((f.requester = me and f.addressee = p_opp) or (f.requester = p_opp and f.addressee = me))) then
     raise exception 'not_friends' using errcode = 'P0001';
@@ -170,7 +176,7 @@ begin
   update public.duels set status = 'expired', ended_at = now() where status = 'invited' and created_at < now() - interval '60 seconds';
   if exists (select 1 from public.duels where status in ('invited', 'active') and (me in (a, b))) then raise exception 'busy' using errcode = 'P0001'; end if;
   if exists (select 1 from public.duels where status in ('invited', 'active') and (p_opp in (a, b))) then raise exception 'opp_busy' using errcode = 'P0001'; end if;
-  insert into public.duels (game, a, b, bet, seen_a) values (p_game, me, p_opp, p_bet, now()) returning id into new_id;
+  insert into public.duels (game, a, b, bet, seen_a, goal) values (p_game, me, p_opp, p_bet, now(), p_goal) returning id into new_id;
   return new_id;
 end; $$;
 
@@ -282,8 +288,8 @@ begin
       or (d.status = 'done' and ((me = d.a and not d.settled_a) or (me = d.b and not d.settled_b))))), '[]'::jsonb);
 end; $$;
 
-revoke all on function public.duel_invite(uuid, text, double precision), public.duel_respond(bigint, boolean), public.duel_move(bigint, text),
+revoke all on function public.duel_invite(uuid, text, double precision, int), public.duel_respond(bigint, boolean), public.duel_move(bigint, text),
   public.duel_tick(bigint), public.duel_cancel(bigint), public.duel_settle(bigint), public.duel_pending() from public, anon;
-grant execute on function public.duel_invite(uuid, text, double precision), public.duel_respond(bigint, boolean), public.duel_move(bigint, text),
+grant execute on function public.duel_invite(uuid, text, double precision, int), public.duel_respond(bigint, boolean), public.duel_move(bigint, text),
   public.duel_tick(bigint), public.duel_cancel(bigint), public.duel_settle(bigint), public.duel_pending() to authenticated;
 revoke all on function public.duel_view(public.duels, uuid), public.duel_rand_pick(text) from public, anon, authenticated;
