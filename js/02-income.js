@@ -379,7 +379,7 @@ function render() {
       </div></div>`;
   });
 
-  html += `<div class="muted">More businesses coming soon...</div></div>`;
+  html += `</div>`;
   html += `<div ${page === "special" ? "" : "hidden"} id="incSpecial">${renderSpecialBusinesses()}</div>`;
   html += `<div ${page === "science" ? "" : "hidden"} id="incScience"><h2>🔬 Science</h2>${typeof renderScience === "function" ? renderScience() : ""}</div>`;
   $("shop").innerHTML = tabs + html;
