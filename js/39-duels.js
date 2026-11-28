@@ -179,7 +179,7 @@ function duLobbyHtml() {
   const games = Object.entries(DU_GAMES).map(([k, g]) => `<button class="duGame ${DU.game === k ? "on" : ""}" data-du="game" data-g="${k}"><img src="${g.ico}" alt=""><b>${duName(k, DU.goal)}</b><span>${duRules(k, DU.goal)}</span>
     <span class="duRec">🏆 ${st[k].w} · ❌ ${st[k].l}</span></button>`).join("");
   const goal = DU.game === "race" ? `<div class="duGoalPick"><span>Race length:</span>${[[21, "quick"], [42, "long"]].map(([n, t]) =>
-    `<button class="seg ${DU.goal === n ? "on" : ""}" data-du="goal" data-n="${n}"><b>${n}</b> <span>${t}</span></button>`).join("")}</div>` : "";
+    `<button class="seg ${DU.goal === n ? "on" : ""}" data-du="goal" data-n="${n}"><img class="duGoalIco" src="assets/duel/race-${n === 42 ? "long" : "quick"}.webp" alt=""><b>${n}</b> <span>${t}</span></button>`).join("")}</div>` : "";
   return `<div class="card"><h3 style="margin-top:0">1. Choose a game</h3><div class="duGames">${games}</div>${goal}</div>
     <div class="card"><h3 style="margin-top:0">2. Your bet</h3>
       <div class="moneyRow"><input id="duBet" type="number" min="1" placeholder="Amount" value="${escapeHtml(typed || "")}" aria-label="Bet">
@@ -237,13 +237,13 @@ function duRaceHtml(v, fin) {
     const turn = !fin && st.turn === who && tp > 0, bust = fresh && ev && ev.bust && ev.who === who;
     return `<div class="duLane${bust ? fx("bust") : ""}">
       ${turn ? `<div class="duGhostBar" style="left:${pct(total)}%;width:${pct(total + tp) - pct(total)}%"></div>
-        <div class="duRunner ghost" style="left:calc(${pct(total + tp)}% - 22px)">${profAvatarImg(av, "frAv")}</div>` : ""}
+        <div class="duRunner ghost" style="left:calc(${pct(total + tp)}% - 22px)"><img class="duGhostIco" src="assets/duel/race-ghost.webp" alt=""></div>` : ""}
       <div class="duRunner" style="left:calc(${pct(total)}% - 22px)">${profAvatarImg(av, "frAv")}</div>
       <span class="duLaneName" data-noi18n>${escapeHtml(name)}</span><b class="duLaneTot">${total}${turn ? `<small>+${tp}</small>` : ""}</b><img class="duFlag" src="assets/duel/race-flag.webp" alt=""></div>`;
   };
   const mineName = me.nickname || "You", oppSide = v.me === "a" ? "b" : "a";
   let pic = "", say;
-  if (!fin && mine && DU.busy) pic = `<img class="duDie big spin" src="assets/duel/die-${1 + Math.floor(Math.random() * 6)}.webp" alt="">`;   // 🎲 rolling…
+  if (!fin && mine && DU.busy) pic = `<img class="duDie big spin" src="assets/duel/die-rolling.webp" alt="">`;   // 🎲 rolling…
   else if (ev && ev.bust) pic = `<img class="duBust${fx("fresh")}" src="assets/duel/race-bust.webp" alt="">`;
   else if (ev && ev.roll) pic = `<img class="duDie big${fx("tumble")}" src="assets/duel/die-${ev.roll}.webp" alt="${ev.roll}">`;
   else if (ev && "bank" in ev) pic = `<img class="duBank${fx("fresh")}" src="assets/duel/race-bank.webp" alt="">`;
