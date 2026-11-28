@@ -65,6 +65,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "🤖 New pet: <b>Digy</b>, a little Kragg mining robot! Get him from the 🗿 Kragg once you're 😊 Friendly (💎 50 diamonds + 🔴 10 rubies). When your ⛏️ mine energy is full, he digs for 30 seconds (⚡ 3 energy) and brings 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25 to your 🏦 vault, also while the game is closed (up to 24 hours).",
     "👥 Friends: your friend requests and friends now come first, with a big friend code box (📋 Copy, 📤 Share) and an invite when you have no friends yet. Online friends have a <b>⚔️ Challenge</b> button that opens the Online casino with them picked.",
     "👤 Profile: tap your avatar to change it, see your 🦊🦉🦅 levels and your pets by name, pick a <b>🏅 showcase</b> of 3 achievements, and choose whether other players can see your money.",
     "🐾 The Pet tab is now <b>Pets</b>: your pet collection at the top (2 of 4 found so far), a live status line for each pet with a Go see him button, and earnings for both pets.",

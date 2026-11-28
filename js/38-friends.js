@@ -190,7 +190,8 @@ document.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.
 /* ----- ⏱️ staying "online" and checking for new requests ----- */
 setInterval(() => {   // 🟢 a small update once a minute while the game is visible: the database stamps last_seen
   if (document.hidden || !frMe() || !prof.row || prof.friendsOn !== true || (typeof tabActive !== "undefined" && !tabActive)) return;
-  cloud.sb.from("profiles").update({ pets: profPets() }).eq("user_id", frMe()).then(({ error }) => { if (!error) prof.row.pets = profPets(); }, () => {});
+  const pets = profPets();
+  cloud.sb.from("profiles").update({ pets }).eq("user_id", frMe()).then(({ error }) => { if (!error) prof.row.pets = pets; else if (error.code === "23514" && pets.includes("digy")) prof.petsOld = true; }, () => {});
 }, FR_PING);
 setInterval(() => {   // new requests (the red number on 👤) and friends going on/offline
   if (document.hidden || !frMe() || !prof.row || prof.friendsOn !== true) return;

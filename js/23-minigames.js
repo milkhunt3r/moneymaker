@@ -137,9 +137,52 @@ function mineBase() {
 }
 const mineRush = () => (state.special.goldRush || 0) > 0;
 
+/* ----- 🤖 DIGY, the mining robot pet (bought from the 🗿 Kragg; his page parts are in js/36b-digy.js) -----
+   When the mine energy is full (and you're not in a run), he uses 3 energy and digs for 30 seconds,
+   then puts a fixed haul into your 🏦 vault. While he digs you can't start a run.
+   Also while the game is closed, for up to 24 hours after you left (like Pip): this function replays the energy
+   refills one by one, so every moment the energy was full counts. It runs before the normal refill below. */
+const DIGY_COST = 3, DIGY_DIG = 30e3, DIGY_AWAY = 24 * 3600e3;
+const DIGY_HAUL = { ruby: 1, diamond: 3, gold: 10, silver: 20, copper: 25, coal: 25 };
+const digyOwned = () => !!(state.digy && state.digy.owned);
+const digyBusy = () => digyOwned() && !!state.digy.dig;
+const digyName = () => String((state.digy && state.digy.name) || "").replace(/[<>"'`&]/g, "").trim().slice(0, 16) || "Digy";
+function digyHaul(t) {
+  const D = state.digy;
+  for (const k in DIGY_HAUL) { M.vault[k] = (M.vault[k] || 0) + DIGY_HAUL[k]; D.ores[k] = (D.ores[k] || 0) + DIGY_HAUL[k]; }
+  D.hauls++; D.lastHaul = t;
+  if (Date.now() - t > 5000) D.awayHauls = (D.awayHauls || 0) + 1;   // happened while the game was closed: told once, all together
+  else if (typeof showNotice === "function") showNotice(LANG === "es" ? `🤖 ${digyName()} ha llevado un botín a tu 🏦 cámara: 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25.` : `🤖 ${digyName()} brought a haul to your 🏦 vault: 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25.`);
+}
+function digyAdvance(now = Date.now()) {
+  const D = state.digy; if (!digyOwned() || !mineUnlocked()) return;
+  D.ores = D.ores || {}; D.hauls = D.hauls || 0;
+  if (D.off) { D.seen = now; return; }
+  const max = energyMax(), cutoff = (D.seen || now) + DIGY_AWAY;
+  let changed = false;
+  for (let guard = 0; guard < 400; guard++) {
+    if (D.dig) { if (now < D.dig.end) break; digyHaul(D.dig.end); D.dig = null; changed = true; continue; }
+    if (M.run || M.pending) break;   // you're playing: he waits
+    if (M.energy >= max) {
+      const t = D.fullAt && D.fullAt <= now ? D.fullAt : now;   // when it got full (replayed), or now
+      if (t > cutoff) { D.fullAt = null; M.regenAt = null; break; }   // away more than 24 h: he rests until you're back
+      M.energy -= DIGY_COST; M.regenAt = t + regenMs(); D.fullAt = null;
+      D.dig = { start: t, end: t + DIGY_DIG }; changed = true;
+      continue;
+    }
+    if (!M.regenAt) M.regenAt = now + regenMs();
+    if (M.regenAt > now) break;
+    M.energy++; const t = M.regenAt; M.regenAt += regenMs(); changed = true;
+    if (M.energy >= max) { M.regenAt = null; D.fullAt = t; }
+  }
+  D.seen = now;
+  if (changed && typeof save === "function") save();
+}
+
 // ⚡ energy refills on real time, also while the game is closed
 function mineEnergy() {
   const now = Date.now();
+  digyAdvance(now);
   if (M.energy >= energyMax()) { M.regenAt = null; return M.energy; }
   if (!M.regenAt) M.regenAt = now + regenMs();
   while (M.energy < energyMax() && now >= M.regenAt) { M.energy++; M.regenAt += regenMs(); }
@@ -216,7 +259,7 @@ if (M.run && M.run.w !== MINE_W) {
 
 // ----- run flow -----
 function mineStart() {
-  if (M.run || M.pending || !mineUnlocked() || mineEnergy() < 1) return;
+  if (M.run || M.pending || !mineUnlocked() || mineEnergy() < 1 || digyBusy()) return;   // 🤖 not while Digy digs
   if (M.energy >= energyMax()) M.regenAt = Date.now() + regenMs();
   M.energy--;
   M.run = newMineMap();
@@ -773,6 +816,7 @@ function renderMine() {
   const e = mineEnergy();
   if (!M.run) {
     v.innerHTML = `<button class="btn ghost small gamesBack" data-games-back>← 🎮 Mini-games</button>
+      <div id="digyCorner"></div>
       <div class="card mineIntro">
         <h2>⛏️ Gold Mine Dig</h2>
         <p>Dig down into your gold mine and grab as much ore as your bag can hold. The deeper you go, the better the ore,
@@ -787,6 +831,7 @@ function renderMine() {
         ${vaultLine()}
         <div class="moneyRow" style="justify-content:center">
           ${M.pending ? `<button class="btn big" data-mine="pending">${mnIco("bag")}Ore from your last run: sell or keep</button>`
+            : digyBusy() ? `<button class="btn big" disabled>🤖 <span data-noi18n>${digyName()}</span>&nbsp;<span>is digging…</span>&nbsp;<b id="digyLeft">${clockMs(state.digy.dig.end - Date.now())}</b></button>`
             : `<button class="btn big" data-mine="start" ${e >= 1 ? "" : "disabled"}>${mnIco("pick")}Start a run (${mnIco("energy")}1)</button>`}
           <button class="btn ghost" data-mine="vault" ${ORE_KEYS.some(k => M.vault[k] > 0) ? "" : "disabled"}>💰 Sell vault ore</button></div>
         <p class="muted">Runs: ${M.runs} · Deepest ever: ${M.best * 2} m · Chests opened: ${M.chests} · Earned: ${fmt(M.earned)}</p>
@@ -889,6 +934,7 @@ function renderGames() {
         <img class="gameIcon gameIconImg" src="assets/mine/entrance.webp" alt=""><h3>Gold Mine Dig</h3>
         <p class="muted">Dig 250 m deep for coal, copper, silver, gold, diamonds, rubies and treasure chests before your lamp runs out.</p>
         <div class="gameStatus">${mine ? `${energyIcons(e)}${M.run ? " · ⛏️ run in progress" : ""}` : "🔒 Buy your first ⛏️ gold mine (💰 Income → ⭐ Special)"}</div>
+        ${mine && typeof digyHubLine === "function" ? digyHubLine() : ""}
         ${mine ? vaultLine("small") : ""}
         <button class="btn" data-game="mine" ${mine ? "" : "disabled"}>${M.run ? "▶ Continue" : "▶ Play"}</button>
       </div>

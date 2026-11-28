@@ -91,6 +91,7 @@ function doPrestige(id) {
     shooter: state.shooter,     // 🚀 Nebula Strike: levels, ships, upgrades and stardust stay
     pet: state.pet,             // 🐾 the pet from the pirate loot box stays
     pip: state.pip,             // 🐾 Pip the painter stays too
+    digy: state.digy,           // 🤖 Digy the mining robot stays too
     taxHoliday: TAX_HOLIDAY,   // 🛡️ no tax inspections for the first 10 minutes
     recruitPlan: state.recruitPlan,   // 🧑‍💼 the Recruitment Agency's staffing plan (the building itself resets)
     // 🖼️ Art Gallery: stays unlocked and keeps its bought slots and all kept paintings

@@ -534,6 +534,7 @@ function spPanelHtml() {
       <span class="spChip" title="Distance: one way">${spI("distance")}${spMin(spSel)} min</span>
       ${typeof spPoliticsChips === "function" ? spPoliticsChips(spSel) : ""}</div>
     ${typeof pipOfferHtml === "function" ? pipOfferHtml(spSel) : ""}
+    ${typeof digyOfferHtml === "function" ? digyOfferHtml(spSel) : ""}
     <div class="spTabs"><button class="spTab ${spPTab === "trade" ? "on" : ""}" data-sptab="trade">${spI("route")}Trade</button><button class="spTab ${spPTab === "bonus" ? "on" : ""}" data-sptab="bonus">${spI("bonus")}Relations & bonuses</button></div>
     ${spPTab === "trade" ? spRouteHtml(spSel) + (typeof spOutpostHtml === "function" ? spOutpostHtml(spSel) : "")
       : (typeof spPoliticsHtml === "function" ? spPoliticsHtml(spSel) : "") + spBonusHtml(spSel)}`;

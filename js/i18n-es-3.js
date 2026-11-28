@@ -1917,6 +1917,29 @@ H("👥 Friends: your friend requests and friends now come first, with a big fri
   "👥 Amigos: tus solicitudes y tus amigos aparecen ahora primero, con un recuadro grande para tu código de amigo (📋 Copiar, 📤 Compartir) y una invitación cuando aún no tienes amigos. Los amigos conectados tienen un botón <b>⚔️ Retar</b> que abre el Casino online con ellos elegidos.");
 H("👤 Profile: tap your avatar to change it, see your 🦊🦉🦅 levels and your pets by name, pick a <b>🏅 showcase</b> of 3 achievements, and choose whether other players can see your money.",
   "👤 Perfil: toca tu avatar para cambiarlo, mira tus niveles 🦊🦉🦅 y tus mascotas por su nombre, elige una <b>🏅 vitrina</b> con 3 logros y decide si los demás jugadores pueden ver tu dinero.");
+// 🤖 Digy, the mining robot pet
+Object.assign(ES, { "Digy joined you!": "¡Digy se ha unido a ti!", "is digging…": "está excavando…", "Hauls": "Botines",
+  "He set up his charging dock at the top of the ⛏️ Gold Mine Dig page. Every time your mine energy is full, he uses ⚡ 3 energy and digs for 30 seconds, then brings a haul to your 🏦 vault: 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25.": "Ha instalado su base de carga arriba en la página de ⛏️ Excavación en la mina de oro. Cada vez que la energía de la mina está llena, usa ⚡ 3 de energía y excava durante 30 segundos, y luego lleva un botín a tu 🏦 cámara: 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25.",
+  "He never digs while you're in a run, and he keeps working while the game is closed (up to 24 hours).": "Nunca excava mientras estás en una partida, y sigue trabajando con el juego cerrado (hasta 24 horas).",
+  "Pirate loot boxes": "Cajas de botín pirata", "An art-loving alien race": "Una raza alienígena amante del arte", "The rock-eating Kragg": "Los Kragg, comedores de rocas",
+  "Open pirate loot boxes in 🎮 Mini-games → 🚀 Nebula Strike (levels 4 and 5, or the pirate chest in the hangar). Every box has a small chance to hold a pet.": "Abre cajas de botín pirata en 🎮 Minijuegos → 🚀 Nebula Strike (niveles 4 y 5, o el cofre pirata del hangar). Cada caja tiene una pequeña probabilidad de contener una mascota.",
+  "The rock-eating Kragg are said to build little mining robots for their friends.": "Dicen que los Kragg, comedores de rocas, construyen pequeños robots mineros para sus amigos.",
+  "Lives on the ⛏️ Gold Mine Dig page and digs when your mine energy is full.": "Vive en la página de ⛏️ Excavación en la mina de oro y excava cuando la energía de la mina está llena.",
+  "Hidden. He doesn't dig, and your mine energy is all yours.": "Oculto. No excava, y toda la energía de la mina es para ti.",
+  "His battery is your ⛏️ mine energy. When it's full, he wakes up and digs for 30 seconds, using ⚡ 3 energy.": "Su batería es la energía de tu ⛏️ mina. Cuando está llena, se despierta y excava durante 30 segundos, usando ⚡ 3 de energía.",
+  "Every dig brings a fixed haul to your 🏦 vault: 🔴 1 ruby, 💎 3 diamonds, 🟡 10 gold, ⚪ 20 silver, 🟠 25 copper and ⚫ 25 coal.": "Cada excavación lleva un botín fijo a tu 🏦 cámara: 🔴 1 rubí, 💎 3 diamantes, 🟡 10 de oro, ⚪ 20 de plata, 🟠 25 de cobre y ⚫ 25 de carbón.",
+  "He never digs while you're in a run, and you can't start a run while he digs.": "Nunca excava mientras estás en una partida, y no puedes empezar una partida mientras él excava.",
+  "He keeps working while the game is closed (up to 24 hours).": "Sigue trabajando con el juego cerrado (hasta 24 horas).",
+  "A digging robot for your mine": "Un robot excavador para tu mina",
+  "Rumour has it an art-loving alien race has a painter who'd love a new home.": "Se rumorea que una raza alienígena amante del arte tiene un pintor al que le encantaría un nuevo hogar.", "Get Digy": "Conseguir a Digy", "Go and see him": "Ir a verlo" });
+rx(String.raw`(.+) ha llevado un botín a tu 🏦 cámara: (.*)`, (m) => m);   // already in Spanish (written by the game)
+rx(String.raw`Your Kragg mining robot · together since (.+)`, "Tu robot minero de los Kragg · juntos desde el $1");
+H("The Kragg built a little mining robot, <b>Digy</b>. When your ⛏️ mine energy is full, he digs for you and brings a haul of ore to your 🏦 vault. They ask <b>💎 50 diamonds and 🔴 10 rubies</b> for him.",
+  "Los Kragg han construido un pequeño robot minero, <b>Digy</b>. Cuando la energía de tu ⛏️ mina está llena, excava por ti y lleva un botín de mineral a tu 🏦 cámara. Piden <b>💎 50 diamantes y 🔴 10 rubíes</b> por él.");
+H("Become <b>😊 Friendly</b> with the Kragg and they may sell you one of their little mining robots.",
+  "Hazte <b>😊 amigo</b> de los Kragg y puede que te vendan uno de sus pequeños robots mineros.");
+H("🤖 New pet: <b>Digy</b>, a little Kragg mining robot! Get him from the 🗿 Kragg once you're 😊 Friendly (💎 50 diamonds + 🔴 10 rubies). When your ⛏️ mine energy is full, he digs for 30 seconds (⚡ 3 energy) and brings 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25 to your 🏦 vault, also while the game is closed (up to 24 hours).",
+  "🤖 Nueva mascota: <b>Digy</b>, un pequeño robot minero de los Kragg. Consíguelo de los 🗿 Kragg cuando seáis 😊 amigos (💎 50 diamantes + 🔴 10 rubíes). Cuando la energía de tu ⛏️ mina está llena, excava durante 30 segundos (⚡ 3 de energía) y lleva 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25 a tu 🏦 cámara, también con el juego cerrado (hasta 24 horas).");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

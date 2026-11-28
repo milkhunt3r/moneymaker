@@ -2100,7 +2100,7 @@ body.phone .petHero { flex-direction: column; text-align: center; }
 .petPick img { width: 72px; height: 72px; object-fit: contain; }
 .petPick.unknown { cursor: default; color: #a9a4c6; font-weight: 600; font-size: 12px; background: rgba(255, 255, 255, 0.03); border: 1px dashed rgba(255, 255, 255, 0.2); }
 .petQ { width: 72px; height: 72px; display: grid; place-items: center; font: 800 34px/1 system-ui, sans-serif; color: rgba(255, 255, 255, 0.35); border-radius: 50%; background: rgba(255, 255, 255, 0.05); }
-.petFind { margin-top: 10px; font-size: 13px; }
+.petFind { margin-top: 10px; font-size: 13px; display: flex; flex-direction: column; gap: 3px; }
 .petNameH { margin: 0; display: flex; align-items: center; gap: 6px; }
 .petEdit { background: none; border: 1px solid transparent; border-radius: 8px; padding: 2px 5px; font-size: 15px; cursor: pointer; opacity: 0.65; }
 .petEdit:hover { opacity: 1; border-color: rgba(255, 211, 77, 0.5); }
@@ -2728,3 +2728,26 @@ body.phone #achList > .achCats .achCat { flex: none; }
 body.phone .profCard { flex-direction: column; text-align: center; }
 body.phone .profLvls, body.phone .profPetsN, body.phone .profShow, body.phone .profMoney, body.phone .profNick, body.phone .profStats { justify-content: center; }
 body.phone .profMoney { flex-wrap: wrap; }
+
+/* 🤖 Digy's corner on the Gold Mine Dig page: charging dock left, digging spot right */
+.digyCard { padding-bottom: 6px; }
+.digyHead { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; }
+.digyHead h3 { margin: 0; }
+.digyStatus { font-size: 14px; color: #d9d6ea; }
+.digyStage { position: relative; height: 190px; margin-top: 6px; border-radius: 12px; overflow: hidden;
+  background: linear-gradient(180deg, rgba(120, 90, 200, 0.12), rgba(0, 0, 0, 0) 55%), linear-gradient(0deg, rgba(110, 70, 40, 0.55), rgba(110, 70, 40, 0.15) 22%, transparent 23%); }
+.digyProp { position: absolute; bottom: 4px; pointer-events: none; opacity: 0; transition: opacity 0.4s; }
+.digyDock { width: 119px; margin-left: 25px; bottom: 0; }   /* same size and spot as the dock in his charging pictures */
+.digyHole { width: 150px; bottom: 6px; }
+.digyDirt { width: 110px; right: 1%; bottom: 6px; }
+.digyStage.showDock .digyDock, .digyStage.showHole .digyHole, .digyStage.showDirt .digyDirt { opacity: 1; }
+.digySprite { position: absolute; bottom: 0; width: 170px; height: 170px; object-fit: contain; pointer-events: none; transition: left 0.12s linear; }
+.digySprite.flip { transform: scaleX(-1); }
+.digySprite.charging { animation: digyBreath 2.4s ease-in-out infinite; transform-origin: 50% 100%; }
+@keyframes digyBreath { 50% { transform: scale(1.015, 0.99); } }
+.digyHub { color: #ffd34d; }
+body.phone .digyStage { height: 140px; }
+body.phone .digySprite { width: 125px; height: 125px; }
+body.phone .digyDock { width: 88px; margin-left: 18px; }
+body.phone .digyHole { width: 110px; }
+body.phone .digyDirt { width: 70px; }

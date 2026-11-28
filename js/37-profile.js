@@ -56,7 +56,7 @@ const profShowcaseHtml = (ids, mine) => {
     ${mine ? `<button class="btn ghost small" data-prof="showcase">🏅 ${list.length ? "Change showcase" : "Pick up to 3 achievements to show off"}</button>` : ""}</div>`;
 };
 const profPetsNamed = () => [state.pet && state.pet.owned && !state.pet.pending ? { pic: PROF_PETS.mochi.pic, name: petCleanName(state.pet.name) || "Mochi" } : null,
-  state.pip && state.pip.owned ? { pic: PROF_PETS.pip.pic, name: pipName() } : null].filter(Boolean);
+  state.pip && state.pip.owned ? { pic: PROF_PETS.pip.pic, name: pipName() } : null, state.digy && state.digy.owned ? { pic: PROF_PETS.digy.pic, name: digyName() } : null].filter(Boolean);
 // avatars: the emblems of the 🎁 reward collections you have unlocked (assets/col/<id>.webp)
 const profColOpen = (col) => COSMETICS.some(c => c.collection === col.id && state.cosmetics.owned[c.id]) || (() => { const p = rewardProgress(col); return p.total > 0 && p.done >= p.total; })();
 // 🐾 starter avatars every player can pick (assets/avatars/<name>.webp), shown before the collection emblems
@@ -65,8 +65,9 @@ const profAvatarIds = () => Object.keys(PROF_STARTERS).concat(COLLECTIONS.filter
 const profAvName = (id) => { if (PROF_STARTERS[id]) return PROF_STARTERS[id]; const c = COLLECTIONS.find(x => x.id === id); return c ? c.name.replace(/^\S+\s/, "") : ""; };
 const profAvatarImg = (id, cls = "") => PROF_STARTERS[id] ? `<img class="${cls}" src="assets/avatars/${id.slice(2)}.webp" alt="">` : id && COL_EMBLEMS.has(id) ? `<img class="${cls}" src="assets/col/${id}.webp" alt="">` : `<span class="${cls} profNoAv">👤</span>`;
 // 🐾 pets other players see on your profile
-const PROF_PETS = { mochi: { pic: "assets/pet/pet-portrait.webp", name: "Baby dragon-moth" }, pip: { pic: "assets/pip/pip-portrait.webp", name: "Pip the painter" } };
-const profPets = () => [state.pet && state.pet.owned && !state.pet.pending ? "mochi" : null, state.pip && state.pip.owned ? "pip" : null].filter(Boolean);
+const PROF_PETS = { mochi: { pic: "assets/pet/pet-portrait.webp", name: "Baby dragon-moth" }, pip: { pic: "assets/pip/pip-portrait.webp", name: "Pip the painter" }, digy: { pic: "assets/digy/digy-portrait.webp", name: "Digy the mining robot" } };
+// "digy" only once the database accepts it (docs/supabase-profiles-extra.sql); an older database refuses the whole update, so it is left out after the first refusal
+const profPets = () => [state.pet && state.pet.owned && !state.pet.pending ? "mochi" : null, state.pip && state.pip.owned ? "pip" : null, state.digy && state.digy.owned && !prof.petsOld ? "digy" : null].filter(Boolean);
 // 🪙 the coin skin you use (assets/<id>-coin.webp; "" = the normal coin) and its picture
 const profCoin = () => { const c = COSMETICS.find(x => x.slot === "coin" && state.cosmetics.on[x.id]); return c ? c.id.replace(/Coin$/, "") : ""; };
 const profCoinImg = (id, cls = "profCoinI") => `<img class="${cls}" src="assets/${/^[a-z0-9]{1,20}$/.test(id || "") && COSMETICS.some(x => x.id === id + "Coin") ? id + "-coin" : "coin"}.webp" alt="">`;
@@ -142,7 +143,7 @@ async function profPushStats() {
   const moneySame = !prof.moneyOn || (st.coin === prof.row.coin && Math.abs(st.money - (prof.row.money || 0)) <= Math.max(1, (prof.row.money || 0) * 0.01));   // money: only when it moved 1%+
   if (st.ach_done === prof.row.ach_done && st.ach_total === prof.row.ach_total && st.prestige === prof.row.prestige && String(st.pets) === String(prof.row.pets) && moneySame && extraSame) return;
   profPushing = true;
-  try { const { error } = await cloud.sb.from("profiles").update(st).eq("user_id", cloud.user.id); if (!error) { Object.assign(prof.row, st); profCache(); } }
+  try { const { error } = await cloud.sb.from("profiles").update(st).eq("user_id", cloud.user.id); if (!error) { Object.assign(prof.row, st); profCache(); } else if (error.code === "23514" && st.pets && st.pets.includes("digy")) { prof.petsOld = true; profPushing = false; return profPushStats(); } }
   catch (e) {}
   profPushing = false;
 }

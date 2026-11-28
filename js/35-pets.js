@@ -14,6 +14,7 @@ const petHas = () => typeof petOwned === "function" && petOwned();
 const pipHas = () => typeof pipOwned === "function" && pipOwned();
 const petOn = () => petHas() && !state.pet.hidden;
 const pipOn = () => pipHas() && !state.pip.off;
+const digyHas = () => typeof digyOwned === "function" && digyOwned();
 
 // 🔴 live parts (keyed by data-pv)
 function petLive() {
@@ -36,11 +37,16 @@ function petLive() {
       : (es ? `😴 <b>Dormido.</b> El próximo cuadro empieza en <b>${clockMs(ph.next - PIP_PAINT - now)}</b>` : `😴 <b>Asleep.</b> Next painting starts in <b>${clockMs(ph.next - PIP_PAINT - now)}</b>`);
     v.pStats = `<span>💰 Earned: <b>${fmt(Q.earned || 0)}</b></span><span>🖼️ Paintings: <b>${(Q.painted || 0).toLocaleString()}</b></span><span>📥 Kept: <b>${(Q.kept || 0).toLocaleString()}</b></span><span>💵 Sold: <b>${(Q.sold || 0).toLocaleString()}</b></span><span>❤️ Petted: <b>${(Q.pets || 0).toLocaleString()}</b></span><span>😤 Disturbed: <b>${(Q.pokes || 0).toLocaleString()}</b></span>`;
   }
+  if (digyHas()) {
+    const D = state.digy, o = D.ores || {};
+    v.dStatus = digyStatus();
+    v.dStats = `<span>⛏️ Hauls: <b>${(D.hauls || 0).toLocaleString()}</b></span><span>🔴 <b>${(o.ruby || 0).toLocaleString()}</b></span><span>💎 <b>${(o.diamond || 0).toLocaleString()}</b></span><span>🟡 <b>${(o.gold || 0).toLocaleString()}</b></span><span>⚪ <b>${(o.silver || 0).toLocaleString()}</b></span><span>🟠 <b>${(o.copper || 0).toLocaleString()}</b></span><span>⚫ <b>${(o.coal || 0).toLocaleString()}</b></span>`;
+  }
   return v;
 }
 
 function petNameHtml(k, name) {
-  if (petEditing === k) return `<input class="petNameInput" id="${k === "pet" ? "petName" : "pipName"}" maxlength="16" value="${escapeHtml(name)}" aria-label="Name" data-noi18n>`;
+  if (petEditing === k) return `<input class="petNameInput" id="${k === "pet" ? "petName" : k === "digy" ? "digyName" : "pipName"}" maxlength="16" value="${escapeHtml(name)}" aria-label="Name" data-noi18n>`;
   return `<span data-noi18n>${escapeHtml(name)}</span><button class="petEdit" data-petedit="${k}" title="Rename" aria-label="Rename">✏️</button>`;
 }
 function petSwitchRow(attr, on, onText, offText) {
@@ -51,7 +57,8 @@ function petSwitchRow(attr, on, onText, offText) {
 function renderPetPage() {
   const box = $("petPage"); if (!box) return;
   const has = petHas(), pip = pipHas(), P = state.pet || {}, Q = state.pip || {}, v = petLive();
-  const owned = (has ? 1 : 0) + (pip ? 1 : 0);
+  const dg = digyHas(), D = state.digy || {};
+  const owned = (has ? 1 : 0) + (pip ? 1 : 0) + (dg ? 1 : 0);
   // 🐾 collection row
   const slot = (k, img, name, hint) => k ? `<button class="petPick" data-petgo="${k}"><img src="${img}" alt=""><span data-noi18n>${escapeHtml(name)}</span></button>`
     : `<div class="petPick unknown" title="${hint}"><span class="petQ">?</span><span>${hint}</span></div>`;
@@ -60,10 +67,12 @@ function renderPetPage() {
     <div class="petPicks">
       ${slot(has && "pet", "assets/pet/pet-portrait.webp", petCleanName(P.name) || "Mochi", "🏴‍☠️ Pirate loot boxes")}
       ${slot(pip && "pip", "assets/pip/pip-portrait.webp", pipHas() ? pipName() : "", "🎨 An art-loving alien race")}
-      ${Array.from({ length: PET_SLOTS - 2 }, () => slot(null, "", "", "Coming in a future update")).join("")}
+      ${slot(dg && "digy", "assets/digy/digy-portrait.webp", dg ? digyName() : "", "🗿 The rock-eating Kragg")}
+      ${Array.from({ length: PET_SLOTS - 3 }, () => slot(null, "", "", "Coming in a future update")).join("")}
     </div>
-    ${owned < 2 ? `<div class="muted petFind">${!has ? "🏴‍☠️ <b>Where to find a pet:</b> open pirate loot boxes in 🎮 Mini-games → 🚀 Nebula Strike (levels 4 and 5, or the pirate chest in the hangar). Every box has a small chance to hold one." : ""}
-      ${!pip ? " 🎨 Rumour has it an art-loving alien race has a painter who'd love a new home." : ""}</div>` : ""}</div>`;
+    ${owned < 3 ? `<div class="muted petFind">${!has ? "<span>🏴‍☠️ Open pirate loot boxes in 🎮 Mini-games → 🚀 Nebula Strike (levels 4 and 5, or the pirate chest in the hangar). Every box has a small chance to hold a pet.</span>" : ""}
+      ${!pip ? "<span>🎨 Rumour has it an art-loving alien race has a painter who'd love a new home.</span>" : ""}
+      ${!dg ? "<span>🗿 The rock-eating Kragg are said to build little mining robots for their friends.</span>" : ""}</div>` : ""}</div>`;
   const mine = has ? `<div class="card petCard" id="petCard-pet">
       <div class="petHero"><img class="petHeroPic" src="assets/pet/pet-portrait.webp" alt="">
         <div class="petHeroInfo"><h2 class="petNameH">${petNameHtml("pet", petCleanName(P.name) || "Mochi")}</h2>
@@ -96,15 +105,29 @@ function renderPetPage() {
         <li>🌙 He keeps painting while the game is closed (up to 24 hours).</li>
         <li>❤️ Click him while he sleeps to pet him. Don't poke him while he's painting: he gets a bit grumpy!</li>
       </ul></details></div>` : "";
+  const digyCard = dg ? `<div class="card petCard" id="petCard-digy">
+      <div class="petHero"><img class="petHeroPic" src="assets/digy/digy-portrait.webp" alt="">
+        <div class="petHeroInfo"><h2 class="petNameH">${petNameHtml("digy", digyName())}</h2>
+          <div class="muted">Your Kragg mining robot${D.at ? ` · together since ${new Date(D.at).toLocaleDateString()}` : ""}</div>
+          <div class="petStatus"><span data-pv="dStatus" data-noi18n>${v.dStatus}</span><button class="btn small" data-petvisit="digy">Go see him →</button></div>
+          <div class="petStats" data-pv="dStats">${v.dStats}</div></div></div>
+      ${petSwitchRow('data-digy="toggle"', !D.off, "Lives on the ⛏️ Gold Mine Dig page and digs when your mine energy is full.", "Hidden. He doesn't dig, and your mine energy is all yours.")}
+      <details class="petHow"><summary>ℹ️ How it works</summary>
+      <ul class="petDoes">
+        <li>🔋 His battery is your ⛏️ mine energy. When it's full, he wakes up and digs for 30 seconds, using ⚡ 3 energy.</li>
+        <li>⛏️ Every dig brings a fixed haul to your 🏦 vault: 🔴 1 ruby, 💎 3 diamonds, 🟡 10 gold, ⚪ 20 silver, 🟠 25 copper and ⚫ 25 coal.</li>
+        <li>⏸️ He never digs while you're in a run, and you can't start a run while he digs.</li>
+        <li>🌙 He keeps working while the game is closed (up to 24 hours).</li>
+      </ul></details></div>` : "";
   // keep the folded / unfolded "How it works" as it was
   const open = [...box.querySelectorAll("details.petHow")].map(d => d.open);
-  box.innerHTML = top + mine + pipCard;
+  box.innerHTML = top + mine + pipCard + digyCard;
   box.querySelectorAll("details.petHow").forEach((d, i) => { if (open[i]) d.open = true; });
   petPageSig = petSig();
   const inp = box.querySelector(".petNameInput"); if (inp) { inp.focus(); inp.select(); }
 }
 // what decides the page's layout (anything else is a live part)
-const petSig = () => [petHas(), pipHas(), petOn(), pipOn(), !!(state.pip && state.pip.sellAll), state.pet && state.pet.name, state.pip && state.pip.name, petEditing, LANG].join("|");
+const petSig = () => [petHas(), pipHas(), digyHas(), digyHas() && !state.digy.off, digyHas() && state.digy.name, petOn(), pipOn(), !!(state.pip && state.pip.sellAll), state.pet && state.pet.name, state.pip && state.pip.name, petEditing, LANG].join("|");
 
 // every second: update the live parts only (or rebuild if the layout changed)
 setInterval(() => {
@@ -121,7 +144,7 @@ $("petPage").addEventListener("click", (e) => {
   const go = e.target.closest("[data-petgo]");
   if (go) { const c = $("petCard-" + go.dataset.petgo); if (c) c.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
   const vis = e.target.closest("[data-petvisit]");
-  if (vis) { if (vis.dataset.petvisit === "pet") showView("income"); else openGame(null); }
+  if (vis) { if (vis.dataset.petvisit === "pet") showView("income"); else if (vis.dataset.petvisit === "digy") openGame("mine"); else openGame(null); }
 });
 // ✏️ rename: Enter or leaving the field saves (the change handlers in js/33-pet.js and js/36-pip.js store the name)
 $("petPage").addEventListener("keydown", (e) => { if (e.target.classList.contains("petNameInput") && (e.key === "Enter" || e.key === "Escape")) e.target.blur(); });

@@ -3293,6 +3293,29 @@ H("👥 Friends: your friend requests and friends now come first, with a big fri
   "👥 Amigos: tus solicitudes y tus amigos aparecen ahora primero, con un recuadro grande para tu código de amigo (📋 Copiar, 📤 Compartir) y una invitación cuando aún no tienes amigos. Los amigos conectados tienen un botón <b>⚔️ Retar</b> que abre el Casino online con ellos elegidos.");
 H("👤 Profile: tap your avatar to change it, see your 🦊🦉🦅 levels and your pets by name, pick a <b>🏅 showcase</b> of 3 achievements, and choose whether other players can see your money.",
   "👤 Perfil: toca tu avatar para cambiarlo, mira tus niveles 🦊🦉🦅 y tus mascotas por su nombre, elige una <b>🏅 vitrina</b> con 3 logros y decide si los demás jugadores pueden ver tu dinero.");
+// 🤖 Digy, the mining robot pet
+Object.assign(ES, { "Digy joined you!": "¡Digy se ha unido a ti!", "is digging…": "está excavando…", "Hauls": "Botines",
+  "He set up his charging dock at the top of the ⛏️ Gold Mine Dig page. Every time your mine energy is full, he uses ⚡ 3 energy and digs for 30 seconds, then brings a haul to your 🏦 vault: 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25.": "Ha instalado su base de carga arriba en la página de ⛏️ Excavación en la mina de oro. Cada vez que la energía de la mina está llena, usa ⚡ 3 de energía y excava durante 30 segundos, y luego lleva un botín a tu 🏦 cámara: 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25.",
+  "He never digs while you're in a run, and he keeps working while the game is closed (up to 24 hours).": "Nunca excava mientras estás en una partida, y sigue trabajando con el juego cerrado (hasta 24 horas).",
+  "Pirate loot boxes": "Cajas de botín pirata", "An art-loving alien race": "Una raza alienígena amante del arte", "The rock-eating Kragg": "Los Kragg, comedores de rocas",
+  "Open pirate loot boxes in 🎮 Mini-games → 🚀 Nebula Strike (levels 4 and 5, or the pirate chest in the hangar). Every box has a small chance to hold a pet.": "Abre cajas de botín pirata en 🎮 Minijuegos → 🚀 Nebula Strike (niveles 4 y 5, o el cofre pirata del hangar). Cada caja tiene una pequeña probabilidad de contener una mascota.",
+  "The rock-eating Kragg are said to build little mining robots for their friends.": "Dicen que los Kragg, comedores de rocas, construyen pequeños robots mineros para sus amigos.",
+  "Lives on the ⛏️ Gold Mine Dig page and digs when your mine energy is full.": "Vive en la página de ⛏️ Excavación en la mina de oro y excava cuando la energía de la mina está llena.",
+  "Hidden. He doesn't dig, and your mine energy is all yours.": "Oculto. No excava, y toda la energía de la mina es para ti.",
+  "His battery is your ⛏️ mine energy. When it's full, he wakes up and digs for 30 seconds, using ⚡ 3 energy.": "Su batería es la energía de tu ⛏️ mina. Cuando está llena, se despierta y excava durante 30 segundos, usando ⚡ 3 de energía.",
+  "Every dig brings a fixed haul to your 🏦 vault: 🔴 1 ruby, 💎 3 diamonds, 🟡 10 gold, ⚪ 20 silver, 🟠 25 copper and ⚫ 25 coal.": "Cada excavación lleva un botín fijo a tu 🏦 cámara: 🔴 1 rubí, 💎 3 diamantes, 🟡 10 de oro, ⚪ 20 de plata, 🟠 25 de cobre y ⚫ 25 de carbón.",
+  "He never digs while you're in a run, and you can't start a run while he digs.": "Nunca excava mientras estás en una partida, y no puedes empezar una partida mientras él excava.",
+  "He keeps working while the game is closed (up to 24 hours).": "Sigue trabajando con el juego cerrado (hasta 24 horas).",
+  "A digging robot for your mine": "Un robot excavador para tu mina",
+  "Rumour has it an art-loving alien race has a painter who'd love a new home.": "Se rumorea que una raza alienígena amante del arte tiene un pintor al que le encantaría un nuevo hogar.", "Get Digy": "Conseguir a Digy", "Go and see him": "Ir a verlo" });
+rx(String.raw`(.+) ha llevado un botín a tu 🏦 cámara: (.*)`, (m) => m);   // already in Spanish (written by the game)
+rx(String.raw`Your Kragg mining robot · together since (.+)`, "Tu robot minero de los Kragg · juntos desde el $1");
+H("The Kragg built a little mining robot, <b>Digy</b>. When your ⛏️ mine energy is full, he digs for you and brings a haul of ore to your 🏦 vault. They ask <b>💎 50 diamonds and 🔴 10 rubies</b> for him.",
+  "Los Kragg han construido un pequeño robot minero, <b>Digy</b>. Cuando la energía de tu ⛏️ mina está llena, excava por ti y lleva un botín de mineral a tu 🏦 cámara. Piden <b>💎 50 diamantes y 🔴 10 rubíes</b> por él.");
+H("Become <b>😊 Friendly</b> with the Kragg and they may sell you one of their little mining robots.",
+  "Hazte <b>😊 amigo</b> de los Kragg y puede que te vendan uno de sus pequeños robots mineros.");
+H("🤖 New pet: <b>Digy</b>, a little Kragg mining robot! Get him from the 🗿 Kragg once you're 😊 Friendly (💎 50 diamonds + 🔴 10 rubies). When your ⛏️ mine energy is full, he digs for 30 seconds (⚡ 3 energy) and brings 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25 to your 🏦 vault, also while the game is closed (up to 24 hours).",
+  "🤖 Nueva mascota: <b>Digy</b>, un pequeño robot minero de los Kragg. Consíguelo de los 🗿 Kragg cuando seáis 😊 amigos (💎 50 diamantes + 🔴 10 rubíes). Cuando la energía de tu ⛏️ mina está llena, excava durante 30 segundos (⚡ 3 de energía) y lleva 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25 a tu 🏦 cámara, también con el juego cerrado (hasta 24 horas).");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -4979,7 +5002,7 @@ function showView(view) {
   $("achievementsView").hidden = view !== "achievements";
   $("wikiView").hidden = view !== "wiki";
   if ($("profileView")) $("profileView").hidden = view !== "profile";
-  if (view === "profile" && (__eocLoaded >= 50 && typeof renderProfile === "function")) renderProfile();
+  if (view === "profile" && (__eocLoaded >= 51 && typeof renderProfile === "function")) renderProfile();
   if ($("profileBtn")) $("profileBtn").classList.toggle("on", view === "profile");
   // 🎮 Mini-games: the hub, or one game page (state.gamePage: null = hub, "art", "mine")
   const gp = view === "games" ? (state.gamePage || null) : undefined;
@@ -11426,6 +11449,7 @@ function doPrestige(id) {
     shooter: state.shooter,     // 🚀 Nebula Strike: levels, ships, upgrades and stardust stay
     pet: state.pet,             // 🐾 the pet from the pirate loot box stays
     pip: state.pip,             // 🐾 Pip the painter stays too
+    digy: state.digy,           // 🤖 Digy the mining robot stays too
     taxHoliday: TAX_HOLIDAY,   // 🛡️ no tax inspections for the first 10 minutes
     recruitPlan: state.recruitPlan,   // 🧑‍💼 the Recruitment Agency's staffing plan (the building itself resets)
     // 🖼️ Art Gallery: stays unlocked and keeps its bought slots and all kept paintings
@@ -14209,6 +14233,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "🤖 New pet: <b>Digy</b>, a little Kragg mining robot! Get him from the 🗿 Kragg once you're 😊 Friendly (💎 50 diamonds + 🔴 10 rubies). When your ⛏️ mine energy is full, he digs for 30 seconds (⚡ 3 energy) and brings 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25 to your 🏦 vault, also while the game is closed (up to 24 hours).",
     "👥 Friends: your friend requests and friends now come first, with a big friend code box (📋 Copy, 📤 Share) and an invite when you have no friends yet. Online friends have a <b>⚔️ Challenge</b> button that opens the Online casino with them picked.",
     "👤 Profile: tap your avatar to change it, see your 🦊🦉🦅 levels and your pets by name, pick a <b>🏅 showcase</b> of 3 achievements, and choose whether other players can see your money.",
     "🐾 The Pet tab is now <b>Pets</b>: your pet collection at the top (2 of 4 found so far), a live status line for each pet with a Go see him button, and earnings for both pets.",
@@ -14702,9 +14727,52 @@ function mineBase() {
 }
 var mineRush = () => (state.special.goldRush || 0) > 0;
 
+/* ----- 🤖 DIGY, the mining robot pet (bought from the 🗿 Kragg; his page parts are in js/36b-digy.js) -----
+   When the mine energy is full (and you're not in a run), he uses 3 energy and digs for 30 seconds,
+   then puts a fixed haul into your 🏦 vault. While he digs you can't start a run.
+   Also while the game is closed, for up to 24 hours after you left (like Pip): this function replays the energy
+   refills one by one, so every moment the energy was full counts. It runs before the normal refill below. */
+var DIGY_COST = 3, DIGY_DIG = 30e3, DIGY_AWAY = 24 * 3600e3;
+var DIGY_HAUL = { ruby: 1, diamond: 3, gold: 10, silver: 20, copper: 25, coal: 25 };
+var digyOwned = () => !!(state.digy && state.digy.owned);
+var digyBusy = () => digyOwned() && !!state.digy.dig;
+var digyName = () => String((state.digy && state.digy.name) || "").replace(/[<>"'`&]/g, "").trim().slice(0, 16) || "Digy";
+function digyHaul(t) {
+  const D = state.digy;
+  for (const k in DIGY_HAUL) { M.vault[k] = (M.vault[k] || 0) + DIGY_HAUL[k]; D.ores[k] = (D.ores[k] || 0) + DIGY_HAUL[k]; }
+  D.hauls++; D.lastHaul = t;
+  if (Date.now() - t > 5000) D.awayHauls = (D.awayHauls || 0) + 1;   // happened while the game was closed: told once, all together
+  else if ((__eocLoaded >= 7 && typeof showNotice === "function")) showNotice(LANG === "es" ? `🤖 ${digyName()} ha llevado un botín a tu 🏦 cámara: 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25.` : `🤖 ${digyName()} brought a haul to your 🏦 vault: 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25.`);
+}
+function digyAdvance(now = Date.now()) {
+  const D = state.digy; if (!digyOwned() || !mineUnlocked()) return;
+  D.ores = D.ores || {}; D.hauls = D.hauls || 0;
+  if (D.off) { D.seen = now; return; }
+  const max = energyMax(), cutoff = (D.seen || now) + DIGY_AWAY;
+  let changed = false;
+  for (let guard = 0; guard < 400; guard++) {
+    if (D.dig) { if (now < D.dig.end) break; digyHaul(D.dig.end); D.dig = null; changed = true; continue; }
+    if (M.run || M.pending) break;   // you're playing: he waits
+    if (M.energy >= max) {
+      const t = D.fullAt && D.fullAt <= now ? D.fullAt : now;   // when it got full (replayed), or now
+      if (t > cutoff) { D.fullAt = null; M.regenAt = null; break; }   // away more than 24 h: he rests until you're back
+      M.energy -= DIGY_COST; M.regenAt = t + regenMs(); D.fullAt = null;
+      D.dig = { start: t, end: t + DIGY_DIG }; changed = true;
+      continue;
+    }
+    if (!M.regenAt) M.regenAt = now + regenMs();
+    if (M.regenAt > now) break;
+    M.energy++; const t = M.regenAt; M.regenAt += regenMs(); changed = true;
+    if (M.energy >= max) { M.regenAt = null; D.fullAt = t; }
+  }
+  D.seen = now;
+  if (changed && (__eocLoaded >= 5 && typeof save === "function")) save();
+}
+
 // ⚡ energy refills on real time, also while the game is closed
 function mineEnergy() {
   const now = Date.now();
+  digyAdvance(now);
   if (M.energy >= energyMax()) { M.regenAt = null; return M.energy; }
   if (!M.regenAt) M.regenAt = now + regenMs();
   while (M.energy < energyMax() && now >= M.regenAt) { M.energy++; M.regenAt += regenMs(); }
@@ -14781,7 +14849,7 @@ if (M.run && M.run.w !== MINE_W) {
 
 // ----- run flow -----
 function mineStart() {
-  if (M.run || M.pending || !mineUnlocked() || mineEnergy() < 1) return;
+  if (M.run || M.pending || !mineUnlocked() || mineEnergy() < 1 || digyBusy()) return;   // 🤖 not while Digy digs
   if (M.energy >= energyMax()) M.regenAt = Date.now() + regenMs();
   M.energy--;
   M.run = newMineMap();
@@ -15338,6 +15406,7 @@ function renderMine() {
   const e = mineEnergy();
   if (!M.run) {
     v.innerHTML = `<button class="btn ghost small gamesBack" data-games-back>← 🎮 Mini-games</button>
+      <div id="digyCorner"></div>
       <div class="card mineIntro">
         <h2>⛏️ Gold Mine Dig</h2>
         <p>Dig down into your gold mine and grab as much ore as your bag can hold. The deeper you go, the better the ore,
@@ -15352,6 +15421,7 @@ function renderMine() {
         ${vaultLine()}
         <div class="moneyRow" style="justify-content:center">
           ${M.pending ? `<button class="btn big" data-mine="pending">${mnIco("bag")}Ore from your last run: sell or keep</button>`
+            : digyBusy() ? `<button class="btn big" disabled>🤖 <span data-noi18n>${digyName()}</span>&nbsp;<span>is digging…</span>&nbsp;<b id="digyLeft">${clockMs(state.digy.dig.end - Date.now())}</b></button>`
             : `<button class="btn big" data-mine="start" ${e >= 1 ? "" : "disabled"}>${mnIco("pick")}Start a run (${mnIco("energy")}1)</button>`}
           <button class="btn ghost" data-mine="vault" ${ORE_KEYS.some(k => M.vault[k] > 0) ? "" : "disabled"}>💰 Sell vault ore</button></div>
         <p class="muted">Runs: ${M.runs} · Deepest ever: ${M.best * 2} m · Chests opened: ${M.chests} · Earned: ${fmt(M.earned)}</p>
@@ -15454,6 +15524,7 @@ function renderGames() {
         <img class="gameIcon gameIconImg" src="assets/mine/entrance.webp" alt=""><h3>Gold Mine Dig</h3>
         <p class="muted">Dig 250 m deep for coal, copper, silver, gold, diamonds, rubies and treasure chests before your lamp runs out.</p>
         <div class="gameStatus">${mine ? `${energyIcons(e)}${M.run ? " · ⛏️ run in progress" : ""}` : "🔒 Buy your first ⛏️ gold mine (💰 Income → ⭐ Special)"}</div>
+        ${mine && (__eocLoaded >= 50 && typeof digyHubLine === "function") ? digyHubLine() : ""}
         ${mine ? vaultLine("small") : ""}
         <button class="btn" data-game="mine" ${mine ? "" : "disabled"}>${M.run ? "▶ Continue" : "▶ Play"}</button>
       </div>
@@ -19133,6 +19204,7 @@ var petHas = () => typeof petOwned === "function" && petOwned();
 var pipHas = () => typeof pipOwned === "function" && pipOwned();
 var petOn = () => petHas() && !state.pet.hidden;
 var pipOn = () => pipHas() && !state.pip.off;
+var digyHas = () => typeof digyOwned === "function" && digyOwned();
 
 // 🔴 live parts (keyed by data-pv)
 function petLive() {
@@ -19155,11 +19227,16 @@ function petLive() {
       : (es ? `😴 <b>Dormido.</b> El próximo cuadro empieza en <b>${clockMs(ph.next - PIP_PAINT - now)}</b>` : `😴 <b>Asleep.</b> Next painting starts in <b>${clockMs(ph.next - PIP_PAINT - now)}</b>`);
     v.pStats = `<span>💰 Earned: <b>${fmt(Q.earned || 0)}</b></span><span>🖼️ Paintings: <b>${(Q.painted || 0).toLocaleString()}</b></span><span>📥 Kept: <b>${(Q.kept || 0).toLocaleString()}</b></span><span>💵 Sold: <b>${(Q.sold || 0).toLocaleString()}</b></span><span>❤️ Petted: <b>${(Q.pets || 0).toLocaleString()}</b></span><span>😤 Disturbed: <b>${(Q.pokes || 0).toLocaleString()}</b></span>`;
   }
+  if (digyHas()) {
+    const D = state.digy, o = D.ores || {};
+    v.dStatus = digyStatus();
+    v.dStats = `<span>⛏️ Hauls: <b>${(D.hauls || 0).toLocaleString()}</b></span><span>🔴 <b>${(o.ruby || 0).toLocaleString()}</b></span><span>💎 <b>${(o.diamond || 0).toLocaleString()}</b></span><span>🟡 <b>${(o.gold || 0).toLocaleString()}</b></span><span>⚪ <b>${(o.silver || 0).toLocaleString()}</b></span><span>🟠 <b>${(o.copper || 0).toLocaleString()}</b></span><span>⚫ <b>${(o.coal || 0).toLocaleString()}</b></span>`;
+  }
   return v;
 }
 
 function petNameHtml(k, name) {
-  if (petEditing === k) return `<input class="petNameInput" id="${k === "pet" ? "petName" : "pipName"}" maxlength="16" value="${escapeHtml(name)}" aria-label="Name" data-noi18n>`;
+  if (petEditing === k) return `<input class="petNameInput" id="${k === "pet" ? "petName" : k === "digy" ? "digyName" : "pipName"}" maxlength="16" value="${escapeHtml(name)}" aria-label="Name" data-noi18n>`;
   return `<span data-noi18n>${escapeHtml(name)}</span><button class="petEdit" data-petedit="${k}" title="Rename" aria-label="Rename">✏️</button>`;
 }
 function petSwitchRow(attr, on, onText, offText) {
@@ -19170,7 +19247,8 @@ function petSwitchRow(attr, on, onText, offText) {
 function renderPetPage() {
   const box = $("petPage"); if (!box) return;
   const has = petHas(), pip = pipHas(), P = state.pet || {}, Q = state.pip || {}, v = petLive();
-  const owned = (has ? 1 : 0) + (pip ? 1 : 0);
+  const dg = digyHas(), D = state.digy || {};
+  const owned = (has ? 1 : 0) + (pip ? 1 : 0) + (dg ? 1 : 0);
   // 🐾 collection row
   const slot = (k, img, name, hint) => k ? `<button class="petPick" data-petgo="${k}"><img src="${img}" alt=""><span data-noi18n>${escapeHtml(name)}</span></button>`
     : `<div class="petPick unknown" title="${hint}"><span class="petQ">?</span><span>${hint}</span></div>`;
@@ -19179,10 +19257,12 @@ function renderPetPage() {
     <div class="petPicks">
       ${slot(has && "pet", "assets/pet/pet-portrait.webp", petCleanName(P.name) || "Mochi", "🏴‍☠️ Pirate loot boxes")}
       ${slot(pip && "pip", "assets/pip/pip-portrait.webp", pipHas() ? pipName() : "", "🎨 An art-loving alien race")}
-      ${Array.from({ length: PET_SLOTS - 2 }, () => slot(null, "", "", "Coming in a future update")).join("")}
+      ${slot(dg && "digy", "assets/digy/digy-portrait.webp", dg ? digyName() : "", "🗿 The rock-eating Kragg")}
+      ${Array.from({ length: PET_SLOTS - 3 }, () => slot(null, "", "", "Coming in a future update")).join("")}
     </div>
-    ${owned < 2 ? `<div class="muted petFind">${!has ? "🏴‍☠️ <b>Where to find a pet:</b> open pirate loot boxes in 🎮 Mini-games → 🚀 Nebula Strike (levels 4 and 5, or the pirate chest in the hangar). Every box has a small chance to hold one." : ""}
-      ${!pip ? " 🎨 Rumour has it an art-loving alien race has a painter who'd love a new home." : ""}</div>` : ""}</div>`;
+    ${owned < 3 ? `<div class="muted petFind">${!has ? "<span>🏴‍☠️ Open pirate loot boxes in 🎮 Mini-games → 🚀 Nebula Strike (levels 4 and 5, or the pirate chest in the hangar). Every box has a small chance to hold a pet.</span>" : ""}
+      ${!pip ? "<span>🎨 Rumour has it an art-loving alien race has a painter who'd love a new home.</span>" : ""}
+      ${!dg ? "<span>🗿 The rock-eating Kragg are said to build little mining robots for their friends.</span>" : ""}</div>` : ""}</div>`;
   const mine = has ? `<div class="card petCard" id="petCard-pet">
       <div class="petHero"><img class="petHeroPic" src="assets/pet/pet-portrait.webp" alt="">
         <div class="petHeroInfo"><h2 class="petNameH">${petNameHtml("pet", petCleanName(P.name) || "Mochi")}</h2>
@@ -19215,15 +19295,29 @@ function renderPetPage() {
         <li>🌙 He keeps painting while the game is closed (up to 24 hours).</li>
         <li>❤️ Click him while he sleeps to pet him. Don't poke him while he's painting: he gets a bit grumpy!</li>
       </ul></details></div>` : "";
+  const digyCard = dg ? `<div class="card petCard" id="petCard-digy">
+      <div class="petHero"><img class="petHeroPic" src="assets/digy/digy-portrait.webp" alt="">
+        <div class="petHeroInfo"><h2 class="petNameH">${petNameHtml("digy", digyName())}</h2>
+          <div class="muted">Your Kragg mining robot${D.at ? ` · together since ${new Date(D.at).toLocaleDateString()}` : ""}</div>
+          <div class="petStatus"><span data-pv="dStatus" data-noi18n>${v.dStatus}</span><button class="btn small" data-petvisit="digy">Go see him →</button></div>
+          <div class="petStats" data-pv="dStats">${v.dStats}</div></div></div>
+      ${petSwitchRow('data-digy="toggle"', !D.off, "Lives on the ⛏️ Gold Mine Dig page and digs when your mine energy is full.", "Hidden. He doesn't dig, and your mine energy is all yours.")}
+      <details class="petHow"><summary>ℹ️ How it works</summary>
+      <ul class="petDoes">
+        <li>🔋 His battery is your ⛏️ mine energy. When it's full, he wakes up and digs for 30 seconds, using ⚡ 3 energy.</li>
+        <li>⛏️ Every dig brings a fixed haul to your 🏦 vault: 🔴 1 ruby, 💎 3 diamonds, 🟡 10 gold, ⚪ 20 silver, 🟠 25 copper and ⚫ 25 coal.</li>
+        <li>⏸️ He never digs while you're in a run, and you can't start a run while he digs.</li>
+        <li>🌙 He keeps working while the game is closed (up to 24 hours).</li>
+      </ul></details></div>` : "";
   // keep the folded / unfolded "How it works" as it was
   const open = [...box.querySelectorAll("details.petHow")].map(d => d.open);
-  box.innerHTML = top + mine + pipCard;
+  box.innerHTML = top + mine + pipCard + digyCard;
   box.querySelectorAll("details.petHow").forEach((d, i) => { if (open[i]) d.open = true; });
   petPageSig = petSig();
   const inp = box.querySelector(".petNameInput"); if (inp) { inp.focus(); inp.select(); }
 }
 // what decides the page's layout (anything else is a live part)
-var petSig = () => [petHas(), pipHas(), petOn(), pipOn(), !!(state.pip && state.pip.sellAll), state.pet && state.pet.name, state.pip && state.pip.name, petEditing, LANG].join("|");
+var petSig = () => [petHas(), pipHas(), digyHas(), digyHas() && !state.digy.off, digyHas() && state.digy.name, petOn(), pipOn(), !!(state.pip && state.pip.sellAll), state.pet && state.pet.name, state.pip && state.pip.name, petEditing, LANG].join("|");
 
 // every second: update the live parts only (or rebuild if the layout changed)
 setInterval(() => {
@@ -19240,7 +19334,7 @@ $("petPage").addEventListener("click", (e) => {
   const go = e.target.closest("[data-petgo]");
   if (go) { const c = $("petCard-" + go.dataset.petgo); if (c) c.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
   const vis = e.target.closest("[data-petvisit]");
-  if (vis) { if (vis.dataset.petvisit === "pet") showView("income"); else openGame(null); }
+  if (vis) { if (vis.dataset.petvisit === "pet") showView("income"); else if (vis.dataset.petvisit === "digy") openGame("mine"); else openGame(null); }
 });
 // ✏️ rename: Enter or leaving the field saves (the change handlers in js/33-pet.js and js/36-pip.js store the name)
 $("petPage").addEventListener("keydown", (e) => { if (e.target.classList.contains("petNameInput") && (e.key === "Enter" || e.key === "Escape")) e.target.blur(); });
@@ -19786,6 +19880,7 @@ function spPanelHtml() {
       <span class="spChip" title="Distance: one way">${spI("distance")}${spMin(spSel)} min</span>
       ${(__eocLoaded >= 45 && typeof spPoliticsChips === "function") ? spPoliticsChips(spSel) : ""}</div>
     ${(__eocLoaded >= 49 && typeof pipOfferHtml === "function") ? pipOfferHtml(spSel) : ""}
+    ${(__eocLoaded >= 50 && typeof digyOfferHtml === "function") ? digyOfferHtml(spSel) : ""}
     <div class="spTabs"><button class="spTab ${spPTab === "trade" ? "on" : ""}" data-sptab="trade">${spI("route")}Trade</button><button class="spTab ${spPTab === "bonus" ? "on" : ""}" data-sptab="bonus">${spI("bonus")}Relations & bonuses</button></div>
     ${spPTab === "trade" ? spRouteHtml(spSel) + ((__eocLoaded >= 46 && typeof spOutpostHtml === "function") ? spOutpostHtml(spSel) : "")
       : ((__eocLoaded >= 45 && typeof spPoliticsHtml === "function") ? spPoliticsHtml(spSel) : "") + spBonusHtml(spSel)}`;
@@ -21051,8 +21146,182 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden && pi
 if (pipOwned()) pipProcess(true);
 if (state.view === "games" && !state.gamePage) renderPipCorner();   // the page opened straight on 🎮 Mini-games
 
-// ===== js/37-profile.js =====
+// ===== js/36b-digy.js =====
 __eocLoaded = 50;
+/* =====================================================================
+   🤖 DIGY, the mining robot pet (the digging logic is in js/23-minigames.js: digyAdvance).
+   · Bought from the 🗿 Kragg (Space Logistics) once they are 😊 Friendly: 💎 50 diamonds + 🔴 10 rubies from your 🏦 vault.
+   · Lives at the top of the ⛏️ Gold Mine Dig page: his charging dock on the left, his digging spot on the right.
+   · His battery is your mine energy: when it's full he wakes up, walks to his spot and digs for 30 seconds
+     (3 energy), comes out dirty with a haul for your vault, cleans himself and goes back to charge.
+   · Active / Resting switch and renaming on the 🐾 Pets page.
+   ===================================================================== */
+var DIGY_V = "1";   // bump when a Digy picture changes (browser cache)
+var DIGY_PRICE = { diamond: 50, ruby: 10 }, DIGY_LV = 3;   // 😊 Friendly with the Kragg
+var DIGY_FRAMES = ["idle-1", "idle-2", "walk-1", "walk-2", "walk-3", "walk-4", "dig-start", "dig-1", "dig-2", "dig-deep", "emerge", "dirty",
+  "clean-1", "clean-2", "clean-3", "charge-low-1", "charge-low-2", "charge-mid", "charge-full"];
+var digySrc = (f) => `assets/digy/digy-${f}.webp?v=${DIGY_V}`;
+var digyOn = () => digyOwned() && !state.digy.off;
+if (digyOwned()) { const D = state.digy; D.hauls = D.hauls || 0; D.ores = D.ores || {}; }
+
+/* ----- 🗿 the offer in the Kragg panel (Space Logistics) ----- */
+function digyOfferHtml(k) {
+  if (k !== "rock" || digyOwned()) return "";
+  const L = spLevel("rock"), V = (state.mine && state.mine.vault) || {};
+  const can = Object.keys(DIGY_PRICE).every(o => (V[o] || 0) >= DIGY_PRICE[o]);
+  return `<div class="pipOffer ${L >= DIGY_LV ? "" : "locked"}"><img src="${digySrc("idle-2")}" alt="">
+    <div><b>🤖 A digging robot for your mine</b>
+      <div>${L >= DIGY_LV ? `The Kragg built a little mining robot, <b>Digy</b>. When your ⛏️ mine energy is full, he digs for you and brings a haul of ore to your 🏦 vault. They ask <b>💎 ${DIGY_PRICE.diamond} diamonds and 🔴 ${DIGY_PRICE.ruby} rubies</b> for him.`
+        : `Become <b>😊 Friendly</b> with the Kragg and they may sell you one of their little mining robots.`}</div>
+      ${L >= DIGY_LV ? `<button class="btn" data-digy="buy" ${can ? "" : "disabled"}>🤖 Get Digy · 💎 ${DIGY_PRICE.diamond} · 🔴 ${DIGY_PRICE.ruby}</button>
+        ${can ? "" : `<div class="muted">Your 🏦 vault: 💎 ${V.diamond || 0} / ${DIGY_PRICE.diamond} · 🔴 ${V.ruby || 0} / ${DIGY_PRICE.ruby}</div>`}` : ""}</div></div>`;
+}
+function digyBuy() {
+  if (digyOwned() || typeof spLevel !== "function" || spLevel("rock") < DIGY_LV || !state.mine) return;
+  const V = state.mine.vault || {};
+  if (!Object.keys(DIGY_PRICE).every(o => (V[o] || 0) >= DIGY_PRICE[o])) return;
+  for (const o in DIGY_PRICE) V[o] -= DIGY_PRICE[o];
+  state.digy = { owned: true, name: "Digy", at: Date.now(), hauls: 0, ores: {}, seen: Date.now(), pets: 0 };
+  save();
+  showModal(`<div style="text-align:center"><img src="${digySrc("charge-full")}" alt="" style="width:180px;height:180px;object-fit:contain">
+    <h2>🤖 Digy joined you!</h2>
+    <p>He set up his charging dock at the top of the ⛏️ Gold Mine Dig page. Every time your mine energy is full, he uses ⚡ 3 energy and digs for 30 seconds, then brings a haul to your 🏦 vault: 🔴 1 · 💎 3 · 🟡 10 · ⚪ 20 · 🟠 25 · ⚫ 25.</p>
+    <p class="muted">He never digs while you're in a run, and he keeps working while the game is closed (up to 24 hours).</p>
+    <div class="row" style="justify-content:center;gap:10px"><button class="btn big" data-digy="visit">⛏️ Go and see him</button><button class="btn ghost" data-modal="close">Later</button></div></div>`);
+  if ((__eocLoaded >= 44 && typeof renderSpace === "function") && state.view === "logistics") renderSpace();
+}
+
+/* ----- 🔋 status (his battery is your mine energy) ----- */
+function digyFullIn() {   // ms until the energy is full again
+  const M = state.mine, max = energyMax();
+  if (!M.regenAt || M.energy >= max) return 0;
+  return Math.max(0, M.regenAt - Date.now()) + (max - M.energy - 1) * regenMs();
+}
+var digyBattery = () => Math.max(0, Math.min(100, Math.round(100 * state.mine.energy / energyMax())));
+function digyStatus() {
+  const es = LANG === "es", M = state.mine, D = state.digy, now = Date.now();
+  if (D.off) return es ? "💤 <b>Descansando.</b> Apagado: no excava." : "💤 <b>Resting.</b> Turned off: he doesn't dig.";
+  if (D.dig) return es ? `⛏️ <b>Excavando</b> · listo en <b>${clockMs(D.dig.end - now)}</b>` : `⛏️ <b>Digging</b> · done in <b>${clockMs(D.dig.end - now)}</b>`;
+  if (M.run || M.pending) return es ? `⏸️ <b>Esperando.</b> Estás jugando en la mina: excavará cuando termines.` : `⏸️ <b>Waiting.</b> You're playing the mine: he digs once you're done.`;
+  const pct = digyBattery(), full = digyFullIn();
+  return es ? `🔋 <b>Cargando ${pct}%</b>${full ? ` · excava cuando la energía esté llena, en <b>${clockMs(full)}</b>` : ""}`
+    : `🔋 <b>Charging ${pct}%</b>${full ? ` · digs when your energy is full, in <b>${clockMs(full)}</b>` : ""}`;
+}
+// one line on the 🎮 Mini-games hub card
+function digyHubLine() {
+  if (!digyOwned()) return "";
+  const D = state.digy, es = LANG === "es", now = Date.now();
+  const t = D.off ? (es ? "descansando" : "resting") : D.dig ? (es ? `⛏️ excavando ${clockMs(D.dig.end - now)}` : `⛏️ digging ${clockMs(D.dig.end - now)}`)
+    : (es ? `🔋 cargando ${digyBattery()}%` : `🔋 charging ${digyBattery()}%`);
+  return `<div class="gameStatus digyHub" data-noi18n>🤖 ${digyName()}: <span id="digyHubT">${t}</span></div>`;
+}
+
+/* ----- 🎬 his corner on the Gold Mine Dig page ----- */
+var DIGY_DOCK = 3, DIGY_HOLE = 60, DIGY_OUT = 42;   // left edge of the sprite, in % of the stage
+var DG = { built: false, frame: "", x: -1, flip: null };
+DIGY_FRAMES.forEach(f => { const im = new Image(); im.src = digySrc(f); });
+var lerp = (a, b, k) => a + (b - a) * Math.max(0, Math.min(1, k));
+// what he does right now: { f: frame, x: %, flip, dock: show the empty dock, hole, dirt }
+function digyPose(now) {
+  const D = state.digy, walk = () => "walk-" + (1 + Math.floor(now / 160) % 4), alt = () => (Math.floor(now / 230) % 2 ? "dig-2" : "dig-1");
+  if (D.dig) {
+    const e = now - D.dig.start;
+    if (e < 1500) return { f: "charge-full", x: DIGY_DOCK };                                       // ⚡ full: wakes up
+    if (e < 5000) return { f: walk(), x: lerp(DIGY_DOCK, DIGY_HOLE, (e - 1500) / 3500), dock: 1 };   // 🚶 walks to his spot
+    if (e < 6500) return { f: "dig-start", x: DIGY_HOLE, dock: 1 };
+    if (e < 12000) return { f: alt(), x: DIGY_HOLE, dock: 1, dirt: 1 };
+    if (e < 24000) return { f: "dig-deep", x: DIGY_HOLE, dock: 1, dirt: 1 };
+    if (e < 28000) return { f: alt(), x: DIGY_HOLE, dock: 1, dirt: 1 };
+    return { f: "emerge", x: DIGY_HOLE, dock: 1, dirt: 1 };                                          // 🎉 out with the haul
+  }
+  const a = now - (D.lastHaul || 0);
+  if (!D.off && a >= 0 && a < 9500) {
+    if (a < 2000) return { f: "dirty", x: DIGY_OUT, dock: 1, hole: 1, dirt: 1 };
+    if (a < 4000) return { f: Math.floor(now / 180) % 2 ? "clean-2" : "clean-1", x: DIGY_OUT, dock: 1, hole: 1, dirt: 1 };
+    if (a < 5500) return { f: "clean-3", x: DIGY_OUT, dock: 1, hole: 1, dirt: 1 };
+    return { f: walk(), x: lerp(DIGY_OUT, DIGY_DOCK, (a - 5500) / 4000), flip: true, dock: 1, hole: 1 };   // 🚶 back to charge
+  }
+  const p = digyBattery();
+  if (p >= 100) return { f: "charge-full", x: DIGY_DOCK };
+  if (p >= 40) return { f: "charge-mid", x: DIGY_DOCK };
+  return { f: Math.floor(now / 700) % 2 ? "charge-low-2" : "charge-low-1", x: DIGY_DOCK };   // 🔴 low battery blinks
+}
+function renderDigyCorner() {
+  const el = $("digyCorner"); if (!el) return;
+  el.hidden = !digyOn() || !!(state.mine && state.mine.run);
+  if (el.hidden) { DG.built = false; el.innerHTML = ""; return; }
+  if (!DG.built || !el.firstChild) {
+    el.innerHTML = `<div class="card digyCard"><div class="digyHead"><h3 data-noi18n>🤖 ${digyName()}</h3><span class="digyStatus" id="digyStatus" data-noi18n></span></div>
+      <div class="digyStage" id="digyStage">
+        <img class="digyProp digyDock" src="assets/digy/digy-dock.webp?v=${DIGY_V}" alt="" style="left:${DIGY_DOCK}%">
+        <img class="digyProp digyHole" src="assets/digy/digy-hole.webp?v=${DIGY_V}" alt="" style="left:${DIGY_HOLE}%">
+        <img class="digyProp digyDirt" src="assets/digy/digy-dirt.webp?v=${DIGY_V}" alt="">
+        <img class="digySprite" id="digySprite" alt="" draggable="false"></div></div>`;
+    DG.built = true; DG.frame = ""; DG.x = -1; DG.flip = null;
+  }
+  digyTick(true);
+}
+function digyTick(force) {
+  if (!digyOwned()) return;
+  const el = $("digyCorner");
+  if (!el || el.hidden || !el.firstChild || (!force && (state.view !== "games" || state.gamePage !== "mine" || document.hidden))) return;
+  const now = Date.now(), p = digyPose(now), sp = $("digySprite"), st = $("digyStage");
+  if (!sp || !st) return;
+  if (p.f !== DG.frame) { sp.src = digySrc(p.f); DG.frame = p.f; }
+  if (p.x !== DG.x) { sp.style.left = p.x + "%"; DG.x = p.x; }
+  if (!!p.flip !== DG.flip) { sp.classList.toggle("flip", !!p.flip); DG.flip = !!p.flip; }
+  sp.classList.toggle("charging", /^charge/.test(p.f));
+  st.classList.toggle("showDock", !!p.dock); st.classList.toggle("showHole", !!p.hole); st.classList.toggle("showDirt", !!p.dirt);
+  const s = $("digyStatus"), h = digyStatus(); if (s && s.dataset.h !== h) { s.dataset.h = h; s.innerHTML = h; }
+}
+setInterval(() => digyTick(false), 120);
+
+// every second: let him work (also when you're on another page), and keep the mine page and the hub up to date
+setInterval(() => {
+  if (!digyOwned()) return;
+  const wasDig = !!state.digy.dig, wasE = state.mine.energy;
+  digyAdvance(Date.now());
+  digyAwayNotice();
+  const changed = wasDig !== !!state.digy.dig || wasE !== state.mine.energy;
+  if (state.view === "games") {
+    if (changed && !state.mine.run && (state.gamePage === "mine" || !state.gamePage)) renderGames();
+    const l = $("digyLeft"); if (l && state.digy.dig) l.textContent = clockMs(state.digy.dig.end - Date.now());
+    const hub = $("digyHubT"); if (hub && !changed) { const n = digyHubLine().match(/<span id="digyHubT">(.*)<\/span>/); if (n && hub.innerHTML !== n[1]) hub.innerHTML = n[1]; }
+  }
+}, 1000);
+// 🌙 what he did while the game was closed (told once)
+function digyAwayNotice() {
+  const D = state.digy; if (!D || !D.awayHauls) return;
+  const n = D.awayHauls; D.awayHauls = 0; save();
+  showNotice(LANG === "es" ? `🤖 Mientras no estabas, ${digyName()} excavó ${n} ${n === 1 ? "vez" : "veces"} y llevó ${n === 1 ? "su botín" : "sus botines"} a tu 🏦 cámara.`
+    : `🤖 While you were away, ${digyName()} dug ${n} time${n === 1 ? "" : "s"} and brought ${n === 1 ? "his haul" : "the hauls"} to your 🏦 vault.`);
+}
+
+/* ----- 🔘 clicks ----- */
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-digy]"); if (!b) return;
+  const k = b.dataset.digy;
+  if (k === "buy") digyBuy();
+  if (k === "visit") { hideModal(); openGame("mine"); }
+  if (k === "toggle" && digyOwned()) {
+    const D = state.digy; D.off = !D.off; D.seen = Date.now(); D.fullAt = null;
+    if (D.off && D.dig) { D.dig = null; digyHaul(Date.now()); }   // switched off mid-dig: he finishes the haul at once (the energy is already spent)
+    save(); if (state.view === "games") renderGames();
+    if ((__eocLoaded >= 43 && typeof renderPetPage === "function")) renderPetPage();
+  }
+});
+document.addEventListener("change", (e) => {
+  if (e.target.id !== "digyName" || !digyOwned()) return;
+  const n = petCleanName(e.target.value);
+  state.digy.name = n || "Digy"; e.target.value = state.digy.name; DG.built = false; save();
+});
+// his corner sits above the mine page: draw it whenever the mine page is drawn
+var digyRenderMineOrig = renderMine;
+renderMine = function () { digyRenderMineOrig(); renderDigyCorner(); };
+if (digyOwned()) { digyAdvance(Date.now()); setTimeout(digyAwayNotice, 1500); }
+
+// ===== js/37-profile.js =====
+__eocLoaded = 51;
 /* =====================================================================
    👤 PLAYER PROFILE: nickname, avatar (the emblem of one of your 🎁 reward collections), achievements and prestige count.
    · Opened with the round 👤 button next to ⚙️ Settings.
@@ -21110,7 +21379,7 @@ var profShowcaseHtml = (ids, mine) => {
     ${mine ? `<button class="btn ghost small" data-prof="showcase">🏅 ${list.length ? "Change showcase" : "Pick up to 3 achievements to show off"}</button>` : ""}</div>`;
 };
 var profPetsNamed = () => [state.pet && state.pet.owned && !state.pet.pending ? { pic: PROF_PETS.mochi.pic, name: petCleanName(state.pet.name) || "Mochi" } : null,
-  state.pip && state.pip.owned ? { pic: PROF_PETS.pip.pic, name: pipName() } : null].filter(Boolean);
+  state.pip && state.pip.owned ? { pic: PROF_PETS.pip.pic, name: pipName() } : null, state.digy && state.digy.owned ? { pic: PROF_PETS.digy.pic, name: digyName() } : null].filter(Boolean);
 // avatars: the emblems of the 🎁 reward collections you have unlocked (assets/col/<id>.webp)
 var profColOpen = (col) => COSMETICS.some(c => c.collection === col.id && state.cosmetics.owned[c.id]) || (() => { const p = rewardProgress(col); return p.total > 0 && p.done >= p.total; })();
 // 🐾 starter avatars every player can pick (assets/avatars/<name>.webp), shown before the collection emblems
@@ -21119,8 +21388,9 @@ var profAvatarIds = () => Object.keys(PROF_STARTERS).concat(COLLECTIONS.filter(c
 var profAvName = (id) => { if (PROF_STARTERS[id]) return PROF_STARTERS[id]; const c = COLLECTIONS.find(x => x.id === id); return c ? c.name.replace(/^\S+\s/, "") : ""; };
 var profAvatarImg = (id, cls = "") => PROF_STARTERS[id] ? `<img class="${cls}" src="assets/avatars/${id.slice(2)}.webp" alt="">` : id && COL_EMBLEMS.has(id) ? `<img class="${cls}" src="assets/col/${id}.webp" alt="">` : `<span class="${cls} profNoAv">👤</span>`;
 // 🐾 pets other players see on your profile
-var PROF_PETS = { mochi: { pic: "assets/pet/pet-portrait.webp", name: "Baby dragon-moth" }, pip: { pic: "assets/pip/pip-portrait.webp", name: "Pip the painter" } };
-var profPets = () => [state.pet && state.pet.owned && !state.pet.pending ? "mochi" : null, state.pip && state.pip.owned ? "pip" : null].filter(Boolean);
+var PROF_PETS = { mochi: { pic: "assets/pet/pet-portrait.webp", name: "Baby dragon-moth" }, pip: { pic: "assets/pip/pip-portrait.webp", name: "Pip the painter" }, digy: { pic: "assets/digy/digy-portrait.webp", name: "Digy the mining robot" } };
+// "digy" only once the database accepts it (docs/supabase-profiles-extra.sql); an older database refuses the whole update, so it is left out after the first refusal
+var profPets = () => [state.pet && state.pet.owned && !state.pet.pending ? "mochi" : null, state.pip && state.pip.owned ? "pip" : null, state.digy && state.digy.owned && !prof.petsOld ? "digy" : null].filter(Boolean);
 // 🪙 the coin skin you use (assets/<id>-coin.webp; "" = the normal coin) and its picture
 var profCoin = () => { const c = COSMETICS.find(x => x.slot === "coin" && state.cosmetics.on[x.id]); return c ? c.id.replace(/Coin$/, "") : ""; };
 var profCoinImg = (id, cls = "profCoinI") => `<img class="${cls}" src="assets/${/^[a-z0-9]{1,20}$/.test(id || "") && COSMETICS.some(x => x.id === id + "Coin") ? id + "-coin" : "coin"}.webp" alt="">`;
@@ -21196,7 +21466,7 @@ async function profPushStats() {
   const moneySame = !prof.moneyOn || (st.coin === prof.row.coin && Math.abs(st.money - (prof.row.money || 0)) <= Math.max(1, (prof.row.money || 0) * 0.01));   // money: only when it moved 1%+
   if (st.ach_done === prof.row.ach_done && st.ach_total === prof.row.ach_total && st.prestige === prof.row.prestige && String(st.pets) === String(prof.row.pets) && moneySame && extraSame) return;
   profPushing = true;
-  try { const { error } = await cloud.sb.from("profiles").update(st).eq("user_id", cloud.user.id); if (!error) { Object.assign(prof.row, st); profCache(); } }
+  try { const { error } = await cloud.sb.from("profiles").update(st).eq("user_id", cloud.user.id); if (!error) { Object.assign(prof.row, st); profCache(); } else if (error.code === "23514" && st.pets && st.pets.includes("digy")) { prof.petsOld = true; profPushing = false; return profPushStats(); } }
   catch (e) {}
   profPushing = false;
 }
@@ -21232,7 +21502,7 @@ function renderProfile() {
   // 👈 Profile / Friends on the left, like the other pages (.subLayout)
   const tabs = `<div class="subLayout"><nav class="subNav"><button class="subTab ${prof.tab !== "friends" ? "active" : ""}" data-prof="tab-me">👤 Profile</button>
     <button class="subTab ${prof.tab === "friends" ? "active" : ""}" data-prof="tab-friends">👥 Friends${inc ? ` <span class="profBadge">${inc}</span>` : ""}</button></nav><div class="subMain">`;
-  if (prof.tab === "friends" && (__eocLoaded >= 51 && typeof renderFriends === "function")) { box.innerHTML = tabs + `<div id="friendsBox"></div></div></div>`; renderFriends(row); return; }
+  if (prof.tab === "friends" && (__eocLoaded >= 52 && typeof renderFriends === "function")) { box.innerHTML = tabs + `<div id="friendsBox"></div></div></div>`; renderFriends(row); return; }
   const ids = profAvatarIds(), cur = row ? row.avatar : prof.pendingAvatar;
   const shown = prof.showAll ? ids : ids.slice(0, 60);
   const typed = $("profNick") ? $("profNick").value : null;
@@ -21317,7 +21587,7 @@ document.addEventListener("click", (e) => {
   if (b.dataset.prof === "settings") showSettings(false);
   if (b.dataset.prof === "hidemoney") { state.profHideMoney = !state.profHideMoney; save(); renderProfile(); profPushStats(); }
   if (b.dataset.prof === "showcase") profShowcasePick();
-  if (b.dataset.prof === "tab-me" || b.dataset.prof === "tab-friends") { prof.tab = b.dataset.prof === "tab-friends" ? "friends" : "me"; prof.err = ""; prof.msg = ""; renderProfile(); if (prof.tab === "friends" && (__eocLoaded >= 51 && typeof frLoad === "function")) frLoad(); }
+  if (b.dataset.prof === "tab-me" || b.dataset.prof === "tab-friends") { prof.tab = b.dataset.prof === "tab-friends" ? "friends" : "me"; prof.err = ""; prof.msg = ""; renderProfile(); if (prof.tab === "friends" && (__eocLoaded >= 52 && typeof frLoad === "function")) frLoad(); }
   if (b.dataset.prof === "copy" && prof.row && prof.row.friend_code) {
     const c = prof.row.friend_code;
     (navigator.clipboard ? navigator.clipboard.writeText(c) : Promise.reject()).then(() => showNotice(`📋 Friend code ${c} copied.`), () => showNotice(`📋 Your friend code: ${c}`));
@@ -21344,7 +21614,7 @@ setInterval(() => { const m = $("profMoney"); if (m) { const t = fmt(state.money
 setInterval(() => { const src = profCoinImg(profCoin()).match(/src="([^"]+)"/)[1]; document.querySelectorAll(".coinSkinImg").forEach(i => { if (i.getAttribute("src") !== src) i.setAttribute("src", src); }); }, 1000);
 
 // ===== js/38-friends.js =====
-__eocLoaded = 51;
+__eocLoaded = 52;
 /* =====================================================================
    👥 FRIENDS (👤 Profile → 👥 Friends). Needs a profile (js/37-profile.js) and the tables from docs/supabase-friends.sql.
    · Find players by nickname (start of the name) or by their 8-letter friend code, and send a request.
@@ -21453,7 +21723,7 @@ function frCodeBox(row, big) {
 }
 // ⚔️ challenge a friend: opens 🎰 Casino → ⚔️ Online casino with this friend picked (choose a game and a bet there)
 function frChallengeBtn(p) {
-  return (__eocLoaded >= 52 && typeof duChallenge === "function") && frOnline(p) ? `<button class="btn small" data-fr="duel" data-id="${p.user_id}"><img class="ico" src="assets/duel/ico-duel.webp" alt="">Challenge</button>` : "";
+  return (__eocLoaded >= 53 && typeof duChallenge === "function") && frOnline(p) ? `<button class="btn small" data-fr="duel" data-id="${p.user_id}"><img class="ico" src="assets/duel/ico-duel.webp" alt="">Challenge</button>` : "";
 }
 function renderFriends(row) {
   const box = $("friendsBox"); if (!box) return;
@@ -21517,7 +21787,7 @@ document.addEventListener("click", (e) => {
   if (k === "duel") {   // ⚔️ to the Online casino lobby with this friend picked
     if (inModal) hideModal();
     if (typeof DU === "object") DU.pick = b.dataset.id;
-    state.casinoPage = "online"; showView("casino"); if ((__eocLoaded >= 52 && typeof duApplyPage === "function")) duApplyPage();
+    state.casinoPage = "online"; showView("casino"); if ((__eocLoaded >= 53 && typeof duApplyPage === "function")) duApplyPage();
     setTimeout(() => { const el = document.querySelector(".frRow.pick"); if (el) el.scrollIntoView({ behavior: "smooth", block: "center" }); }, 150);
   }
   if (k === "add") { if (inModal) hideModal(); frAdd(b.dataset.id); }
@@ -21536,7 +21806,8 @@ document.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.
 /* ----- ⏱️ staying "online" and checking for new requests ----- */
 setInterval(() => {   // 🟢 a small update once a minute while the game is visible: the database stamps last_seen
   if (document.hidden || !frMe() || !prof.row || prof.friendsOn !== true || (typeof tabActive !== "undefined" && !tabActive)) return;
-  cloud.sb.from("profiles").update({ pets: profPets() }).eq("user_id", frMe()).then(({ error }) => { if (!error) prof.row.pets = profPets(); }, () => {});
+  const pets = profPets();
+  cloud.sb.from("profiles").update({ pets }).eq("user_id", frMe()).then(({ error }) => { if (!error) prof.row.pets = pets; else if (error.code === "23514" && pets.includes("digy")) prof.petsOld = true; }, () => {});
 }, FR_PING);
 setInterval(() => {   // new requests (the red number on 👤) and friends going on/offline
   if (document.hidden || !frMe() || !prof.row || prof.friendsOn !== true) return;
@@ -21548,7 +21819,7 @@ var frProfLoadOrig = profLoad;
 profLoad = async function () { await frProfLoadOrig(); if (prof.row && prof.friendsOn) frLoad(true); };
 
 // ===== js/39-duels.js =====
-__eocLoaded = 52;
+__eocLoaded = 53;
 /* =====================================================================
    ⚔️ ONLINE CASINO: duels against friends (🎰 Casino → ⚔️ Online casino on the left).
    · ✊✋✌️ Rock Paper Scissors and 🎲 Dice Battle (2 dice each, higher total wins the round): best of 3; a tie is played again.
@@ -21672,7 +21943,7 @@ function duChallenge(oppId) {
   const bet = Math.floor(Number(DU.bet));
   if (!(bet >= 1)) { DU.err = "Choose a bet of at least 1."; return renderDuels(); }
   if (bet > state.money) { DU.err = "You don't have enough money for this bet."; return renderDuels(); }
-  if ((__eocLoaded >= 50 && typeof profPushStats === "function")) profPushStats();   // the referee checks the money on your profile
+  if ((__eocLoaded >= 51 && typeof profPushStats === "function")) profPushStats();   // the referee checks the money on your profile
   duDo("duel_invite", { p_opp: oppId, p_game: DU.game, p_bet: bet }, () => { setTimeout(duPending, 300); });
 }
 
@@ -21903,7 +22174,7 @@ function duMoneyTick() { const m = $("duMoney"); if (m) { const t = fmt(state.mo
 setInterval(duMoneyTick, 500);
 
 // ===== js/40-coin-input.js =====
-__eocLoaded = 53;
+__eocLoaded = 54;
 /* =====================================================================
    🪙 COIN UNIT SWITCH next to every money box: type the amount in bcoin, scoin (1M) or gcoin (1M scoin),
    instead of counting zeros. The rest of the game is not changed: each money box still reports its amount

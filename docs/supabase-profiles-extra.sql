@@ -16,3 +16,7 @@ alter table public.profiles add constraint profiles_showcase_ok check (
 
 -- 🙈 hide my money from other players (the game hides it; the duel referee still uses the money column)
 alter table public.profiles add column if not exists hide_money boolean not null default false;
+
+-- 🐾 pets: allow 🤖 Digy (and future pets: short lowercase names, at most 8)
+alter table public.profiles drop constraint if exists profiles_pets_ok;
+alter table public.profiles add constraint profiles_pets_ok check (cardinality(pets) <= 8 and array_to_string(pets, ',') ~ '^[a-z,]{0,100}$');
