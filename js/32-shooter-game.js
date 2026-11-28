@@ -239,6 +239,7 @@ function shBoom(x, y, r) {
   shFx(x, y, Math.round(5 + r / 3), "#ff6a2b", 80 + r * 3, 4 + r / 8);
   shRing(x, y, r * 1.6, "rgba(255,220,120,0.9)");
 }
+const SH_DUST_ALPHA = 0.55;
 function shDrop(k, x, y, v = 0) { shR.pk.push({ k, x, y, v, t: 0, vx: k === "dust" ? -70 + shRand(-30, 30) : -60, vy: k === "dust" ? shRand(-40, 40) : 0 }); }
 function shKill(e) {
   const R = shR;
@@ -715,7 +716,7 @@ function shUpdate(dt) {
     if (bm.t > bm.tele + bm.on) bm.dead = true;
   }
 
-  // 🎁 pick-ups
+  // 🎁 pick-ups (✨ stardust is a little see-through, so it doesn't get mixed up with bullets)
   for (const k of R.pk) {
     k.t += dt;
     const d2 = shDist2(k.x, k.y, P.x, P.y), pull = k.k === "dust" ? st.magnet + 40 : 0;
@@ -950,8 +951,9 @@ function shDraw() {
     if (pic) {
       g.save(); g.translate(k.x, k.y); if (k.k === "dust") g.rotate(k.t * 3);
       if (k.k !== "dust") { g.globalAlpha = 0.5 + 0.25 * Math.sin(k.t * 6); g.fillStyle = shRad(g, 0, 0, sz * 0.3, sz * 0.85, ["rgba(255,255,255,0.7)", "rgba(255,255,255,0)"]); g.fillRect(-sz, -sz, sz * 2, sz * 2); g.globalAlpha = 1; }
+      if (k.k === "dust") g.globalAlpha = SH_DUST_ALPHA;
       g.drawImage(pic, -sz / 2, -sz / 2, sz, sz); g.restore();
-    } else shDrawSprite(g, shPickSprite(k.k), k.x, k.y, k.k === "dust" ? k.t * 3 : 0);
+    } else { if (k.k === "dust") { g.save(); g.globalAlpha = SH_DUST_ALPHA; } shDrawSprite(g, shPickSprite(k.k), k.x, k.y, k.k === "dust" ? k.t * 3 : 0); if (k.k === "dust") g.restore(); }
   }
   // 👹 boss
   const b = R.boss;

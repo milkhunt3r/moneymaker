@@ -1994,6 +1994,8 @@ H("🎮 Mini-game fixes: 🎨 Art Gallery: Submit copy and New painting sit apar
 H("⚙️ Settings: the <b>Display</b> section folds away (tap its header). Folded, it shows your language, brightness and number format at a glance.",
   "⚙️ Ajustes: la sección <b>Pantalla</b> se puede plegar (toca su cabecera). Plegada, muestra tu idioma, brillo y formato de números de un vistazo.");
 Object.assign(ES, { "This file is far too big to be an Empire of Coins backup.": "Este archivo es demasiado grande para ser una copia de Empire of Coins." });
+H("🚀 Nebula Strike: ✨ stardust is now a little see-through, so it's easier to tell apart from enemy bullets.",
+  "🚀 Nebula Strike: el ✨ polvo estelar es ahora un poco transparente, para distinguirlo mejor de las balas enemigas.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

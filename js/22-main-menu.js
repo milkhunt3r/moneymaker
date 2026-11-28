@@ -65,6 +65,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "🚀 Nebula Strike: ✨ stardust is now a little see-through, so it's easier to tell apart from enemy bullets.",
     "⚙️ Settings: the <b>Display</b> section folds away (tap its header). Folded, it shows your language, brightness and number format at a glance.",
     "🎮 Mini-game fixes: 🎨 Art Gallery: Submit copy and New painting sit apart, and New painting asks before throwing your copy away. ⛏️ Gold Mine: a 🏦 Vault box with your ore and what it's worth. 🚀 Nebula Strike: a big Continue button for the next level, and the pirate chest sits right under it. 🧬 Gene Splicer: a start guide for your first splice, and the DNA timer and Hint sit in the splicer box.",
     "🎮 Mini-games hub: 🎨 Pip now paints at the top of the 🖼️ Art Gallery page, a <b>!</b> on a game (and on the Mini-games tab) shows when it wants you: today's art commission, full mine energy, full DNA or something to buy in Nebula Strike. On phones the games sit two per row.",

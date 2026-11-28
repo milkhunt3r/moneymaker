@@ -3370,6 +3370,8 @@ H("🎮 Mini-game fixes: 🎨 Art Gallery: Submit copy and New painting sit apar
 H("⚙️ Settings: the <b>Display</b> section folds away (tap its header). Folded, it shows your language, brightness and number format at a glance.",
   "⚙️ Ajustes: la sección <b>Pantalla</b> se puede plegar (toca su cabecera). Plegada, muestra tu idioma, brillo y formato de números de un vistazo.");
 Object.assign(ES, { "This file is far too big to be an Empire of Coins backup.": "Este archivo es demasiado grande para ser una copia de Empire of Coins." });
+H("🚀 Nebula Strike: ✨ stardust is now a little see-through, so it's easier to tell apart from enemy bullets.",
+  "🚀 Nebula Strike: el ✨ polvo estelar es ahora un poco transparente, para distinguirlo mejor de las balas enemigas.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -14378,6 +14380,7 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "🚀 Nebula Strike: ✨ stardust is now a little see-through, so it's easier to tell apart from enemy bullets.",
     "⚙️ Settings: the <b>Display</b> section folds away (tap its header). Folded, it shows your language, brightness and number format at a glance.",
     "🎮 Mini-game fixes: 🎨 Art Gallery: Submit copy and New painting sit apart, and New painting asks before throwing your copy away. ⛏️ Gold Mine: a 🏦 Vault box with your ore and what it's worth. 🚀 Nebula Strike: a big Continue button for the next level, and the pirate chest sits right under it. 🧬 Gene Splicer: a start guide for your first splice, and the DNA timer and Hint sit in the splicer box.",
     "🎮 Mini-games hub: 🎨 Pip now paints at the top of the 🖼️ Art Gallery page, a <b>!</b> on a game (and on the Mini-games tab) shows when it wants you: today's art commission, full mine energy, full DNA or something to buy in Nebula Strike. On phones the games sit two per row.",
@@ -18025,6 +18028,7 @@ function shBoom(x, y, r) {
   shFx(x, y, Math.round(5 + r / 3), "#ff6a2b", 80 + r * 3, 4 + r / 8);
   shRing(x, y, r * 1.6, "rgba(255,220,120,0.9)");
 }
+var SH_DUST_ALPHA = 0.55;
 function shDrop(k, x, y, v = 0) { shR.pk.push({ k, x, y, v, t: 0, vx: k === "dust" ? -70 + shRand(-30, 30) : -60, vy: k === "dust" ? shRand(-40, 40) : 0 }); }
 function shKill(e) {
   const R = shR;
@@ -18501,7 +18505,7 @@ function shUpdate(dt) {
     if (bm.t > bm.tele + bm.on) bm.dead = true;
   }
 
-  // 🎁 pick-ups
+  // 🎁 pick-ups (✨ stardust is a little see-through, so it doesn't get mixed up with bullets)
   for (const k of R.pk) {
     k.t += dt;
     const d2 = shDist2(k.x, k.y, P.x, P.y), pull = k.k === "dust" ? st.magnet + 40 : 0;
@@ -18736,8 +18740,9 @@ function shDraw() {
     if (pic) {
       g.save(); g.translate(k.x, k.y); if (k.k === "dust") g.rotate(k.t * 3);
       if (k.k !== "dust") { g.globalAlpha = 0.5 + 0.25 * Math.sin(k.t * 6); g.fillStyle = shRad(g, 0, 0, sz * 0.3, sz * 0.85, ["rgba(255,255,255,0.7)", "rgba(255,255,255,0)"]); g.fillRect(-sz, -sz, sz * 2, sz * 2); g.globalAlpha = 1; }
+      if (k.k === "dust") g.globalAlpha = SH_DUST_ALPHA;
       g.drawImage(pic, -sz / 2, -sz / 2, sz, sz); g.restore();
-    } else shDrawSprite(g, shPickSprite(k.k), k.x, k.y, k.k === "dust" ? k.t * 3 : 0);
+    } else { if (k.k === "dust") { g.save(); g.globalAlpha = SH_DUST_ALPHA; } shDrawSprite(g, shPickSprite(k.k), k.x, k.y, k.k === "dust" ? k.t * 3 : 0); if (k.k === "dust") g.restore(); }
   }
   // 👹 boss
   const b = R.boss;
