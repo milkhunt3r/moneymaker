@@ -8,7 +8,7 @@
    ===================================================================== */
 // a piece of text in Spanish (or as it is, if it has no translation yet)
 const es = (s) => (s == null ? s : trText(String(s)) ?? s);
-const NUM = String.raw`[−+-]?[\d.,]+(?:\s?[sgbp]coin)?`;   // an amount as the game shows it ("2,5 scoin", "1.000")
+const NUM = String.raw`[−+-]?[\d.,]+(?:\s?[sgbp]coin|Sx|Qi|Qa|[KMBT](?![a-z]))?`;   // also "3.92T" (⚙️ Settings → Numbers: Short)   // an amount as the game shows it ("2,5 scoin", "1.000")
 const rx = (src, to) => ES_RX.push([new RegExp("^" + src + "$"), to]);
 const hrx = (src, to) => ES_HTML_RX.push([new RegExp("^" + src + "$"), to]);
 const plural = (n, one, many) => (String(n).replace(/\D/g, "") === "1" ? one : many);

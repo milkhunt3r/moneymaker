@@ -1867,6 +1867,25 @@ H("🏠 Main menu: a line under Play shows your progress (money and prestige), a
   "🏠 Menú principal: una línea bajo Jugar muestra tu progreso (dinero y prestigio), una etiqueta <b>NUEVO</b> en Acerca de marca las notas de la versión que no has leído, Donar es ahora un botón pequeño, y la esquina superior muestra si tu partida está guardada en la ☁️ nube.");
 H("⚙️ Settings: a new <b>Account</b> section (sign in, ☁️ Sync now, sign out), a \"Saved 12 s ago\" row with a Save now button, an About section, and 🗑️ Reset game moved to a small danger zone at the bottom.",
   "⚙️ Ajustes: nueva sección <b>Cuenta</b> (iniciar sesión, ☁️ Sincronizar ya, cerrar sesión), una fila «Guardado hace 12 s» con un botón Guardar ya, una sección Acerca de, y 🗑️ Reiniciar la partida pasa a una pequeña zona de peligro abajo del todo.");
+// ⚙️ Settings step 5: numbers, reduce effects, pop-ups, backup
+Object.assign(ES, { "Back up or restore your game": "Copia de seguridad o restaurar", "Numbers": "Números", "Reduce effects": "Reducir efectos", "Pop-ups": "Avisos emergentes",
+  "Every pop-up in the corner: achievements, level-ups and warnings.": "Todos los avisos de la esquina: logros, subidas de nivel y alertas.",
+  "Only warnings (breakdowns, failed missions, calls for help, trades closed at a loss).": "Solo alertas (averías, misiones fallidas, peticiones de ayuda, operaciones cerradas con pérdidas).",
+  "No pop-ups in the corner. Tax bills and other choices still open as usual.": "Ningún aviso en la esquina. Las facturas de impuestos y otras decisiones se siguen abriendo como siempre.",
+  "Keep a copy of your progress in a file, or move it to another browser without an account.": "Guarda una copia de tu progreso en un archivo o llévala a otro navegador sin cuenta.",
+  "Download backup file": "Descargar copia de seguridad", "Copy backup code": "Copiar código de copia", "Restore": "Restaurar",
+  "Load a backup file or paste a backup code.": "Carga un archivo de copia o pega un código de copia.", "It replaces the game on this device": "Sustituye la partida de este dispositivo",
+  "(and your ☁️ cloud save at the next sync)": "(y tu partida en la ☁️ nube en la próxima sincronización)",
+  "Choose a file": "Elegir un archivo", "← Settings": "← Ajustes", "Restore this backup": "Restaurar esta copia",
+  "This isn't a valid Empire of Coins backup (or it was changed).": "No es una copia válida de Empire of Coins (o se ha modificado).",
+  "Backup file downloaded.": "Copia de seguridad descargada.", "Backup code copied. Paste it somewhere safe.": "Código copiado. Pégalo en un lugar seguro.",
+  "Select the code above and copy it.": "Selecciona el código de arriba y cópialo.", "Could not save: browser storage is full.": "No se pudo guardar: el almacenamiento del navegador está lleno." });
+rx(String.raw`Backup found: (${NUM})\.`, "Copia encontrada: $1.");
+rx(String.raw`Backup found: (${NUM}), ⭐ (\d+) prestiges?\.`, (m, a, n) => `Copia encontrada: ${a}, ⭐ ${n} ${n === "1" ? "prestigio" : "prestigios"}.`);
+H("⚙️ More settings: <b>Numbers</b> (coins like 3.92 gcoin, short like 3.92T, or full), <b>Reduce effects</b> (no blur, glows play once, no floating click numbers) and <b>Pop-ups</b> (all, only warnings, or none).",
+  "⚙️ Más ajustes: <b>Números</b> (en monedas como 3,92 gcoin, cortos como 3,92T o completos), <b>Reducir efectos</b> (sin desenfoque, los brillos se ven una vez, sin números flotantes al hacer clic) y <b>Avisos emergentes</b> (todos, solo alertas o ninguno).");
+H("💾 <b>Back up or restore your game</b> in ⚙️ Settings: download a backup file or copy a backup code, and load it on any browser, no account needed. Backups can't be edited to cheat.",
+  "💾 <b>Copia de seguridad o restaurar</b> en ⚙️ Ajustes: descarga un archivo de copia o copia un código, y cárgalo en cualquier navegador, sin cuenta. Las copias no se pueden modificar para hacer trampas.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");

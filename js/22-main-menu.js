@@ -65,6 +65,8 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "⚙️ More settings: <b>Numbers</b> (coins like 3.92 gcoin, short like 3.92T, or full), <b>Reduce effects</b> (no blur, glows play once, no floating click numbers) and <b>Pop-ups</b> (all, only warnings, or none).",
+    "💾 <b>Back up or restore your game</b> in ⚙️ Settings: download a backup file or copy a backup code, and load it on any browser, no account needed. Backups can't be edited to cheat.",
     "🏠 Main menu: a line under Play shows your progress (money and prestige), a <b>NEW</b> badge on About marks patch notes you haven't read, Donate is now a small button, and the top corner shows whether your game is saved to the ☁️ cloud.",
     "⚙️ Settings: a new <b>Account</b> section (sign in, ☁️ Sync now, sign out), a \"Saved 12 s ago\" row with a Save now button, an About section, and 🗑️ Reset game moved to a small danger zone at the bottom.",
     "🎁 Free casino bet chips now go back to 0 on a prestige reset. 🎟️ VIP Coins keeps them: pick it and your free chips stay on that and every later reset.",

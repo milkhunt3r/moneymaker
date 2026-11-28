@@ -181,7 +181,7 @@ __eocLoaded = 1;
    ===================================================================== */
 // a piece of text in Spanish (or as it is, if it has no translation yet)
 var es = (s) => (s == null ? s : trText(String(s)) ?? s);
-var NUM = String.raw`[−+-]?[\d.,]+(?:\s?[sgbp]coin)?`;   // an amount as the game shows it ("2,5 scoin", "1.000")
+var NUM = String.raw`[−+-]?[\d.,]+(?:\s?[sgbp]coin|Sx|Qi|Qa|[KMBT](?![a-z]))?`;   // also "3.92T" (⚙️ Settings → Numbers: Short)   // an amount as the game shows it ("2,5 scoin", "1.000")
 var rx = (src, to) => ES_RX.push([new RegExp("^" + src + "$"), to]);
 var hrx = (src, to) => ES_HTML_RX.push([new RegExp("^" + src + "$"), to]);
 var plural = (n, one, many) => (String(n).replace(/\D/g, "") === "1" ? one : many);
@@ -3243,6 +3243,25 @@ H("🏠 Main menu: a line under Play shows your progress (money and prestige), a
   "🏠 Menú principal: una línea bajo Jugar muestra tu progreso (dinero y prestigio), una etiqueta <b>NUEVO</b> en Acerca de marca las notas de la versión que no has leído, Donar es ahora un botón pequeño, y la esquina superior muestra si tu partida está guardada en la ☁️ nube.");
 H("⚙️ Settings: a new <b>Account</b> section (sign in, ☁️ Sync now, sign out), a \"Saved 12 s ago\" row with a Save now button, an About section, and 🗑️ Reset game moved to a small danger zone at the bottom.",
   "⚙️ Ajustes: nueva sección <b>Cuenta</b> (iniciar sesión, ☁️ Sincronizar ya, cerrar sesión), una fila «Guardado hace 12 s» con un botón Guardar ya, una sección Acerca de, y 🗑️ Reiniciar la partida pasa a una pequeña zona de peligro abajo del todo.");
+// ⚙️ Settings step 5: numbers, reduce effects, pop-ups, backup
+Object.assign(ES, { "Back up or restore your game": "Copia de seguridad o restaurar", "Numbers": "Números", "Reduce effects": "Reducir efectos", "Pop-ups": "Avisos emergentes",
+  "Every pop-up in the corner: achievements, level-ups and warnings.": "Todos los avisos de la esquina: logros, subidas de nivel y alertas.",
+  "Only warnings (breakdowns, failed missions, calls for help, trades closed at a loss).": "Solo alertas (averías, misiones fallidas, peticiones de ayuda, operaciones cerradas con pérdidas).",
+  "No pop-ups in the corner. Tax bills and other choices still open as usual.": "Ningún aviso en la esquina. Las facturas de impuestos y otras decisiones se siguen abriendo como siempre.",
+  "Keep a copy of your progress in a file, or move it to another browser without an account.": "Guarda una copia de tu progreso en un archivo o llévala a otro navegador sin cuenta.",
+  "Download backup file": "Descargar copia de seguridad", "Copy backup code": "Copiar código de copia", "Restore": "Restaurar",
+  "Load a backup file or paste a backup code.": "Carga un archivo de copia o pega un código de copia.", "It replaces the game on this device": "Sustituye la partida de este dispositivo",
+  "(and your ☁️ cloud save at the next sync)": "(y tu partida en la ☁️ nube en la próxima sincronización)",
+  "Choose a file": "Elegir un archivo", "← Settings": "← Ajustes", "Restore this backup": "Restaurar esta copia",
+  "This isn't a valid Empire of Coins backup (or it was changed).": "No es una copia válida de Empire of Coins (o se ha modificado).",
+  "Backup file downloaded.": "Copia de seguridad descargada.", "Backup code copied. Paste it somewhere safe.": "Código copiado. Pégalo en un lugar seguro.",
+  "Select the code above and copy it.": "Selecciona el código de arriba y cópialo.", "Could not save: browser storage is full.": "No se pudo guardar: el almacenamiento del navegador está lleno." });
+rx(String.raw`Backup found: (${NUM})\.`, "Copia encontrada: $1.");
+rx(String.raw`Backup found: (${NUM}), ⭐ (\d+) prestiges?\.`, (m, a, n) => `Copia encontrada: ${a}, ⭐ ${n} ${n === "1" ? "prestigio" : "prestigios"}.`);
+H("⚙️ More settings: <b>Numbers</b> (coins like 3.92 gcoin, short like 3.92T, or full), <b>Reduce effects</b> (no blur, glows play once, no floating click numbers) and <b>Pop-ups</b> (all, only warnings, or none).",
+  "⚙️ Más ajustes: <b>Números</b> (en monedas como 3,92 gcoin, cortos como 3,92T o completos), <b>Reducir efectos</b> (sin desenfoque, los brillos se ven una vez, sin números flotantes al hacer clic) y <b>Avisos emergentes</b> (todos, solo alertas o ninguno).");
+H("💾 <b>Back up or restore your game</b> in ⚙️ Settings: download a backup file or copy a backup code, and load it on any browser, no account needed. Backups can't be edited to cheat.",
+  "💾 <b>Copia de seguridad o restaurar</b> en ⚙️ Ajustes: descarga un archivo de copia o copia un código, y cárgalo en cualquier navegador, sin cuenta. Las copias no se pueden modificar para hacer trampas.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -3567,7 +3586,7 @@ var staffIco = (key, o, cls = "staffI") => STAFF_PICS.includes(key) ? ico("st-" 
 var alienBonus = (key) => ((__eocLoaded >= 44 && typeof spAllyBonus === "function") ? spAllyBonus(key) : 0);
 var geneBonus = (cat) => (typeof geneCatCount === "function" ? geneCatCount(cat) * 0.01 : 0);
 var PREF_KEYS = ["view", "coinUnit", "casinoPage", "logiPage", "rewardType", "rewardState", "gamePage", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage", "cryptoSel", "ivCard", "logiFleet", "mapBig", "mapHelp",
-                   "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage"];
+                   "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage", "numFmt", "lowFx", "popups"];
 function splitState(st) {   // -> { progress, prefs }
   const progress = {}, prefs = {};
   for (const k in st) (PREF_KEYS.includes(k) ? prefs : progress)[k] = st[k];
@@ -3770,8 +3789,17 @@ var fmtNum = (n) => Math.floor(n).toLocaleString();
 // Never rounds up, so it never shows more than you have.
 var SCOIN = 1e6, GCOIN = 1e12, PCOIN = 1e18;
 // scoinFrom: from which amount to switch from bcoin to scoin (1M by default)
+// ⚙️ number format (Settings): "coins" (default, as above), "short" (3.92T) or "full" (3,920,000,000,000)
+var NUM_SHORT = [[1e21, "Sx"], [1e18, "Qi"], [1e15, "Qa"], [1e12, "T"], [1e9, "B"], [1e6, "M"], [1e3, "K"]];
 function splitCoins(n, scoinFrom = SCOIN) {
   const a = Math.abs(n);
+  const nf = typeof state === "object" && state ? state.numFmt : "";
+  if (nf === "full") return [Math.floor(a).toLocaleString(), "bcoin"];
+  if (nf === "short") {
+    const s = NUM_SHORT.find(([u]) => a >= u);
+    if (!s) return [Math.floor(a).toLocaleString(), "bcoin"];
+    return [(Math.floor(a / s[0] * 100) / 100).toLocaleString(undefined, { maximumFractionDigits: 2 }) + s[1], "bcoin"];
+  }
   if (a < scoinFrom) return [Math.floor(a).toLocaleString(), "bcoin"];
   const unit = a < GCOIN ? SCOIN : a < PCOIN ? GCOIN : PCOIN;
   const v = Math.floor(a / unit * 100) / 100;
@@ -4674,6 +4702,8 @@ function taxTick() {
 
 /* ----- Red alert pop-up: shows for 8 seconds, click to close ----- */
 function showAlert(title, text, kind = "") {
+  // ⚙️ Settings → Pop-ups: "off" shows none, "important" only warnings (not the green good-news ones)
+  if (state.popups === "off" || (state.popups === "important" && kind === "good")) return;
   const el = document.createElement("div");
   el.className = "alertPop " + kind;
   el.innerHTML = `<b>${title}</b>${text}<br><small>Click to close</small>`;
@@ -6454,6 +6484,9 @@ function settingsNote(text) {
 var OR_ICONS = {
   cup: '<path d="M4 8h13v5a6 6 0 0 1-6 6H10a6 6 0 0 1-6-6V8z"/><path d="M17 10h1.5a2.5 2.5 0 0 1 0 5H17" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 2.5c0 1.5 1.5 1.5 1.5 3M12 2.5c0 1.5 1.5 1.5 1.5 3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
   save: '<path d="M4 3h12.5L21 7.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm3 2v5h9V5zm5 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>',
+  num: '<path d="M8 3 6.5 21h2L10 3zm7 0-1.5 18h2L17 3zM3.5 8h17v2h-17zm-1 6h17v2h-17z"/>',
+  bell: '<path d="M12 22a2.5 2.5 0 0 0 2.4-2h-4.8a2.5 2.5 0 0 0 2.4 2zm7-6V11a7 7 0 0 0-5.5-6.8V3a1.5 1.5 0 0 0-3 0v1.2A7 7 0 0 0 5 11v5l-2 2v1h18v-1z"/>',
+  lowFx: '<path d="M12 2l2.4 6.6L21 9l-5.2 4.2L17.6 20 12 16.3 6.4 20l1.8-6.8L3 9l6.6-.4z" opacity=".45"/><path d="M3 3l18 18-1.4 1.4-18-18z"/>',
   download: '<path d="M11 3h2v10.2l3.6-3.6 1.4 1.4-6 6-6-6 1.4-1.4 3.6 3.6zM4 19h16v2H4z"/>',
   load: '<path d="M13 21h-2V10.8l-3.6 3.6L6 13l6-6 6 6-1.4 1.4-3.6-3.6zM4 3h16v2H4z"/>',
   tips: '<path d="M12 2a7 7 0 0 0-4 12.7V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.3A7 7 0 0 0 12 2zM9 20h6v1.2a.8.8 0 0 1-.8.8H9.8a.8.8 0 0 1-.8-.8z"/>',
@@ -6478,6 +6511,84 @@ $("modalBox").addEventListener("input", (e) => {
   $("orBrightVal").textContent = state.bgBright + "%";
   applyBgBright(); save();
 });
+// ⚙️ Numbers / Reduce effects / Pop-ups (screen preferences: per device, kept through resets)
+var numFmtNow = () => ["short", "full"].includes(state.numFmt) ? state.numFmt : "coins";
+var popupHint = () => ({ all: "Every pop-up in the corner: achievements, level-ups and warnings.",
+  important: "Only warnings (breakdowns, failed missions, calls for help, trades closed at a loss).",
+  off: "No pop-ups in the corner. Tax bills and other choices still open as usual." })[state.popups || "all"];
+function applyLowFx() { document.body.classList.toggle("lowfx", !!state.lowFx); }
+applyLowFx();
+$("modalBox").addEventListener("click", (e) => {
+  const n = e.target.closest("[data-numfmt]");
+  if (n) {
+    state.numFmt = n.dataset.numfmt === "coins" ? "" : n.dataset.numfmt; save();
+    n.parentElement.querySelectorAll("button").forEach(b => b.classList.toggle("on", b === n));
+    const ex = $("orNumEx"); if (ex) ex.textContent = fmt(state.money);
+    if ((__eocLoaded >= 7 && typeof render === "function")) render();
+    updateCounter();
+    return;
+  }
+  const p = e.target.closest("[data-popups]");
+  if (p) {
+    state.popups = p.dataset.popups === "all" ? "" : p.dataset.popups; save();
+    p.parentElement.querySelectorAll("button").forEach(b => b.classList.toggle("on", b === p));
+    const h = p.closest(".orRow").querySelector(".orHint"); if (h) h.textContent = popupHint();
+    if (state.popups === "off") $("alerts").innerHTML = "";
+  }
+});
+
+// 💾 Back up / restore: the same signed, scrambled text as the browser save (so it can't be edited to cheat)
+function backupText() { return saveEncode(splitState(state).progress); }
+function showBackup() {
+  showModal(`<h2>💾 Back up or restore your game</h2>
+    <p>Keep a copy of your progress in a file, or move it to another browser without an account.</p>
+    <div class="row" style="justify-content:center; flex-wrap:wrap; gap:8px">
+      <button class="btn big" id="bkDownload">⬇️ Download backup file</button>
+      <button class="btn big ghost" id="bkCopy">📋 Copy backup code</button></div>
+    <h3 style="margin-top:18px">Restore</h3>
+    <p class="muted">Load a backup file or paste a backup code. <b>It replaces the game on this device</b>${typeof cloud === "object" && cloud.user ? " (and your ☁️ cloud save at the next sync)" : ""}.</p>
+    <div class="row" style="justify-content:center; flex-wrap:wrap; gap:8px">
+      <label class="btn ghost" style="cursor:pointer; border:1px solid rgba(255,255,255,0.3); padding:8px 14px; border-radius:10px">📂 Choose a file<input type="file" id="bkFile" accept=".txt,text/plain" hidden></label></div>
+    <textarea id="bkText" rows="3" style="width:100%; margin-top:8px; font-size:12px" placeholder="${LANG === "es" ? "…o pega aquí un código de copia" : "…or paste a backup code here"}" data-noi18n></textarea>
+    <p class="muted" id="bkMsg"></p>
+    <div class="row" style="justify-content:center; gap:8px">
+      <button class="btn ghost" id="bkBack">← Settings</button>
+      <button class="btn dangerBtn" id="bkLoad" disabled>Restore this backup</button></div>`);
+  $("modalBox").classList.add("wide");
+  const msg = (t) => { $("bkMsg").textContent = t; };
+  let picked = null;
+  const check = (raw) => {
+    raw = (raw || "").trim(); picked = null; $("bkLoad").disabled = true;
+    if (!raw) return msg("");
+    const r = saveDecode(raw);
+    if (!r.ok || !r.data || typeof r.data !== "object" || r.data.money == null) return msg("❌ This isn't a valid Empire of Coins backup (or it was changed).");
+    picked = cleanSave(r.data); $("bkLoad").disabled = false;
+    msg(`✅ Backup found: ${fmt(picked.money || 0)}${picked.legacy && picked.legacy.count ? `, ⭐ ${picked.legacy.count} prestige${picked.legacy.count === 1 ? "" : "s"}` : ""}.`);
+  };
+  $("bkDownload").onclick = () => {
+    save(); flushSave();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([backupText()], { type: "text/plain" }));
+    a.download = `empire-of-coins-backup-${new Date().toISOString().slice(0, 10)}.txt`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+    msg("✅ Backup file downloaded.");
+  };
+  $("bkCopy").onclick = async () => {
+    try { await navigator.clipboard.writeText(backupText()); msg("✅ Backup code copied. Paste it somewhere safe."); }
+    catch (e) { $("bkText").value = backupText(); $("bkText").select(); msg("Select the code above and copy it."); }
+  };
+  $("bkFile").onchange = (e) => { const f = e.target.files[0]; if (!f) return; f.text().then(t => { $("bkText").value = ""; check(t); }); };
+  $("bkText").oninput = (e) => check(e.target.value);
+  $("bkBack").onclick = () => showSettings(settingsFromMenu);
+  $("bkLoad").onclick = () => {
+    if (!picked) return;
+    stopSaving = true;
+    try { storage.saveGame(picked); } catch (e) { stopSaving = false; return msg("❌ Could not save: browser storage is full."); }
+    location.reload();
+  };
+}
+
 // 💾 "Saved 12 s ago" in ⚙️ Settings (ticks while the window is open)
 function savedAgo() {
   const s = Math.max(0, Math.round((Date.now() - lastSaveAt) / 1000));
@@ -6494,6 +6605,7 @@ function showSettings(fromMenu) {
       <div class="orSec">Game</div>
       <div class="orRow orSave">${orIcon("save")}<span class="grow"><span>Saved <b id="orSaved">${savedAgo()}</b></span><small>Saves itself every 30 seconds and after every action.</small></span>
         <button class="orMini" data-or="save">Save now</button></div>
+      <button class="orRow" data-or="backup">${orIcon("download")}<span class="grow">Back up or restore your game</span><span class="orArrow">›</span></button>
       <div class="orSec">Account</div>
       <div id="orCloud">${(__eocLoaded >= 38 && typeof cloudRowsHtml === "function") ? cloudRowsHtml(true) : ""}</div>
       <div class="orSec">Display</div>
@@ -6501,6 +6613,13 @@ function showSettings(fromMenu) {
         <input type="range" class="orRange" id="orBright" min="20" max="100" step="5" value="${bgBright()}" style="--p:${(bgBright() - 20) / 0.8}%" aria-label="Background brightness"></div>
       <div class="orRow slider">${orIcon("lang")}<span class="grow">Language</span>
         <span class="orLang" data-noi18n><button data-lang="en">English</button><button data-lang="es">Español</button></span></div>
+      <div class="orRow slider">${orIcon("num")}<span class="grow">Numbers</span>
+        <span class="orLang" data-noi18n>${[["coins", "Coins"], ["short", "Short"], ["full", "Full"]].map(([k, t]) => `<button data-numfmt="${k}" class="${numFmtNow() === k ? "on" : ""}">${LANG === "es" ? { Coins: "Monedas", Short: "Corto", Full: "Completo" }[t] : t}</button>`).join("")}</span>
+        <small class="orHint" id="orNumEx">${fmt(state.money)}</small></div>
+      ${row("lowFx", "Reduce effects", `<span class="orSwitch ${state.lowFx ? "on" : ""}" id="orLowFx"></span>`)}
+      <div class="orRow slider">${orIcon("bell")}<span class="grow">Pop-ups</span>
+        <span class="orLang" data-noi18n>${[["all", "All"], ["important", "Important"], ["off", "Off"]].map(([k, t]) => `<button data-popups="${k}" class="${(state.popups || "all") === k ? "on" : ""}">${LANG === "es" ? { All: "Todos", Important: "Importantes", Off: "Ninguno" }[t] : t}</button>`).join("")}</span>
+        <small class="orHint">${popupHint()}</small></div>
       <div class="orSec">Help</div>
       ${row("tips", "Show tips", `<span class="orSwitch ${state.tips.on ? "on" : ""}" id="orTips"></span>`)}
       ${row("tipsReset", "Show all tips again")}
@@ -6519,6 +6638,8 @@ $("modalBox").addEventListener("click", (e) => {
   const b = e.target.closest("[data-or]"); if (!b) return;
   const what = b.dataset.or;
   if (what === "bug") return showBugReport();
+  if (what === "backup") return showBackup();
+  if (what === "lowFx") { state.lowFx = !state.lowFx; applyLowFx(); save(); const t = $("orLowFx"); if (t) t.classList.toggle("on", !!state.lowFx); return; }
   if (what === "donate") return showDonate();   // 🐞 js/05b-bug-report.js
   if (what === "menu" || what === "tutorial") hideModal();
   $("settingsMenu").querySelector(`[data-setting="${what}"]`).click();
@@ -11067,7 +11188,7 @@ function grantRewards() {   // checked with the achievements; a reward, once ear
     if (p.done < p.total) continue;
     items.forEach(c => state.cosmetics.owned[c.id] = true);
     save();
-    showAlert(`🎁 Reward unlocked: ${col.name}!`, `You finished every achievement it needs. Turn it on in 🏆 Achievements → 🎁 Rewards.`);
+    showAlert(`🎁 Reward unlocked: ${col.name}!`, `You finished every achievement it needs. Turn it on in 🏆 Achievements → 🎁 Rewards.`, "good");
     if (state.view === "achievements") renderAchievements();
   }
 }
@@ -14056,6 +14177,8 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "⚙️ More settings: <b>Numbers</b> (coins like 3.92 gcoin, short like 3.92T, or full), <b>Reduce effects</b> (no blur, glows play once, no floating click numbers) and <b>Pop-ups</b> (all, only warnings, or none).",
+    "💾 <b>Back up or restore your game</b> in ⚙️ Settings: download a backup file or copy a backup code, and load it on any browser, no account needed. Backups can't be edited to cheat.",
     "🏠 Main menu: a line under Play shows your progress (money and prestige), a <b>NEW</b> badge on About marks patch notes you haven't read, Donate is now a small button, and the top corner shows whether your game is saved to the ☁️ cloud.",
     "⚙️ Settings: a new <b>Account</b> section (sign in, ☁️ Sync now, sign out), a \"Saved 12 s ago\" row with a Save now button, an About section, and 🗑️ Reset game moved to a small danger zone at the bottom.",
     "🎁 Free casino bet chips now go back to 0 on a prestige reset. 🎟️ VIP Coins keeps them: pick it and your free chips stay on that and every later reset.",

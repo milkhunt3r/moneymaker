@@ -247,7 +247,7 @@ const staffIco = (key, o, cls = "staffI") => STAFF_PICS.includes(key) ? ico("st-
 const alienBonus = (key) => (typeof spAllyBonus === "function" ? spAllyBonus(key) : 0);
 const geneBonus = (cat) => (typeof geneCatCount === "function" ? geneCatCount(cat) * 0.01 : 0);
 const PREF_KEYS = ["view", "coinUnit", "casinoPage", "logiPage", "rewardType", "rewardState", "gamePage", "incomePage", "achPage", "achHideDone", "achCat", "bgBright", "mapShow", "mapHidden", "cryptoChart", "cryptoTf", "cryptoMA", "investPage", "cryptoSel", "ivCard", "logiFleet", "mapBig", "mapHelp",
-                   "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage"];
+                   "vpPayHidden", "uthPayHidden", "groupCollapsed", "wikiPage", "numFmt", "lowFx", "popups"];
 function splitState(st) {   // -> { progress, prefs }
   const progress = {}, prefs = {};
   for (const k in st) (PREF_KEYS.includes(k) ? prefs : progress)[k] = st[k];
@@ -450,8 +450,17 @@ const fmtNum = (n) => Math.floor(n).toLocaleString();
 // Never rounds up, so it never shows more than you have.
 const SCOIN = 1e6, GCOIN = 1e12, PCOIN = 1e18;
 // scoinFrom: from which amount to switch from bcoin to scoin (1M by default)
+// ⚙️ number format (Settings): "coins" (default, as above), "short" (3.92T) or "full" (3,920,000,000,000)
+const NUM_SHORT = [[1e21, "Sx"], [1e18, "Qi"], [1e15, "Qa"], [1e12, "T"], [1e9, "B"], [1e6, "M"], [1e3, "K"]];
 function splitCoins(n, scoinFrom = SCOIN) {
   const a = Math.abs(n);
+  const nf = typeof state === "object" && state ? state.numFmt : "";
+  if (nf === "full") return [Math.floor(a).toLocaleString(), "bcoin"];
+  if (nf === "short") {
+    const s = NUM_SHORT.find(([u]) => a >= u);
+    if (!s) return [Math.floor(a).toLocaleString(), "bcoin"];
+    return [(Math.floor(a / s[0] * 100) / 100).toLocaleString(undefined, { maximumFractionDigits: 2 }) + s[1], "bcoin"];
+  }
   if (a < scoinFrom) return [Math.floor(a).toLocaleString(), "bcoin"];
   const unit = a < GCOIN ? SCOIN : a < PCOIN ? GCOIN : PCOIN;
   const v = Math.floor(a / unit * 100) / 100;

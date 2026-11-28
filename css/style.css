@@ -1736,6 +1736,11 @@ body.phone .debtBanner { top: 56px; }
 html[lang="en"] [data-lang="en"], html[lang="es"] [data-lang="es"] { background: linear-gradient(180deg, #ffe27a, #f0a81c) !important; color: #2a1800 !important; }
 .orLang { display: flex; gap: 4px; }
 .orLang button { font: 700 13px system-ui, sans-serif; padding: 5px 12px; border-radius: 8px; border: 1px solid rgba(255, 211, 77, 0.5); background: rgba(255, 255, 255, 0.06); color: #fff; cursor: pointer; }
+.orLang button.on { background: linear-gradient(180deg, #ffe27a, #f0a81c); color: #2a1800; }
+.orRow .orHint { flex-basis: 100%; color: #b9b4d6; font-weight: 600; font-size: 12px; margin: -2px 0 0 34px; }
+/* ✨ Reduce effects (⚙️ Settings): no blur, endless glows play once, no floating click numbers or coin bursts */
+body.lowfx *, body.lowfx *::before, body.lowfx *::after { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+body.lowfx #fx { display: none; }
 /* 🌐 longer Spanish labels: keep amounts on one line */
 #shop .income, #shop .card > .row > .muted, #shop .row > span.muted:last-child { white-space: nowrap; }
 

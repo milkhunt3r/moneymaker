@@ -735,6 +735,8 @@ function taxTick() {
 
 /* ----- Red alert pop-up: shows for 8 seconds, click to close ----- */
 function showAlert(title, text, kind = "") {
+  // ⚙️ Settings → Pop-ups: "off" shows none, "important" only warnings (not the green good-news ones)
+  if (state.popups === "off" || (state.popups === "important" && kind === "good")) return;
   const el = document.createElement("div");
   el.className = "alertPop " + kind;
   el.innerHTML = `<b>${title}</b>${text}<br><small>Click to close</small>`;

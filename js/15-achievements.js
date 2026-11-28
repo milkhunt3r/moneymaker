@@ -365,7 +365,7 @@ function grantRewards() {   // checked with the achievements; a reward, once ear
     if (p.done < p.total) continue;
     items.forEach(c => state.cosmetics.owned[c.id] = true);
     save();
-    showAlert(`🎁 Reward unlocked: ${col.name}!`, `You finished every achievement it needs. Turn it on in 🏆 Achievements → 🎁 Rewards.`);
+    showAlert(`🎁 Reward unlocked: ${col.name}!`, `You finished every achievement it needs. Turn it on in 🏆 Achievements → 🎁 Rewards.`, "good");
     if (state.view === "achievements") renderAchievements();
   }
 }

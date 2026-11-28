@@ -29,6 +29,9 @@ function settingsNote(text) {
 const OR_ICONS = {
   cup: '<path d="M4 8h13v5a6 6 0 0 1-6 6H10a6 6 0 0 1-6-6V8z"/><path d="M17 10h1.5a2.5 2.5 0 0 1 0 5H17" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 2.5c0 1.5 1.5 1.5 1.5 3M12 2.5c0 1.5 1.5 1.5 1.5 3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
   save: '<path d="M4 3h12.5L21 7.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm3 2v5h9V5zm5 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>',
+  num: '<path d="M8 3 6.5 21h2L10 3zm7 0-1.5 18h2L17 3zM3.5 8h17v2h-17zm-1 6h17v2h-17z"/>',
+  bell: '<path d="M12 22a2.5 2.5 0 0 0 2.4-2h-4.8a2.5 2.5 0 0 0 2.4 2zm7-6V11a7 7 0 0 0-5.5-6.8V3a1.5 1.5 0 0 0-3 0v1.2A7 7 0 0 0 5 11v5l-2 2v1h18v-1z"/>',
+  lowFx: '<path d="M12 2l2.4 6.6L21 9l-5.2 4.2L17.6 20 12 16.3 6.4 20l1.8-6.8L3 9l6.6-.4z" opacity=".45"/><path d="M3 3l18 18-1.4 1.4-18-18z"/>',
   download: '<path d="M11 3h2v10.2l3.6-3.6 1.4 1.4-6 6-6-6 1.4-1.4 3.6 3.6zM4 19h16v2H4z"/>',
   load: '<path d="M13 21h-2V10.8l-3.6 3.6L6 13l6-6 6 6-1.4 1.4-3.6-3.6zM4 3h16v2H4z"/>',
   tips: '<path d="M12 2a7 7 0 0 0-4 12.7V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.3A7 7 0 0 0 12 2zM9 20h6v1.2a.8.8 0 0 1-.8.8H9.8a.8.8 0 0 1-.8-.8z"/>',
@@ -53,6 +56,84 @@ $("modalBox").addEventListener("input", (e) => {
   $("orBrightVal").textContent = state.bgBright + "%";
   applyBgBright(); save();
 });
+// ⚙️ Numbers / Reduce effects / Pop-ups (screen preferences: per device, kept through resets)
+const numFmtNow = () => ["short", "full"].includes(state.numFmt) ? state.numFmt : "coins";
+const popupHint = () => ({ all: "Every pop-up in the corner: achievements, level-ups and warnings.",
+  important: "Only warnings (breakdowns, failed missions, calls for help, trades closed at a loss).",
+  off: "No pop-ups in the corner. Tax bills and other choices still open as usual." })[state.popups || "all"];
+function applyLowFx() { document.body.classList.toggle("lowfx", !!state.lowFx); }
+applyLowFx();
+$("modalBox").addEventListener("click", (e) => {
+  const n = e.target.closest("[data-numfmt]");
+  if (n) {
+    state.numFmt = n.dataset.numfmt === "coins" ? "" : n.dataset.numfmt; save();
+    n.parentElement.querySelectorAll("button").forEach(b => b.classList.toggle("on", b === n));
+    const ex = $("orNumEx"); if (ex) ex.textContent = fmt(state.money);
+    if (typeof render === "function") render();
+    updateCounter();
+    return;
+  }
+  const p = e.target.closest("[data-popups]");
+  if (p) {
+    state.popups = p.dataset.popups === "all" ? "" : p.dataset.popups; save();
+    p.parentElement.querySelectorAll("button").forEach(b => b.classList.toggle("on", b === p));
+    const h = p.closest(".orRow").querySelector(".orHint"); if (h) h.textContent = popupHint();
+    if (state.popups === "off") $("alerts").innerHTML = "";
+  }
+});
+
+// 💾 Back up / restore: the same signed, scrambled text as the browser save (so it can't be edited to cheat)
+function backupText() { return saveEncode(splitState(state).progress); }
+function showBackup() {
+  showModal(`<h2>💾 Back up or restore your game</h2>
+    <p>Keep a copy of your progress in a file, or move it to another browser without an account.</p>
+    <div class="row" style="justify-content:center; flex-wrap:wrap; gap:8px">
+      <button class="btn big" id="bkDownload">⬇️ Download backup file</button>
+      <button class="btn big ghost" id="bkCopy">📋 Copy backup code</button></div>
+    <h3 style="margin-top:18px">Restore</h3>
+    <p class="muted">Load a backup file or paste a backup code. <b>It replaces the game on this device</b>${typeof cloud === "object" && cloud.user ? " (and your ☁️ cloud save at the next sync)" : ""}.</p>
+    <div class="row" style="justify-content:center; flex-wrap:wrap; gap:8px">
+      <label class="btn ghost" style="cursor:pointer; border:1px solid rgba(255,255,255,0.3); padding:8px 14px; border-radius:10px">📂 Choose a file<input type="file" id="bkFile" accept=".txt,text/plain" hidden></label></div>
+    <textarea id="bkText" rows="3" style="width:100%; margin-top:8px; font-size:12px" placeholder="${LANG === "es" ? "…o pega aquí un código de copia" : "…or paste a backup code here"}" data-noi18n></textarea>
+    <p class="muted" id="bkMsg"></p>
+    <div class="row" style="justify-content:center; gap:8px">
+      <button class="btn ghost" id="bkBack">← Settings</button>
+      <button class="btn dangerBtn" id="bkLoad" disabled>Restore this backup</button></div>`);
+  $("modalBox").classList.add("wide");
+  const msg = (t) => { $("bkMsg").textContent = t; };
+  let picked = null;
+  const check = (raw) => {
+    raw = (raw || "").trim(); picked = null; $("bkLoad").disabled = true;
+    if (!raw) return msg("");
+    const r = saveDecode(raw);
+    if (!r.ok || !r.data || typeof r.data !== "object" || r.data.money == null) return msg("❌ This isn't a valid Empire of Coins backup (or it was changed).");
+    picked = cleanSave(r.data); $("bkLoad").disabled = false;
+    msg(`✅ Backup found: ${fmt(picked.money || 0)}${picked.legacy && picked.legacy.count ? `, ⭐ ${picked.legacy.count} prestige${picked.legacy.count === 1 ? "" : "s"}` : ""}.`);
+  };
+  $("bkDownload").onclick = () => {
+    save(); flushSave();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([backupText()], { type: "text/plain" }));
+    a.download = `empire-of-coins-backup-${new Date().toISOString().slice(0, 10)}.txt`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+    msg("✅ Backup file downloaded.");
+  };
+  $("bkCopy").onclick = async () => {
+    try { await navigator.clipboard.writeText(backupText()); msg("✅ Backup code copied. Paste it somewhere safe."); }
+    catch (e) { $("bkText").value = backupText(); $("bkText").select(); msg("Select the code above and copy it."); }
+  };
+  $("bkFile").onchange = (e) => { const f = e.target.files[0]; if (!f) return; f.text().then(t => { $("bkText").value = ""; check(t); }); };
+  $("bkText").oninput = (e) => check(e.target.value);
+  $("bkBack").onclick = () => showSettings(settingsFromMenu);
+  $("bkLoad").onclick = () => {
+    if (!picked) return;
+    stopSaving = true;
+    try { storage.saveGame(picked); } catch (e) { stopSaving = false; return msg("❌ Could not save: browser storage is full."); }
+    location.reload();
+  };
+}
+
 // 💾 "Saved 12 s ago" in ⚙️ Settings (ticks while the window is open)
 function savedAgo() {
   const s = Math.max(0, Math.round((Date.now() - lastSaveAt) / 1000));
@@ -69,6 +150,7 @@ function showSettings(fromMenu) {
       <div class="orSec">Game</div>
       <div class="orRow orSave">${orIcon("save")}<span class="grow"><span>Saved <b id="orSaved">${savedAgo()}</b></span><small>Saves itself every 30 seconds and after every action.</small></span>
         <button class="orMini" data-or="save">Save now</button></div>
+      <button class="orRow" data-or="backup">${orIcon("download")}<span class="grow">Back up or restore your game</span><span class="orArrow">›</span></button>
       <div class="orSec">Account</div>
       <div id="orCloud">${typeof cloudRowsHtml === "function" ? cloudRowsHtml(true) : ""}</div>
       <div class="orSec">Display</div>
@@ -76,6 +158,13 @@ function showSettings(fromMenu) {
         <input type="range" class="orRange" id="orBright" min="20" max="100" step="5" value="${bgBright()}" style="--p:${(bgBright() - 20) / 0.8}%" aria-label="Background brightness"></div>
       <div class="orRow slider">${orIcon("lang")}<span class="grow">Language</span>
         <span class="orLang" data-noi18n><button data-lang="en">English</button><button data-lang="es">Español</button></span></div>
+      <div class="orRow slider">${orIcon("num")}<span class="grow">Numbers</span>
+        <span class="orLang" data-noi18n>${[["coins", "Coins"], ["short", "Short"], ["full", "Full"]].map(([k, t]) => `<button data-numfmt="${k}" class="${numFmtNow() === k ? "on" : ""}">${LANG === "es" ? { Coins: "Monedas", Short: "Corto", Full: "Completo" }[t] : t}</button>`).join("")}</span>
+        <small class="orHint" id="orNumEx">${fmt(state.money)}</small></div>
+      ${row("lowFx", "Reduce effects", `<span class="orSwitch ${state.lowFx ? "on" : ""}" id="orLowFx"></span>`)}
+      <div class="orRow slider">${orIcon("bell")}<span class="grow">Pop-ups</span>
+        <span class="orLang" data-noi18n>${[["all", "All"], ["important", "Important"], ["off", "Off"]].map(([k, t]) => `<button data-popups="${k}" class="${(state.popups || "all") === k ? "on" : ""}">${LANG === "es" ? { All: "Todos", Important: "Importantes", Off: "Ninguno" }[t] : t}</button>`).join("")}</span>
+        <small class="orHint">${popupHint()}</small></div>
       <div class="orSec">Help</div>
       ${row("tips", "Show tips", `<span class="orSwitch ${state.tips.on ? "on" : ""}" id="orTips"></span>`)}
       ${row("tipsReset", "Show all tips again")}
@@ -94,6 +183,8 @@ $("modalBox").addEventListener("click", (e) => {
   const b = e.target.closest("[data-or]"); if (!b) return;
   const what = b.dataset.or;
   if (what === "bug") return showBugReport();
+  if (what === "backup") return showBackup();
+  if (what === "lowFx") { state.lowFx = !state.lowFx; applyLowFx(); save(); const t = $("orLowFx"); if (t) t.classList.toggle("on", !!state.lowFx); return; }
   if (what === "donate") return showDonate();   // 🐞 js/05b-bug-report.js
   if (what === "menu" || what === "tutorial") hideModal();
   $("settingsMenu").querySelector(`[data-setting="${what}"]`).click();
