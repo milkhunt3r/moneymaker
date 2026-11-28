@@ -65,6 +65,8 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 const PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "👥 Friends: your friend requests and friends now come first, with a big friend code box (📋 Copy, 📤 Share) and an invite when you have no friends yet. Online friends have a <b>⚔️ Challenge</b> button that opens the Online casino with them picked.",
+    "👤 Profile: tap your avatar to change it, see your 🦊🦉🦅 levels and your pets by name, pick a <b>🏅 showcase</b> of 3 achievements, and choose whether other players can see your money.",
     "🐾 The Pet tab is now <b>Pets</b>: your pet collection at the top (2 of 4 found so far), a live status line for each pet with a Go see him button, and earnings for both pets.",
     "🐾 Every pet has an <b>Active / Resting</b> switch. Resting hides it and stops its work (Pip's painting clock pauses). Pip also has a new <b>Always sell his paintings</b> option. Rename a pet with the ✏️ next to its name.",
     "⚙️ More settings: <b>Numbers</b> (coins like 3.92 gcoin, short like 3.92T, or full), <b>Reduce effects</b> (no blur, glows play once, no floating click numbers) and <b>Pop-ups</b> (all, only warnings, or none).",

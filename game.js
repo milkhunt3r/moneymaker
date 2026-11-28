@@ -3280,6 +3280,19 @@ H("🐾 The Pet tab is now <b>Pets</b>: your pet collection at the top (2 of 4 f
   "🐾 La pestaña Mascota ahora es <b>Mascotas</b>: tu colección de mascotas arriba (2 de 4 encontradas por ahora), una línea de estado en directo para cada mascota con un botón Ir a verlo, y las ganancias de las dos.");
 H("🐾 Every pet has an <b>Active / Resting</b> switch. Resting hides it and stops its work (Pip's painting clock pauses). Pip also has a new <b>Always sell his paintings</b> option. Rename a pet with the ✏️ next to its name.",
   "🐾 Cada mascota tiene un interruptor <b>Activo / Descansando</b>. Descansando la oculta y detiene su trabajo (el reloj de pintura de Pip se pausa). Pip tiene además la opción <b>Vender siempre sus cuadros</b>. Cambia el nombre de una mascota con el ✏️ junto a su nombre.");
+// 👤 Profile and 👥 Friends updates
+Object.assign(ES, { "Change avatar": "Cambiar avatar", "Investor": "Inversor", "Pick up to 3 achievements to show off": "Elige hasta 3 logros para presumir",
+  "Show my money to other players": "Mostrar mi dinero a otros jugadores", "Friends see your money on your profile and in the ⚔️ Online casino.": "Tus amigos ven tu dinero en tu perfil y en el ⚔️ Casino online.",
+  "Signed in as": "Sesión iniciada como", "Manage in ⚙️ Settings": "Gestionar en ⚙️ Ajustes", "hidden from others": "oculto para los demás",
+  "Hidden: friends see 🙈 instead of your money.": "Oculto: tus amigos ven 🙈 en lugar de tu dinero.", "Your showcase": "Tu vitrina",
+  "Pick up to 3 achievements. Other players see them on your profile.": "Elige hasta 3 logros. Los demás jugadores los verán en tu perfil.",
+  "Change showcase": "Cambiar vitrina", "Add a friend": "Añadir un amigo", "Showcase": "Vitrina", "Money hidden": "Dinero oculto", "Your friend code": "Tu código de amigo",
+  "Share": "Compartir", "No friends yet.": "Todavía no tienes amigos.", "Send your friend code to the people you play with, or search for their nickname below.": "Envía tu código de amigo a la gente con la que juegas, o busca su apodo abajo." });
+rx(String.raw`Save \((\d)/3\)`, "Guardar ($1/3)");
+H("👥 Friends: your friend requests and friends now come first, with a big friend code box (📋 Copy, 📤 Share) and an invite when you have no friends yet. Online friends have a <b>⚔️ Challenge</b> button that opens the Online casino with them picked.",
+  "👥 Amigos: tus solicitudes y tus amigos aparecen ahora primero, con un recuadro grande para tu código de amigo (📋 Copiar, 📤 Compartir) y una invitación cuando aún no tienes amigos. Los amigos conectados tienen un botón <b>⚔️ Retar</b> que abre el Casino online con ellos elegidos.");
+H("👤 Profile: tap your avatar to change it, see your 🦊🦉🦅 levels and your pets by name, pick a <b>🏅 showcase</b> of 3 achievements, and choose whether other players can see your money.",
+  "👤 Perfil: toca tu avatar para cambiarlo, mira tus niveles 🦊🦉🦅 y tus mascotas por su nombre, elige una <b>🏅 vitrina</b> con 3 logros y decide si los demás jugadores pueden ver tu dinero.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
@@ -11404,6 +11417,7 @@ function doPrestige(id) {
     freeChips: L.vip > 0 ? state.freeChips : {},   // 🎁 free bet chips go back to 0 on a reset, unless 🎟️ VIP Coins was picked (this reset or before)
     vpPayHidden: state.vpPayHidden, uthPayHidden: state.uthPayHidden, view: "income",
     tips: state.tips,   // 💡 tips already seen and the guided start stay done
+    profShowcase: state.profShowcase, profHideMoney: state.profHideMoney,   // 👤 profile showcase and "hide my money"
     // ⛏️ Gold Mine Dig: records, upgrades and the 🏦 vault stay (unsold ore from the last run goes into the vault; a run in progress is dropped)
     mine: state.mine ? { energy: state.mine.energy, regenAt: state.mine.regenAt, runs: state.mine.runs, best: state.mine.best, earned: state.mine.earned, ores: state.mine.ores,
       up: state.mine.up, rescued: state.mine.rescued, fullBag: state.mine.fullBag, closeCall: state.mine.closeCall,
@@ -14195,6 +14209,8 @@ addEventListener("resize", fitBrand); fitBrand();
 // 📝 Patch notes: newest first. The first entry is shown open in About.
 var PATCH_NOTES = [
   { date: "28 November 2026", title: "Empire of Coins", items: [
+    "👥 Friends: your friend requests and friends now come first, with a big friend code box (📋 Copy, 📤 Share) and an invite when you have no friends yet. Online friends have a <b>⚔️ Challenge</b> button that opens the Online casino with them picked.",
+    "👤 Profile: tap your avatar to change it, see your 🦊🦉🦅 levels and your pets by name, pick a <b>🏅 showcase</b> of 3 achievements, and choose whether other players can see your money.",
     "🐾 The Pet tab is now <b>Pets</b>: your pet collection at the top (2 of 4 found so far), a live status line for each pet with a Go see him button, and earnings for both pets.",
     "🐾 Every pet has an <b>Active / Resting</b> switch. Resting hides it and stops its work (Pip's painting clock pauses). Pip also has a new <b>Always sell his paintings</b> option. Rename a pet with the ✏️ next to its name.",
     "⚙️ More settings: <b>Numbers</b> (coins like 3.92 gcoin, short like 3.92T, or full), <b>Reduce effects</b> (no blur, glows play once, no floating click numbers) and <b>Pop-ups</b> (all, only warnings, or none).",
@@ -21082,6 +21098,19 @@ function profNickError(n) {
 
 /* ----- 🏆 what other players see ----- */
 var profStats = () => ({ ach_done: achDone(), ach_total: achShown().length, prestige: (state.legacy && state.legacy.count) || 0 });
+// 🦊🦉🦅 your three levels, 🏅 your showcase (up to 3 finished achievements) and 🙈 hide money (docs/supabase-profiles-extra.sql)
+var profLevels = () => ({ g: levelInfo(state.casinoXp).level, i: levelInfo(inv.xp, INVEST_XP).level, l: levelInfo(state.logiXp, LOGI_XP).level });
+var profShowcase = () => (Array.isArray(state.profShowcase) ? state.profShowcase : []).filter(id => state.achievements[id] && ACHIEVEMENTS.some(a => a.id === id)).slice(0, 3);
+var PROF_LV = [["g", "🦊", "Gambler"], ["i", "🦉", "Investor"], ["l", "🦅", "Logistics"]];
+var profLevelsHtml = (lv) => lv && Object.keys(lv).length ? `<div class="profLvls">${PROF_LV.map(([k, e, n]) => `<span title="${n} level">${e} <span>${n}</span> <b>${Number(lv[k]) || 1}</b></span>`).join("")}</div>` : "";
+var profShowcaseHtml = (ids, mine) => {
+  const list = (ids || []).map(id => ACHIEVEMENTS.find(a => a.id === id)).filter(Boolean);
+  if (!list.length && !mine) return "";
+  return `<div class="profShow">${list.map(a => `<span class="profShowItem" title="${escapeHtml(a.desc || "")}">${achIcon(a, "inl")}<b>${a.name}</b></span>`).join("")}
+    ${mine ? `<button class="btn ghost small" data-prof="showcase">🏅 ${list.length ? "Change showcase" : "Pick up to 3 achievements to show off"}</button>` : ""}</div>`;
+};
+var profPetsNamed = () => [state.pet && state.pet.owned && !state.pet.pending ? { pic: PROF_PETS.mochi.pic, name: petCleanName(state.pet.name) || "Mochi" } : null,
+  state.pip && state.pip.owned ? { pic: PROF_PETS.pip.pic, name: pipName() } : null].filter(Boolean);
 // avatars: the emblems of the 🎁 reward collections you have unlocked (assets/col/<id>.webp)
 var profColOpen = (col) => COSMETICS.some(c => c.collection === col.id && state.cosmetics.owned[c.id]) || (() => { const p = rewardProgress(col); return p.total > 0 && p.done >= p.total; })();
 // 🐾 starter avatars every player can pick (assets/avatars/<name>.webp), shown before the collection emblems
@@ -21105,7 +21134,7 @@ async function profLoad() {
     // "*": the columns added by later SQL files (friends, money) may not exist yet; see what came back
     const { data, error } = await cloud.sb.from("profiles").select("*").eq("user_id", cloud.user.id).maybeSingle();
     if (error) throw error;
-    if (data) { prof.friendsOn = "friend_code" in data; prof.moneyOn = "money" in data; }
+    if (data) { prof.friendsOn = "friend_code" in data; prof.moneyOn = "money" in data; prof.extraOn = "levels" in data; }   // extraOn: docs/supabase-profiles-extra.sql
     prof.row = data; prof.user = cloud.user.id; prof.fetched = cloud.user.id; profCache();
   } catch (e) { console.warn("Profile load failed:", e); prof.err = e && (e.code === "42P01" || e.code === "PGRST205") ? profDbError(e) : "load"; }
   prof.loading = false;
@@ -21159,8 +21188,13 @@ async function profPushStats() {
   st.prestige = Math.min(st.prestige, (prof.row.prestige || 0) + 1);   // the database accepts one prestige step per upload
   if (prof.friendsOn) st.pets = profPets();
   if (prof.moneyOn) { st.coin = profCoin(); st.money = Math.max(0, Math.floor(state.money)); }
+  let extraSame = true;
+  if (prof.extraOn) {
+    st.levels = profLevels(); st.showcase = profShowcase(); st.hide_money = !!state.profHideMoney;
+    extraSame = JSON.stringify(st.levels) === JSON.stringify(prof.row.levels || {}) && JSON.stringify(st.showcase) === JSON.stringify(prof.row.showcase || []) && st.hide_money === !!prof.row.hide_money;
+  }
   const moneySame = !prof.moneyOn || (st.coin === prof.row.coin && Math.abs(st.money - (prof.row.money || 0)) <= Math.max(1, (prof.row.money || 0) * 0.01));   // money: only when it moved 1%+
-  if (st.ach_done === prof.row.ach_done && st.ach_total === prof.row.ach_total && st.prestige === prof.row.prestige && String(st.pets) === String(prof.row.pets) && moneySame) return;
+  if (st.ach_done === prof.row.ach_done && st.ach_total === prof.row.ach_total && st.prestige === prof.row.prestige && String(st.pets) === String(prof.row.pets) && moneySame && extraSame) return;
   profPushing = true;
   try { const { error } = await cloud.sb.from("profiles").update(st).eq("user_id", cloud.user.id); if (!error) { Object.assign(prof.row, st); profCache(); } }
   catch (e) {}
@@ -21171,12 +21205,14 @@ setInterval(profPushStats, 30000);
 /* ----- 🖼️ the page ----- */
 function profCardHtml(row) {
   const st = profStats(), nick = row ? row.nickname : "", av = row ? row.avatar : prof.pendingAvatar;
-  return `<div class="profCard">${profAvatarImg(av, "profAv")}
+  const pets = profPetsNamed();
+  return `<div class="profCard"><button class="profAvBtn" data-prof="avatar" title="Change avatar" aria-label="Change avatar">${profAvatarImg(av, "profAv")}<span class="profAvEdit">✏️</span></button>
     <div class="profCardInfo"><div class="profNick"><span data-noi18n>${nick ? escapeHtml(nick) : "<i>…</i>"}</span>${row && !prof.editing ? `<button class="profEdit" data-prof="edit" title="Change nickname" aria-label="Change nickname">✏️</button>` : ""}</div>
       <div class="profStats"><span>🏆 <b>${st.ach_done}/${st.ach_total}</b> achievements</span><span>⭐ Prestige <b>${st.prestige}</b></span></div>
-      <div class="profMoney">${profCoinImg(profCoin())}<b id="profMoney">${fmt(state.money)}</b></div>
-      ${profPetsHtml(profPets())}
-      ${row && row.friend_code ? `<div class="profCode">Friend code: <b data-noi18n>${escapeHtml(row.friend_code)}</b> <button class="btn ghost small" data-prof="copy">📋 Copy</button></div>` : ""}</div></div>`;
+      ${profLevelsHtml(profLevels())}
+      <div class="profMoney">${profCoinImg(profCoin())}<b id="profMoney">${fmt(state.money)}</b>${state.profHideMoney ? `<span class="muted profHid">🙈 hidden from others</span>` : ""}</div>
+      ${pets.length ? `<div class="profPetsN">${pets.map(p => `<span><img src="${p.pic}" alt=""><b data-noi18n>${escapeHtml(p.name)}</b></span>`).join("")}</div>` : ""}
+      ${row && prof.extraOn ? profShowcaseHtml(profShowcase(), true) : ""}</div></div>`;
 }
 function renderProfile() {
   const box = $("profileView"); if (!box || box.hidden) return;
@@ -21207,7 +21243,9 @@ function renderProfile() {
       ${prof.loading && !row ? `<p class="muted">Loading…</p>` : ""}
       ${!row && !prof.loading ? `<p class="profNew">✨ Choose a nickname and an avatar to create your profile.</p>` : ""}
       ${prof.msg && !showNick ? `<div class="profOk">${prof.msg}</div>` : ""}
-      ${prof.err && !showNick ? `<div class="profErr">❌ ${errText}</div>` : ""}</div>
+      ${prof.err && !showNick ? `<div class="profErr">❌ ${errText}</div>` : ""}
+      ${row && prof.extraOn ? `<div class="orRow petOnRow profPriv"><span class="grow"><b>Show my money to other players</b><small>${state.profHideMoney ? "Hidden: friends see 🙈 instead of your money." : "Friends see your money on your profile and in the ⚔️ Online casino."}</small></span>
+        <span class="orSwitch ${state.profHideMoney ? "" : "on"}" data-prof="hidemoney" role="switch" tabindex="0"></span></div>` : ""}</div>
     ${showNick ? `<div class="card profWrap"><h3 style="margin-top:0">✏️ ${row ? "Change nickname" : "Nickname"}</h3>
       <div class="profNickRow"><input id="profNick" maxlength="16" autocomplete="off" spellcheck="false" placeholder="Your nickname" value="${escapeHtml(typed != null ? typed : row ? row.nickname : "")}" data-noi18n aria-label="Nickname">
         ${row ? `<button class="btn" data-prof="nick" ${prof.busy || !afford ? "disabled" : ""}>Change · ${fmt(PROF_RENAME_COST)}</button><button class="btn ghost" data-prof="cancel">Cancel</button>`
@@ -21216,13 +21254,13 @@ function renderProfile() {
       <div class="muted">${row ? `Changing your nickname costs <b>${fmt(PROF_RENAME_COST)}</b>.${afford ? "" : ` You have ${fmt(state.money)}.`}` : "Your first nickname is free. Changing it later costs 100 gcoin."}</div>
       ${prof.err ? `<div class="profErr">❌ ${errText}</div>` : ""}
       ${prof.msg ? `<div class="profOk">${prof.msg}</div>` : ""}</div>` : ""}
-    <div class="card profWrap"><h3 style="margin-top:0">🖼️ Avatar</h3>
+    ${prof.pickAv || !row || !cur ? `<div class="card profWrap"><div class="row"><h3 style="margin:0">🖼️ Avatar</h3>${row && cur ? `<button class="btn ghost small" data-prof="avdone">Done</button>` : ""}</div>
       <p class="muted">Pick a starter avatar or the emblem of one of your 🎁 reward collections. Unlock more collections (🏆 Achievements → 🎁 Rewards) to get more avatars.</p>
       ${ids.length ? `<div class="profAvGrid">${shown.map(id => {
         return `<button class="profAvPick ${id === cur ? "on" : ""}" data-prof-av="${id}" title="${escapeHtml(profAvName(id))}">${profAvatarImg(id)}</button>`; }).join("")}</div>
         ${ids.length > shown.length ? `<button class="btn ghost small" data-prof="all">Show all ${ids.length}</button>` : ""}`
-        : `<p>🔒 Unlock your first 🎁 reward collection (🏆 Achievements → 🎁 Rewards) to choose an avatar.</p>`}</div>
-    <div class="card profWrap"><h3 style="margin-top:0">☁️ Account</h3><div id="cloudRows">${cloudRowsHtml()}</div></div></div></div>`;
+        : `<p>🔒 Unlock your first 🎁 reward collection (🏆 Achievements → 🎁 Rewards) to choose an avatar.</p>`}</div>` : ""}
+    <div class="profAcct muted">☁️ Signed in as <b data-noi18n>${escapeHtml(cloud.user.email || "Google account")}</b> · <button class="linkBtn" data-prof="settings">Manage in ⚙️ Settings</button></div></div></div>`;
 }
 function profUi() {
   const b = $("profileBtn");
@@ -21234,6 +21272,21 @@ function profUi() {
   }
   const typing = document.activeElement && ["profNick", "frSearch"].includes(document.activeElement.id);   // don't rebuild the page under the player's fingers
   if (state.view === "profile" && !typing) renderProfile();
+}
+
+/* ----- 🏅 pick your showcase (up to 3 finished achievements) ----- */
+function profShowcasePick() {
+  let sel = profShowcase();
+  const done = ACHIEVEMENTS.filter(a => state.achievements[a.id]).sort((a, b) => (state.achievements[b.id] || 0) - (state.achievements[a.id] || 0));
+  const draw = () => {
+    showModal(`<h2>🏅 Your showcase</h2><p class="muted">Pick up to 3 achievements. Other players see them on your profile.</p>
+      <div class="profShowPick">${done.map(a => `<button class="${sel.includes(a.id) ? "on" : ""}" data-showpick="${a.id}" ${!sel.includes(a.id) && sel.length >= 3 ? "disabled" : ""}>${achIcon(a, "inl")}<span><b>${a.name}</b><small>${a.desc || ""}</small></span></button>`).join("") || `<p class="muted">Finish an achievement first.</p>`}</div>
+      <div class="row" style="justify-content:center;gap:10px;margin-top:12px"><button class="btn ghost" data-modal="close">Cancel</button><button class="btn" id="showSave">Save (${sel.length}/3)</button></div>`);
+    $("modalBox").classList.add("wide");
+    $("modalBox").querySelectorAll("[data-showpick]").forEach(b => b.onclick = () => { const id = b.dataset.showpick; sel = sel.includes(id) ? sel.filter(x => x !== id) : sel.concat(id).slice(0, 3); const y = $("modalBox").querySelector(".profShowPick").scrollTop; draw(); $("modalBox").querySelector(".profShowPick").scrollTop = y; });
+    $("showSave").onclick = () => { state.profShowcase = sel; save(); hideModal(); renderProfile(); profPushStats(); };
+  };
+  draw();
 }
 
 /* ----- 🔘 wiring ----- */
@@ -21259,6 +21312,11 @@ document.addEventListener("click", (e) => {
   if (b.dataset.prof === "signin" && (__eocLoaded >= 38 && typeof cloudSignIn === "function")) cloudSignIn();
   if (b.dataset.prof === "nick") profSaveNick($("profNick").value);
   if (b.dataset.prof === "all") { prof.showAll = true; renderProfile(); }
+  if (b.dataset.prof === "avatar") { prof.pickAv = !prof.pickAv; renderProfile(); if (prof.pickAv) { const g = document.querySelector(".profAvGrid"); if (g) g.scrollIntoView({ behavior: "smooth", block: "center" }); } }
+  if (b.dataset.prof === "avdone") { prof.pickAv = false; renderProfile(); }
+  if (b.dataset.prof === "settings") showSettings(false);
+  if (b.dataset.prof === "hidemoney") { state.profHideMoney = !state.profHideMoney; save(); renderProfile(); profPushStats(); }
+  if (b.dataset.prof === "showcase") profShowcasePick();
   if (b.dataset.prof === "tab-me" || b.dataset.prof === "tab-friends") { prof.tab = b.dataset.prof === "tab-friends" ? "friends" : "me"; prof.err = ""; prof.msg = ""; renderProfile(); if (prof.tab === "friends" && (__eocLoaded >= 51 && typeof frLoad === "function")) frLoad(); }
   if (b.dataset.prof === "copy" && prof.row && prof.row.friend_code) {
     const c = prof.row.friend_code;
@@ -21386,6 +21444,17 @@ function frResultBtn(p) {
   if (r.addressee === frMe()) return `<button class="btn small" data-fr="accept" data-rid="${r.id}">✅ Accept</button>`;
   return `<span class="muted">⏳ Request sent</span>`;
 }
+// 📤 your friend code: copy it, or share an invite with the phone's share sheet
+var frInvite = (code) => LANG === "es" ? `¡Añádeme como amigo en Empire of Coins! Mi código de amigo: ${code}` : `Add me as a friend in Empire of Coins! My friend code: ${code}`;
+function frCodeBox(row, big) {
+  const code = escapeHtml(row.friend_code || "…");
+  return `<div class="frCodeBox ${big ? "big" : ""}"><div><span class="muted">Your friend code</span><b data-noi18n>${code}</b></div>
+    <span class="frCodeBtns"><button class="btn ghost small" data-prof="copy">📋 Copy</button>${navigator.share ? `<button class="btn small" data-fr="share">📤 Share</button>` : ""}</span></div>`;
+}
+// ⚔️ challenge a friend: opens 🎰 Casino → ⚔️ Online casino with this friend picked (choose a game and a bet there)
+function frChallengeBtn(p) {
+  return (__eocLoaded >= 52 && typeof duChallenge === "function") && frOnline(p) ? `<button class="btn small" data-fr="duel" data-id="${p.user_id}"><img class="ico" src="assets/duel/ico-duel.webp" alt="">Challenge</button>` : "";
+}
 function renderFriends(row) {
   const box = $("friendsBox"); if (!box) return;
   if (!row) { box.innerHTML = `<div class="card profWrap"><h2 style="margin-top:0">👥 Friends</h2><p>Create your profile first (👤 Profile tab: choose a nickname). Then you can add friends.</p></div>`; return; }
@@ -21398,19 +21467,22 @@ function renderFriends(row) {
     .sort((a, b) => (frOnline(b) - frOnline(a)) || String(a.nickname).localeCompare(String(b.nickname)));
   const online = friends.filter(frOnline).length;
   const typed = $("frSearch") ? $("frSearch").value : fr.q;
-  box.innerHTML = `<div class="card profWrap"><h3 style="margin-top:0">🔍 Find players</h3>
+  const none = fr.loaded && !friends.length;
+  // 1. requests for you  2. your friends (or an invite when you have none)  3. add a friend  4. requests you sent
+  const reqs = incoming.length ? `<div class="card profWrap"><h3 style="margin-top:0">📨 Friend requests <span class="profBadge">${incoming.length}</span></h3><div class="frList">${incoming.map(r => frPersonRow(P(r),
+      `<button class="btn small" data-fr="accept" data-rid="${r.id}">✅ Accept</button><button class="btn ghost small" data-fr="decline" data-rid="${r.id}">Decline</button>`)).join("")}</div></div>` : "";
+  const list = `<div class="card profWrap"><div class="row"><h3 style="margin:0">👥 Your friends (${friends.length})</h3><span class="muted">${friends.length ? `🟢 ${online} online` : ""}</span></div>
+      ${fr.loading && !fr.loaded ? `<p class="muted">Loading…</p>` : friends.length ? `<div class="frList">${friends.map(p => frPersonRow(p, frOnline(p) ? `<span class="frOn">Online</span>${frChallengeBtn(p)}` : p.last_seen ? `<span class="muted">${frAgo(p.last_seen)}</span>` : "")).join("")}</div>`
+        : `<div class="frEmpty"><p><b>No friends yet.</b> Send your friend code to the people you play with, or search for their nickname below.</p>${frCodeBox(row, true)}</div>`}</div>`;
+  const add = `<div class="card profWrap"><h3 style="margin-top:0">➕ Add a friend</h3>
       <div class="profNickRow"><input id="frSearch" maxlength="20" autocomplete="off" spellcheck="false" placeholder="Nickname or friend code" value="${escapeHtml(typed || "")}" data-noi18n aria-label="Nickname or friend code">
         <button class="btn" data-fr="search" ${fr.searching ? "disabled" : ""}>Search</button></div>
-      <div class="muted">Your friend code: <b data-noi18n>${escapeHtml(row.friend_code || "…")}</b> <button class="btn ghost small" data-prof="copy">📋 Copy</button> · Share it so friends can find you.</div>
       ${fr.err ? `<div class="profErr">❌ ${fr.err}</div>` : ""}
-      ${fr.searching ? `<p class="muted">Searching…</p>` : fr.results ? (fr.results.length ? `<div class="frList">${fr.results.map(p => frPersonRow(p, frResultBtn(p))).join("")}</div>` : `<p class="muted">No players found.</p>`) : ""}</div>
-    ${incoming.length ? `<div class="card profWrap"><h3 style="margin-top:0">📨 Friend requests <span class="profBadge">${incoming.length}</span></h3><div class="frList">${incoming.map(r => frPersonRow(P(r),
-      `<button class="btn small" data-fr="accept" data-rid="${r.id}">✅ Accept</button><button class="btn ghost small" data-fr="decline" data-rid="${r.id}">Decline</button>`)).join("")}</div></div>` : ""}
-    <div class="card profWrap"><div class="row"><h3 style="margin:0">👥 Your friends (${friends.length})</h3><span class="muted">${friends.length ? `🟢 ${online} online` : ""}</span></div>
-      ${fr.loading && !fr.loaded ? `<p class="muted">Loading…</p>` : friends.length ? `<div class="frList">${friends.map(p => frPersonRow(p, frOnline(p) ? `<span class="frOn">Online</span>` : p.last_seen ? `<span class="muted">${frAgo(p.last_seen)}</span>` : "")).join("")}</div>`
-        : `<p class="muted">No friends yet. Search for a nickname or a friend code above.</p>`}</div>
-    ${outgoing.length ? `<div class="card profWrap"><h3 style="margin-top:0">⏳ Requests you sent</h3><div class="frList">${outgoing.map(r => frPersonRow(P(r),
-      `<button class="btn ghost small" data-fr="cancel" data-rid="${r.id}">Cancel</button>`)).join("")}</div></div>` : ""}`;
+      ${fr.searching ? `<p class="muted">Searching…</p>` : fr.results ? (fr.results.length ? `<div class="frList">${fr.results.map(p => frPersonRow(p, frResultBtn(p))).join("")}</div>` : `<p class="muted">No players found.</p>`) : ""}
+      ${none ? "" : frCodeBox(row, false)}</div>`;
+  const sent = outgoing.length ? `<div class="card profWrap"><h3 style="margin-top:0">⏳ Requests you sent</h3><div class="frList">${outgoing.map(r => frPersonRow(P(r),
+      `<button class="btn ghost small" data-fr="cancel" data-rid="${r.id}">Cancel</button>`)).join("")}</div></div>` : "";
+  box.innerHTML = reqs + list + add + sent;
 }
 
 /* ----- 👤 a friend's profile ----- */
@@ -21420,13 +21492,17 @@ function frShowProfile(id) {
   showModal(`<div class="frProfile">${profAvatarImg(p.avatar, "profAv")}
       <h2 data-noi18n>${escapeHtml(p.nickname)}</h2>
       <div class="frStatus">${frDot(p)} ${frOnline(p) ? "Online" : p.last_seen ? `Last seen ${frAgo(p.last_seen)}` : "Offline"}</div>
-      <div class="profStats" style="justify-content:center"><span>🏆 <b>${p.ach_done || 0}/${p.ach_total || 0}</b> achievements</span><span>⭐ Prestige <b>${p.prestige || 0}</b></span></div>
-      ${"money" in p ? `<div class="profMoney" style="justify-content:center">${profCoinImg(p.coin)}<b>${fmt(Number(p.money) || 0)}</b></div>` : ""}
+      <div class="profStats" style="justify-content:center"><span>🏆 <b>${p.ach_total ? `${p.ach_done || 0}/${p.ach_total}` : p.ach_done || 0}</b> achievements</span><span>⭐ Prestige <b>${p.prestige || 0}</b></span></div>
+      ${p.levels ? profLevelsHtml(p.levels).replace('class="profLvls"', 'class="profLvls" style="justify-content:center"') : ""}
+      ${"money" in p ? (p.hide_money ? `<div class="profMoney" style="justify-content:center"><span class="muted">🙈 Money hidden</span></div>` : `<div class="profMoney" style="justify-content:center">${profCoinImg(p.coin)}<b>${fmt(Number(p.money) || 0)}</b></div>`) : ""}
+      ${p.showcase && p.showcase.length ? `<h3 style="margin:16px 0 8px">🏅 Showcase</h3>${profShowcaseHtml(p.showcase, false).replace('class="profShow"', 'class="profShow" style="justify-content:center"')}` : ""}
       <h3 style="margin:16px 0 8px">🐾 Pets</h3>
       ${pets.length ? `<div class="frPets">${pets.map(k => `<div class="frPet"><img src="${PROF_PETS[k].pic}" alt=""><span>${PROF_PETS[k].name}</span></div>`).join("")}</div>` : `<p class="muted">No pets yet.</p>`}
-      <div class="row" style="justify-content:center;gap:10px;margin-top:14px">
-        ${r && r.status === "accepted" ? `<button class="btn ghost" data-fr="remove" data-rid="${r.id}" data-name="${escapeHtml(p.nickname)}">Remove friend</button>` : !r ? `<button class="btn" data-fr="add" data-id="${p.user_id}">➕ Add friend</button>` : ""}
-        <button class="btn" data-modal="close">Close</button></div></div>`);
+      <div class="row" style="justify-content:center;gap:10px;margin-top:14px;flex-wrap:wrap">
+        ${r && r.status === "accepted" ? frChallengeBtn(p) : ""}
+        ${!r ? `<button class="btn" data-fr="add" data-id="${p.user_id}">➕ Add friend</button>` : ""}
+        <button class="btn ghost" data-modal="close">Close</button></div>
+      ${r && r.status === "accepted" ? `<button class="linkBtn frRemove" data-fr="remove" data-rid="${r.id}" data-name="${escapeHtml(p.nickname)}">Remove friend</button>` : ""}</div>`);
 }
 
 /* ----- 🔘 clicks ----- */
@@ -21437,6 +21513,13 @@ document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-fr]"); if (!b) return;
   const k = b.dataset.fr, rid = Number(b.dataset.rid);
   if (k === "search") frSearch($("frSearch").value);
+  if (k === "share" && prof.row && prof.row.friend_code) { navigator.share({ title: "Empire of Coins", text: frInvite(prof.row.friend_code) }).catch(() => {}); }
+  if (k === "duel") {   // ⚔️ to the Online casino lobby with this friend picked
+    if (inModal) hideModal();
+    if (typeof DU === "object") DU.pick = b.dataset.id;
+    state.casinoPage = "online"; showView("casino"); if ((__eocLoaded >= 52 && typeof duApplyPage === "function")) duApplyPage();
+    setTimeout(() => { const el = document.querySelector(".frRow.pick"); if (el) el.scrollIntoView({ behavior: "smooth", block: "center" }); }, 150);
+  }
   if (k === "add") { if (inModal) hideModal(); frAdd(b.dataset.id); }
   if (k === "accept") frAccept(rid);
   if (k === "decline") frDelete(rid, "Request declined.");
@@ -21624,9 +21707,10 @@ function duFriendsHtml() {
   if (typeof fr === "undefined") return "";
   if (!fr.loaded && !fr.loading) frLoad(true);
   const list = fr.rows.filter(r => r.status === "accepted").map(r => fr.people[frOther(r)]).filter(Boolean)
-    .sort((a, b) => (frOnline(b) - frOnline(a)) || String(a.nickname).localeCompare(String(b.nickname)));
+    .sort((a, b) => ((b.user_id === DU.pick) - (a.user_id === DU.pick)) || (frOnline(b) - frOnline(a)) || String(a.nickname).localeCompare(String(b.nickname)));   // ⚔️ the friend picked on the Friends page comes first
   if (!list.length) return `<p class="muted">You have no friends to challenge yet. Add some in 👤 Profile → 👥 Friends.</p>`;
-  return `<div class="frList">${list.map(p => `<div class="frRow ${frOnline(p) ? "" : "off"}"><span class="frWho">${profAvatarImg(p.avatar, "frAv")}${frDot(p)}<span class="frName" data-noi18n>${escapeHtml(p.nickname)}</span>
+  const picked = list.find(p => p.user_id === DU.pick);
+  return `${picked ? `<p class="duPickHint" data-noi18n>${LANG === "es" ? `⚔️ Elige un juego y una apuesta arriba, y pulsa <b>Retar</b> junto a <b>${escapeHtml(picked.nickname)}</b>.` : `⚔️ Choose a game and a bet above, then press <b>Challenge</b> next to <b>${escapeHtml(picked.nickname)}</b>.`}</p>` : ""}<div class="frList">${list.map(p => `<div class="frRow ${frOnline(p) ? "" : "off"} ${p.user_id === DU.pick ? "pick" : ""}"><span class="frWho">${profAvatarImg(p.avatar, "frAv")}${frDot(p)}<span class="frName" data-noi18n>${escapeHtml(p.nickname)}</span>
       ${"money" in p ? `<span class="frMini">${profCoinImg(p.coin, "duCoinS")} ${fmt(Number(p.money) || 0)}</span>` : ""}</span>
     <span class="frBtns">${frOnline(p) ? `<button class="btn small" data-du="challenge" data-id="${p.user_id}" ${DU.busy || DU.out ? "disabled" : ""}><img class="ico" src="assets/duel/ico-duel.webp" alt="">Challenge</button>` : `<span class="muted">Offline</span>`}</span></div>`).join("")}</div>`;
 }

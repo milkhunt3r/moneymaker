@@ -157,9 +157,10 @@ function duFriendsHtml() {
   if (typeof fr === "undefined") return "";
   if (!fr.loaded && !fr.loading) frLoad(true);
   const list = fr.rows.filter(r => r.status === "accepted").map(r => fr.people[frOther(r)]).filter(Boolean)
-    .sort((a, b) => (frOnline(b) - frOnline(a)) || String(a.nickname).localeCompare(String(b.nickname)));
+    .sort((a, b) => ((b.user_id === DU.pick) - (a.user_id === DU.pick)) || (frOnline(b) - frOnline(a)) || String(a.nickname).localeCompare(String(b.nickname)));   // ⚔️ the friend picked on the Friends page comes first
   if (!list.length) return `<p class="muted">You have no friends to challenge yet. Add some in 👤 Profile → 👥 Friends.</p>`;
-  return `<div class="frList">${list.map(p => `<div class="frRow ${frOnline(p) ? "" : "off"}"><span class="frWho">${profAvatarImg(p.avatar, "frAv")}${frDot(p)}<span class="frName" data-noi18n>${escapeHtml(p.nickname)}</span>
+  const picked = list.find(p => p.user_id === DU.pick);
+  return `${picked ? `<p class="duPickHint" data-noi18n>${LANG === "es" ? `⚔️ Elige un juego y una apuesta arriba, y pulsa <b>Retar</b> junto a <b>${escapeHtml(picked.nickname)}</b>.` : `⚔️ Choose a game and a bet above, then press <b>Challenge</b> next to <b>${escapeHtml(picked.nickname)}</b>.`}</p>` : ""}<div class="frList">${list.map(p => `<div class="frRow ${frOnline(p) ? "" : "off"} ${p.user_id === DU.pick ? "pick" : ""}"><span class="frWho">${profAvatarImg(p.avatar, "frAv")}${frDot(p)}<span class="frName" data-noi18n>${escapeHtml(p.nickname)}</span>
       ${"money" in p ? `<span class="frMini">${profCoinImg(p.coin, "duCoinS")} ${fmt(Number(p.money) || 0)}</span>` : ""}</span>
     <span class="frBtns">${frOnline(p) ? `<button class="btn small" data-du="challenge" data-id="${p.user_id}" ${DU.busy || DU.out ? "disabled" : ""}><img class="ico" src="assets/duel/ico-duel.webp" alt="">Challenge</button>` : `<span class="muted">Offline</span>`}</span></div>`).join("")}</div>`;
 }

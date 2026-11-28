@@ -44,6 +44,19 @@ function profNickError(n) {
 
 /* ----- 🏆 what other players see ----- */
 const profStats = () => ({ ach_done: achDone(), ach_total: achShown().length, prestige: (state.legacy && state.legacy.count) || 0 });
+// 🦊🦉🦅 your three levels, 🏅 your showcase (up to 3 finished achievements) and 🙈 hide money (docs/supabase-profiles-extra.sql)
+const profLevels = () => ({ g: levelInfo(state.casinoXp).level, i: levelInfo(inv.xp, INVEST_XP).level, l: levelInfo(state.logiXp, LOGI_XP).level });
+const profShowcase = () => (Array.isArray(state.profShowcase) ? state.profShowcase : []).filter(id => state.achievements[id] && ACHIEVEMENTS.some(a => a.id === id)).slice(0, 3);
+const PROF_LV = [["g", "🦊", "Gambler"], ["i", "🦉", "Investor"], ["l", "🦅", "Logistics"]];
+const profLevelsHtml = (lv) => lv && Object.keys(lv).length ? `<div class="profLvls">${PROF_LV.map(([k, e, n]) => `<span title="${n} level">${e} <span>${n}</span> <b>${Number(lv[k]) || 1}</b></span>`).join("")}</div>` : "";
+const profShowcaseHtml = (ids, mine) => {
+  const list = (ids || []).map(id => ACHIEVEMENTS.find(a => a.id === id)).filter(Boolean);
+  if (!list.length && !mine) return "";
+  return `<div class="profShow">${list.map(a => `<span class="profShowItem" title="${escapeHtml(a.desc || "")}">${achIcon(a, "inl")}<b>${a.name}</b></span>`).join("")}
+    ${mine ? `<button class="btn ghost small" data-prof="showcase">🏅 ${list.length ? "Change showcase" : "Pick up to 3 achievements to show off"}</button>` : ""}</div>`;
+};
+const profPetsNamed = () => [state.pet && state.pet.owned && !state.pet.pending ? { pic: PROF_PETS.mochi.pic, name: petCleanName(state.pet.name) || "Mochi" } : null,
+  state.pip && state.pip.owned ? { pic: PROF_PETS.pip.pic, name: pipName() } : null].filter(Boolean);
 // avatars: the emblems of the 🎁 reward collections you have unlocked (assets/col/<id>.webp)
 const profColOpen = (col) => COSMETICS.some(c => c.collection === col.id && state.cosmetics.owned[c.id]) || (() => { const p = rewardProgress(col); return p.total > 0 && p.done >= p.total; })();
 // 🐾 starter avatars every player can pick (assets/avatars/<name>.webp), shown before the collection emblems
@@ -67,7 +80,7 @@ async function profLoad() {
     // "*": the columns added by later SQL files (friends, money) may not exist yet; see what came back
     const { data, error } = await cloud.sb.from("profiles").select("*").eq("user_id", cloud.user.id).maybeSingle();
     if (error) throw error;
-    if (data) { prof.friendsOn = "friend_code" in data; prof.moneyOn = "money" in data; }
+    if (data) { prof.friendsOn = "friend_code" in data; prof.moneyOn = "money" in data; prof.extraOn = "levels" in data; }   // extraOn: docs/supabase-profiles-extra.sql
     prof.row = data; prof.user = cloud.user.id; prof.fetched = cloud.user.id; profCache();
   } catch (e) { console.warn("Profile load failed:", e); prof.err = e && (e.code === "42P01" || e.code === "PGRST205") ? profDbError(e) : "load"; }
   prof.loading = false;
@@ -121,8 +134,13 @@ async function profPushStats() {
   st.prestige = Math.min(st.prestige, (prof.row.prestige || 0) + 1);   // the database accepts one prestige step per upload
   if (prof.friendsOn) st.pets = profPets();
   if (prof.moneyOn) { st.coin = profCoin(); st.money = Math.max(0, Math.floor(state.money)); }
+  let extraSame = true;
+  if (prof.extraOn) {
+    st.levels = profLevels(); st.showcase = profShowcase(); st.hide_money = !!state.profHideMoney;
+    extraSame = JSON.stringify(st.levels) === JSON.stringify(prof.row.levels || {}) && JSON.stringify(st.showcase) === JSON.stringify(prof.row.showcase || []) && st.hide_money === !!prof.row.hide_money;
+  }
   const moneySame = !prof.moneyOn || (st.coin === prof.row.coin && Math.abs(st.money - (prof.row.money || 0)) <= Math.max(1, (prof.row.money || 0) * 0.01));   // money: only when it moved 1%+
-  if (st.ach_done === prof.row.ach_done && st.ach_total === prof.row.ach_total && st.prestige === prof.row.prestige && String(st.pets) === String(prof.row.pets) && moneySame) return;
+  if (st.ach_done === prof.row.ach_done && st.ach_total === prof.row.ach_total && st.prestige === prof.row.prestige && String(st.pets) === String(prof.row.pets) && moneySame && extraSame) return;
   profPushing = true;
   try { const { error } = await cloud.sb.from("profiles").update(st).eq("user_id", cloud.user.id); if (!error) { Object.assign(prof.row, st); profCache(); } }
   catch (e) {}
@@ -133,12 +151,14 @@ setInterval(profPushStats, 30000);
 /* ----- 🖼️ the page ----- */
 function profCardHtml(row) {
   const st = profStats(), nick = row ? row.nickname : "", av = row ? row.avatar : prof.pendingAvatar;
-  return `<div class="profCard">${profAvatarImg(av, "profAv")}
+  const pets = profPetsNamed();
+  return `<div class="profCard"><button class="profAvBtn" data-prof="avatar" title="Change avatar" aria-label="Change avatar">${profAvatarImg(av, "profAv")}<span class="profAvEdit">✏️</span></button>
     <div class="profCardInfo"><div class="profNick"><span data-noi18n>${nick ? escapeHtml(nick) : "<i>…</i>"}</span>${row && !prof.editing ? `<button class="profEdit" data-prof="edit" title="Change nickname" aria-label="Change nickname">✏️</button>` : ""}</div>
       <div class="profStats"><span>🏆 <b>${st.ach_done}/${st.ach_total}</b> achievements</span><span>⭐ Prestige <b>${st.prestige}</b></span></div>
-      <div class="profMoney">${profCoinImg(profCoin())}<b id="profMoney">${fmt(state.money)}</b></div>
-      ${profPetsHtml(profPets())}
-      ${row && row.friend_code ? `<div class="profCode">Friend code: <b data-noi18n>${escapeHtml(row.friend_code)}</b> <button class="btn ghost small" data-prof="copy">📋 Copy</button></div>` : ""}</div></div>`;
+      ${profLevelsHtml(profLevels())}
+      <div class="profMoney">${profCoinImg(profCoin())}<b id="profMoney">${fmt(state.money)}</b>${state.profHideMoney ? `<span class="muted profHid">🙈 hidden from others</span>` : ""}</div>
+      ${pets.length ? `<div class="profPetsN">${pets.map(p => `<span><img src="${p.pic}" alt=""><b data-noi18n>${escapeHtml(p.name)}</b></span>`).join("")}</div>` : ""}
+      ${row && prof.extraOn ? profShowcaseHtml(profShowcase(), true) : ""}</div></div>`;
 }
 function renderProfile() {
   const box = $("profileView"); if (!box || box.hidden) return;
@@ -169,7 +189,9 @@ function renderProfile() {
       ${prof.loading && !row ? `<p class="muted">Loading…</p>` : ""}
       ${!row && !prof.loading ? `<p class="profNew">✨ Choose a nickname and an avatar to create your profile.</p>` : ""}
       ${prof.msg && !showNick ? `<div class="profOk">${prof.msg}</div>` : ""}
-      ${prof.err && !showNick ? `<div class="profErr">❌ ${errText}</div>` : ""}</div>
+      ${prof.err && !showNick ? `<div class="profErr">❌ ${errText}</div>` : ""}
+      ${row && prof.extraOn ? `<div class="orRow petOnRow profPriv"><span class="grow"><b>Show my money to other players</b><small>${state.profHideMoney ? "Hidden: friends see 🙈 instead of your money." : "Friends see your money on your profile and in the ⚔️ Online casino."}</small></span>
+        <span class="orSwitch ${state.profHideMoney ? "" : "on"}" data-prof="hidemoney" role="switch" tabindex="0"></span></div>` : ""}</div>
     ${showNick ? `<div class="card profWrap"><h3 style="margin-top:0">✏️ ${row ? "Change nickname" : "Nickname"}</h3>
       <div class="profNickRow"><input id="profNick" maxlength="16" autocomplete="off" spellcheck="false" placeholder="Your nickname" value="${escapeHtml(typed != null ? typed : row ? row.nickname : "")}" data-noi18n aria-label="Nickname">
         ${row ? `<button class="btn" data-prof="nick" ${prof.busy || !afford ? "disabled" : ""}>Change · ${fmt(PROF_RENAME_COST)}</button><button class="btn ghost" data-prof="cancel">Cancel</button>`
@@ -178,13 +200,13 @@ function renderProfile() {
       <div class="muted">${row ? `Changing your nickname costs <b>${fmt(PROF_RENAME_COST)}</b>.${afford ? "" : ` You have ${fmt(state.money)}.`}` : "Your first nickname is free. Changing it later costs 100 gcoin."}</div>
       ${prof.err ? `<div class="profErr">❌ ${errText}</div>` : ""}
       ${prof.msg ? `<div class="profOk">${prof.msg}</div>` : ""}</div>` : ""}
-    <div class="card profWrap"><h3 style="margin-top:0">🖼️ Avatar</h3>
+    ${prof.pickAv || !row || !cur ? `<div class="card profWrap"><div class="row"><h3 style="margin:0">🖼️ Avatar</h3>${row && cur ? `<button class="btn ghost small" data-prof="avdone">Done</button>` : ""}</div>
       <p class="muted">Pick a starter avatar or the emblem of one of your 🎁 reward collections. Unlock more collections (🏆 Achievements → 🎁 Rewards) to get more avatars.</p>
       ${ids.length ? `<div class="profAvGrid">${shown.map(id => {
         return `<button class="profAvPick ${id === cur ? "on" : ""}" data-prof-av="${id}" title="${escapeHtml(profAvName(id))}">${profAvatarImg(id)}</button>`; }).join("")}</div>
         ${ids.length > shown.length ? `<button class="btn ghost small" data-prof="all">Show all ${ids.length}</button>` : ""}`
-        : `<p>🔒 Unlock your first 🎁 reward collection (🏆 Achievements → 🎁 Rewards) to choose an avatar.</p>`}</div>
-    <div class="card profWrap"><h3 style="margin-top:0">☁️ Account</h3><div id="cloudRows">${cloudRowsHtml()}</div></div></div></div>`;
+        : `<p>🔒 Unlock your first 🎁 reward collection (🏆 Achievements → 🎁 Rewards) to choose an avatar.</p>`}</div>` : ""}
+    <div class="profAcct muted">☁️ Signed in as <b data-noi18n>${escapeHtml(cloud.user.email || "Google account")}</b> · <button class="linkBtn" data-prof="settings">Manage in ⚙️ Settings</button></div></div></div>`;
 }
 function profUi() {
   const b = $("profileBtn");
@@ -196,6 +218,21 @@ function profUi() {
   }
   const typing = document.activeElement && ["profNick", "frSearch"].includes(document.activeElement.id);   // don't rebuild the page under the player's fingers
   if (state.view === "profile" && !typing) renderProfile();
+}
+
+/* ----- 🏅 pick your showcase (up to 3 finished achievements) ----- */
+function profShowcasePick() {
+  let sel = profShowcase();
+  const done = ACHIEVEMENTS.filter(a => state.achievements[a.id]).sort((a, b) => (state.achievements[b.id] || 0) - (state.achievements[a.id] || 0));
+  const draw = () => {
+    showModal(`<h2>🏅 Your showcase</h2><p class="muted">Pick up to 3 achievements. Other players see them on your profile.</p>
+      <div class="profShowPick">${done.map(a => `<button class="${sel.includes(a.id) ? "on" : ""}" data-showpick="${a.id}" ${!sel.includes(a.id) && sel.length >= 3 ? "disabled" : ""}>${achIcon(a, "inl")}<span><b>${a.name}</b><small>${a.desc || ""}</small></span></button>`).join("") || `<p class="muted">Finish an achievement first.</p>`}</div>
+      <div class="row" style="justify-content:center;gap:10px;margin-top:12px"><button class="btn ghost" data-modal="close">Cancel</button><button class="btn" id="showSave">Save (${sel.length}/3)</button></div>`);
+    $("modalBox").classList.add("wide");
+    $("modalBox").querySelectorAll("[data-showpick]").forEach(b => b.onclick = () => { const id = b.dataset.showpick; sel = sel.includes(id) ? sel.filter(x => x !== id) : sel.concat(id).slice(0, 3); const y = $("modalBox").querySelector(".profShowPick").scrollTop; draw(); $("modalBox").querySelector(".profShowPick").scrollTop = y; });
+    $("showSave").onclick = () => { state.profShowcase = sel; save(); hideModal(); renderProfile(); profPushStats(); };
+  };
+  draw();
 }
 
 /* ----- 🔘 wiring ----- */
@@ -221,6 +258,11 @@ document.addEventListener("click", (e) => {
   if (b.dataset.prof === "signin" && typeof cloudSignIn === "function") cloudSignIn();
   if (b.dataset.prof === "nick") profSaveNick($("profNick").value);
   if (b.dataset.prof === "all") { prof.showAll = true; renderProfile(); }
+  if (b.dataset.prof === "avatar") { prof.pickAv = !prof.pickAv; renderProfile(); if (prof.pickAv) { const g = document.querySelector(".profAvGrid"); if (g) g.scrollIntoView({ behavior: "smooth", block: "center" }); } }
+  if (b.dataset.prof === "avdone") { prof.pickAv = false; renderProfile(); }
+  if (b.dataset.prof === "settings") showSettings(false);
+  if (b.dataset.prof === "hidemoney") { state.profHideMoney = !state.profHideMoney; save(); renderProfile(); profPushStats(); }
+  if (b.dataset.prof === "showcase") profShowcasePick();
   if (b.dataset.prof === "tab-me" || b.dataset.prof === "tab-friends") { prof.tab = b.dataset.prof === "tab-friends" ? "friends" : "me"; prof.err = ""; prof.msg = ""; renderProfile(); if (prof.tab === "friends" && typeof frLoad === "function") frLoad(); }
   if (b.dataset.prof === "copy" && prof.row && prof.row.friend_code) {
     const c = prof.row.friend_code;

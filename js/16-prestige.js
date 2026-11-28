@@ -82,6 +82,7 @@ function doPrestige(id) {
     freeChips: L.vip > 0 ? state.freeChips : {},   // 🎁 free bet chips go back to 0 on a reset, unless 🎟️ VIP Coins was picked (this reset or before)
     vpPayHidden: state.vpPayHidden, uthPayHidden: state.uthPayHidden, view: "income",
     tips: state.tips,   // 💡 tips already seen and the guided start stay done
+    profShowcase: state.profShowcase, profHideMoney: state.profHideMoney,   // 👤 profile showcase and "hide my money"
     // ⛏️ Gold Mine Dig: records, upgrades and the 🏦 vault stay (unsold ore from the last run goes into the vault; a run in progress is dropped)
     mine: state.mine ? { energy: state.mine.energy, regenAt: state.mine.regenAt, runs: state.mine.runs, best: state.mine.best, earned: state.mine.earned, ores: state.mine.ores,
       up: state.mine.up, rescued: state.mine.rescued, fullBag: state.mine.fullBag, closeCall: state.mine.closeCall,

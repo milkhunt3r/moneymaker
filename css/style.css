@@ -2691,3 +2691,40 @@ body.phone #achList > .achCats .achCat { flex: none; }
 #freeChipsCard { animation: none; }
 .casHud .hotT { margin-left: 4px; } #casinoView .casHud { gap: 6px 12px; } #casinoView .casHud .casHudLv { padding: 3px 9px; }
 #casinoView .casHudXp { width: 50px; } #casinoView .casHudMoney { font-size: 16px; } #casinoView .casHudChips { margin-left: auto; }
+
+/* 👤 Profile: avatar button (tap to change), levels, named pets, showcase, privacy row, account line */
+.profAvBtn { position: relative; background: none; border: 0; padding: 0; cursor: pointer; flex: none; border-radius: 50%; }
+.profAvBtn:hover .profAvEdit, .profAvBtn:focus-visible .profAvEdit { opacity: 1; }
+.profAvEdit { position: absolute; right: -2px; bottom: -2px; font-size: 14px; padding: 4px; border-radius: 50%; background: #2a2450; border: 1px solid rgba(255, 211, 77, 0.6); opacity: 0.85; }
+.profLvls { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.profLvls > span { font-size: 13px; padding: 4px 9px; border-radius: 999px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 211, 77, 0.3); }
+.profLvls b { color: #ffd34d; }
+.profHid { font-size: 12px; margin-left: 8px; font-weight: 600; }
+.profPetsN { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.profPetsN span { display: flex; align-items: center; gap: 6px; padding: 3px 10px 3px 3px; border-radius: 999px; background: rgba(255, 255, 255, 0.06); font-size: 13px; }
+.profPetsN img { width: 34px; height: 34px; object-fit: contain; border-radius: 50%; background: rgba(255, 255, 255, 0.06); }
+.profShow { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; align-items: center; }
+.profShowItem { display: flex; align-items: center; gap: 6px; padding: 4px 10px 4px 4px; border-radius: 10px; background: rgba(255, 211, 77, 0.1); border: 1px solid rgba(255, 211, 77, 0.45); font-size: 13px; }
+.profShowItem .inl, .profShowPick .inl { width: 26px; height: 26px; }
+.profShowPick { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 6px; max-height: 55vh; overflow-y: auto; text-align: left; }
+.profShowPick button { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 10px; cursor: pointer; color: #fff; font: inherit;
+  background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12); }
+.profShowPick button span { display: flex; flex-direction: column; } .profShowPick small { color: #b9b4d6; font-size: 11px; }
+.profShowPick button.on { border-color: #ffd34d; background: rgba(255, 211, 77, 0.16); }
+.profShowPick button:disabled { opacity: 0.45; cursor: default; }
+.profPriv { margin-top: 12px; }
+.profAcct { margin: 6px 4px 0; font-size: 13px; }
+/* 👥 Friends: code box with Copy / Share, empty-state invite, Challenge, picked friend in the duel lobby */
+.frCodeBox { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 12px; padding: 10px 12px; border-radius: 12px;
+  background: rgba(255, 211, 77, 0.08); border: 1px dashed rgba(255, 211, 77, 0.5); }
+.frCodeBox > div { display: flex; flex-direction: column; gap: 2px; }
+.frCodeBox b { font-size: 20px; letter-spacing: 2px; color: #ffd34d; }
+.frCodeBox.big b { font-size: 26px; }
+.frCodeBtns { display: flex; gap: 6px; }
+.frEmpty p { margin: 6px 0 0; }
+.frRemove { display: block; margin: 12px auto 0; font-size: 13px; color: #ff9a9a !important; }
+.frRow.pick { outline: 2px solid #ffd34d; background: rgba(255, 211, 77, 0.12); }
+.duPickHint { margin: 0 0 8px; padding: 8px 10px; border-radius: 10px; background: rgba(255, 211, 77, 0.1); border: 1px solid rgba(255, 211, 77, 0.4); font-size: 14px; }
+body.phone .profCard { flex-direction: column; text-align: center; }
+body.phone .profLvls, body.phone .profPetsN, body.phone .profShow, body.phone .profMoney, body.phone .profNick, body.phone .profStats { justify-content: center; }
+body.phone .profMoney { flex-wrap: wrap; }

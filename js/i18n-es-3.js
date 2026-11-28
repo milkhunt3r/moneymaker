@@ -1904,6 +1904,19 @@ H("🐾 The Pet tab is now <b>Pets</b>: your pet collection at the top (2 of 4 f
   "🐾 La pestaña Mascota ahora es <b>Mascotas</b>: tu colección de mascotas arriba (2 de 4 encontradas por ahora), una línea de estado en directo para cada mascota con un botón Ir a verlo, y las ganancias de las dos.");
 H("🐾 Every pet has an <b>Active / Resting</b> switch. Resting hides it and stops its work (Pip's painting clock pauses). Pip also has a new <b>Always sell his paintings</b> option. Rename a pet with the ✏️ next to its name.",
   "🐾 Cada mascota tiene un interruptor <b>Activo / Descansando</b>. Descansando la oculta y detiene su trabajo (el reloj de pintura de Pip se pausa). Pip tiene además la opción <b>Vender siempre sus cuadros</b>. Cambia el nombre de una mascota con el ✏️ junto a su nombre.");
+// 👤 Profile and 👥 Friends updates
+Object.assign(ES, { "Change avatar": "Cambiar avatar", "Investor": "Inversor", "Pick up to 3 achievements to show off": "Elige hasta 3 logros para presumir",
+  "Show my money to other players": "Mostrar mi dinero a otros jugadores", "Friends see your money on your profile and in the ⚔️ Online casino.": "Tus amigos ven tu dinero en tu perfil y en el ⚔️ Casino online.",
+  "Signed in as": "Sesión iniciada como", "Manage in ⚙️ Settings": "Gestionar en ⚙️ Ajustes", "hidden from others": "oculto para los demás",
+  "Hidden: friends see 🙈 instead of your money.": "Oculto: tus amigos ven 🙈 en lugar de tu dinero.", "Your showcase": "Tu vitrina",
+  "Pick up to 3 achievements. Other players see them on your profile.": "Elige hasta 3 logros. Los demás jugadores los verán en tu perfil.",
+  "Change showcase": "Cambiar vitrina", "Add a friend": "Añadir un amigo", "Showcase": "Vitrina", "Money hidden": "Dinero oculto", "Your friend code": "Tu código de amigo",
+  "Share": "Compartir", "No friends yet.": "Todavía no tienes amigos.", "Send your friend code to the people you play with, or search for their nickname below.": "Envía tu código de amigo a la gente con la que juegas, o busca su apodo abajo." });
+rx(String.raw`Save \((\d)/3\)`, "Guardar ($1/3)");
+H("👥 Friends: your friend requests and friends now come first, with a big friend code box (📋 Copy, 📤 Share) and an invite when you have no friends yet. Online friends have a <b>⚔️ Challenge</b> button that opens the Online casino with them picked.",
+  "👥 Amigos: tus solicitudes y tus amigos aparecen ahora primero, con un recuadro grande para tu código de amigo (📋 Copiar, 📤 Compartir) y una invitación cuando aún no tienes amigos. Los amigos conectados tienen un botón <b>⚔️ Retar</b> que abre el Casino online con ellos elegidos.");
+H("👤 Profile: tap your avatar to change it, see your 🦊🦉🦅 levels and your pets by name, pick a <b>🏅 showcase</b> of 3 achievements, and choose whether other players can see your money.",
+  "👤 Perfil: toca tu avatar para cambiarlo, mira tus niveles 🦊🦉🦅 y tus mascotas por su nombre, elige una <b>🏅 vitrina</b> con 3 logros y decide si los demás jugadores pueden ver tu dinero.");
 // 📰 patch note
 H("🌌 New in 🚢 Logistics: <b>Space</b>! Logistics now has two pages, 🌍 Earth (everything you know) and 🌌 Space. Build the 🚀 Space Mission Center to get your first spaceship and open the star map.",
   "🌌 Novedad en 🚢 Logística: ¡<b>Espacio</b>! Logística tiene ahora dos páginas: 🌍 Tierra (todo lo que ya conoces) y 🌌 Espacio. Construye el 🚀 Centro de Misiones Espaciales para conseguir tu primera nave y abrir el mapa estelar.");
